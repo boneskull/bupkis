@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true
+  },
+  "extends": "../tsconfig.json",
+  "include": [
+    "../src/**/*.ts",
+    "../test/**/*.ts",
+    "../.wallaby.js",
+    "../eslint.config.js",
+    "../.commitlintrc.js",
+    "./typedoc.js"
+  ]
+}

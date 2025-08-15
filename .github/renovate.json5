@@ -1,0 +1,60 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    // only pin dev deps
+    // https://docs.renovatebot.com/presets-config/#configjs-lib
+    'config:js-library',
+
+    // send PRs to resolve dependabot alerts
+    // https://docs.renovatebot.com/configuration-options/#vulnerabilityalerts
+    ':enableVulnerabilityAlerts',
+
+    // commit messages in conventional commits format
+    // https://docs.renovatebot.com/presets-default/#semanticcommits
+    ':semanticCommits',
+
+    // group all eslint-related & prettier updates
+    // https://docs.renovatebot.com/presets-group/#grouplinters
+    'group:linters',
+
+    // group all @types/* updates
+    // https://docs.renovatebot.com/presets-group/#groupdefinitelytyped
+    'group:definitelyTyped',
+
+    // only update after packages can no longer be unpublished
+    // https://docs.renovatebot.com/presets-npm/#npmunpublishsafe
+    'npm:unpublishSafe',
+
+    // pin github action digests
+    // https://docs.renovatebot.com/presets-helpers/#helperspingithubactiondigests
+    'helpers:pinGitHubActionDigests',
+
+    // self-update config file when needed
+    // https://docs.renovatebot.com/configuration-options/#configmigration
+    ':configMigration',
+
+    // https://docs.renovatebot.com/presets-default/#automergedigest
+    ':automergeDigest',
+
+    // https://docs.renovatebot.com/presets-default/#automergeminor
+    ':automergeMinor',
+  ],
+  labels: ['dependencies'],
+  ignorePaths: [
+    '**/node_modules/**',
+    '**/test/**',
+    '**/demo/**',
+    '**/example*/**',
+  ],
+  // packageRules: [
+  //   {
+  //     matchFileNames: ['.nvmrc'],
+  //     automerge: true,
+  //   },
+  // ],
+  // https://docs.renovatebot.com/configuration-options/#lockfilemaintenance
+  lockFileMaintenance: {
+    enabled: true,
+    automerge: true,
+  },
+}
