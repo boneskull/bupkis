@@ -1,0 +1,25 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit",
+    "source.formatDocument": "explicit"
+  },
+  "prettier.useEditorConfig": true,
+  "files.insertFinalNewline": false,
+  "editor.formatOnSave": true,
+  "eslint.useFlatConfig": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "nodejs-testing.exclude": ["**/node_modules/**", "**/dist/**"],
+  "nodejs-testing.extensions": [
+    {
+      "extensions": ["mts", "cts", "ts"],
+      "parameters": ["--import", "tsx"]
+    }
+  ],
+  "search.exclude": {
+    ".tshy-build*": true,
+    ".tshy": true
+  },
+  "files.exclude": {}
+}
