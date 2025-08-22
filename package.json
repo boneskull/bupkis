@@ -44,6 +44,8 @@
     "tape"
   ],
   "scripts": {
+    "lint-commit": "commitlint",
+    "lint-staged": "lint-staged",
     "prepare": "husky",
     "test": "node --import tsx --test \"test/**/*.ts\"",
     "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"

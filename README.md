@@ -1,8 +1,12 @@
-# _BUPKIS_
-
-> A well-typed and easily exensible _BDD-style_ assertion library.
-
-[![bupkis logo](https://raw.githubusercontent.com/boneskull/bupkis/main/assets/bupkis-logo-512.png)]
+<p align="center">
+  <img src="https://github.com/bupkis/tree/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
+  <h1 align="center"><em>BUPKIS</em></h1>
+  <p align="center">
+    A well-typed and easily exensible _BDD-style_ assertion library.
+    <br/>
+    by <a href="https://github.com/boneskull">@boneskull</a>
+  </p>
+</p>
 
 > [!CAUTION]
 >
