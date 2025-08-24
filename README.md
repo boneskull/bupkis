@@ -2,7 +2,7 @@
   <img src="https://github.com/boneskull/bupkis/blob/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
   <h1 align="center"><em>BUPKIS</em></h1>
   <p align="center">
-    A well-typed and easily exensible _BDD-style_ assertion library.
+    A well-typed and easily exensible <em>BDD-style</em> assertion library.
     <br/>
     by <a href="https://github.com/boneskull">@boneskull</a>
   </p>
@@ -73,7 +73,7 @@ Can't remember the string? Did you forget a word or make a typo? Maybe you also 
 
 > **TODO**: More examples as assertions are implemented.
 
-### Just Use Zod
+### Custom Assertions: Basics
 
 _BUPKIS_ dogfoods its own custom assertions, so all of its builtin assertions are implemented the same way a user would. An implementation for a simple "`unknown` is a string" assertion would look like this:
 
@@ -81,7 +81,7 @@ _BUPKIS_ dogfoods its own custom assertions, so all of its builtin assertions ar
 createAssertion(['is a string'], z.string());
 ```
 
-See that `z.striong()`? That's [Zod](https://zod.dev/). If you know Zod, you know how to create a custom assertion. Most all of Zod's functionality is available to you. If Zod _can't_ do it out-of-the-box, you always have [`z.custom()`](https://zod.dev/api#custom). For example, we have a "is a function" assertion:
+See that `z.string()`? That's [Zod][]. If you know Zod, you know how to create a custom assertion. Most all of Zod's functionality is available to you. If Zod _can't_ do it out-of-the-box, you always have [`z.custom()`](https://zod.dev/api#custom). For example, we have an "is a function" assertion:
 
 ```ts
 createAssertion(
@@ -95,10 +95,10 @@ expect(Date, 'to be a function');
 
 In _BUPKIS_, Zod plays a dual role:
 
-1. It is used to typecheck values to determine which assertion should be executed, and
-2. It is often used to implement the assertion itself.
+1. It is used to check values to determine _which_ assertion should be executed, and
+2. It is most often used to implement the assertion itself.
 
-#### Parametric Assertions
+#### Custom Assertions: Parametric Assertions
 
 When we want to create an assertion that takes parameters—i.e. a _parameterized assertion_, we can still use Zod. For example, here is a simple "is greater than" assertion:
 
@@ -119,7 +119,7 @@ createAssertion(
 );
 ```
 
-#### Boolean-Returning Functions
+#### Custom Assertions: Boolean-Returning Functions
 
 That callback can also just be a function that returns a boolean. If the assertion passes, it should return `true`. If it fails, it should return `false`. For example, here is a simple "is even" assertion:
 
@@ -158,9 +158,13 @@ _BUPKIS_ has two main exports:
 >
 > As of this writing, the assertions available in `expectAsync()` are all `Promise`-related (and custom assertions can even use an async schema for the subject); they are completely disjoint from the assertions available in `expect()`. **This will likely change in the future.**
 
+## Project Scope
+
+1. It's an assertion library
+
 ### TODO
 
-In no particular order, here are some things I want to implement (maybe):
+In no particular order, here are some things I want to implement:
 
 - [ ] Good diffs (use a library)
 - [ ] More assertions
@@ -179,8 +183,9 @@ In no particular order, here are some things I want to implement (maybe):
   - [ ] Type safety for custom assertions (may require a significant refactor)
 - [x] Lean on Zod more for builtin assertion implementations and use its error-reporting facilities
 - [ ] Keypaths / property drilling
+- [ ] See if there's some way to leverage `asserts` type predicates without too much boilerplate & tedium. Maybe make a TS feature request to allow `asserts` and/or `is` keyword to be used in types (or find out why they didn't want to do that).
 
-#### Future
+#### Maybe Later
 
 - [ ] Lower-level plugin API for those things which are more involved than custom assertions
 - [ ] Basic spies (rationale: it is v. common to want to just check that a function gets called)
@@ -194,17 +199,13 @@ In no particular order, here are some things I want to implement (maybe):
   - [ ] `node:util.inspect` (dev)
   - [ ] `node:assert.AssertionError`
 - [ ] Pull in multiple test frameworks into the dev env and assert basic compatibility with all of them
-
-### Not TODO
-
-Non-goals:
-
-- Stubs and mocks
--
+- [ ] Codemods for migration
+- [ ] Support other object validation libraries (or wasn't there one that provided a translation layer?)
 
 ## Prior Art
 
-- [Unexpected](https://unexpected.js.org/) is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
+- [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
+- [Zod][] is a popular object validation library which does most of the heavy lifting for _BUPKIS_. It's not an assertion library, but there's enough overlap in its use case that it makes sense to leverage it.
 
 ## A Note From The Author
 
@@ -215,3 +216,6 @@ Non-goals:
 ## License
 
 Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
+
+[zod]: https://zod.dev
+[unexpected]: https://unexpected.js.org
