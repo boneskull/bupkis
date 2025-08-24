@@ -1,13 +1,20 @@
-import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
-import { AssertionError } from '../error.js';
-import { functionSchema } from '../schema.js';
-import { Assertion, factory } from './assertion.js';
+import { ClassSchema, FunctionSchema, PropertyKeySchema } from '../schema.js';
+import { satisfies, shallowSatisfiesShape } from '../util.js';
+import { Assertion } from './assertion.js';
 
 const { fromParts: createAssertion } = Assertion;
 
-export const Assertions = [
+const trapError = (fn: () => unknown) => {
+  try {
+    fn();
+  } catch (err) {
+    return err;
+  }
+};
+
+const BasicAssertions = [
   createAssertion(
     [
       ['to be a', 'to be an'],
@@ -18,97 +25,146 @@ export const Assertions = [
         'undefined',
         'null',
         'bigint',
+        'BigInt',
+        'Symbol',
         'symbol',
         'object',
+        'Object',
         'function',
+        'Function',
         'array',
+        'Array',
         'date',
+        'Date',
       ]),
     ],
-    (_, subject, type) => {
+    (subject, type) => {
+      type = type.toLowerCase() as typeof type;
       switch (type) {
-        case 'array': {
-          if (!Array.isArray(subject)) {
-            throw new AssertionError(`Expected ${subject} to be an array`);
-          }
-          break;
-        }
-        case 'date': {
-          if (!(subject instanceof Date)) {
-            throw new AssertionError(`Expected ${subject} to be a Date`);
-          }
-          break;
-        }
-        case 'null': {
-          if (subject !== null) {
-            throw new AssertionError(`Expected ${subject} to be null`);
-          }
-          break;
-        }
+        case 'array':
+          return z.array(z.any());
+        case 'Date':
+        case 'date':
+          return z.date();
+        case 'null':
+          return z.null();
         default:
           if (typeof subject !== type) {
-            throw new AssertionError(`Expected ${subject} to be a ${type}`);
+            return false;
           }
       }
     },
   ),
-  // createAssertion(['to be a', classSchema], (_ctx, subject, type) => {}),
   createAssertion(['to be a string'], z.string()),
-  createAssertion(['to be a number'], z.number()),
+  createAssertion(['to be a String'], z.instanceof(String)),
+  createAssertion(['to be a Number'], z.instanceof(Number)),
+  createAssertion(['to be a Boolean'], z.instanceof(Boolean)),
+  createAssertion([['to be a number', 'to be finite']], z.number()),
+  createAssertion([['to be infinite', 'to be Infinity']], z.literal(Infinity)),
+  createAssertion(
+    [['to be a safe number', 'to be safe']],
+    z.number().refine((n) => Number.isSafeInteger(n)),
+  ),
   createAssertion(['to be a boolean'], z.boolean()),
-  createAssertion(['to be true'], z.literal(true)),
+  createAssertion(['to be positive'], z.number().positive()),
+  createAssertion(['to be negative'], z.number().negative()),
+  createAssertion([['to be zero', 'to be 0']], z.literal(0)),
+  createAssertion([['to be 1', 'to be one']], z.literal(1)),
+  createAssertion([['to be true', 'not to be false']], z.literal(true)),
   createAssertion([['to be a bigint', 'to be a BigInt']], z.bigint()),
   createAssertion([['to be a symbol', 'to be a Symbol']], z.symbol()),
-  createAssertion(['to be a function'], functionSchema),
-  createAssertion(['to be false'], z.literal(false)),
+  createAssertion(['to be a function'], FunctionSchema),
+  createAssertion([['to be false', 'not to be true']], z.literal(false)),
+  createAssertion(['to be NaN'], z.nan()),
+  createAssertion(['to be an integer'], z.number().int()),
   createAssertion(['to be null'], z.null()),
   createAssertion(['to be undefined'], z.undefined()),
-  createAssertion(['to be an array'], z.array(z.unknown())),
-  createAssertion([z.date(), ['to be a date', 'to be a Date']], z.date()),
-  // createAssertion(
-  //   [['to be a class', 'to be a constructor']],
-  //   (_ctx, subject) => {
-  //     expect(subject, 'to be a', classSchema);
-  //   },
-  // ),
-  // ),
-  createAssertion(['to be an object'], z.object({})),
+  createAssertion([['to be an array', 'to be array']], z.array(z.any())),
+  createAssertion([['to be a date', 'to be a Date']], z.date()),
+  createAssertion([['to be a class', 'to be a constructor']], ClassSchema),
+
   createAssertion(
-    [z.number(), 'to be greater than', z.number()],
-    factory((other: number) => {
-      return z.number().gt(other);
-    }),
+    [['to be a RegExp', 'to be a regex', 'to be a regexp']],
+    z.instanceof(RegExp),
   ),
   createAssertion(
-    [z.number(), 'to be less than', z.number()],
-    Object.assign(
-      (context: any, subject: number, other: number) => {
-        const schema = z.number().lt(other);
-        try {
-          schema.parse(subject);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            const pretty = z.prettifyError(error);
-            throw new AssertionError(`Assertion failed: ${pretty}`);
-          }
-          throw error;
-        }
-      },
-      { __isSchemaFactory: true },
+    [['to be truthy', 'to exist']],
+    z.any().refine((value) => !!value),
+  ),
+  createAssertion(
+    [['to be falsy', 'not to exist']],
+    z.any().refine((value) => !value),
+  ),
+  createAssertion(['to be an object'], z.looseObject({}).or(z.array(z.any()))),
+  createAssertion([z.array(z.any()), 'to be empty'], z.array(z.any()).max(0)),
+  createAssertion(
+    [z.array(z.any()), ['to not be empty', 'not to be empty']],
+    z.array(z.any()).min(1),
+  ),
+  createAssertion(
+    [z.looseObject({}), ['to not be empty', 'not to be empty']],
+    z.record(z.any(), z.any()).refine((value) => Object.keys(value).length > 0),
+  ),
+  createAssertion(
+    [z.looseObject({}), ['to be empty']],
+    z.record(z.any(), z.never()),
+  ),
+] as const;
+
+export const EsotericAssertions = [
+  createAssertion(
+    ['to have a null prototype'],
+    z.custom<object>(
+      (value) =>
+        !!value &&
+        typeof value === 'object' &&
+        Object.getPrototypeOf(value) === null,
     ),
+  ),
+  createAssertion(
+    [PropertyKeySchema, 'to be an enumerable property of', z.looseObject({})],
+    (subject, obj) =>
+      !!Object.getOwnPropertyDescriptor(obj, subject)?.enumerable,
+  ),
+  createAssertion(
+    ['to be sealed'],
+    z.any().refine((obj) => Object.isSealed(obj)),
+  ),
+  createAssertion(
+    ['to be frozen'],
+    z.any().refine((obj) => Object.isFrozen(obj)),
+  ),
+  createAssertion(
+    ['to be extensible'],
+    z.any().refine((obj) => Object.isExtensible(obj)),
+  ),
+] as const;
+
+const ParametricAssertions = [
+  createAssertion([z.number(), 'to be greater than', z.number()], (_, other) =>
+    z.number().gt(other),
+  ),
+  createAssertion([z.number(), 'to be less than', z.number()], (_, other) =>
+    z.number().lt(other),
+  ),
+  createAssertion(
+    [
+      z.number(),
+      ['to be greater than or equal to', 'to be at least'],
+      z.number(),
+    ],
+    (_, other) => z.number().gte(other),
+  ),
+  createAssertion(
+    [z.number(), ['to be less than or equal to', 'to be at most'], z.number()],
+    (_, other) => z.number().lte(other),
   ),
   createAssertion(
     [
       ['to be', 'to equal', 'equals', 'is', 'is equal to', 'to strictly equal'],
       z.any(),
     ],
-    (_, subject, value) => {
-      if (subject !== value) {
-        throw new AssertionError(
-          `Expected ${subject} to be ${value}, but it was ${inspect(subject)}`,
-        );
-      }
-    },
+    (subject, value) => subject === value,
   ),
   createAssertion(
     [
@@ -123,125 +179,101 @@ export const Assertions = [
       ],
       z.any(),
     ],
-    (_, subject, value) => {
-      if (subject === value) {
-        throw new AssertionError(
-          `Expected ${subject} not to be ${value}, but it was`,
-        );
-      }
-    },
+    (subject, value) => subject !== value,
   ),
-  createAssertion([functionSchema, 'to throw'], (_, subject) => {
+  createAssertion([FunctionSchema, 'to throw'], (subject) => {
     let threw = false;
     try {
       subject();
-    } catch (err) {
+    } catch {
       threw = true;
     }
-    if (!threw) {
-      throw new AssertionError('Expected function to throw');
-    }
+    return threw;
   }),
   createAssertion(
-    [functionSchema, ['not to throw', 'to not throw']],
-    (_, subject) => {
+    [FunctionSchema, ['not to throw', 'to not throw']],
+    (subject) => {
       let threw = false;
-      let error: unknown;
       try {
         subject();
-      } catch (err) {
+      } catch {
         threw = true;
-        error = err;
       }
-      if (threw) {
-        throw new AssertionError(
-          `Expected function not to throw, but it threw: ${error}`,
-        );
-      }
+      return !threw;
     },
   ),
-  createAssertion([z.looseObject({}), 'to be empty'], (_, subject) => {
-    if (Object.keys(subject).length > 0) {
-      throw new AssertionError(
-        `Expected object to be empty, but it had keys: ${Object.keys(subject).join(', ')}`,
-      );
-    }
-  }),
+  createAssertion(
+    [FunctionSchema, ['to throw a', 'to thrown an'], ClassSchema],
+    (subject, ctor) => {
+      const error = trapError(subject);
+      if (!error) {
+        return false;
+      }
+      return error instanceof ctor;
+    },
+  ),
   createAssertion(
     [
-      z.looseObject({}),
-      [
-        'to not be empty',
-        'not to be empty',
-        'to have no keys',
-        'not to have keys',
-        'to have no properties',
-        'not to have properties',
-      ],
+      FunctionSchema,
+      ['to throw'],
+      z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
-    (_, subject) => {
-      if (Object.keys(subject).length === 0) {
-        throw new AssertionError(
-          `Expected object to not be empty, but it was empty`,
-        );
+    (subject, param) => {
+      const error = trapError(subject);
+      if (!error) {
+        return false;
+      }
+
+      if (typeof param === 'string') {
+        return z
+          .object({
+            message: z.coerce.string().pipe(z.literal(param)),
+          })
+          .or(z.coerce.string().pipe(z.literal(param)))
+          .safeParse(error).success;
+      } else if (param instanceof RegExp) {
+        return z
+          .object({
+            message: z.coerce.string().regex(param),
+          })
+          .or(z.coerce.string().regex(param))
+          .safeParse(error).success;
+      } else if (typeof param === 'object' && param !== null) {
+        return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
+      } else {
+        return false;
       }
     },
   ),
-  // createAssertion(
-  //   [functionSchema, ['to resolve', 'to fulfill']],
-  //   async (_, subject) => {
-  //     try {
-  //       await subject();
-  //     } catch (err) {
-  //       throw new AssertionError(
-  //         `Expected function to resolve, but it rejected: ${err}`,
-  //       );
-  //     }
-  //   },
-  // ),
   createAssertion(
-    [z.promise(z.any()), ['to resolve', 'to fulfill']],
-    async (_, subject) => {
-      try {
-        await subject;
-      } catch (err) {
-        throw new AssertionError(
-          `Expected Promise to resolve, but it rejected: ${err}`,
-        );
-      }
-    },
+    [
+      z.string(),
+      ['includes', 'contains', 'to include', 'to contain'],
+      z.string(),
+    ],
+    (subject, expected) => subject.includes(expected),
   ),
+
   createAssertion(
     [z.string(), 'to match', z.instanceof(RegExp)],
-    (_, subject, regex) => {
-      if (!regex.test(subject)) {
-        throw new AssertionError(
-          `Expected string "${subject}" to match regex ${regex}, but it did not`,
-        );
-      }
-    },
+    (subject, regex) => regex.test(subject),
   ),
   createAssertion(
-    [
-      z.looseObject({}),
-      ['to satisfy', 'to be like', 'to match'],
-      z.looseObject({}),
-    ],
-    (_, subject, expected) => {
-      // TODO: this is not deeply recursive and should be; pull the implementation from some other lib or maybe z.partial would work here
-      const expectedKeys = Object.keys(expected);
-      for (const key of expectedKeys) {
-        if (!(key in subject)) {
-          throw new AssertionError(
-            `Expected object to have key "${key}", but it was missing`,
-          );
-        }
-        if (subject[key] !== expected[key]) {
-          throw new AssertionError(
-            `Expected object key "${key}" to be ${expected[key]}, but it was ${subject[key]}`,
-          );
-        }
+    [z.any(), ['to satisfy', 'to be like', 'to match'], z.looseObject({})],
+    (subject, expected) => {
+      if (typeof subject !== 'object' || subject === null) {
+        return false;
       }
+
+      // Deep recursive object matching with circular reference protection
+
+      return satisfies(subject, expected);
     },
   ),
 ] as const; // Shared validation/match helper
+
+export const Assertions = [
+  ...BasicAssertions,
+  ...EsotericAssertions,
+  ...ParametricAssertions,
+];

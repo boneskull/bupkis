@@ -15,7 +15,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         extraFileExtensions: ['.json5', '.jsonc'],
-        project: './tsconfig.json',
+        project: './.config/tsconfig.eslint.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -73,6 +73,17 @@ export default tseslint.config(
       ],
       // too many false positives
       '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+          varsIgnorePattern: '^_',
+        },
+      ],
+
       // these 6 bytes add up
       '@typescript-eslint/require-await': 'off',
 
@@ -88,15 +99,12 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/cli.ts'],
-    rules: {
-      'n/hashbang': 'off',
-    },
-  },
-  {
     files: ['test/**/*.test.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
   eslintPluginJsonc.configs['flat/prettier'][0],
@@ -106,6 +114,6 @@ export default tseslint.config(
   },
   eslintPluginJsonc.configs['flat/prettier'][2],
   {
-    ignores: ['dist', 'coverage', '*.snapshot', '.tsup'],
+    ignores: ['dist', 'coverage', '*.snapshot', '.tshy'],
   },
 );

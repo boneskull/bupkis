@@ -1,15 +1,14 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
     "source.fixAll": "explicit",
-    "source.formatDocument": "explicit"
+    "source.formatDocument": "explicit",
+    "source.organizeImports": "explicit"
   },
-  "prettier.useEditorConfig": true,
-  "files.insertFinalNewline": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "eslint.onIgnoredFiles": "warn",
   "eslint.useFlatConfig": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.insertFinalNewline": false,
   "nodejs-testing.exclude": ["**/node_modules/**", "**/dist/**"],
   "nodejs-testing.extensions": [
     {
@@ -17,9 +16,11 @@
       "parameters": ["--import", "tsx"]
     }
   ],
+  "prettier.useEditorConfig": true,
   "search.exclude": {
-    ".tshy-build*": true,
-    ".tshy": true
+    ".tshy": true,
+    ".tshy-build*": true
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
   "files.exclude": {}
 }

@@ -1,5 +1,5 @@
-import { Assertion } from './assertion.js';
+import { Assertion, FunctionAssertion, SchemaAssertion } from './assertion.js';
 
-export const createAssertion = Assertion.fromParts;
+export const { fromParts: createAssertion } = Assertion;
 
-export { Assertion };
+export { Assertion, FunctionAssertion, SchemaAssertion };

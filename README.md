@@ -75,52 +75,61 @@ Can't remember the string? Did you forget a word or make a typo? Maybe you also 
 
 ### Just Use Zod
 
-_BUPKIS_ dogfoods its own custom assertions, so all of its builtin assertions are implemented the same way a user would. If you recall the [first example](#natural-language-assertions), the implementation looks similar to this:
+_BUPKIS_ dogfoods its own custom assertions, so all of its builtin assertions are implemented the same way a user would. An implementation for a simple "`unknown` is a string" assertion would look like this:
 
 ```ts
-createAssertion(
-  [
-    ['to be', 'to equal', 'equals', 'is', 'is equal to', 'to strictly equal'],
-    z.any(),
-  ],
-  (subject: unknown, expected: any) => {
-    if (subject !== expected) {
-      throw new AssertionError(`Expected ${subject} to be ${value}`);
-    }
-  },
-);
+createAssertion(['is a string'], z.string());
 ```
 
-> [!TIP] If the first item of the first parameter to `createAssertion()` is _not_ a Zodlike object, we implicitly parse the _subject_ with `z.unknown()`.
-
-See that `z.any()`? That's [Zod](https://zod.dev/). If you know Zod, you know how to create a custom assertion. Most all of Zod's functionality is available to you. If Zod _can't_ do it, well, you always have [`z.custom()`](https://zod.dev/api#custom). For example (explicit types added for clarity in some cases):
+See that `z.striong()`? That's [Zod](https://zod.dev/). If you know Zod, you know how to create a custom assertion. Most all of Zod's functionality is available to you. If Zod _can't_ do it out-of-the-box, you always have [`z.custom()`](https://zod.dev/api#custom). For example, we have a "is a function" assertion:
 
 ```ts
-const ClassSchema = z.custom<new (...args: any[]) => any>({
-  // this seems to actually work and doesn't call the constructor
-  try {
-    new new Proxy(fn, { construct: () => ({}) })();
-    return true;
-  } catch (err) {
-    return false;
-  }
-});
-
 createAssertion(
-  ['to be an instance of'], ClassSchema],
-  (subject: unknown, ctor: new (...args: any[]) => any) => {
-    if (!(subject instanceof ctor)) {
-      throw new AssertionError(
-        `Expected ${subject} to be an instance of ${ctor.name}`);
-    }
-  },
+  ['is a function'],
+  z.custom<(...args: any[]) => any>((value) => typeof value === 'function'),
 );
 
 // usage
-expect(new Date(), 'to be an instance of', Date);
+expect(Date, 'to be a function');
 ```
 
-The main role of Zod here is to provide a _matching function_ ("matcher"). The matcher is necessary to know which assertion we should call. It is also responsible for much inference and type-safety.
+In _BUPKIS_, Zod plays a dual role:
+
+1. It is used to typecheck values to determine which assertion should be executed, and
+2. It is often used to implement the assertion itself.
+
+#### Parametric Assertions
+
+When we want to create an assertion that takes parameters—i.e. a _parameterized assertion_, we can still use Zod. For example, here is a simple "is greater than" assertion:
+
+```ts
+createAssertion([z.number(), 'is greater than', z.number()], (_, expected) =>
+  z.number().gt(expected),
+);
+```
+
+The first parameter to the callback `(_, expected)` is the subject of the assertion, which corresponds to the first item of the first argument to `createAssertion()`. The second argument is of course the phrase, and the third is the expected value. The callback `(_, expected)` will always eliminate phrases from its parameters (since they are not really useful). If we _return_ a Zod schema from the callback, it will be used to validate the subject. It's equivalent to writing the following (with less boilerplate):
+
+```ts
+createAssertion(
+  [z.number(), 'is greater than', z.number()],
+  (subject, expected) => {
+    z.number().gt(expected).parse(subject);
+  },
+);
+```
+
+#### Boolean-Returning Functions
+
+That callback can also just be a function that returns a boolean. If the assertion passes, it should return `true`. If it fails, it should return `false`. For example, here is a simple "is even" assertion:
+
+```ts
+createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
+```
+
+If this fails, an `AssertionError` will be thrown.
+
+> TODO: Custom error messages.
 
 ## Prerequisites
 
@@ -146,12 +155,12 @@ In no particular order, here are some things I want to implement (maybe):
 - [ ] Custom diffs
 - [ ] More assertions
   - [ ] Better / more async support
-  - [ ] `is true` / `is not true`
-  - [ ] `is false` / `is not false`
-  - [ ] `is NaN` / `is not NaN`
+  - [x] `is true` / `is not true`
+  - [x] `is false` / `is not false`
+  - [x] `is NaN`
   - [ ] Assertions for all Zod v4 builtins, essentially (which suggests some dynamic generation of assertions)
   - [ ] Support for more intrinsics; `Set`, `Map`, `WeakSet`, `WeakMap`, `WeakRef`
-  - [ ] Random convenience like `is frozen`, `is sealed`, `is extensible`
+  - [x] Random convenience like `is frozen`, `is sealed`, `is extensible`
   - [ ] Deep equality / partial equality, strict and loose
 - [ ] Dynamic types
 - [ ] Custom error messages

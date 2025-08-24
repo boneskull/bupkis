@@ -1,38 +1,39 @@
 import Debug from 'debug';
+import { AssertionError } from 'node:assert';
 import { inspect } from 'util';
 import { z } from 'zod/v4';
-import { AssertionError } from '../error.js';
+
+import { kStringLiteral } from '../constant.js';
 import {
-  isAssertionImplFn,
-  isAssertionSchemaFactory,
+  isBoolean,
+  isPromiseLike,
   isZodPromise,
   isZodType,
 } from '../guards.js';
-import { bupkisRegistry, kStringLiteral } from '../metadata.js';
+import { bupkisRegistry, BupkisRegistrySchema } from '../metadata.js';
 import {
-  AssertionImpl,
-  AssertionImplFn,
-  AssertionPart,
-  AssertionParts,
-  AssertionSchemaFactory,
-  AssertionSlots,
-  ParsedResult,
-  ParsedSubject,
-  ParsedValues,
-  RestParsedValues,
+  type AnyParsedValues,
+  type AssertionImpl,
+  type AssertionImplAsyncFn,
+  type AssertionImplFn,
+  type AssertionPart,
+  type AssertionParts,
+  type AssertionSlots,
+  type ParsedResult,
+  type ParsedSubject,
+  type ParsedValues,
 } from './types.js';
 
 const debug = Debug('bupkis:assertion');
 
-export const kSchemaFactory = Symbol('schema-factory');
-
-export class Assertion<Parts extends AssertionParts> {
-  readonly implFn?: AssertionImplFn<Parts>;
-  readonly schema?: z.ZodSchema<ParsedSubject<Parts>>;
-  readonly factory?: AssertionSchemaFactory<Parts>;
-  readonly slots: AssertionSlots<Parts>;
-
+export abstract class Assertion<
+  T extends AssertionImpl<Parts>,
+  Parts extends AssertionParts,
+> {
   readonly __parts!: Parts;
+  readonly impl: T;
+
+  readonly slots: AssertionSlots<Parts>;
 
   get subject() {
     return this.slots[0];
@@ -42,86 +43,67 @@ export class Assertion<Parts extends AssertionParts> {
     return this.subject.def.type;
   }
 
-  constructor(slots: AssertionSlots<Parts>, impl: AssertionImpl<Parts>) {
+  constructor(slots: AssertionSlots<Parts>, impl: T) {
     this.slots = slots;
-
-    // Type guard to determine if it's a schema or implementation
-    if (isZodType(impl)) {
-      this.schema = impl;
-    } else if (isAssertionSchemaFactory(impl)) {
-      this.factory = impl;
-    } else if (isAssertionImplFn(impl)) {
-      this.implFn = impl;
-    } else {
-      throw new TypeError(`Invalid assertion implementation: ${inspect(impl)}`);
-    }
+    this.impl = impl;
   }
 
-  private translateZodError(
-    zodError: z.ZodError,
-    context?: string,
-  ): AssertionError {
-    const pretty = z.prettifyError(zodError);
-    return new AssertionError(
-      `Assertion failed${context ? ` ${context}` : ''}: ${pretty}`,
+  static forImpl<
+    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
+    Parts extends AssertionParts,
+  >(
+    slots: AssertionSlots<Parts>,
+    implementationFn: Impl,
+  ): FunctionAssertion<Impl, Parts>;
+  static forImpl<
+    Impl extends z.ZodType<ParsedSubject<Parts>>,
+    Parts extends AssertionParts,
+  >(slots: AssertionSlots<Parts>, schema: Impl): SchemaAssertion<Impl, Parts>;
+  static forImpl<Parts extends AssertionParts>(
+    slots: AssertionSlots<Parts>,
+    impl: AssertionImpl<Parts>,
+  ) {
+    if (isZodType(impl)) {
+      return new SchemaAssertion(slots, impl);
+    }
+    if (typeof impl === 'function') {
+      return new FunctionAssertion(slots, impl);
+    }
+    throw new TypeError(
+      'Assertion implementation must be a function, Zod schema or Zod schema factory',
     );
   }
 
-  execute<T extends ParsedValues<Parts>>(
-    parsedValues: T,
-    rawArgs: readonly unknown[],
-  ): Awaited<void> {
-    let schema: z.ZodType | undefined;
-    const [subject, ...rest] = parsedValues;
-    if (this.factory) {
-      schema = this.factory.call(null, ...rest);
-    } else if (this.schema) {
-      schema = this.schema;
-    }
-    if (schema) {
-      try {
-        schema.parse(subject);
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          throw this.translateZodError(error);
-        }
-        throw error;
-      }
-    } else if (this.implFn) {
-      // Function-based implementation
-      this.implFn.call(
-        null,
-        { raw: rawArgs, slots: this.slots },
-        ...(parsedValues as any),
-      ) as Awaited<void>;
-      return;
-    } else {
-      throw new Error('Assertion has neither implementation nor schema');
-    }
-  }
-
   // Static factory: build an Assertion instance from author-provided parts
-  static fromParts<const Parts extends AssertionParts>(
+  static fromParts<
+    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
+    const Parts extends AssertionParts,
+  >(
+    this: void,
     parts: Parts,
-    implFn: AssertionImplFn<Parts>,
-  ): Assertion<Parts>;
+    implementationFn: Impl,
+  ): FunctionAssertion<Impl, Parts>;
+  static fromParts<
+    Impl extends z.ZodType<ParsedSubject<Parts>>,
+    const Parts extends AssertionParts,
+  >(this: void, parts: Parts, schema: Impl): SchemaAssertion<Impl, Parts>;
   static fromParts<const Parts extends AssertionParts>(
-    parts: Parts,
-    schema: z.ZodType,
-  ): Assertion<Parts>;
-  static fromParts<const Parts extends AssertionParts>(
-    parts: Parts,
-    factory: AssertionSchemaFactory<Parts>,
-  ): Assertion<Parts>;
-  static fromParts<const Parts extends AssertionParts>(
+    this: void,
     parts: Parts,
     impl: AssertionImpl<Parts>,
-  ): Assertion<Parts> {
+  ) {
     if (!parts || parts.length === 0) {
       throw new TypeError('At least one value is required for an assertion');
     }
-    // Build slots tuple: prepend z.unknown() if first is string or string[]; map strings -> branded literals
-    const mapped = parts.flatMap((part, index) => {
+    const slots = Assertion.slotify<Parts>(parts);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return Assertion.forImpl(slots, impl as any);
+  }
+
+  // Build slots tuple: prepend z.unknown() if first is string or string[]; map strings -> branded literals
+  private static slotify<const Parts extends AssertionParts>(parts: Parts) {
+    return parts.flatMap((part, index) => {
       const result: z.ZodType[] = [];
       if (
         index === 0 &&
@@ -154,11 +136,14 @@ export class Assertion<Parts extends AssertionParts> {
         result.push(part);
       }
       return result;
-    });
-
-    return new Assertion(mapped as unknown as AssertionSlots<Parts>, impl);
+    }) as unknown as AssertionSlots<Parts>;
   }
 
+  abstract execute(parsedValues: AnyParsedValues, args: unknown[]): void;
+  abstract executeAsync(
+    parsedValues: AnyParsedValues,
+    args: unknown[],
+  ): Promise<void>;
   parseValues<Args extends readonly unknown[]>(
     args: Args,
   ): ParsedResult<Parts> {
@@ -175,37 +160,14 @@ export class Assertion<Parts extends AssertionParts> {
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i]!;
       const arg = args[i];
-      const meta = bupkisRegistry.get(slot);
-      // our branded literal slots are also tagged in meta for runtime
-      if (meta && kStringLiteral in meta) {
-        if ('value' in meta) {
-          if (arg !== meta.value) {
-            return {
-              assertion: `${this}`,
-              reason: `Expected ${meta.value} for slot ${i}, got ${inspect(arg)}`,
-              success: false,
-            };
-          }
-        } else if ('values' in meta) {
-          const allowed = meta.values as readonly string[];
-          if (!allowed.includes(arg as any)) {
-            return {
-              assertion: `${this}`,
-              reason: `Expected one of ${allowed.join(', ')} for slot ${i}, got ${inspect(arg)}`,
-              success: false,
-            };
-          }
-        } else {
-          debug('Invalid metadata for slot', i, 'with value', arg);
-          return {
-            assertion: `${this}`,
-            reason: `Invalid metadata for slot ${i}`,
-            success: false,
-          };
-        }
-        // skip from impl params
+
+      const parsedLiteralResult = this.parseSlotForLiteral(slot, i, arg);
+      if (parsedLiteralResult === true) {
         continue;
+      } else if (parsedLiteralResult !== false) {
+        return parsedLiteralResult;
       }
+
       // unknown/any accept anything
       // IMPORTANT: do not use a type guard here
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
@@ -215,17 +177,9 @@ export class Assertion<Parts extends AssertionParts> {
         continue;
       }
       if (isZodPromise(slot)) {
-        // Avoid sync parsing of promises; match only if it's a thenable
-        debug('Skipping validation for promise', arg);
-        if (arg && typeof (arg as any).then === 'function') {
-          parsedValues.push(arg);
-          continue;
-        }
-        return {
-          assertion: `${this}`,
-          reason: `Expected promise for slot ${i}, got ${inspect(arg)}`,
-          success: false,
-        };
+        throw new TypeError(
+          `${this} expects a Promise for slot ${i}; use expectAsync() instead of expect()`,
+        );
       }
       const result = slot.safeParse(arg);
       if (!result.success) {
@@ -253,20 +207,221 @@ export class Assertion<Parts extends AssertionParts> {
     };
   }
 
+  async parseValuesAsync<Args extends readonly unknown[]>(
+    args: Args,
+  ): Promise<ParsedResult<Parts>> {
+    const { slots } = this;
+    const parsedValues: any[] = [];
+    if (slots.length !== args.length) {
+      return {
+        assertion: `${this}`,
+        reason: 'Argument count mismatch',
+        success: false,
+      };
+    }
+    let exactMatch = true;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i]!;
+      const arg = args[i];
+
+      const parsedLiteralResult = this.parseSlotForLiteral(slot, i, arg);
+      if (parsedLiteralResult === true) {
+        continue;
+      } else if (parsedLiteralResult !== false) {
+        return parsedLiteralResult;
+      }
+
+      // unknown/any accept anything
+      // IMPORTANT: do not use a type guard here; it will break inference
+      if (slot.def.type === 'unknown' || slot.def.type === 'any') {
+        debug('Skipping unknown/any slot validation for arg', arg);
+        parsedValues.push(arg);
+        exactMatch = false;
+        continue;
+      }
+      const result = await slot.safeParseAsync(arg);
+      if (!result.success) {
+        debug(
+          'Validation failed for slot',
+          i,
+          'with value',
+          arg,
+          'error:',
+          z.prettifyError(result.error),
+        );
+        return {
+          assertion: `${this}`,
+          reason: `Validation failed for slot ${i}: ${z.prettifyError(result.error)}`,
+          success: false,
+        };
+      }
+      parsedValues.push(result.data);
+    }
+    return {
+      assertion: `${this}`,
+      exactMatch,
+      parsedValues: parsedValues as unknown as ParsedValues<Parts>,
+      success: true,
+    };
+  }
+
   toString(): string {
-    return `Assertion(${this.slots.map((s: z.ZodType) => (s.def.type === 'literal' ? JSON.stringify((s as z.ZodLiteral).def.values) : `z.${s.def.type}`)).join(', ')})`;
+    return `"${this.slots.map((s: z.ZodType) => (s.def.type === 'literal' ? JSON.stringify((s as z.ZodLiteral).def.values) : `<${s.def.type}>`)).join(' ')}"`;
+  }
+
+  // TODO: support stackStartFn
+  protected translateZodError(
+    zodError: z.ZodError,
+    actual?: unknown,
+    expected?: unknown,
+  ): AssertionError {
+    z.flattenError(zodError); //?
+    const pretty = z.prettifyError(zodError);
+    return new AssertionError({
+      actual,
+      expected,
+      message: `Assertion ${this} failed: ${pretty}`,
+      operator: `${this}`,
+    });
+  }
+
+  private parseSlotForLiteral<T extends (typeof this.slots)[number]>(
+    slot: T,
+    i: number,
+    arg: unknown,
+  ): boolean | ParsedResult<Parts> {
+    const meta = bupkisRegistry.get(slot);
+    // our branded literal slots are also tagged in meta for runtime
+    const metadata = BupkisRegistrySchema.safeParse(meta);
+    if (metadata.success) {
+      const { data } = metadata;
+      if ('value' in data) {
+        if (arg !== data.value) {
+          return {
+            assertion: `${this}`,
+            reason: `Expected ${data.value} for slot ${i}, got ${inspect(arg)}`,
+            success: false,
+          };
+        }
+      } else if ('values' in data) {
+        const allowed = data.values as readonly string[];
+        if (!allowed.includes(`${arg}`)) {
+          return {
+            assertion: `${this}`,
+            reason: `Expected one of ${allowed.join(', ')} for slot ${i}, got ${inspect(arg)}`,
+            success: false,
+          };
+        }
+      } else {
+        debug('Invalid metadata for slot', i, 'with value', arg);
+        return {
+          assertion: `${this}`,
+          reason: `Invalid metadata for slot ${i}`,
+          success: false,
+        };
+      }
+      return true;
+      // skip from impl params
+    }
+    return false;
   }
 }
-export const isStringTupleAssertionPart = (
+
+export class FunctionAssertion<
+  T extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
+  Parts extends AssertionParts,
+> extends Assertion<T, Parts> {
+  execute(parsedValues: AnyParsedValues, args: unknown[]): void {
+    const result = (this.impl as AssertionImplFn<Parts>).call(
+      null,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...(parsedValues as any),
+    );
+    if (isPromiseLike(result)) {
+      // Avoid unhandled promise rejection
+      Promise.resolve(result).catch((err) => {
+        debug(`Ignored unhandled rejection from assertion %s: %O`, this, err);
+      });
+
+      throw new TypeError(
+        `Assertion ${this} returned a Promise; use expectAsync() instead of expect()`,
+      );
+    }
+    if (isZodType(result)) {
+      try {
+        result.parse(parsedValues[0]);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          throw this.translateZodError(error, ...parsedValues);
+        }
+        throw error;
+      }
+    } else if (isBoolean(result)) {
+      if (!result) {
+        throw new AssertionError({
+          message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
+        });
+      }
+    }
+  }
+
+  async executeAsync(
+    parsedValues: AnyParsedValues,
+    args: unknown[],
+  ): Promise<void> {
+    const result = await (this.impl as AssertionImplAsyncFn<Parts>).call(
+      null,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...(parsedValues as any),
+    );
+    if (isZodType(result)) {
+      try {
+        await result.parseAsync(parsedValues[0]);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          throw this.translateZodError(error, ...parsedValues);
+        }
+        throw error;
+      }
+    } else if (isBoolean(result)) {
+      if (!result) {
+        throw new AssertionError({
+          message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
+        });
+      }
+    }
+  }
+}
+
+export class SchemaAssertion<
+  T extends z.ZodType<ParsedSubject<Parts>>,
+  Parts extends AssertionParts,
+> extends Assertion<T, Parts> {
+  execute(parsedValues: AnyParsedValues): void {
+    const [subject] = parsedValues as unknown as AnyParsedValues;
+    try {
+      this.impl.parse(subject);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw this.translateZodError(error, ...parsedValues);
+      }
+      throw error;
+    }
+  }
+
+  async executeAsync(parsedValues: AnyParsedValues): Promise<void> {
+    const [subject] = parsedValues as unknown as AnyParsedValues;
+    try {
+      await this.impl.parseAsync(subject);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw this.translateZodError(error, ...parsedValues);
+      }
+      throw error;
+    }
+  }
+}
+
+const isStringTupleAssertionPart = (
   value: AssertionPart,
 ): value is readonly [string, ...string[]] => Array.isArray(value);
-
-// Wrapper function to create a marked schema factory
-export function factory<Parts extends AssertionParts>(
-  fn: (...values: RestParsedValues<Parts>) => z.ZodType,
-): AssertionSchemaFactory<Parts> {
-  Object.defineProperty(fn, kSchemaFactory, {
-    value: true,
-  });
-  return fn as unknown as AssertionSchemaFactory<Parts>;
-}

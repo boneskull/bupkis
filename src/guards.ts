@@ -1,12 +1,5 @@
 import { type Constructor } from 'type-fest';
 import { type z } from 'zod';
-import { kSchemaFactory } from './assertion/assertion.js';
-import {
-  AssertionImpl,
-  AssertionImplFn,
-  AssertionParts,
-  AssertionSchemaFactory,
-} from './assertion/types.js';
 
 /**
  * Returns true if the given value looks like a Zod schema (v4), determined by
@@ -15,6 +8,7 @@ import {
  * Note: This relies on Zod's internal shape and is intended for runtime
  * discrimination within this library.
  *
+ * @template T
  * @param value - Value to test
  * @returns Whether the value is Zod-like
  */
@@ -55,6 +49,13 @@ export const isZodAny = (value: unknown): value is z.ZodAny =>
 export const isZodPromise = (value: unknown): value is z.ZodPromise =>
   isZodType(value) && value.def.type === 'promise';
 
+export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
+  !!(
+    value &&
+    typeof value === 'object' &&
+    typeof (value as any).then === 'function'
+  );
+
 /**
  * Returns true if the given value is a constructable function (i.e., a class).
  *
@@ -75,14 +76,5 @@ export const isConstructable = (fn: any): fn is Constructor<any> => {
   }
 };
 
-export const isAssertionImplFn = <Parts extends AssertionParts>(
-  value: AssertionImpl<Parts>,
-): value is AssertionImplFn<Parts> =>
-  typeof value === 'function' && !isAssertionSchemaFactory(value);
-
-export const isAssertionSchemaFactory = (
-  value: unknown,
-): value is AssertionSchemaFactory<any> =>
-  typeof value === 'function' &&
-  kSchemaFactory in value &&
-  value[kSchemaFactory] === true;
+export const isBoolean = (value: unknown): value is boolean =>
+  typeof value === 'boolean';
