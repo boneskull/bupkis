@@ -1,3 +1,13 @@
+/**
+ * Asynchronous assertion engine implementation.
+ *
+ * This module provides the `expectAsync` function for writing assertions that
+ * work with Promises and asynchronous operations. It handles Promise
+ * resolution, rejection, and provides async-specific assertion patterns.
+ *
+ * @packageDocumentation
+ */
+
 import Debug from 'debug';
 
 import { Assertions } from './assertion/async-implementations.js';
@@ -71,7 +81,7 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
   }
   if (found) {
     const { assertion, parsedValues } = found;
-    await assertion.executeAsync(parsedValues, [...args]);
+    await assertion.executeAsync(parsedValues, [...args], expectAsyncFunction);
     return;
   }
   debug('Failed to find a matching assertion for args %o', args);

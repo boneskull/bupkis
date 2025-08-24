@@ -1,6 +1,16 @@
+/**
+ * Core type definitions for the assertion system.
+ *
+ * This module defines all the fundamental types used throughout the assertion
+ * framework, including assertion parts, implementation functions, parsed
+ * values, and type inference utilities. These types enable type-safe assertion
+ * creation and execution.
+ *
+ * @packageDocumentation
+ */
+
 import { type z } from 'zod/v4';
 
-import type { NoNeverTuple } from '../util.js';
 import type { Assertions as AsyncAssertions } from './async-implementations.js';
 import type { Assertions } from './implementations.js';
 
@@ -16,10 +26,13 @@ export type AssertionImplAsyncFn<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
 ) => Promise<boolean | void | z.ZodType<ParsedSubject<Parts>>>;
 
-export type AssertionImplFn<Parts extends AssertionParts> = (
-  this: null,
-  ...values: ParsedValues<Parts>
-) => boolean | void | z.ZodType<ParsedSubject<Parts>>;
+export type AssertionImplFn<
+  Parts extends AssertionParts,
+  Return extends boolean | void | z.ZodType<ParsedSubject<Parts>> =
+    | boolean
+    | void
+    | z.ZodType<ParsedSubject<Parts>>,
+> = (this: null, ...values: ParsedValues<Parts>) => Return;
 
 export type AssertionPart = readonly [string, ...string[]] | string | z.ZodType;
 
@@ -60,13 +73,15 @@ export type BupkisStringLiterals<H extends readonly [string, ...string[]]> =
     readonly __values: H;
   };
 
-export type MapAssertionParts<Parts extends AssertionParts> =
-  Parts extends readonly [
-    infer First extends AssertionPart,
-    ...infer Rest extends AssertionParts,
-  ]
-    ? readonly [AssertionSlot<First>, ...MapAssertionParts<Rest>]
-    : readonly [];
+export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
+  infer First,
+  ...infer Rest,
+]
+  ? [First] extends [never]
+    ? readonly [...NoNeverTuple<Rest>]
+    : readonly [First, ...NoNeverTuple<Rest>]
+  : readonly [];
+
 export type ParsedResult<Parts extends AssertionParts> = {
   assertion: string;
 } & (
@@ -91,14 +106,12 @@ export type ParsedSubject<Parts extends AssertionParts> =
   ParsedValues<Parts> extends readonly [infer Subject, ...any[]]
     ? Subject
     : never;
+
 export type ParsedValues<Parts extends AssertionParts> =
-  readonly [] extends MaybeEmptyParsedValues<Parts>
+  MaybeEmptyParsedValues<Parts> extends readonly []
     ? never
     : MaybeEmptyParsedValues<Parts>;
-export type RestParsedValues<Parts extends AssertionParts> =
-  ParsedValues<Parts> extends readonly [infer _, ...infer Rest]
-    ? readonly [...Rest]
-    : readonly [];
+
 type InferredPart<Part extends AssertionPart> = Part extends
   | readonly [string, ...string[]]
   | string
@@ -112,6 +125,13 @@ type InferredParts<Parts extends AssertionParts> = Parts extends readonly [
   ...infer Rest extends AssertionParts,
 ]
   ? readonly [InferredPart<First>, ...InferredParts<Rest>]
+  : readonly [];
+
+type MapAssertionParts<Parts extends AssertionParts> = Parts extends readonly [
+  infer First extends AssertionPart,
+  ...infer Rest extends AssertionParts,
+]
+  ? readonly [AssertionSlot<First>, ...MapAssertionParts<Rest>]
   : readonly [];
 
 type MaybeEmptyParsedValues<Parts extends AssertionParts> = NoNeverTuple<

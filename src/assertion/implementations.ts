@@ -1,3 +1,14 @@
+/**
+ * Synchronous assertion implementations.
+ *
+ * This module contains all built-in synchronous assertion implementations
+ * including type checks, comparisons, equality tests, object satisfaction,
+ * function behavior validation, and property checks. Each assertion is
+ * implemented with proper error handling and type safety.
+ *
+ * @packageDocumentation
+ */
+
 import { z } from 'zod/v4';
 
 import { ClassSchema, FunctionSchema, PropertyKeySchema } from '../schema.js';
@@ -43,14 +54,35 @@ const BasicAssertions = [
       switch (type) {
         case 'array':
           return z.array(z.any());
-        case 'Date':
         case 'date':
           return z.date();
         case 'null':
           return z.null();
         default:
+          // For primitive types like 'string', 'number', 'boolean', 'object', 'function', 'symbol', 'bigint', 'undefined'
           if (typeof subject !== type) {
             return false;
+          }
+          // Return a schema that validates the type
+          switch (type) {
+            case 'bigint':
+              return z.bigint();
+            case 'boolean':
+              return z.boolean();
+            case 'function':
+              return z.function();
+            case 'number':
+              return z.number();
+            case 'object':
+              return z.object({}).passthrough(); // Allows any object structure
+            case 'string':
+              return z.string();
+            case 'symbol':
+              return z.symbol();
+            case 'undefined':
+              return z.undefined();
+            default:
+              return false; // Unknown type
           }
       }
     },
@@ -111,7 +143,7 @@ const BasicAssertions = [
   ),
 ] as const;
 
-export const EsotericAssertions = [
+const EsotericAssertions = [
   createAssertion(
     ['to have a null prototype'],
     z.custom<object>(

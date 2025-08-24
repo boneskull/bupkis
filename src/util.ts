@@ -1,53 +1,32 @@
-// Drop `never` elements from a tuple while keeping it a tuple
+/**
+ * Utility functions for object satisfaction and shape validation.
+ *
+ * This module provides core utility functions for checking if objects satisfy
+ * expected shapes, including `satisfies` for partial matching,
+ * `exhaustivelySatisfies` for exact matching, and `shallowSatisfiesShape` for
+ * converting shapes to Zod schemas. All functions handle circular references
+ * safely.
+ *
+ * @packageDocumentation
+ */
 
 import { z } from 'zod/v4';
 
-import type { Assertion } from './assertion/assertion.js';
-import type { BuiltinAssertion } from './assertion/types.js';
-
-import { type Assertions } from './assertion/implementations.js';
-import { type InferredExpectSlots } from './expect.js';
-
-export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
-  infer First,
-  ...infer Rest,
-]
-  ? [First] extends [never]
-    ? readonly [...NoNeverTuple<Rest>]
-    : readonly [First, ...NoNeverTuple<Rest>]
-  : readonly [];
-
-// Create a padded function signature
-export type PaddedSignature<T extends BuiltinAssertion> =
-  T extends Assertion<infer _, infer Parts>
-    ? (...args: PadTuple<InferredExpectSlots<Parts>, MaxArity>) => void
-    : never;
-// Find maximum length across all assertion signatures
-type AllSignatureLengths<T extends readonly BuiltinAssertion[]> =
-  T extends readonly [
-    infer First extends BuiltinAssertion,
-    ...infer Rest extends readonly BuiltinAssertion[],
-  ]
-    ? [First] extends [Assertion<infer _, infer Parts>]
-      ? AllSignatureLengths<Rest> | Length<InferredExpectSlots<Parts>>
-      : AllSignatureLengths<Rest>
-    : never;
-// ————————————————————————————————————————————————————————————————
-// Utility types for padding function signatures to same arity
-// ————————————————————————————————————————————————————————————————
-// Get the length of a tuple type
-type Length<T extends readonly unknown[]> = T['length'];
-type MaxArity = AllSignatureLengths<typeof Assertions>;
-// Pad a tuple to a specific length with optional never parameters
-type PadTuple<
-  T extends readonly unknown[],
-  TargetLength extends number,
-  Current extends readonly unknown[] = T,
-> = Current['length'] extends TargetLength
-  ? Current
-  : PadTuple<T, TargetLength, readonly [...Current, never?]>;
-
-export const satisfies = <Actual, Expected = Actual>(
+/**
+ * Implementation of the "satisfies" semantic, which checks if `actual`
+ * contains, at minimum, the expected shape.
+ *
+ * @param actual Actual object to check
+ * @param expected Expected shape
+ * @param visitedActual Seen objects in `actual` to prevent infinite recursion
+ * @param visitedExpected Seen objects in `expected` to prevent infinite
+ *   recursion
+ * @returns `true` if `actual` satisfies `expected`, `false` otherwise
+ */
+export const satisfies = <
+  Actual extends object,
+  Expected extends object = Actual,
+>(
   actual: Actual,
   expected: Expected,
   visitedActual = new WeakSet(),
@@ -95,11 +74,98 @@ export const satisfies = <Actual, Expected = Actual>(
 };
 
 /**
- * @internal
+ * Implementation of the "exhaustively satisfies" semantic, which checks if
+ * `actual` has exactly the same properties as `expected` - no more, no less -
+ * and all corresponding values must match.
+ *
+ * Unlike `satisfies`, this function requires an exact property match between
+ * the two objects. The `actual` object cannot have additional properties beyond
+ * what's in `expected`.
+ *
+ * @param actual Actual object to check
+ * @param expected Expected shape with exact properties
+ * @param visitedActual Seen objects in `actual` to prevent infinite recursion
+ * @param visitedExpected Seen objects in `expected` to prevent infinite
+ *   recursion
+ * @returns `true` if `actual` exhaustively satisfies `expected`, `false`
+ *   otherwise
  */
-export const shallowSatisfiesShape = (param: object): z.ZodRawShape => {
+export const exhaustivelySatisfies = <
+  Actual extends object,
+  Expected extends object = Actual,
+>(
+  actual: Actual,
+  expected: Expected,
+  visitedActual = new WeakSet(),
+  visitedExpected = new WeakSet(),
+): boolean => {
+  if (typeof expected !== 'object' || expected === null) {
+    return actual === (expected as unknown as Actual);
+  }
+
+  if (typeof actual !== 'object' || actual === null) {
+    return false;
+  }
+
+  // Check for circular references
+  if (visitedActual.has(actual) || visitedExpected.has(expected)) {
+    // If we've seen both objects before, assume they match to avoid infinite recursion
+    // This is a conservative approach - in practice, circular structures should match
+    // if they have the same structure
+    return visitedActual.has(actual) && visitedExpected.has(expected);
+  }
+
+  // Mark objects as visited
+  visitedActual.add(actual);
+  visitedExpected.add(expected);
+
+  const actualKeys = Object.keys(actual);
+  const expectedKeys = Object.keys(expected);
+
+  // Check if both objects have the same number of properties
+  if (actualKeys.length !== expectedKeys.length) {
+    return false;
+  }
+
+  // Check if all expected keys exist in actual and have matching values
+  for (const key of expectedKeys) {
+    if (!(key in actual)) {
+      return false;
+    }
+
+    if (
+      !exhaustivelySatisfies(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (actual as any)[key],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (expected as any)[key],
+        visitedActual,
+        visitedExpected,
+      )
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Creates a `ZodRawShape` to be used with `z.object()` that checks if an object
+ * _shallowly_ satisfies the given shape.
+ *
+ * `RegExp` values in the shape will be converted to `z.string().regex(...)`
+ * schemas, string values will be converted to `z.string().literal(...)`
+ * schemas, and nested objects will be recursively converted. Other values will
+ * be converted to `z.literal(...)` schemas.
+ *
+ * @returns A `ZodRawShape` for use with `z.object()`
+ * @internal
+ * @see {@link satisfies}
+ */
+export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Object.fromEntries(
+  Object.fromEntries(
     Object.entries(param).map(([key, value]) => {
       if (value instanceof RegExp) {
         return [key, z.coerce.string().regex(value)];
@@ -113,4 +179,3 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape => {
       return [key, z.literal(value)];
     }),
   );
-};

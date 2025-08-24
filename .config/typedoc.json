@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../src/index.ts"],
+  "out": "../docs",
+  "sort": ["kind"],
+  "kindSortOrder": [
+    "Reference",
+    "Project",
+    "Module",
+    "Namespace",
+    "Function",
+    "TypeAlias"
+  ],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "customCss": "./custom.css",
+  "plugin": ["typedoc-github-theme", "typedoc-plugin-mdn-links"],
+  "cleanOutputDir": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/boneskull/bupkis"
+  },
+  "hostedBaseUrl": "https://boneskull.github.io/bupkis"
+}

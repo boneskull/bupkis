@@ -1,3 +1,13 @@
+/**
+ * Zod schema definitions for common types and validation patterns.
+ *
+ * This module provides reusable Zod schemas for validating constructors,
+ * functions, property keys, promises, and other common JavaScript types used
+ * throughout the assertion system.
+ *
+ * @packageDocumentation
+ */
+
 import type { Constructor } from 'type-fest';
 
 import { z } from 'zod/v4';

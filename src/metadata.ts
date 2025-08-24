@@ -1,3 +1,9 @@
+/**
+ * Defines Bupkis' Zod metadata registry
+ *
+ * @packageDocumentation
+ */
+
 import { z } from 'zod';
 
 import { kStringLiteral } from './constant.js';
@@ -5,17 +11,23 @@ import { kStringLiteral } from './constant.js';
 /**
  * Metadata stored in Zod registry
  */
-export type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
+type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
 
 /**
  * Zod metadata registry for Bupkis
  */
-export const bupkisRegistry = z.registry<BupkisMeta>();
+export const BupkisRegistry = z.registry<BupkisMeta>();
 
+/**
+ * Base schema for Bupkis metadata
+ */
 const BaseBupkisRegistrySchema = z.object({
   [kStringLiteral]: z.literal(true),
 });
 
+/**
+ * Final schema for Bupkis registry
+ */
 export const BupkisRegistrySchema = z.union([
   z.object({
     ...BaseBupkisRegistrySchema.shape,

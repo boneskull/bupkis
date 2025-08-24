@@ -1,3 +1,14 @@
+/**
+ * Core assertion class and parsing engine.
+ *
+ * This module implements the main `Assertion` class which handles parsing,
+ * validation, and execution of assertions. It provides the foundational
+ * infrastructure for converting assertion parts into executable validation
+ * logic with comprehensive error handling and type safety.
+ *
+ * @packageDocumentation
+ */
+
 import Debug from 'debug';
 import { AssertionError } from 'node:assert';
 import { inspect } from 'util';
@@ -7,16 +18,16 @@ import { kStringLiteral } from '../constant.js';
 import {
   isBoolean,
   isPromiseLike,
+  isStringTupleAssertionPart,
   isZodPromise,
   isZodType,
 } from '../guards.js';
-import { bupkisRegistry, BupkisRegistrySchema } from '../metadata.js';
+import { BupkisRegistry, BupkisRegistrySchema } from '../metadata.js';
 import {
   type AnyParsedValues,
   type AssertionImpl,
   type AssertionImplAsyncFn,
   type AssertionImplFn,
-  type AssertionPart,
   type AssertionParts,
   type AssertionSlots,
   type ParsedResult,
@@ -117,7 +128,7 @@ export abstract class Assertion<
           z
             .enum(part)
             .brand('string-literal')
-            .register(bupkisRegistry, {
+            .register(BupkisRegistry, {
               [kStringLiteral]: true,
               values: part,
             }),
@@ -127,7 +138,7 @@ export abstract class Assertion<
           z
             .literal(part)
             .brand('string-literal')
-            .register(bupkisRegistry, {
+            .register(BupkisRegistry, {
               [kStringLiteral]: true,
               value: part,
             }),
@@ -139,11 +150,17 @@ export abstract class Assertion<
     }) as unknown as AssertionSlots<Parts>;
   }
 
-  abstract execute(parsedValues: AnyParsedValues, args: unknown[]): void;
+  abstract execute(
+    parsedValues: AnyParsedValues,
+    args: unknown[],
+    stackStartFn: (...args: any[]) => any,
+  ): void;
   abstract executeAsync(
     parsedValues: AnyParsedValues,
     args: unknown[],
+    stackStartFn: (...args: any[]) => any,
   ): Promise<void>;
+
   parseValues<Args extends readonly unknown[]>(
     args: Args,
   ): ParsedResult<Parts> {
@@ -266,22 +283,42 @@ export abstract class Assertion<
   }
 
   toString(): string {
-    return `"${this.slots.map((s: z.ZodType) => (s.def.type === 'literal' ? JSON.stringify((s as z.ZodLiteral).def.values) : `<${s.def.type}>`)).join(' ')}"`;
+    const expand = (zodType: z.ZodType): string => {
+      switch (zodType.def.type) {
+        case 'enum':
+          return `${(zodType as z.ZodEnum<any>).options.join('/')}`;
+        case 'literal':
+          return JSON.stringify((zodType as z.ZodLiteral).def.values);
+        case 'union':
+          return ((zodType as z.ZodUnion<any>).options as z.ZodType[])
+            .map(expand)
+            .join(' | ');
+        default:
+          return `<${zodType.def.type}>`;
+      }
+    };
+    return `"${this.slots.map(expand).join(' ')}"`;
   }
 
   // TODO: support stackStartFn
   protected translateZodError(
+    stackStartFn: (...args: any[]) => any,
     zodError: z.ZodError,
-    actual?: unknown,
-    expected?: unknown,
+    ...values: AnyParsedValues
   ): AssertionError {
-    z.flattenError(zodError); //?
-    const pretty = z.prettifyError(zodError);
+    const flat = z.flattenError(zodError);
+
+    let pretty = flat.formErrors.join('; ');
+    for (const [keypath, errors] of Object.entries(flat.fieldErrors)) {
+      pretty += `; ${keypath}: ${(errors as unknown[]).join('; ')}`;
+    }
+    const [actual, expected] = values as unknown as [unknown, unknown];
     return new AssertionError({
       actual,
       expected,
       message: `Assertion ${this} failed: ${pretty}`,
       operator: `${this}`,
+      stackStartFn,
     });
   }
 
@@ -290,7 +327,7 @@ export abstract class Assertion<
     i: number,
     arg: unknown,
   ): boolean | ParsedResult<Parts> {
-    const meta = bupkisRegistry.get(slot);
+    const meta = BupkisRegistry.get(slot);
     // our branded literal slots are also tagged in meta for runtime
     const metadata = BupkisRegistrySchema.safeParse(meta);
     if (metadata.success) {
@@ -331,7 +368,11 @@ export class FunctionAssertion<
   T extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
   Parts extends AssertionParts,
 > extends Assertion<T, Parts> {
-  execute(parsedValues: AnyParsedValues, args: unknown[]): void {
+  execute(
+    parsedValues: AnyParsedValues,
+    args: unknown[],
+    stackStartFn: (...args: any[]) => any,
+  ): void {
     const result = (this.impl as AssertionImplFn<Parts>).call(
       null,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -352,7 +393,7 @@ export class FunctionAssertion<
         result.parse(parsedValues[0]);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          throw this.translateZodError(error, ...parsedValues);
+          throw this.translateZodError(stackStartFn, error, ...parsedValues);
         }
         throw error;
       }
@@ -368,6 +409,7 @@ export class FunctionAssertion<
   async executeAsync(
     parsedValues: AnyParsedValues,
     args: unknown[],
+    stackStartFn: (...args: any[]) => any,
   ): Promise<void> {
     const result = await (this.impl as AssertionImplAsyncFn<Parts>).call(
       null,
@@ -379,7 +421,7 @@ export class FunctionAssertion<
         await result.parseAsync(parsedValues[0]);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          throw this.translateZodError(error, ...parsedValues);
+          throw this.translateZodError(stackStartFn, error, ...parsedValues);
         }
         throw error;
       }
@@ -397,31 +439,35 @@ export class SchemaAssertion<
   T extends z.ZodType<ParsedSubject<Parts>>,
   Parts extends AssertionParts,
 > extends Assertion<T, Parts> {
-  execute(parsedValues: AnyParsedValues): void {
+  execute(
+    parsedValues: AnyParsedValues,
+    _args: unknown[],
+    stackStartFn: (...args: any[]) => any,
+  ): void {
     const [subject] = parsedValues as unknown as AnyParsedValues;
     try {
       this.impl.parse(subject);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw this.translateZodError(error, ...parsedValues);
+        throw this.translateZodError(stackStartFn, error, ...parsedValues);
       }
       throw error;
     }
   }
 
-  async executeAsync(parsedValues: AnyParsedValues): Promise<void> {
+  async executeAsync(
+    parsedValues: AnyParsedValues,
+    _args: unknown[],
+    stackStartFn: (...args: any[]) => any,
+  ): Promise<void> {
     const [subject] = parsedValues as unknown as AnyParsedValues;
     try {
       await this.impl.parseAsync(subject);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw this.translateZodError(error, ...parsedValues);
+        throw this.translateZodError(stackStartFn, error, ...parsedValues);
       }
       throw error;
     }
   }
 }
-
-const isStringTupleAssertionPart = (
-  value: AssertionPart,
-): value is readonly [string, ...string[]] => Array.isArray(value);

@@ -1,3 +1,13 @@
+/**
+ * Main synchronous assertion engine implementation.
+ *
+ * This module provides the core `expect` function for writing assertions in
+ * tests. It handles assertion parsing, validation, execution, and error
+ * reporting with rich type-safe APIs for various assertion patterns.
+ *
+ * @packageDocumentation
+ */
+
 import Debug from 'debug';
 import { type z } from 'zod/v4';
 
@@ -10,15 +20,15 @@ import {
   type BuiltinAssertion,
   type BupkisStringLiteral,
   type BupkisStringLiterals,
+  type NoNeverTuple,
 } from './assertion/types.js';
 import { AssertionError } from './error.js';
-import { type NoNeverTuple } from './util.js';
 
 const debug = Debug('bupkis:expect');
 
-export type Expect = ExpectFunction & {
+export interface Expect extends ExpectFunction {
   fail(reason?: string): never;
-};
+}
 
 export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
   Parts extends readonly [infer First extends AssertionPart, ...infer _]
@@ -103,7 +113,8 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   }
   if (found) {
     const { assertion, parsedValues } = found;
-    return assertion.execute(parsedValues, [...args]);
+
+    return assertion.execute(parsedValues, [...args], expectFunction);
   }
   debug('Failed to find a matching assertion for args %o', args);
   throw new TypeError(

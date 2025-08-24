@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/boneskull/bupkis/blob/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
+  <img src="https://raw.githubusercontent.com/boneskull/bupkis/refs/heads/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
   <h1 align="center"><em>BUPKIS</em></h1>
   <p align="center">
     A well-typed and easily exensible _BDD-style_ assertion library.
@@ -127,7 +127,7 @@ That callback can also just be a function that returns a boolean. If the asserti
 createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 ```
 
-If this fails, an `AssertionError` will be thrown.
+If this fails, an `AssertionError` will be thrown. It will not be as detailed as if we had used a Zod schema, but I'm hoping future versions of _BUPKIS_ will allow custom errors to mitigate this.
 
 > TODO: Custom error messages.
 
@@ -147,14 +147,24 @@ npm install bupkis -D
 
 I guess I have to document all these things in a nice way, which maybe is going to be too big for a `README`. I guess I need a website.
 
+### Worth Mentioning Right Now
+
+_BUPKIS_ has two main exports:
+
+- `expect()`: the main entrypoint for synchronous assertions
+- `expectAsync()`: the main entrypoint for asynchronous assertions
+
+> [!IMPORTANT]
+>
+> As of this writing, the assertions available in `expectAsync()` are all `Promise`-related (and custom assertions can even use an async schema for the subject); they are completely disjoint from the assertions available in `expect()`. **This will likely change in the future.**
+
 ### TODO
 
 In no particular order, here are some things I want to implement (maybe):
 
-- [ ] Diffs (use a library)
-- [ ] Custom diffs
+- [ ] Good diffs (use a library)
 - [ ] More assertions
-  - [ ] Better / more async support
+  - [x] Better / more async support
   - [x] `is true` / `is not true`
   - [x] `is false` / `is not false`
   - [x] `is NaN`
@@ -162,17 +172,28 @@ In no particular order, here are some things I want to implement (maybe):
   - [ ] Support for more intrinsics; `Set`, `Map`, `WeakSet`, `WeakMap`, `WeakRef`
   - [x] Random convenience like `is frozen`, `is sealed`, `is extensible`
   - [ ] Deep equality / partial equality, strict and loose
-- [ ] Dynamic types
-- [ ] Custom error messages
-- [ ] Custom error metadata
-- [ ] Lean on Zod more for builtin assertion implementations and use its error-reporting facilities
-- [ ] Type safety for custom assertions (may require a significant refactor)
-- [ ] Lower-level plugin API for those things which are more involved than custom assertions
-- [ ] Basic spies
-  - [ ] Simple function instrumentation via `Proxy` or something; a way to check if a function was called, how many times, and with what
-  - [ ] Adapters which generate assertions from 3p spy providers
-- [ ] Boolean logic syntax (`and`, `or`, `not`) while still avoiding chainable APIs. Though I might convince myself that chainable APIs are OK for this and this only.
+- [ ] Custom assertion improvements
+  - [ ] Custom diffs
+  - [ ] Custom error messages
+  - [ ] Custom error metadata
+  - [ ] Type safety for custom assertions (may require a significant refactor)
+- [x] Lean on Zod more for builtin assertion implementations and use its error-reporting facilities
 - [ ] Keypaths / property drilling
+
+#### Future
+
+- [ ] Lower-level plugin API for those things which are more involved than custom assertions
+- [ ] Basic spies (rationale: it is v. common to want to just check that a function gets called)
+  - [ ] Draw a line in the sand: no stubs, no mocks, no fakes
+  - [ ] Simple function instrumentation via `Proxy` or something; a way to check if a function was called, how many times, and with what
+  - [ ] Adapters which generate assertions from 3p spy providers?
+- [ ] Is snapshot testing the responsibility of an assertion library?
+- [ ] Boolean logic syntax (`and`, `or`, `not`) while still avoiding chainable APIs. Though I might convince myself that chainable APIs are OK for this and this only.
+- [ ] Completely avoid dependencies on Node.js internals and expand support to other environments; as of this writing there are only three (3) bits used from Node.js:
+  - [ ] `node:test` (dev)
+  - [ ] `node:util.inspect` (dev)
+  - [ ] `node:assert.AssertionError`
+- [ ] Pull in multiple test frameworks into the dev env and assert basic compatibility with all of them
 
 ### Not TODO
 
@@ -183,8 +204,7 @@ Non-goals:
 
 ## Prior Art
 
-- [Unexpected](https://unexpected.js.org/) is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried).
-- [Chai](https://www.chaijs.com/)
+- [Unexpected](https://unexpected.js.org/) is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
 
 ## A Note From The Author
 
