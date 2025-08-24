@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/boneskull/bupkis/refs/heads/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
+  <img src="https://github.com/boneskull/bupkis/blob/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo" />
   <h1 align="center"><em>BUPKIS</em></h1>
   <p align="center">
     A well-typed and easily exensible _BDD-style_ assertion library.
