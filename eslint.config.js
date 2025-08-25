@@ -41,6 +41,14 @@ export default tseslint.config(
         },
       ],
 
+      '@stylistic/lines-between-class-members': [
+        'error',
+        'always',
+        {
+          exceptAfterOverload: false,
+        },
+      ],
+
       '@stylistic/semi': 'error',
 
       '@typescript-eslint/consistent-type-exports': [
