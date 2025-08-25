@@ -8,19 +8,96 @@
     "email": "boneskull@boneskull.com"
   },
   "license": "BlueOak-1.0.0",
-  "main": "./dist/index.cjs",
-  "types": "./dist/index.d.cts",
-  "module": "./dist/index.js",
+  "main": "./dist/commonjs/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "module": "./dist/esm/index.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.cts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./guards.js": {
+      "import": {
+        "types": "./dist/esm/guards.d.ts",
+        "default": "./dist/esm/guards.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/guards.d.ts",
+        "default": "./dist/commonjs/guards.js"
+      }
+    },
+    "./schema.js": {
+      "import": {
+        "types": "./dist/esm/schema.d.ts",
+        "default": "./dist/esm/schema.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/schema.d.ts",
+        "default": "./dist/commonjs/schema.js"
+      }
+    },
+    "./error.js": {
+      "import": {
+        "types": "./dist/esm/error.d.ts",
+        "default": "./dist/esm/error.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/error.d.ts",
+        "default": "./dist/commonjs/error.js"
+      }
+    },
+    "./assertion.js": {
+      "import": {
+        "types": "./dist/esm/assertion/index.d.ts",
+        "default": "./dist/esm/assertion/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/assertion/index.d.ts",
+        "default": "./dist/commonjs/assertion/index.js"
+      }
+    },
+    "./expect-async.js": {
+      "import": {
+        "types": "./dist/esm/expect-async.d.ts",
+        "default": "./dist/esm/expect-async.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/expect-async.d.ts",
+        "default": "./dist/commonjs/expect-async.js"
+      }
+    },
+    "./expect.js": {
+      "import": {
+        "types": "./dist/esm/expect.d.ts",
+        "default": "./dist/esm/expect.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/expect.d.ts",
+        "default": "./dist/commonjs/expect.js"
+      }
+    },
+    "./expect-types.js": {
+      "import": {
+        "types": "./dist/esm/expect-types.d.ts",
+        "default": "./dist/esm/expect-types.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/expect-types.d.ts",
+        "default": "./dist/commonjs/expect-types.js"
+      }
     }
   },
   "files": [
-    "dist"
+    "CHANGELOG.md",
+    "dist",
+    "src"
   ],
   "keywords": [
     "test",
@@ -42,13 +119,15 @@
     "tape"
   ],
   "scripts": {
-    "build": "zshy",
+    "build": "tshy",
     "build:docs": "typedoc",
+    "dev": "tshy --watch",
     "lint": "eslint .",
-    "lint-commit": "commitlint",
-    "lint-staged": "lint-staged",
+    "lint:commit": "commitlint",
     "lint:fix": "eslint . --fix",
+    "lint:staged": "lint-staged",
     "lint:types": "tsc -b .config/tsconfig.eslint.json",
+    "lint:types:dev": "npm run lint:types -- --watch",
     "prepare": "husky",
     "test": "node --import tsx --test \"test/**/*.ts\"",
     "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
@@ -72,13 +151,16 @@
     "eslint": "9.33.0",
     "eslint-plugin-jsonc": "2.20.1",
     "eslint-plugin-perfectionist": "4.15.0",
+    "expect-type": "1.2.2",
     "husky": "9.1.7",
     "knip": "5.62.0",
     "lint-staged": "16.1.5",
     "prettier": "3.6.2",
     "prettier-plugin-jsdoc": "1.3.3",
     "prettier-plugin-pkg": "0.21.2",
+    "prettier-plugin-sort-json": "4.1.1",
     "serve": "14.2.4",
+    "tshy": "3.0.2",
     "tsx": "4.20.5",
     "type-fest": "4.41.0",
     "typedoc": "0.28.10",
@@ -86,18 +168,24 @@
     "typedoc-plugin-mdn-links": "5.0.9",
     "typedoc-plugin-zod": "1.4.2",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.40.0",
-    "zshy": "0.3.5"
+    "typescript-eslint": "8.40.0"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "knip": {
+    "ignoreDependencies": [
+      "@types/wallabyjs",
+      "serve"
+    ],
     "ignore": [
       ".wallaby.js",
       "**/*.cts",
       "**/*.d.ts"
+    ],
+    "tags": [
+      "-knipignore"
     ],
     "node": {
       "entry": [
@@ -116,17 +204,23 @@
     "jsdocPreferCodeFences": true,
     "plugins": [
       "prettier-plugin-jsdoc",
-      "prettier-plugin-pkg"
+      "prettier-plugin-pkg",
+      "prettier-plugin-sort-json"
     ],
     "singleQuote": true,
     "tsdoc": true
   },
-  "zshy": {
-    "main": "./src/index.ts",
-    "module": "./src/index.ts",
+  "tshy": {
     "exports": {
       "./package.json": "./package.json",
-      ".": "./src/index.ts"
+      ".": "./src/index.ts",
+      "./guards.js": "./src/guards.ts",
+      "./schema.js": "./src/schema.ts",
+      "./error.js": "./src/error.ts",
+      "./assertion.js": "./src/assertion/index.ts",
+      "./expect-async.js": "./src/expect-async.ts",
+      "./expect.js": "./src/expect.ts",
+      "./expect-types.js": "./src/expect-types.ts"
     }
   }
 }

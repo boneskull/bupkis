@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "rootDir": "../src",
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  },
+  "extends": "../tsconfig.json"
+}
