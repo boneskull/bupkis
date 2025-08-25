@@ -1,31 +1,48 @@
 {
-  "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "build",
+      "detail": "tshy",
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "isDefault": true,
+        "kind": "build"
       },
-      "problemMatcher": ["$tsc"],
       "label": "npm: build",
-      "detail": "zshy"
-    },
-    {
-      "type": "npm",
-      "script": "lint:types",
       "problemMatcher": ["$tsc"],
-      "label": "npm: lint:types",
-      "detail": "tsc -b .config/tsconfig.eslint.json"
+      "script": "build",
+      "type": "npm"
     },
     {
-      "type": "npm",
-      "script": "test",
+      "detail": "tsc -b .config/tsconfig.eslint.json",
       "group": "test",
-      "problemMatcher": [],
+      "label": "npm: lint:types",
+      "problemMatcher": ["$tsc"],
+      "script": "lint:types",
+      "type": "npm"
+    },
+    {
+      "detail": "node --import tsx --test \"test/**/*.ts\"",
+      "group": "test",
       "label": "npm: test",
-      "detail": "node --import tsx --test \"test/**/*.ts\""
+      "problemMatcher": [],
+      "script": "test",
+      "type": "npm"
+    },
+    {
+      "detail": "tshy --watch",
+      "group": "build",
+      "label": "npm: dev",
+      "problemMatcher": ["$tsc-watch"],
+      "script": "dev",
+      "type": "npm"
+    },
+    {
+      "detail": "npm run lint:types -- --watch",
+      "group": "test",
+      "label": "npm: lint:types:dev",
+      "problemMatcher": ["$tsc-watch"],
+      "script": "lint:types:dev",
+      "type": "npm"
     }
-  ]
+  ],
+  "version": "2.0.0"
 }
