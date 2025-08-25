@@ -1,9 +1,11 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "cleanOutputDir": true,
+  "customCss": "./custom.css",
   "entryPoints": ["../src/index.ts"],
-  "out": "../docs",
-  "sort": ["kind"],
-  "tsconfig": "./tsconfig.typedoc.json",
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "hostedBaseUrl": "https://boneskull.github.io/bupkis",
   "kindSortOrder": [
     "Reference",
     "Project",
@@ -12,18 +14,23 @@
     "Function",
     "TypeAlias"
   ],
-  "excludeInternal": true,
-  "excludePrivate": true,
-  "customCss": "./custom.css",
+  "modifierTags": [
+    "@knipignore",
+    "@assertion",
+    "@subject",
+    "@value",
+    "@phrase"
+  ],
+  "navigationLinks": {
+    "GitHub": "https://github.com/boneskull/bupkis"
+  },
+  "out": "../docs",
   "plugin": [
     "typedoc-github-theme",
     "typedoc-plugin-mdn-links",
     "typedoc-plugin-zod"
   ],
-  "cleanOutputDir": true,
-  "navigationLinks": {
-    "GitHub": "https://github.com/boneskull/bupkis"
-  },
-  "hostedBaseUrl": "https://boneskull.github.io/bupkis",
+  "sort": ["kind"],
+  "tsconfig": "./tsconfig.typedoc.json",
   "useTsLinkResolution": false
 }
