@@ -1,4 +1,6 @@
-// @ts-check
+/**
+ * @import {InfiniteDepthConfigWithExtends} from 'typescript-eslint'
+ */
 
 import jsPlugin from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
@@ -107,12 +109,16 @@ export default tseslint.config(
       '@typescript-eslint/unbound-method': 'off',
     },
   },
-  eslintPluginJsonc.configs['flat/prettier'][0],
-  {
+  /** @type {InfiniteDepthConfigWithExtends} */ (
+    eslintPluginJsonc.configs['flat/prettier'][0]
+  ),
+  /** @type {InfiniteDepthConfigWithExtends} */ ({
     ...eslintPluginJsonc.configs['flat/prettier'][1],
     extends: [tseslint.configs.disableTypeChecked],
-  },
-  eslintPluginJsonc.configs['flat/prettier'][2],
+  }),
+  /** @type {InfiniteDepthConfigWithExtends} */ (
+    eslintPluginJsonc.configs['flat/prettier'][2]
+  ),
   {
     ignores: ['dist', 'coverage', '*.snapshot', '.tshy'],
   },

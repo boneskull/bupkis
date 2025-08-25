@@ -3,6 +3,7 @@
   "entryPoints": ["../src/index.ts"],
   "out": "../docs",
   "sort": ["kind"],
+  "tsconfig": "./tsconfig.typedoc.json",
   "kindSortOrder": [
     "Reference",
     "Project",
@@ -14,10 +15,15 @@
   "excludeInternal": true,
   "excludePrivate": true,
   "customCss": "./custom.css",
-  "plugin": ["typedoc-github-theme", "typedoc-plugin-mdn-links"],
+  "plugin": [
+    "typedoc-github-theme",
+    "typedoc-plugin-mdn-links",
+    "typedoc-plugin-zod"
+  ],
   "cleanOutputDir": true,
   "navigationLinks": {
     "GitHub": "https://github.com/boneskull/bupkis"
   },
-  "hostedBaseUrl": "https://boneskull.github.io/bupkis"
+  "hostedBaseUrl": "https://boneskull.github.io/bupkis",
+  "useTsLinkResolution": false
 }

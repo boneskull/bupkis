@@ -11,7 +11,13 @@
 
 import { z } from 'zod/v4';
 
-import { ClassSchema, FunctionSchema, PropertyKeySchema } from '../schema.js';
+import {
+  ClassSchema,
+  FunctionSchema,
+  PropertyKeySchema,
+  StrongMapSchema,
+  StrongSetSchema,
+} from '../schema.js';
 import { satisfies, shallowSatisfiesShape } from '../util.js';
 import { Assertion } from './assertion.js';
 
@@ -74,7 +80,7 @@ const BasicAssertions = [
             case 'number':
               return z.number();
             case 'object':
-              return z.object({}).passthrough(); // Allows any object structure
+              return z.looseObject({});
             case 'string':
               return z.string();
             case 'symbol':
@@ -134,11 +140,11 @@ const BasicAssertions = [
     z.array(z.any()).min(1),
   ),
   createAssertion(
-    [z.looseObject({}), ['to not be empty', 'not to be empty']],
+    [z.record(z.any(), z.unknown()), ['to not be empty', 'not to be empty']],
     z.record(z.any(), z.any()).refine((value) => Object.keys(value).length > 0),
   ),
   createAssertion(
-    [z.looseObject({}), ['to be empty']],
+    [z.record(z.any(), z.unknown()), ['to be empty']],
     z.record(z.any(), z.never()),
   ),
 ] as const;
@@ -169,6 +175,104 @@ const EsotericAssertions = [
   createAssertion(
     ['to be extensible'],
     z.any().refine((obj) => Object.isExtensible(obj)),
+  ),
+] as const;
+
+const CollectionAssertions = [
+  // Map assertions (including WeakMap)
+  createAssertion(['to be a Map'], z.instanceof(Map)),
+  createAssertion(
+    [z.instanceof(Map), ['to contain', 'to include'], z.any()],
+    (subject, key) => subject.has(key),
+  ),
+  createAssertion(
+    [z.instanceof(Map), ['not to contain', 'not to include'], z.any()],
+    (subject, key) => !subject.has(key),
+  ),
+
+  // Size-based assertions only for strong Maps (not WeakMaps)
+  createAssertion(
+    [StrongMapSchema, 'to have size', z.number()],
+    (subject, expectedSize) => subject.size === expectedSize,
+  ),
+  createAssertion(
+    [StrongMapSchema, 'to be empty'],
+    (subject) => subject.size === 0,
+  ),
+  createAssertion(
+    [StrongMapSchema, ['to not be empty', 'not to be empty']],
+    (subject) => subject.size > 0,
+  ),
+
+  // Set assertions (including WeakSet)
+  createAssertion(['to be a Set'], z.instanceof(Set)),
+  createAssertion(
+    [z.instanceof(Set), ['to contain', 'to include'], z.any()],
+    (subject, value) => subject.has(value),
+  ),
+  createAssertion(
+    [z.instanceof(Set), ['not to contain', 'not to include'], z.any()],
+    (subject, value) => !subject.has(value),
+  ),
+
+  // Size-based assertions only for strong Sets (not WeakSets)
+  createAssertion(
+    [StrongSetSchema, 'to have size', z.number()],
+    (subject, expectedSize) => subject.size === expectedSize,
+  ),
+  createAssertion(
+    [StrongSetSchema, 'to be empty'],
+    (subject) => subject.size === 0,
+  ),
+  createAssertion(
+    [StrongSetSchema, ['to not be empty', 'not to be empty']],
+    (subject) => subject.size > 0,
+  ),
+
+  // WeakMap specific assertions
+  createAssertion(['to be a WeakMap'], z.instanceof(WeakMap)),
+  createAssertion(
+    [z.instanceof(WeakMap), ['to contain', 'to include'], z.any()],
+    (subject, key) => {
+      // WeakMap.has only works with object keys
+      if (typeof key !== 'object' || key === null) {
+        return false;
+      }
+      return subject.has(key as WeakKey);
+    },
+  ),
+  createAssertion(
+    [z.instanceof(WeakMap), ['not to contain', 'not to include'], z.any()],
+    (subject, key) => {
+      // WeakMap.has only works with object keys
+      if (typeof key !== 'object' || key === null) {
+        return true; // Non-object keys are never in WeakMap
+      }
+      return !subject.has(key as WeakKey);
+    },
+  ),
+
+  // WeakSet specific assertions
+  createAssertion(['to be a WeakSet'], z.instanceof(WeakSet)),
+  createAssertion(
+    [z.instanceof(WeakSet), ['to contain', 'to include'], z.any()],
+    (subject, value) => {
+      // WeakSet.has only works with object values
+      if (typeof value !== 'object' || value === null) {
+        return false;
+      }
+      return subject.has(value as WeakKey);
+    },
+  ),
+  createAssertion(
+    [z.instanceof(WeakSet), ['not to contain', 'not to include'], z.any()],
+    (subject, value) => {
+      // WeakSet.has only works with object values
+      if (typeof value !== 'object' || value === null) {
+        return true; // Non-object values are never in WeakSet
+      }
+      return !subject.has(value as WeakKey);
+    },
   ),
 ] as const;
 
@@ -305,6 +409,7 @@ const ParametricAssertions = [
 ] as const; // Shared validation/match helper
 
 export const Assertions = [
+  ...CollectionAssertions,
   ...BasicAssertions,
   ...EsotericAssertions,
   ...ParametricAssertions,

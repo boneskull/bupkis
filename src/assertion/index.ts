@@ -9,7 +9,28 @@
  */
 
 import { Assertion } from './assertion.js';
+export { FunctionAssertion, SchemaAssertion } from './assertion.js';
+export type {
+  AssertionImpl,
+  AssertionImplAsyncFn,
+  AssertionImplFn,
+  AssertionPart,
+  AssertionParts,
+  AssertionPartsToSlots,
+  AssertionSlot,
+  AssertionSlots,
+  HoleyParsedValues,
+  ParsedResult,
+  ParsedResultFailure,
+  ParsedResultSuccess,
+  ParsedSubject,
+  ParsedValues,
+  Phrase,
+  PhraseLiteral,
+  PhraseLiteralEnum,
+  PhraseLiteralEnumSlot,
+  PhraseLiteralSlot,
+} from './types.js';
+export { Assertion };
 
 export const { fromParts: createAssertion } = Assertion;
-
-export { Assertion };

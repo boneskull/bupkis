@@ -9,72 +9,17 @@
  */
 
 import Debug from 'debug';
-import { type z } from 'zod/v4';
 
+import { Assertion } from './assertion/assertion.js';
 import { Assertions } from './assertion/implementations.js';
 import {
   type AnyParsedValues,
-  type AssertionPart,
-  type AssertionParts,
-  type AssertionSlot,
   type BuiltinAssertion,
-  type BupkisStringLiteral,
-  type BupkisStringLiterals,
-  type NoNeverTuple,
 } from './assertion/types.js';
 import { AssertionError } from './error.js';
+import { type Expect, type ExpectFunction } from './expect-types.js';
 
 const debug = Debug('bupkis:expect');
-
-export interface Expect extends ExpectFunction {
-  fail(reason?: string): never;
-}
-
-export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
-  Parts extends readonly [infer First extends AssertionPart, ...infer _]
-    ? First extends readonly [string, ...string[]] | string
-      ? [unknown, ...MapExpectSlots<Parts>]
-      : MapExpectSlots<Parts>
-    : never
->;
-
-/**
- * SOLUTION: Fixed type computation that avoids the "deep instantiation" error
- *
- * The original problematic code was: export type Expect =
- * UnionToIntersection<PaddedSignature<BuiltinAssertion>>;
- *
- * This created a union of 40+ function signatures with complex tuple padding,
- * which hit TypeScript's recursion limits causing "type instantiation is
- * excessively deep and possibly infinite".
- *
- * The solution uses function overloads instead of intersection types.
- */
-
-// Create function overloads for each assertion
-type ExpectFunction = {
-  [K in keyof typeof Assertions]: (typeof Assertions)[K] extends BuiltinAssertion
-    ? (...args: InferredExpectSlots<(typeof Assertions)[K]['__parts']>) => void
-    : never;
-}[number];
-
-type MapExpectSlots<Parts extends AssertionParts> = Parts extends readonly [
-  infer First extends AssertionPart,
-  ...infer Rest extends AssertionParts,
-]
-  ? [
-      AssertionSlot<First> extends BupkisStringLiteral<infer StringLiteral>
-        ? StringLiteral
-        : AssertionSlot<First> extends BupkisStringLiterals<
-              infer StringLiterals
-            >
-          ? z.infer<z.ZodEnum<z.core.util.ToEnum<StringLiterals[number]>>>
-          : AssertionSlot<First> extends z.ZodType
-            ? z.infer<AssertionSlot<First>>
-            : never,
-      ...MapExpectSlots<Rest>,
-    ]
-  : [];
 
 const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   // Ambiguity check: ensure only one match
@@ -125,10 +70,9 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   );
 };
 
-/**
- * The main assertion function with fail property.
- */
+/** {@inheritDoc Expect} */
 export const expect: Expect = Object.assign(expectFunction, {
+  createAssertion: Assertion.fromParts,
   fail(reason?: string): never {
     throw new AssertionError({ message: reason });
   },

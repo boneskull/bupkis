@@ -364,6 +364,18 @@ export abstract class Assertion<
   }
 }
 
+/**
+ * A class representing an assertion implemented as a function.
+ *
+ * This function may:
+ *
+ * 1. Return a `boolean` indicating pass/fail.
+ * 2. Return a `ZodType` which will be used to validate the subject.
+ * 3. Return a `Promise` resolving to either of the above (when called via
+ *    {@link expectAsync})
+ * 4. Throw a {@link AssertionError}; when called via {@link expectAsync}, reject
+ *    with an {@link AssertionError}
+ */
 export class FunctionAssertion<
   T extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
   Parts extends AssertionParts,
@@ -435,6 +447,11 @@ export class FunctionAssertion<
   }
 }
 
+/**
+ * An assertion implemented as a Zod schema.
+ *
+ * Async schemas are supported via {@link expectAsync}.
+ */
 export class SchemaAssertion<
   T extends z.ZodType<ParsedSubject<Parts>>,
   Parts extends AssertionParts,

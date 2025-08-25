@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"],
+      "label": "npm: build",
+      "detail": "zshy"
+    },
+    {
+      "type": "npm",
+      "script": "lint:types",
+      "problemMatcher": ["$tsc"],
+      "label": "npm: lint:types",
+      "detail": "tsc -b .config/tsconfig.eslint.json"
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "npm: test",
+      "detail": "node --import tsx --test \"test/**/*.ts\""
+    }
+  ]
+}

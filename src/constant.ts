@@ -8,11 +8,9 @@
  * @packageDocumentation
  */
 
-// ————————————————————————————————————————————————————————————————
-// Types
-// ————————————————————————————————————————————————————————————————
 /**
- * Symbol flagging the value as a string literal
+ * Symbol flagging the value as a Bupkis-created string literal, which will be
+ * omitted from the parameters to an `AssertionImpl`.
  */
 
 export const kStringLiteral: unique symbol = Symbol('bupkis:string-literal');
