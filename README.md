@@ -33,7 +33,7 @@ To achieve these goals, I've adopted the following design principles:
 
 ### Natural-Language Assertions
 
-In _BUPKIS_, you **don't** write this:
+In `bupkis` (stylized as "_BUPKIS_"), you **don't** write this:
 
 ```js
 expect(actual).toEqual(expected);
@@ -71,7 +71,27 @@ expect(actual, 'to be an string');
 
 Can't remember the string? Did you forget a word or make a typo? Maybe you also forgot _BUPKIS_ is type-safe? You'll get a nice squiggly for your trouble.
 
-> **TODO**: More examples as assertions are implemented.
+The "string" part of an expectation is known as a _phrase_. Every expectation will contain, at minimum, one phrase. As you can see from the above example, phrases often have aliases.
+
+You can negate just about any phrase:
+
+```js
+expect(actual, 'to be', expected);
+// did they not teach grammar in nerd school??
+expect(actual, 'not is', expected);
+
+expect(
+  () => throw new TypeError('aww, shucks'),
+  'to throw a',
+  TypeError,
+  'not satisfying',
+  /gol durn/,
+);
+```
+
+> [!CAUTION]
+>
+> I haven't yet documented all of the parameters to `expect()`/`expectAsync()`.
 
 ### Custom Assertions: Basics
 
@@ -211,7 +231,7 @@ In no particular order, here are some things I want to implement:
 
 > _"This is my assertion library. Many are like it, but this one is mine."_
 >
-> —boneskull, 2025
+> ‒boneskull, 2025
 
 ## License
 
