@@ -11,13 +11,14 @@
 
 import { z } from 'zod/v4';
 
+import { isA, isNonNullObject, isString } from '../guards.js';
 import {
   ClassSchema,
   FunctionSchema,
   WrappedPromiseLikeSchema,
 } from '../schema.js';
 import { shallowSatisfiesShape } from '../util.js';
-import { createAssertion } from './index.js';
+import { createAssertion } from './assertion.js';
 
 const trapAsyncFnError = async (fn: () => unknown) => {
   try {
@@ -35,7 +36,7 @@ const trapPromiseError = async (promise: PromiseLike<unknown>) => {
   }
 };
 
-const AsyncAssertions = [
+export const AsyncAssertions = [
   createAssertion(
     [FunctionSchema, ['to resolve', 'to fulfill']],
     async (subject) => {
@@ -111,7 +112,7 @@ const AsyncAssertions = [
       if (!error) {
         return false;
       }
-      return error instanceof ctor;
+      return isA(error, ctor);
     },
   ),
   createAssertion(
@@ -125,7 +126,7 @@ const AsyncAssertions = [
       if (!error) {
         return false;
       }
-      return error instanceof ctor;
+      return isA(error, ctor);
     },
   ),
 
@@ -142,21 +143,21 @@ const AsyncAssertions = [
         return false;
       }
 
-      if (typeof param === 'string') {
+      if (isString(param)) {
         return z
           .object({
             message: z.coerce.string().pipe(z.literal(param)),
           })
           .or(z.coerce.string().pipe(z.literal(param)))
           .safeParse(error).success;
-      } else if (param instanceof RegExp) {
+      } else if (isA(param, RegExp)) {
         return z
           .object({
             message: z.coerce.string().regex(param),
           })
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
-      } else if (typeof param === 'object' && param !== null) {
+      } else if (isNonNullObject(param)) {
         return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
       } else {
         return false;
@@ -175,21 +176,21 @@ const AsyncAssertions = [
         return false;
       }
 
-      if (typeof param === 'string') {
+      if (isString(param)) {
         return z
           .object({
             message: z.coerce.string().pipe(z.literal(param)),
           })
           .or(z.coerce.string().pipe(z.literal(param)))
           .safeParse(error).success;
-      } else if (param instanceof RegExp) {
+      } else if (isA(param, RegExp)) {
         return z
           .object({
             message: z.coerce.string().regex(param),
           })
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
-      } else if (typeof param === 'object' && param !== null) {
+      } else if (isNonNullObject(param)) {
         return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
       } else {
         return false;
@@ -197,5 +198,3 @@ const AsyncAssertions = [
     },
   ),
 ] as const;
-
-export const Assertions = AsyncAssertions;

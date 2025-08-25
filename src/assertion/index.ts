@@ -8,8 +8,6 @@
  * @packageDocumentation
  */
 
-import { Assertion } from './assertion.js';
-export { FunctionAssertion, SchemaAssertion } from './assertion.js';
 export type {
   AssertionImpl,
   AssertionImplAsyncFn,
@@ -27,10 +25,15 @@ export type {
   ParsedValues,
   Phrase,
   PhraseLiteral,
-  PhraseLiteralEnum,
-  PhraseLiteralEnumSlot,
+  PhraseLiteralChoice as PhraseLiteralEnum,
+  PhraseLiteralChoiceSlot as PhraseLiteralEnumSlot,
   PhraseLiteralSlot,
-} from './types.js';
-export { Assertion };
-
-export const { fromParts: createAssertion } = Assertion;
+} from './assertion-types.js';
+export {
+  BupkisAssertion,
+  createAssertion,
+  FunctionAssertion,
+  SchemaAssertion,
+} from './assertion.js';
+export { AsyncAssertions } from './async.js';
+export { SyncAssertions } from './sync.js';

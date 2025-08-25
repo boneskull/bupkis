@@ -10,8 +10,10 @@ import { kStringLiteral } from './constant.js';
 
 /**
  * Metadata stored in Zod registry
+ *
+ * @knipignore
  */
-type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
+export type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
 
 /**
  * Zod metadata registry for Bupkis
@@ -19,23 +21,38 @@ type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
 export const BupkisRegistry = z.registry<BupkisMeta>();
 
 /**
- * Base schema for Bupkis metadata
+ * Base schema for all metadata
  */
-const BaseBupkisRegistrySchema = z.object({
+const BaseBupkisMetadataSchema = z.object({
+  description: z.string().optional().describe('Human-friendly description'),
+  name: z
+    .string()
+    .optional()
+    .describe('Internal name; used by Assertion.prototype.toString()'),
+});
+
+/**
+ * Base schema for metadata referring to string literal flag
+ */
+const StringLiteralFlagSchema = z.object({
+  ...BaseBupkisMetadataSchema.shape,
   [kStringLiteral]: z.literal(true),
 });
 
 /**
  * Final schema for Bupkis registry
  */
-export const BupkisRegistrySchema = z.union([
+// TODO: Figure out how to make this rule allow type-only usage. Or just export it and tag it.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const BupkisRegistrySchema = z.union([
+  z.object({ ...BaseBupkisMetadataSchema.shape }),
   z.object({
-    ...BaseBupkisRegistrySchema.shape,
+    ...StringLiteralFlagSchema.shape,
     value: z.string(),
     values: z.never().optional(),
   }),
   z.object({
-    ...BaseBupkisRegistrySchema.shape,
+    ...StringLiteralFlagSchema.shape,
     value: z.never().optional(),
     values: z.tuple([z.string()]).rest(z.string()).readonly(),
   }),

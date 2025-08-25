@@ -37,10 +37,21 @@ describe('Synchronous expect assertions', () => {
       [true, 'array'],
       [undefined, 'null'],
     ] as const) {
-      it(`should reject when ${inspect(value)} is not a ${typeName}`, () => {
+      it(`should throw when ${inspect(value)} is not a ${typeName}`, () => {
         expect(() => expect(value, 'to be a', typeName), 'to throw');
       });
     }
+
+    it('should throw when type is unknown', () => {
+      expect(
+        // @ts-expect-error bad type!!
+        () => expect(42, 'to be a', 'boognish'),
+        'to throw a',
+        TypeError,
+        'satisfying',
+        `Invalid arguments. No assertion matched: [ 42, 'to be a', 'boognish' ]`,
+      );
+    });
   });
 
   describe('Comparison assertions', () => {
@@ -143,18 +154,13 @@ describe('Synchronous expect assertions', () => {
 
     it('should pass when values are not equal (inequality)', () => {
       expect(() => expect(42, 'not to be', 24), 'not to throw');
-      expect(() => expect(42, 'to not equal', 24), 'not to throw');
       expect(() => expect('hi', 'not to equal', 'bye'), 'not to throw');
-      expect(() => expect(42, 'is not', 24), 'not to throw');
-      expect(() => expect(42, "isn't", 24), 'not to throw');
       expect(() => expect(42, 'not to strictly equal', 24), 'not to throw');
-      expect(() => expect(42, 'to not strictly equal', 24), 'not to throw');
     });
 
     it('should fail when values are equal (inequality)', () => {
       expect(() => expect(42, 'not to be', 42), 'to throw');
-      expect(() => expect(42, 'to not equal', 42), 'to throw');
-      expect(() => expect(42, "isn't", 42), 'to throw');
+      expect(() => expect(42, 'not to equal', 42), 'to throw');
     });
   });
 
@@ -176,22 +182,18 @@ describe('Synchronous expect assertions', () => {
     });
 
     it('should pass when object is not empty', () => {
-      expect(() => expect({ a: 1 }, 'to not be empty'), 'not to throw');
       expect(() => expect({ a: 1 }, 'not to be empty'), 'not to throw');
     });
 
     it('should fail when empty object is expected to not be empty', () => {
-      expect(() => expect({}, 'to not be empty'), 'to throw');
       expect(() => expect({}, 'not to be empty'), 'to throw');
     });
 
     it('should pass when array is not empty', () => {
-      expect(() => expect([1], 'to not be empty'), 'not to throw');
       expect(() => expect([1], 'not to be empty'), 'not to throw');
     });
 
     it('should fail when empty array is expected to not be empty', () => {
-      expect(() => expect([], 'to not be empty'), 'to throw');
       expect(() => expect([], 'not to be empty'), 'to throw');
     });
   });
@@ -199,7 +201,6 @@ describe('Synchronous expect assertions', () => {
   describe('Function throwing assertions', () => {
     it('should pass when function does not throw', () => {
       expect(() => expect(() => 'safe', 'not to throw'), 'not to throw');
-      expect(() => expect(() => 'safe', 'to not throw'), 'not to throw');
     });
 
     it('should fail when function throws but expected not to', () => {
@@ -208,13 +209,6 @@ describe('Synchronous expect assertions', () => {
           expect(() => {
             throw new Error('boom');
           }, 'not to throw'),
-        'to throw',
-      );
-      expect(
-        () =>
-          expect(() => {
-            throw new Error('boom');
-          }, 'to not throw'),
         'to throw',
       );
     });
@@ -602,6 +596,7 @@ describe('Synchronous expect assertions', () => {
 
   describe('String pattern matching', () => {
     it('should pass when string matches regex', () => {
+      expect('hello', 'to match', /h.*o/);
       expect(() => expect('hello', 'to match', /h.*o/), 'not to throw');
       expect(() => expect('test123', 'to match', /\d+$/), 'not to throw');
     });
@@ -638,10 +633,6 @@ describe('Synchronous expect assertions', () => {
         'not to throw',
       );
       expect(
-        () => expect({ a: 1, b: 2 }, 'to match', { b: 2 }),
-        'not to throw',
-      );
-      expect(
         () => expect({ a: 1, b: 2, c: 3 }, 'to satisfy', { a: 1, c: 3 }),
         'not to throw',
       );
@@ -650,7 +641,6 @@ describe('Synchronous expect assertions', () => {
     it('should fail when object does not satisfy requirements', () => {
       expect(() => expect({ a: 1 }, 'to satisfy', { a: 1, b: 2 }), 'to throw'); // missing key
       expect(() => expect({ a: 1 }, 'to be like', { a: 2 }), 'to throw'); // wrong value
-      expect(() => expect({ a: 1, b: 2 }, 'to match', { c: 3 }), 'to throw'); // missing key
     });
   });
 
@@ -980,13 +970,11 @@ describe('Synchronous expect assertions', () => {
 
       it('should pass when non-empty Map is not empty', () => {
         const map = new Map([['a', 1]]);
-        expect(() => expect(map, 'to not be empty'), 'not to throw');
         expect(() => expect(map, 'not to be empty'), 'not to throw');
       });
 
       it('should fail when empty Map is expected to not be empty', () => {
         const map = new Map();
-        expect(() => expect(map, 'to not be empty'), 'to throw');
         expect(() => expect(map, 'not to be empty'), 'to throw');
       });
     });
@@ -1049,13 +1037,11 @@ describe('Synchronous expect assertions', () => {
 
       it('should pass when non-empty Set is not empty', () => {
         const set = new Set(['a']);
-        expect(() => expect(set, 'to not be empty'), 'not to throw');
         expect(() => expect(set, 'not to be empty'), 'not to throw');
       });
 
       it('should fail when empty Set is expected to not be empty', () => {
         const set = new Set();
-        expect(() => expect(set, 'to not be empty'), 'to throw');
         expect(() => expect(set, 'not to be empty'), 'to throw');
       });
     });

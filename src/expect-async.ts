@@ -10,21 +10,31 @@
 
 import Debug from 'debug';
 
-import { Assertions } from './assertion/async-implementations.js';
-import { Assertion } from './assertion/index.js';
 import {
   type AnyParsedValues,
   type BuiltinAsyncAssertion,
-} from './assertion/types.js';
+} from './assertion/assertion-types.js';
+import { AsyncAssertions } from './assertion/async.js';
+import { BupkisAssertion } from './assertion/index.js';
 import { AssertionError } from './error.js';
-import { type ExpectAsync, type ExpectAsyncFunction } from './expect-types.js';
+import {
+  assertSingleExactMatch,
+  executeWithNegationAsync,
+  maybeProcessNegation,
+  throwInvalidParametersError,
+} from './expect.js';
+import { type ExpectAsync, type ExpectAsyncFunction } from './types.js';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const debug = Debug('bupkis:expect-async');
 
 const expectAsyncFunction: ExpectAsyncFunction = async (
   ...args: readonly unknown[]
 ): Promise<void> => {
-  // Ambiguity check: ensure only one match
+  const [isNegated, processedArgs] = maybeProcessNegation(args);
+  /**
+   * This value will be set if we find a matching assertion
+   */
   let found:
     | undefined
     | {
@@ -32,22 +42,14 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
         exactMatch: boolean;
         parsedValues: AnyParsedValues;
       };
-  const failureReasons: [string, string][] = [];
-  for (const assertion of Assertions) {
+  const failureReasons: [assertionRepor: string, reason: string][] = [];
+  for (const assertion of AsyncAssertions) {
     const { exactMatch, parsedValues, reason, success } =
-      await assertion.parseValuesAsync(args);
+      await assertion.parseValuesAsync(processedArgs);
     if (success) {
+      // Ambiguity check: ensure only one match
       if (found) {
-        // if we have an exact match already and this match is not exact, keep the current one.
-        // if we have an exact match already and this match is also exact, throw an error.
-        if (found.exactMatch) {
-          if (!exactMatch) {
-            continue;
-          }
-          throw new TypeError(
-            `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
-          );
-        }
+        assertSingleExactMatch(found, assertion, exactMatch);
       }
       found = { assertion, exactMatch, parsedValues };
     } else {
@@ -56,23 +58,21 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
   }
   if (found) {
     const { assertion, parsedValues } = found;
-    await assertion.executeAsync(parsedValues, [...args], expectAsyncFunction);
+    await executeWithNegationAsync(
+      assertion,
+      parsedValues,
+      [...args],
+      expectAsyncFunction,
+      isNegated,
+    );
     return;
   }
-  debug('Failed to find a matching assertion for args %o', args);
-  throw new TypeError(
-    `No assertion matched the provided arguments: [${args.map((arg) => `${typeof arg} ${String(arg)}`).join(', ')}]\\n` +
-      failureReasons
-        .map(([assertion, reason]) => `  • ${assertion}: ${reason}`)
-        .join('\\n'),
-  );
+  throwInvalidParametersError(args, failureReasons);
 };
 
-/**
- * The main async assertion function with fail property.
- */
+/** {@inheritDoc ExpectAsync} */
 export const expectAsync: ExpectAsync = Object.assign(expectAsyncFunction, {
-  createAssertion: Assertion.fromParts,
+  createAssertion: BupkisAssertion.create,
   fail(reason?: string): never {
     throw new AssertionError({ message: reason });
   },

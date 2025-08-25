@@ -9,19 +9,170 @@
  */
 
 import Debug from 'debug';
+import { inspect } from 'node:util';
 
-import { Assertion } from './assertion/assertion.js';
-import { Assertions } from './assertion/implementations.js';
 import {
   type AnyParsedValues,
   type BuiltinAssertion,
-} from './assertion/types.js';
+  type BuiltinAsyncAssertion,
+} from './assertion/assertion-types.js';
+import { BupkisAssertion } from './assertion/assertion.js';
+import { SyncAssertions } from './assertion/sync.js';
 import { AssertionError } from './error.js';
-import { type Expect, type ExpectFunction } from './expect-types.js';
+import { isString } from './guards.js';
+import { type Expect, type ExpectFunction } from './types.js';
 
 const debug = Debug('bupkis:expect');
 
+/**
+ * Detects if an assertion phrase starts with "not " and returns the cleaned
+ * phrase.
+ *
+ * @param phrase - The assertion phrase to check
+ * @returns Object with `isNegated` flag and `cleanedPhrase`
+ */
+const detectNegation = (
+  phrase: string,
+): {
+  cleanedPhrase: string;
+  isNegated: boolean;
+} => {
+  if (phrase.startsWith('not to ')) {
+    return {
+      cleanedPhrase: phrase.substring(4), // Remove "not "
+      isNegated: true,
+    };
+  }
+  return {
+    cleanedPhrase: phrase,
+    isNegated: false,
+  };
+};
+
+/**
+ * Executes an assertion with optional negation logic (async version).
+ *
+ * @param assertion - The assertion to execute
+ * @param parsedValues - Parsed values for the assertion
+ * @param args - Original arguments passed to expectAsync
+ * @param stackStartFn - Function for stack trace management
+ * @param isNegated - Whether the assertion should be negated
+ */
+export async function executeWithNegationAsync(
+  assertion: BuiltinAsyncAssertion,
+  parsedValues: AnyParsedValues,
+  args: unknown[],
+  stackStartFn: (...args: any[]) => any,
+  isNegated: boolean,
+): Promise<void> {
+  if (!isNegated) {
+    return assertion.executeAsync(parsedValues, args, stackStartFn);
+  }
+
+  try {
+    await assertion.executeAsync(parsedValues, args, stackStartFn);
+    // If we reach here, the assertion passed but we expected it to fail
+    throw new AssertionError({
+      message: `Expected assertion to fail, but it passed: ${assertion}`,
+      stackStartFn,
+    });
+  } catch (error) {
+    if (error instanceof AssertionError) {
+      // The assertion failed as expected for negation - this is success
+      return;
+    }
+    // Re-throw non-assertion errors (like TypeErrors, etc.)
+    throw error;
+  }
+}
+
+/**
+ * Executes an assertion with optional negation logic.
+ *
+ * @param assertion - The assertion to execute
+ * @param parsedValues - Parsed values for the assertion
+ * @param args - Original arguments passed to expect
+ * @param stackStartFn - Function for stack trace management
+ * @param isNegated - Whether the assertion should be negated
+ */
+function executeWithNegation(
+  assertion: BuiltinAssertion,
+  parsedValues: AnyParsedValues,
+  args: unknown[],
+  stackStartFn: (...args: any[]) => any,
+  isNegated: boolean,
+): void {
+  if (!isNegated) {
+    return assertion.execute(parsedValues, args, stackStartFn);
+  }
+
+  try {
+    assertion.execute(parsedValues, args, stackStartFn);
+    // If we reach here, the assertion passed but we expected it to fail
+    throw new AssertionError({
+      message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
+      stackStartFn,
+    });
+  } catch (error) {
+    // Check if this is the negation error we just threw
+    if (
+      error instanceof AssertionError &&
+      error.message.includes(
+        'Expected assertion to fail (due to negation), but it passed:',
+      )
+    ) {
+      // This is our negation error, re-throw it
+      throw error;
+    }
+
+    if (error instanceof AssertionError) {
+      // The assertion failed as expected for negation - this is success
+      return;
+    }
+    // Re-throw non-assertion errors (like TypeErrors, etc.)
+    throw error;
+  }
+}
+
+/**
+ * @internal
+ */
+export const maybeProcessNegation = (
+  args: readonly unknown[],
+): [isNegated: boolean, processedArgs: readonly unknown[]] => {
+  let isNegated = false;
+  let processedArgs = args;
+
+  if (args.length >= 2 && isString(args[1])) {
+    const { cleanedPhrase, isNegated: detected } = detectNegation(args[1]);
+    if (detected) {
+      isNegated = true;
+      processedArgs = [args[0], cleanedPhrase, ...args.slice(2)];
+    }
+  }
+  return [isNegated, processedArgs];
+};
+/**
+ * @internal
+ */
+export const throwInvalidParametersError = (
+  args: readonly unknown[],
+  failureReasons: [assertionRepr: string, reason: string][],
+): never => {
+  const inspectedArgs = inspect(args, { depth: 1 });
+  debug(
+    `Invalid arguments. No assertion matched: ${inspectedArgs}\\n${failureReasons
+      .map(([assertion, reason]) => `  • ${assertion}: ${reason}`)
+      .join('\\n')}`,
+  );
+  throw new TypeError(
+    `Invalid arguments. No assertion matched: ${inspectedArgs}`,
+  );
+};
+
 const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
+  const [isNegated, processedArgs] = maybeProcessNegation(args);
+
   // Ambiguity check: ensure only one match
   let found:
     | undefined
@@ -34,24 +185,19 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   /**
    * This is used for debugging purposes only.
    */
-  const parseFailureReasons: [string, string][] = [];
-  for (const assertion of Assertions) {
+  const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
+  for (const assertion of SyncAssertions) {
     const { exactMatch, parsedValues, reason, success } =
-      assertion.parseValues(args);
+      assertion.parseValues(processedArgs);
     if (success) {
       if (found) {
-        // if we have an exact match already and this match is not exact, keep the current one.
-        // if we have an exact match already and this match is also exact, throw an error.
-        if (found.exactMatch) {
-          if (!exactMatch) {
-            continue;
-          }
-          throw new TypeError(
-            `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
-          );
-        }
+        assertSingleExactMatch(found, assertion, exactMatch);
       }
-      found = { assertion, exactMatch, parsedValues };
+      found = {
+        assertion,
+        exactMatch,
+        parsedValues: parsedValues as readonly [unknown, any],
+      };
     } else {
       parseFailureReasons.push([`${assertion}`, reason]);
     }
@@ -59,21 +205,51 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   if (found) {
     const { assertion, parsedValues } = found;
 
-    return assertion.execute(parsedValues, [...args], expectFunction);
+    return executeWithNegation(
+      assertion,
+      parsedValues,
+      [...args],
+      expectFunction,
+      isNegated,
+    );
   }
-  debug('Failed to find a matching assertion for args %o', args);
-  throw new TypeError(
-    `No assertion matched the provided arguments: [${args.map((arg) => `${typeof arg} ${String(arg)}`).join(', ')}]\\n` +
-      parseFailureReasons
-        .map(([assertion, reason]) => `  • ${assertion}: ${reason}`)
-        .join('\\n'),
-  );
+  throwInvalidParametersError(args, parseFailureReasons);
 };
 
 /** {@inheritDoc Expect} */
 export const expect: Expect = Object.assign(expectFunction, {
-  createAssertion: Assertion.fromParts,
+  createAssertion: BupkisAssertion.create,
   fail(reason?: string): never {
     throw new AssertionError({ message: reason });
   },
 });
+
+/**
+ * Used by `expect` and `expectAsync` to ensure only one exact matching
+ * `Assertion` is found.
+ *
+ * @param found Object containing information about a previously found matching
+ *   `Assertion`
+ * @param assertion The current matching `Assertion`
+ * @param exactMatch Whether the current match is an exact match
+ * @throws {TypeError} If multiple exact matching assertions are found
+ * @internal
+ */
+export const assertSingleExactMatch = <
+  T extends BuiltinAssertion | BuiltinAsyncAssertion,
+>(
+  found: {
+    assertion: T;
+    exactMatch: boolean;
+  },
+  assertion: T,
+  exactMatch: boolean,
+): void => {
+  // if we have an exact match already and this match is not exact, keep the current one.
+  // if we have an exact match already and this match is also exact, throw an error.
+  if (found.exactMatch && exactMatch) {
+    throw new TypeError(
+      `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
+    );
+  }
+};

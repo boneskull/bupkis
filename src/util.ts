@@ -12,6 +12,8 @@
 
 import { z } from 'zod/v4';
 
+import { isA, isNonNullObject, isNullOrNonObject, isString } from './guards.js';
+
 /**
  * Implementation of the "satisfies" semantic, which checks if `actual`
  * contains, at minimum, the expected shape.
@@ -32,11 +34,11 @@ export const satisfies = <
   visitedActual = new WeakSet(),
   visitedExpected = new WeakSet(),
 ): boolean => {
-  if (typeof expected !== 'object' || expected === null) {
+  if (isNullOrNonObject(expected)) {
     return actual === (expected as unknown as Actual);
   }
 
-  if (typeof actual !== 'object' || actual === null) {
+  if (isNullOrNonObject(actual)) {
     return false;
   }
 
@@ -99,11 +101,11 @@ export const exhaustivelySatisfies = <
   visitedActual = new WeakSet(),
   visitedExpected = new WeakSet(),
 ): boolean => {
-  if (typeof expected !== 'object' || expected === null) {
+  if (isNullOrNonObject(expected)) {
     return actual === (expected as unknown as Actual);
   }
 
-  if (typeof actual !== 'object' || actual === null) {
+  if (isNullOrNonObject(actual)) {
     return false;
   }
 
@@ -167,14 +169,14 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   Object.fromEntries(
     Object.entries(param).map(([key, value]) => {
-      if (value instanceof RegExp) {
+      if (isA(value, RegExp)) {
         return [key, z.coerce.string().regex(value)];
       }
-      if (typeof value === 'string') {
+      if (isString(value)) {
         return [key, z.coerce.string().pipe(z.literal(value))];
       }
-      if (typeof value === 'object' && value !== null) {
-        return [key, z.object(shallowSatisfiesShape(value as object))];
+      if (isNonNullObject(value)) {
+        return [key, z.object(shallowSatisfiesShape(value))];
       }
       return [key, z.literal(value)];
     }),

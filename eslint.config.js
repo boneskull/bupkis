@@ -128,6 +128,6 @@ export default tseslint.config(
     eslintPluginJsonc.configs['flat/prettier'][2]
   ),
   {
-    ignores: ['dist', 'coverage', '*.snapshot', '.tshy'],
+    ignores: ['docs', 'dist', 'coverage', '*.snapshot', '.tshy/*.json'],
   },
 );

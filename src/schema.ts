@@ -15,21 +15,34 @@ import type { Constructor } from 'type-fest';
 
 import { z } from 'zod/v4';
 
-import { isConstructable, isPromiseLike } from './guards.js';
+import {
+  isA,
+  isConstructable,
+  isFunction,
+  isNonNullObject,
+  isPromiseLike,
+} from './guards.js';
+import { BupkisRegistry } from './metadata.js';
 
 /**
  * A Zod Schema that validates JavaScript classes or constructor functions.
  */
 export const ClassSchema = z
   .custom<Constructor<unknown>>(isConstructable)
+  .register(BupkisRegistry, { name: 'ClassSchema' })
   .describe('Class / Constructor');
 
 /**
  * A Zod Schema that validates JavaScript functions.
  */
 export const FunctionSchema = z
-  .custom<(...args: any[]) => any>((fn) => typeof fn === 'function')
-  .describe('Any function; similar to z.function() in Zod v3.x');
+  .custom<(...args: any[]) => any>(isFunction)
+  .register(BupkisRegistry, {
+    name: 'FunctionSchema',
+  })
+  .describe(
+    'Any function; similar to parseable-only `z.function()` in Zod v3.x',
+  );
 
 /**
  * A Zod Schema that validates valid JavaScript property keys, i.e. strings,
@@ -37,6 +50,7 @@ export const FunctionSchema = z
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
+  .register(BupkisRegistry, { name: 'PropertyKeySchema' })
   .describe('PropertyKey');
 
 /**
@@ -47,6 +61,7 @@ export const PropertyKeySchema = z
  */
 export const WrappedPromiseLikeSchema = z
   .custom<PromiseLike<unknown>>((value) => isPromiseLike(value))
+  .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' })
   .describe(
     'PromiseLike; unlike z.promise(), does not unwrap the resolved value',
   );
@@ -56,11 +71,20 @@ export const WrappedPromiseLikeSchema = z
  */
 export const StrongMapSchema = z
   .instanceof(Map)
-  .refine((m) => !(m instanceof WeakMap));
+  .refine((value) => !isA(value, WeakMap))
+  .register(BupkisRegistry, { name: 'StrongMapSchema' });
 
 /**
  * A Zod Schema that validates `Set` objects that are _not_ `WeakSet`s.
  */
 export const StrongSetSchema = z
   .instanceof(Set)
-  .refine((s) => !(s instanceof WeakSet));
+  .refine((value) => !isA(value, WeakSet))
+  .register(BupkisRegistry, { name: 'StrongSetSchema' });
+
+export const NullProtoObjectSchema = z
+  .custom<object>(
+    (value) => isNonNullObject(value) && Object.getPrototypeOf(value) === null,
+  )
+  .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' })
+  .describe('Object with null prototype');

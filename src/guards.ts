@@ -9,10 +9,10 @@
  * @packageDocumentation
  */
 
-import { type Constructor } from 'type-fest';
+import { type Constructor, type Primitive } from 'type-fest';
 import { type z } from 'zod';
 
-import type { AssertionPart } from './assertion/types.js';
+import type { AssertionPart } from './assertion/assertion-types.js';
 
 /**
  * Returns true if the given value looks like a Zod schema (v4), determined by
@@ -90,6 +90,42 @@ export const isBoolean = (value: unknown): value is boolean =>
   typeof value === 'boolean';
 
 /**
+ * Type guard for a function value
+ *
+ * @param value Value to check
+ * @returns `true` if the value is a function, `false` otherwise
+ */
+export const isFunction = (value: unknown): value is (...args: any[]) => any =>
+  typeof value === 'function';
+
+/**
+ * Type guard for a string value
+ *
+ * @param value Value to check
+ * @returns `true` if the value is a string, `false` otherwise
+ */
+export const isString = (value: unknown): value is string =>
+  typeof value === 'string';
+
+/**
+ * Type guard for a non-null object value
+ *
+ * @param value Value to check
+ * @returns `true` if the value is an object and not null, `false` otherwise
+ */
+export const isNonNullObject = (value: unknown): value is object =>
+  typeof value === 'object' && value !== null;
+
+/**
+ * Type guard for a null or non-object value
+ *
+ * @param value Value to check
+ * @returns `true` if the value is null or not an object, `false` otherwise
+ */
+export const isNullOrNonObject = (value: unknown): value is null | Primitive =>
+  typeof value !== 'object' || value === null;
+
+/**
  * Checks if a {@link AssertionPart} is a string tuple (which will be converted
  * to a Zod enum of literals)
  *
@@ -100,3 +136,47 @@ export const isBoolean = (value: unknown): value is boolean =>
 export const isStringTupleAssertionPart = (
   value: AssertionPart,
 ): value is readonly [string, ...string[]] => Array.isArray(value);
+
+export type PrimitiveTypeName =
+  | 'bigint'
+  | 'boolean'
+  | 'function'
+  | 'null'
+  | 'number'
+  | 'object'
+  | 'string'
+  | 'symbol'
+  | 'undefined';
+
+export type PrimitiveTypeNameToType<T extends PrimitiveTypeName> =
+  T extends 'undefined'
+    ? undefined
+    : T extends 'object'
+      ? null | object
+      : T extends 'function'
+        ? (...args: any[]) => any
+        : T extends 'string'
+          ? string
+          : T extends 'number'
+            ? number
+            : T extends 'boolean'
+              ? boolean
+              : T extends 'bigint'
+                ? bigint
+                : T extends 'symbol'
+                  ? symbol
+                  : never;
+
+export const isType = <T extends PrimitiveTypeName>(
+  a: unknown,
+  b: T,
+): a is PrimitiveTypeNameToType<T> => {
+  return typeof a === b;
+};
+
+export const isA = <T extends Constructor<any>>(
+  value: unknown,
+  ctor: T,
+): value is InstanceType<T> => {
+  return isNonNullObject(value) && value instanceof ctor;
+};

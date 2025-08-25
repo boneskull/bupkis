@@ -16,15 +16,19 @@ import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import {
+  isA,
   isBoolean,
+  isFunction,
   isPromiseLike,
+  isString,
   isStringTupleAssertionPart,
   isZodPromise,
   isZodType,
 } from '../guards.js';
-import { BupkisRegistry, BupkisRegistrySchema } from '../metadata.js';
+import { BupkisRegistry } from '../metadata.js';
 import {
   type AnyParsedValues,
+  type Assertion,
   type AssertionImpl,
   type AssertionImplAsyncFn,
   type AssertionImplFn,
@@ -33,51 +37,72 @@ import {
   type ParsedResult,
   type ParsedSubject,
   type ParsedValues,
-} from './types.js';
+} from './assertion-types.js';
 
 const debug = Debug('bupkis:assertion');
 
-export abstract class Assertion<
+export abstract class BupkisAssertion<
   T extends AssertionImpl<Parts>,
   Parts extends AssertionParts,
-> {
+> implements Assertion<T, Parts>
+{
   readonly __parts!: Parts;
+
   readonly impl: T;
 
   readonly slots: AssertionSlots<Parts>;
-
-  get subject() {
-    return this.slots[0];
-  }
-
-  get subjectType() {
-    return this.subject.def.type;
-  }
 
   constructor(slots: AssertionSlots<Parts>, impl: T) {
     this.slots = slots;
     this.impl = impl;
   }
 
-  static forImpl<
-    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
-    Parts extends AssertionParts,
-  >(
-    slots: AssertionSlots<Parts>,
-    implementationFn: Impl,
-  ): FunctionAssertion<Impl, Parts>;
-  static forImpl<
+  /**
+   * Create an `Assertion` from {@link AssertionParts parts} and a
+   * {@link z.ZodType Zod schema}.
+   *
+   * @param parts Assertion parts defining the shape of the assertion
+   * @param impl Implementation as a Zod schema
+   * @returns New `SchemaAssertion` instance
+   * @throws {TypeError} Invalid assertion implementation type
+   */
+
+  static create<
     Impl extends z.ZodType<ParsedSubject<Parts>>,
-    Parts extends AssertionParts,
-  >(slots: AssertionSlots<Parts>, schema: Impl): SchemaAssertion<Impl, Parts>;
-  static forImpl<Parts extends AssertionParts>(
-    slots: AssertionSlots<Parts>,
-    impl: AssertionImpl<Parts>,
-  ) {
+    const Parts extends AssertionParts,
+  >(this: void, parts: Parts, impl: Impl): SchemaAssertion<Impl, Parts>;
+  /**
+   * Create an `Assertion` from {@link AssertionParts parts} and an
+   * implementation function.
+   *
+   * @param parts Assertion parts defining the shape of the assertion
+   * @param impl Implementation as a function
+   * @returns New `FunctionAssertion` instance
+   * @throws {TypeError} Invalid assertion implementation type
+   */
+  static create<
+    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
+    const Parts extends AssertionParts,
+  >(this: void, parts: Parts, impl: Impl): FunctionAssertion<Impl, Parts>;
+  /**
+   * @param this
+   * @param parts
+   * @param impl
+   * @returns
+   */
+  static create<
+    Impl extends AssertionImpl<Parts>,
+    const Parts extends AssertionParts,
+  >(this: void, parts: Parts, impl: Impl) {
+    if (!parts || parts.length === 0) {
+      throw new TypeError('At least one value is required for an assertion');
+    }
+    const slots = BupkisAssertion.slotify<Parts>(parts);
+
     if (isZodType(impl)) {
       return new SchemaAssertion(slots, impl);
     }
-    if (typeof impl === 'function') {
+    if (isFunction(impl)) {
       return new FunctionAssertion(slots, impl);
     }
     throw new TypeError(
@@ -85,55 +110,33 @@ export abstract class Assertion<
     );
   }
 
-  // Static factory: build an Assertion instance from author-provided parts
-  static fromParts<
-    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
-    const Parts extends AssertionParts,
-  >(
-    this: void,
-    parts: Parts,
-    implementationFn: Impl,
-  ): FunctionAssertion<Impl, Parts>;
-  static fromParts<
-    Impl extends z.ZodType<ParsedSubject<Parts>>,
-    const Parts extends AssertionParts,
-  >(this: void, parts: Parts, schema: Impl): SchemaAssertion<Impl, Parts>;
-  static fromParts<const Parts extends AssertionParts>(
-    this: void,
-    parts: Parts,
-    impl: AssertionImpl<Parts>,
-  ) {
-    if (!parts || parts.length === 0) {
-      throw new TypeError('At least one value is required for an assertion');
-    }
-    const slots = Assertion.slotify<Parts>(parts);
+  /**
+   * Builds slots out of assertion parts.
+   *
+   * @param parts Assertion parts
+   * @returns Slots
+   */
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return Assertion.forImpl(slots, impl as any);
-  }
-
-  // Build slots tuple: prepend z.unknown() if first is string or string[]; map strings -> branded literals
-  private static slotify<const Parts extends AssertionParts>(parts: Parts) {
+  private static slotify<const Parts extends AssertionParts>(
+    parts: Parts,
+  ): AssertionSlots<Parts> {
     return parts.flatMap((part, index) => {
       const result: z.ZodType[] = [];
-      if (
-        index === 0 &&
-        (isStringTupleAssertionPart(part) || typeof part === 'string')
-      ) {
+      if (index === 0 && (isStringTupleAssertionPart(part) || isString(part))) {
         result.push(z.unknown().describe('subject'));
       }
 
       if (isStringTupleAssertionPart(part)) {
         result.push(
           z
-            .enum(part)
+            .literal(part)
             .brand('string-literal')
             .register(BupkisRegistry, {
               [kStringLiteral]: true,
               values: part,
             }),
         );
-      } else if (typeof part === 'string') {
+      } else if (isString(part)) {
         result.push(
           z
             .literal(part)
@@ -150,16 +153,41 @@ export abstract class Assertion<
     }) as unknown as AssertionSlots<Parts>;
   }
 
+  /**
+   * Execute the assertion implementation synchronously.
+   *
+   * @param parsedValues Parameters for the assertion implementation
+   * @param args Raw parameters passed to `expect()`
+   * @param stackStartFn
+   */
+
   abstract execute(
     parsedValues: AnyParsedValues,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): void;
+
+  /**
+   * Execute the assertion implementation asynchronously.
+   *
+   * @param parsedValues Parameters for the assertion implementation
+   * @param args Raw parameters passed to `expectAsync()`
+   * @param stackStartFn
+   */
+
   abstract executeAsync(
     parsedValues: AnyParsedValues,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): Promise<void>;
+
+  /**
+   * Parses raw arguments synchronously against this `Assertion`'s Slots to
+   * determine if they match this `Assertion`.
+   *
+   * @param args Raw arguments provided to `expect()`
+   * @returns Result of parsing attempt
+   */
 
   parseValues<Args extends readonly unknown[]>(
     args: Args,
@@ -224,6 +252,14 @@ export abstract class Assertion<
     };
   }
 
+  /**
+   * Parses raw arguments asynchronously against this `Assertion`'s Slots to
+   * determine if they match this `Assertion`.
+   *
+   * @param args Raw arguments provided to `expectAsync()`
+   * @returns Result of parsing attempt
+   */
+
   async parseValuesAsync<Args extends readonly unknown[]>(
     args: Args,
   ): Promise<ParsedResult<Parts>> {
@@ -282,19 +318,30 @@ export abstract class Assertion<
     };
   }
 
+  /**
+   * @returns String representation
+   */
+
   toString(): string {
     const expand = (zodType: z.ZodType): string => {
       switch (zodType.def.type) {
         case 'enum':
           return `${(zodType as z.ZodEnum<any>).options.join('/')}`;
         case 'literal':
-          return JSON.stringify((zodType as z.ZodLiteral).def.values);
+          return [...(zodType as z.ZodLiteral).def.values].join('/');
         case 'union':
           return ((zodType as z.ZodUnion<any>).options as z.ZodType[])
             .map(expand)
             .join(' | ');
+        case 'custom': {
+          const meta = BupkisRegistry.get(zodType);
+          if (meta?.name) {
+            return `<${meta.name}>`;
+          }
+        }
+        // falls through
         default:
-          return `<${zodType.def.type}>`;
+          return `{${zodType.def.type}}`;
       }
     };
     return `"${this.slots.map(expand).join(' ')}"`;
@@ -327,21 +374,20 @@ export abstract class Assertion<
     i: number,
     arg: unknown,
   ): boolean | ParsedResult<Parts> {
-    const meta = BupkisRegistry.get(slot);
+    const meta = BupkisRegistry.get(slot) ?? {};
     // our branded literal slots are also tagged in meta for runtime
-    const metadata = BupkisRegistrySchema.safeParse(meta);
-    if (metadata.success) {
-      const { data } = metadata;
-      if ('value' in data) {
-        if (arg !== data.value) {
+    // const metadata = BupkisRegistrySchema.safeParse(meta);
+    if (kStringLiteral in meta) {
+      if ('value' in meta) {
+        if (arg !== meta.value) {
           return {
             assertion: `${this}`,
-            reason: `Expected ${data.value} for slot ${i}, got ${inspect(arg)}`,
+            reason: `Expected ${meta.value} for slot ${i}, got ${inspect(arg)}`,
             success: false,
           };
         }
-      } else if ('values' in data) {
-        const allowed = data.values as readonly string[];
+      } else if ('values' in meta) {
+        const allowed = meta.values as readonly string[];
         if (!allowed.includes(`${arg}`)) {
           return {
             assertion: `${this}`,
@@ -376,10 +422,14 @@ export abstract class Assertion<
  * 4. Throw a {@link AssertionError}; when called via {@link expectAsync}, reject
  *    with an {@link AssertionError}
  */
+
 export class FunctionAssertion<
-  T extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
-  Parts extends AssertionParts,
-> extends Assertion<T, Parts> {
+    Impl extends AssertionImplAsyncFn<Parts> | AssertionImplFn<Parts>,
+    Parts extends AssertionParts,
+  >
+  extends BupkisAssertion<Impl, Parts>
+  implements Assertion<Impl, Parts>
+{
   execute(
     parsedValues: AnyParsedValues,
     args: unknown[],
@@ -404,7 +454,7 @@ export class FunctionAssertion<
       try {
         result.parse(parsedValues[0]);
       } catch (error) {
-        if (error instanceof z.ZodError) {
+        if (isA(error, z.ZodError)) {
           throw this.translateZodError(stackStartFn, error, ...parsedValues);
         }
         throw error;
@@ -432,7 +482,7 @@ export class FunctionAssertion<
       try {
         await result.parseAsync(parsedValues[0]);
       } catch (error) {
-        if (error instanceof z.ZodError) {
+        if (isA(error, z.ZodError)) {
           throw this.translateZodError(stackStartFn, error, ...parsedValues);
         }
         throw error;
@@ -452,10 +502,14 @@ export class FunctionAssertion<
  *
  * Async schemas are supported via {@link expectAsync}.
  */
+
 export class SchemaAssertion<
-  T extends z.ZodType<ParsedSubject<Parts>>,
-  Parts extends AssertionParts,
-> extends Assertion<T, Parts> {
+    Impl extends z.ZodType<ParsedSubject<Parts>>,
+    Parts extends AssertionParts,
+  >
+  extends BupkisAssertion<Impl, Parts>
+  implements Assertion<Impl, Parts>
+{
   execute(
     parsedValues: AnyParsedValues,
     _args: unknown[],
@@ -465,7 +519,7 @@ export class SchemaAssertion<
     try {
       this.impl.parse(subject);
     } catch (error) {
-      if (error instanceof z.ZodError) {
+      if (isA(error, z.ZodError)) {
         throw this.translateZodError(stackStartFn, error, ...parsedValues);
       }
       throw error;
@@ -481,10 +535,15 @@ export class SchemaAssertion<
     try {
       await this.impl.parseAsync(subject);
     } catch (error) {
-      if (error instanceof z.ZodError) {
+      if (isA(error, z.ZodError)) {
         throw this.translateZodError(stackStartFn, error, ...parsedValues);
       }
       throw error;
     }
   }
 }
+
+/**
+ * {@inheritDoc BupkisAssertion.create}
+ */
+export const createAssertion = BupkisAssertion.create;
