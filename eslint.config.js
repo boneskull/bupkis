@@ -25,29 +25,26 @@ export default tseslint.config(
   {
     files: ['**/*.ts', '**/*.js'],
     plugins: {
+      '@perfectionist': perfectionist,
       '@stylistic': stylistic,
     },
     rules: {
+      '@perfectionist/sort-classes': ['error', { partitionByNewLine: true }],
+
       '@stylistic/lines-around-comment': [
         'warn',
         {
+          afterBlockComment: false, // conflicts with perfectionist if enabled
           allowArrayStart: true,
-          allowBlockStart: true,
+          allowBlockStart: true, // conflicts with prettier if disabled
           allowClassStart: true,
           allowInterfaceStart: true,
-          // these conflict with prettier, so we must allow them
-          allowObjectStart: true,
-          beforeBlockComment: true,
+          allowObjectStart: true, // conflicts with prettier if disabled
+          beforeBlockComment: false, // conflicts with perfectionist if enabled
         },
       ],
 
-      '@stylistic/lines-between-class-members': [
-        'error',
-        'always',
-        {
-          exceptAfterOverload: false,
-        },
-      ],
+      '@stylistic/lines-between-class-members': ['error', 'always'],
 
       '@stylistic/semi': 'error',
 
@@ -81,8 +78,11 @@ export default tseslint.config(
           allowComparingNullableBooleansToTrue: true,
         },
       ],
+
       // too many false positives
       '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
