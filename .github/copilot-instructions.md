@@ -118,7 +118,15 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - `wallaby_runtimeValues` - Inspect variable values at specific code locations
 - Fallback: `npm test` for basic test execution without real-time feedback
 
-**Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project
+**Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
+
+```
+ *  Executing task: npm run --silent lint:types
+
+ *  Terminal will be reused by tasks, press any key to close it.
+```
+
+Choose only the tail end of the output to confirm success.
 
 **Common Debugging Patterns**:
 
@@ -126,6 +134,9 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - **Type Inference Issues**: Complex recursive types in `types.ts` may hit TypeScript recursion limits
 - **Async/Sync Mismatch**: `expect()` throws TypeError if assertion returns Promise; use `expectAsync()` instead
 - **Slot Validation**: Arguments must match assertion "slots" exactly; check `DEBUG=bupkis*` output for validation details
+- **Use Wallaby MCP**, if available. It will execute any code found in a temporary test file matching the glob pattern `test/**/*.test.ts`. These will be run automatically by Wallaby. You can create a temporary test file here to gather feedback about specific issues, put breakpoints to log values and/or query runtime values, and also query Wallaby for test results.
+  - If Wallaby MCP is available, **avoid running arbitrary code in a terminal**.
+  - If the Wallaby extension is installed and you are able to Start Wallaby, do so.
 
 **Error Investigation**:
 
