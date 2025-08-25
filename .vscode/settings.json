@@ -19,8 +19,8 @@
   "prettier.useEditorConfig": true,
   "search.exclude": {
     ".tshy": true,
-    ".tshy-build*": true
+    ".tshy-build*": true,
+    "dist": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "files.exclude": {}
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
