@@ -129,8 +129,9 @@
     "lint:types": "tsc -b .config/tsconfig.eslint.json",
     "lint:types:dev": "npm run lint:types -- --watch",
     "prepare": "husky",
-    "test": "node --import tsx --test \"test/**/*.ts\"",
-    "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "test:ci": "node --import tsx --test test/**/*.test.ts",
+    "test:watch": "node --import tsx --test test/**/*.test.ts --watch"
   },
   "peerDependencies": {
     "zod": "^4.1.0"

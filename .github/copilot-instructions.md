@@ -1,151 +1,179 @@
 # Bupkis Copilot Instructions
 
-## Architecture Overview
+## Project Overview
 
-**Bupkis** is a TypeScript assertion library built around natural language assertions using Zod v4 for validation. Unlike chainable APIs, it uses function calls with phrase arguments: `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.
+**Bupkis** is a TypeScript assertion library that provides natural language assertions using Zod v4 for validation. Instead of chainable APIs like `expect(value).toBeString()`, it uses phrase-based syntax: `expect(value, 'to be a string')`. The library is ~37KB (source), written in TypeScript, targets Node.js environments, and ships as dual CJS/ESM packages.
 
-### Core Components
+**Key Technologies**: TypeScript 5.9+, Zod v4 (peer dependency), Node.js built-in test runner, tshy (build tool), ESLint, Husky (git hooks)
 
-- **`src/expect.ts`** - Main synchronous assertion engine with argument parsing and assertion matching
-- **`src/expect-async.ts`** - Asynchronous assertion engine for Promise-based operations
-- **`src/assertion/assertion.ts`** - Core `Assertion` class with parsing/execution logic
-- **`src/assertion/implementations.ts`** - All built-in synchronous assertions (type checks, comparisons, etc.)
-- **`src/assertion/async-implementations.ts`** - Built-in async assertions (Promise resolution/rejection)
-- **`src/assertion/types.ts`** - Complex TypeScript types for assertion system (recursive tuple operations)
+## Build & Development Workflow
 
-### Key Patterns
+**Environment Setup**:
 
-**Assertion Creation**: Use `createAssertion()` from `Assertion.fromParts()`:
+```bash
+npm install  # Installs dependencies and runs husky prepare
+```
+
+**Core Commands** (always run in this order for development):
+
+```bash
+npm run build        # Build dual CJS/ESM output using tshy (~2-5 seconds)
+npm run lint         # ESLint validation (~3-10 seconds)
+npm run lint:types   # TypeScript type checking (~5-15 seconds)
+npm test             # Run test suite (~10-30 seconds, 237+ tests)
+```
+
+**Development Commands**:
+
+```bash
+npm run dev          # Watch mode building with tshy --watch
+npm run test:watch   # Watch mode testing
+npm run test:ci      # CI-compatible test script (same as npm test)
+npm run lint:fix     # Auto-fix ESLint issues
+npm run build:docs   # Generate TypeDoc documentation
+```
+
+**Validated Workflow** (all commands work correctly):
+
+- Tests run successfully with unquoted glob pattern: `test/**/*.test.ts`
+- Build system produces dual output in `dist/commonjs/` and `dist/esm/`
+- Linting passes with comprehensive TypeScript + style rules
+- Type checking validates complex recursive types and strict mode
+- All 237+ tests pass consistently including async and sync assertions
+
+**Common Issues & Solutions**:
+
+- **Test script issue (FIXED)**: Added `npm run test:ci` script for GitHub Actions workflow compatibility.
+- **Test glob pattern (FIXED)**: Removed quotes from test script pattern - now uses `test/**/*.test.ts` which works correctly.
+- **Build artifacts**: `.tshy/` directory contains generated files that may show as modified in git status - these are build artifacts and should not be committed.
+- **Dependency installation**: Always run `npm install` before any development work to ensure husky hooks are properly installed.
+
+**Build Validation Sequence**:
+
+1. Clean install: `rm -rf node_modules package-lock.json && npm install`
+2. Type check: `npm run lint:types`
+3. Lint: `npm run lint`
+4. Build: `npm run build`
+5. Test: `npm test`
+6. All commands should complete with exit code 0.
+
+## Architecture & Key Components
+
+**Core Source Structure**:
+
+- `src/expect.ts` - Main synchronous assertion engine
+- `src/expect-async.ts` - Asynchronous Promise-based assertions
+- `src/assertion/assertion.ts` - Core Assertion class and parsing logic
+- `src/assertion/sync*.ts` - Built-in synchronous assertions (type, comparison, etc.)
+- `src/assertion/async.ts` - Built-in async assertions
+- `src/assertion/types.ts` - Complex TypeScript type system for inference
+- `src/guards.ts` - Runtime type checking utilities
+- `src/schema.ts` - Reusable Zod schemas
+- `src/util.ts` - Object matching utilities (`satisfies`, `exhaustivelySatisfies`)
+
+**Build System**: Uses `tshy` to generate dual CJS/ESM output in `dist/commonjs/` and `dist/esm/`
+
+**Testing**: Node.js built-in test runner (`node:test`) with `tsx` loader for TypeScript execution. Tests use `describe`/`it` BDD-style patterns.
+
+## Development Patterns
+
+**Assertion Creation Pattern**:
 
 ```ts
+import { createAssertion } from './assertion/index.js';
+import { z } from 'zod';
+
 // Simple schema-based assertion
 createAssertion(['to be a string'], z.string());
 
-// Parameterized assertion with callback
+// Parameterized assertion
 createAssertion([z.number(), 'is greater than', z.number()], (_, expected) =>
   z.number().gt(expected),
 );
 
-// Boolean-returning function
+// Boolean function assertion
 createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 ```
 
-**Dual Execution Engines**: The library maintains separate sync/async paths:
+**Type-Safe Natural Language API**:
 
-- `expect()` throws immediately on Promise returns
-- `expectAsync()` awaits Promise-based implementations
-- Both use the same assertion parsing but different execution
+- Phrases are string literals: `'to be a string'` or tuples: `['to be a', 'to be an']`
+- Arguments are matched against "slots" derived from assertion parts
+- Type inference maps phrases to TypeScript signatures
+- No method chaining - everything uses positional arguments
 
-**Type-Safe Argument Parsing**: The `parseValues()`/`parseValuesAsync()` methods convert natural language arguments into typed tuples using Zod schemas. Arguments are matched against "slots" derived from assertion parts.
+**Dual Execution Engines**:
 
-## Development Workflows
+- `expect()` - synchronous, throws on Promise returns
+- `expectAsync()` - asynchronous, awaits Promise-based implementations
+- Both use same parsing but different execution strategies
 
-**Build**: `npm run build` (uses `tshy` for dual CJS/ESM output)
-**Test**: `npm test` (Node.js built-in test runner with `tsx` loader)
-**Watch Tests**: `npm run test:watch`
-**Debug**: Set `DEBUG=bupkis*` environment variable
+## Continuous Integration & Validation
 
-**Wallaby.js Integration**: Real-time testing with `.wallaby.js` config:
+**GitHub Actions Workflow** (`.github/workflows/nodejs.yml`):
 
-- Auto-detects Node.js test framework
-- Enables debug output via `DEBUG=bupkis*`
-- Excludes build artifacts and handles TypeScript via `tsx/esm`
+- Runs on Node.js 22.15.0 and 24.0.1
+- Steps: checkout → setup Node → npm ci → lint → test
+- Uses `npm run test:ci` (now available) for consistent CI testing
 
-## Project-Specific Conventions
+**Pre-commit Hooks** (via Husky):
 
-**Natural Language API**: Every assertion follows `expect(subject, phrase, ...params)` pattern
+- `lint-staged` runs on staged files
+- `commitlint` validates commit message format (conventional commits)
+- Automatically runs ESLint and Prettier on staged files
 
-- Phrases are string literals or tuples: `['to be a', 'to be an']`
-- Type inference maps phrases to TypeScript types
-- No method chaining - everything is positional arguments
+**Dependencies**:
 
-**Zod-Centric Design**:
+- **Zod v4**: Core validation (peer/optional dependency)
+- **Debug**: Structured logging (`DEBUG=bupkis*`)
+- **tsx**: TypeScript execution for tests
+- **tshy**: Dual package building
+- **ESLint**: Code quality with TypeScript integration
 
-- Zod v4 is both validation engine AND implementation language
-- Custom assertions leverage Zod's schema composition
-- Error messages use `z.prettifyError()` for consistency
+## Common Development Issues
 
-**TypeScript Type System**:
+**Debug Logging**: Enable with `DEBUG=bupkis*` to see assertion matching and validation steps
 
-- Heavy use of recursive conditional types for argument inference
-- `AssertionParts` → `AssertionSlots` → `ParsedValues` transformation pipeline
-- `InferredExpectSlots` maps assertion definitions to function signatures
-- Recent work simplified some recursive types but maintained compatibility
+**TypeScript Issues**:
 
-**Dual Implementation Classes**:
+- Complex recursive types in `types.ts` may hit recursion limits
+- Run `npm run lint:types` to validate all TypeScript compilation
+- Recent refactoring simplified some recursive types but maintained compatibility
 
-- `FunctionAssertion` - for callback-based implementations
-- `SchemaAssertion` - for pure Zod schema implementations
-- Both extend base `Assertion` class with different execution strategies
+**Test Issues**:
 
-**Error Handling**:
+- Assertion parsing failures: Check `parseValues()` result for `success: false`
+- Async/Sync mismatch: `expect()` throws TypeError if assertion returns Promise
+- Use `expectAsync()` for Promise-based assertions
 
-- `AssertionError` from Node.js for test framework compatibility
-- Detailed validation failures with slot information
-- Stack trace management via `stackStartFn` parameter
+**Build Issues**:
 
-**Testing**
+- Always run `npm install` before building to ensure proper setup
+- Build artifacts in `.tshy/` and `dist/` should not be committed
+- Use `npm run dev` for watch mode during development
 
-- Comprehensive unit tests for all built-in assertions
-- Edge cases for argument parsing and type inference
-- Both sync and async paths are fully covered
-- Tests should be written in TypeScript using the `node:test` framework, leveragine `describe` for grouping and `it` for individual tests; titles should be written in BDD-style ("should...")
+**Performance Considerations**:
 
-## Integration Points
+- Assertion matching loops through all built-in assertions until exact match
+- Complex tuple type operations may slow TypeScript compilation
+- Circular reference detection prevents infinite loops but adds overhead
 
-**External Dependencies**:
+## File Organization
 
-- **Zod v4** (peer/optional dependency) - core validation engine
-- **Debug** - structured logging with `bupkis:*` namespace
-- **tsx** - TypeScript execution for tests
+**Configuration Files**:
 
-**Module Boundaries**:
+- `package.json` - Scripts, dependencies, tshy config
+- `tsconfig.json` - TypeScript configuration with strict mode
+- `eslint.config.js` - ESLint with TypeScript and style rules
+- `.wallaby.js` - Real-time testing configuration
+- `.gitignore` - Excludes `dist/`, `coverage/`, build artifacts
 
-- `guards.ts` - runtime type checking (used throughout)
-- `schema.ts` - reusable Zod schemas (`ClassSchema`, `FunctionSchema`, etc.)
-- `util.ts` - object matching utilities (`satisfies`, `exhaustivelySatisfies`)
-- Clear separation between sync/async assertion implementations
+**Key Directories**:
 
-**Type Safety**: The library uses branded Zod types (`PhraseLiteralSlot`) and complex type inference to ensure compile-time validation of assertion usage while maintaining runtime flexibility.
+- `src/` - TypeScript source code
+- `test/` - Test files using Node.js test runner
+- `dist/` - Built CJS/ESM output (generated)
+- `.config/` - Additional configuration files
+- `.github/` - GitHub Actions workflows and funding info
 
-## Debugging & Validation
-
-**Test Results & Coverage**: Use Wallaby MCP tools when available for real-time insights:
-
-- `wallaby_allTests` - Get all test results with execution times and errors
-- `wallaby_failingTests` - Focus on failing tests only
-- `wallaby_coveredLinesForFile` - Check code coverage for specific files
-- `wallaby_runtimeValues` - Inspect variable values at specific code locations
-- Fallback: `npm test` for basic test execution without real-time feedback
-
-**Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
-
-```
- *  Executing task: npm run --silent lint:types
-
- *  Terminal will be reused by tasks, press any key to close it.
-```
-
-Choose only the tail end of the output to confirm success.
-
-**Common Debugging Patterns**:
-
-- **Assertion Parsing Failures**: Check `parseValues()` result for `success: false` and examine `reason` field
-- **Type Inference Issues**: Complex recursive types in `types.ts` may hit TypeScript recursion limits
-- **Async/Sync Mismatch**: `expect()` throws TypeError if assertion returns Promise; use `expectAsync()` instead
-- **Slot Validation**: Arguments must match assertion "slots" exactly; check `DEBUG=bupkis*` output for validation details
-- **Use Wallaby MCP**, if available. It will execute any code found in a temporary test file matching the glob pattern `test/**/*.test.ts`. These will be run automatically by Wallaby. You can create a temporary test file here to gather feedback about specific issues, put breakpoints to log values and/or query runtime values, and also query Wallaby for test results.
-  - If Wallaby MCP is available, **avoid running arbitrary code in a terminal**.
-  - If the Wallaby extension is installed and you are able to Start Wallaby, do so.
-
-**Error Investigation**:
-
-- Enable debug logging: `DEBUG=bupkis*` shows assertion matching and validation steps
-- Stack traces use `stackStartFn` parameter to point to user code, not library internals
-- Zod validation errors are prettified via `z.prettifyError()` for readability
-
-**Performance Gotchas**:
-
-- Assertion matching loops through all built-in assertions until exact match found
-- Complex tuple type operations may slow TypeScript compilation in large projects
-- Circular reference detection in `satisfies()` utility prevents infinite loops but adds overhead
+Trust these instructions and only perform additional exploration if information is incomplete or found to be incorrect. The project uses modern Node.js patterns and tooling designed for simplicity and type safety.
