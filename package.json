@@ -136,7 +136,8 @@
     "zod": "^4.1.0"
   },
   "dependencies": {
-    "debug": "^4.4.1"
+    "debug": "^4.4.1",
+    "slug": "11.0.0"
   },
   "optionalDependencies": {
     "zod": "^4.1.0"
@@ -147,11 +148,13 @@
     "@eslint/js": "9.33.0",
     "@stylistic/eslint-plugin": "5.2.3",
     "@types/node": "22.7.4",
+    "@types/slug": "5.0.9",
     "@types/wallabyjs": "0.0.15",
     "eslint": "9.33.0",
     "eslint-plugin-jsonc": "2.20.1",
     "eslint-plugin-perfectionist": "4.15.0",
     "expect-type": "1.2.2",
+    "fast-check": "4.2.0",
     "husky": "9.1.7",
     "knip": "5.62.0",
     "lint-staged": "16.1.5",

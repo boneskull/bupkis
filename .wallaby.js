@@ -27,5 +27,6 @@ export default {
     '!node_modules/**',
     '!dist/**',
     '!src/node_modules/bupkis/**',
+    '!test/assertion/property-based.test.ts', // too intensive
   ],
 };

@@ -13,12 +13,16 @@ import { inspect } from 'node:util';
 
 import {
   type AnyParsedValues,
+  type Assertion,
+  type AssertionImpl,
+  type AssertionParts,
   type BuiltinAssertion,
   type BuiltinAsyncAssertion,
+  type ParsedValues,
 } from './assertion/assertion-types.js';
 import { BupkisAssertion } from './assertion/assertion.js';
 import { SyncAssertions } from './assertion/sync.js';
-import { AssertionError } from './error.js';
+import { AssertionError, NegatedAssertionError } from './error.js';
 import { isString } from './guards.js';
 import { type Expect, type ExpectFunction } from './types.js';
 
@@ -37,7 +41,7 @@ const detectNegation = (
   cleanedPhrase: string;
   isNegated: boolean;
 } => {
-  if (phrase.startsWith('not to ')) {
+  if (phrase.startsWith('not ')) {
     return {
       cleanedPhrase: phrase.substring(4), // Remove "not "
       isNegated: true,
@@ -50,89 +54,55 @@ const detectNegation = (
 };
 
 /**
- * Executes an assertion with optional negation logic (async version).
- *
- * @param assertion - The assertion to execute
- * @param parsedValues - Parsed values for the assertion
- * @param args - Original arguments passed to expectAsync
- * @param stackStartFn - Function for stack trace management
- * @param isNegated - Whether the assertion should be negated
- */
-export async function executeWithNegationAsync(
-  assertion: BuiltinAsyncAssertion,
-  parsedValues: AnyParsedValues,
-  args: unknown[],
-  stackStartFn: (...args: any[]) => any,
-  isNegated: boolean,
-): Promise<void> {
-  if (!isNegated) {
-    return assertion.executeAsync(parsedValues, args, stackStartFn);
-  }
-
-  try {
-    await assertion.executeAsync(parsedValues, args, stackStartFn);
-    // If we reach here, the assertion passed but we expected it to fail
-    throw new AssertionError({
-      message: `Expected assertion to fail, but it passed: ${assertion}`,
-      stackStartFn,
-    });
-  } catch (error) {
-    if (error instanceof AssertionError) {
-      // The assertion failed as expected for negation - this is success
-      return;
-    }
-    // Re-throw non-assertion errors (like TypeErrors, etc.)
-    throw error;
-  }
-}
-
-/**
  * Executes an assertion with optional negation logic.
  *
+ * @privateRemarks
+ * This is here because `Assertion` doesn't know anything about negation and
+ * probably shouldn't.
  * @param assertion - The assertion to execute
  * @param parsedValues - Parsed values for the assertion
  * @param args - Original arguments passed to expect
  * @param stackStartFn - Function for stack trace management
  * @param isNegated - Whether the assertion should be negated
  */
-function executeWithNegation(
-  assertion: BuiltinAssertion,
-  parsedValues: AnyParsedValues,
+const execute = <
+  T extends Assertion<AssertionImpl<Parts>, Parts>,
+  Parts extends AssertionParts,
+>(
+  assertion: T,
+  parsedValues: ParsedValues<Parts>,
   args: unknown[],
   stackStartFn: (...args: any[]) => any,
   isNegated: boolean,
-): void {
+): void => {
   if (!isNegated) {
     return assertion.execute(parsedValues, args, stackStartFn);
   }
 
   try {
+    debug('Executing negated assertion: %s', assertion);
     assertion.execute(parsedValues, args, stackStartFn);
     // If we reach here, the assertion passed but we expected it to fail
-    throw new AssertionError({
+    throw new NegatedAssertionError({
       message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
       stackStartFn,
     });
   } catch (error) {
     // Check if this is the negation error we just threw
-    if (
-      error instanceof AssertionError &&
-      error.message.includes(
-        'Expected assertion to fail (due to negation), but it passed:',
-      )
-    ) {
+    if (NegatedAssertionError.isNegatedAssertionError(error)) {
       // This is our negation error, re-throw it
       throw error;
     }
 
-    if (error instanceof AssertionError) {
+    if (AssertionError.isAssertionError(error)) {
       // The assertion failed as expected for negation - this is success
       return;
     }
+    debug('Non-assertion error thrown during negated assertion: %O', error);
     // Re-throw non-assertion errors (like TypeErrors, etc.)
     throw error;
   }
-}
+};
 
 /**
  * @internal
@@ -205,9 +175,12 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
   if (found) {
     const { assertion, parsedValues } = found;
 
-    return executeWithNegation(
-      assertion,
-      parsedValues,
+    return execute(
+      assertion as unknown as Assertion<
+        AssertionImpl<AssertionParts>,
+        AssertionParts
+      >,
+      parsedValues as unknown as ParsedValues<AssertionParts>,
       [...args],
       expectFunction,
       isNegated,

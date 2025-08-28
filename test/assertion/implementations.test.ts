@@ -1,59 +1,9 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import { describe, it } from 'node:test';
-import { inspect } from 'node:util';
 
 import { expect } from '../../src/index.js';
 
 describe('Synchronous expect assertions', () => {
-  describe('Type assertions', () => {
-    it('should accept a string value with "to be a string"', () => {
-      expect(() => expect('hi', 'to be a string'), 'not to throw');
-    });
-
-    // happy path: to be a <type>
-    for (const [value, kind] of [
-      ['hi', 'string'],
-      [42, 'number'],
-      [true, 'boolean'],
-      [undefined, 'undefined'],
-      [null, 'null'],
-      [10n, 'bigint'],
-      [Symbol('s'), 'symbol'],
-      [{}, 'object'],
-      [() => {}, 'function'],
-      [[], 'array'],
-      [new Date(), 'date'],
-    ] as const) {
-      it(`should accept ${inspect(value)} as a/an ${inspect(kind)}`, () => {
-        expect(() => expect(value, 'to be a', kind), 'not to throw');
-        expect(() => expect(value, 'to be an', kind), 'not to throw');
-      });
-    }
-
-    // unhappy path: wrong type
-    for (const [value, typeName] of [
-      [42, 'string'],
-      ['hi', 'number'],
-      [true, 'array'],
-      [undefined, 'null'],
-    ] as const) {
-      it(`should throw when ${inspect(value)} is not a ${typeName}`, () => {
-        expect(() => expect(value, 'to be a', typeName), 'to throw');
-      });
-    }
-
-    it('should throw when type is unknown', () => {
-      expect(
-        // @ts-expect-error bad type!!
-        () => expect(42, 'to be a', 'boognish'),
-        'to throw a',
-        TypeError,
-        'satisfying',
-        `Invalid arguments. No assertion matched: [ 42, 'to be a', 'boognish' ]`,
-      );
-    });
-  });
-
   describe('Comparison assertions', () => {
     it('should pass when number is greater than another number', () => {
       expect(() => expect(5, 'to be greater than', 3), 'not to throw');
@@ -99,40 +49,6 @@ describe('Synchronous expect assertions', () => {
     it('should fail when number is not less than or equal to another number', () => {
       expect(() => expect(7, 'to be less than or equal to', 5), 'to throw');
       expect(() => expect(6, 'to be at most', 5), 'to throw');
-    });
-  });
-
-  describe('Boolean value assertions', () => {
-    it('should pass when value is true', () => {
-      expect(() => expect(true, 'to be true'), 'not to throw');
-    });
-
-    it('should fail when value is not true', () => {
-      expect(() => expect(false, 'to be true'), 'to throw');
-    });
-
-    it('should pass when value is false', () => {
-      expect(() => expect(false, 'to be false'), 'not to throw');
-    });
-
-    it('should fail when value is not false', () => {
-      expect(() => expect(true, 'to be false'), 'to throw');
-    });
-
-    it('should pass when value is null', () => {
-      expect(() => expect(null, 'to be null'), 'not to throw');
-    });
-
-    it('should fail when value is not null', () => {
-      expect(() => expect(undefined, 'to be null'), 'to throw');
-    });
-
-    it('should pass when value is undefined', () => {
-      expect(() => expect(undefined, 'to be undefined'), 'not to throw');
-    });
-
-    it('should fail when value is not undefined', () => {
-      expect(() => expect(null, 'to be undefined'), 'to throw');
     });
   });
 
@@ -740,24 +656,6 @@ describe('Synchronous expect assertions', () => {
       expect(() => expect(0, 'to be negative'), 'to throw');
     });
 
-    it('should pass when value is zero', () => {
-      expect(() => expect(0, 'to be zero'), 'not to throw');
-      expect(() => expect(0, 'to be 0'), 'not to throw');
-    });
-
-    it('should pass when value is one', () => {
-      expect(() => expect(1, 'to be 1'), 'not to throw');
-      expect(() => expect(1, 'to be one'), 'not to throw');
-    });
-
-    it('should fail when non-zero value is expected to be zero', () => {
-      expect(() => expect(1, 'to be zero'), 'to throw');
-    });
-
-    it('should fail when non-one value is expected to be one', () => {
-      expect(() => expect(0, 'to be one'), 'to throw');
-    });
-
     it('should pass when value is NaN', () => {
       expect(() => expect(NaN, 'to be NaN'), 'not to throw');
       expect(() => expect(Number.NaN, 'to be NaN'), 'not to throw');
@@ -793,12 +691,10 @@ describe('Synchronous expect assertions', () => {
 
     it('should pass when number is infinite', () => {
       expect(() => expect(Infinity, 'to be infinite'), 'not to throw');
-      expect(() => expect(Infinity, 'to be Infinity'), 'not to throw');
     });
 
     it('should fail when number is not infinite', () => {
       expect(() => expect(42, 'to be infinite'), 'to throw');
-      expect(() => expect(-Infinity, 'to be Infinity'), 'to throw');
     });
 
     it('should pass when number is safe', () => {
@@ -824,13 +720,23 @@ describe('Synchronous expect assertions', () => {
       expect(() => expect({}, 'to be an object'), 'not to throw');
       expect(() => expect([], 'to be an object'), 'not to throw');
       expect(() => expect(new Date(), 'to be an object'), 'not to throw');
+      expect(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        () => expect(Object.create(null), 'to be an object'),
+        'not to throw',
+      );
+      class TestClass {}
+      expect(() => expect(new TestClass(), 'to be an object'), 'not to throw');
     });
 
     it('should fail when value is not an object', () => {
       expect(() => expect('string', 'to be an object'), 'to throw');
       expect(() => expect(42, 'to be an object'), 'to throw');
+      expect(() => expect(null, 'to be an object'), 'to throw');
     });
+  });
 
+  describe('Esoteric assertions', () => {
     it('should pass when object has null prototype', () => {
       const nullProtoObj = Object.create(null) as object;
       expect(

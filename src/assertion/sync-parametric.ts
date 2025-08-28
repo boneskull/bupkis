@@ -47,18 +47,6 @@ export const ParametricAssertions = [
     return threw;
   }),
   createAssertion(
-    [FunctionSchema, ['not to throw', 'to not throw']],
-    (subject) => {
-      let threw = false;
-      try {
-        subject();
-      } catch {
-        threw = true;
-      }
-      return !threw;
-    },
-  ),
-  createAssertion(
     [FunctionSchema, ['to throw a', 'to thrown an'], ClassSchema],
     (subject, ctor) => {
       const error = trapError(subject);

@@ -10,11 +10,12 @@
  */
 
 import Debug from 'debug';
-import { AssertionError } from 'node:assert';
+import slug from 'slug';
 import { inspect } from 'util';
 import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
+import { AssertionError } from '../error.js';
 import {
   isA,
   isBoolean,
@@ -27,7 +28,6 @@ import {
 } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
-  type AnyParsedValues,
   type Assertion,
   type AssertionImpl,
   type AssertionImplAsyncFn,
@@ -48,6 +48,8 @@ export abstract class BupkisAssertion<
 {
   readonly __parts!: Parts;
 
+  readonly id: string;
+
   readonly impl: T;
 
   readonly slots: AssertionSlots<Parts>;
@@ -55,6 +57,7 @@ export abstract class BupkisAssertion<
   constructor(slots: AssertionSlots<Parts>, impl: T) {
     this.slots = slots;
     this.impl = impl;
+    this.id = slug(`${this}`);
   }
 
   /**
@@ -99,15 +102,17 @@ export abstract class BupkisAssertion<
     }
     const slots = BupkisAssertion.slotify<Parts>(parts);
 
+    let assertion: Assertion<AssertionImpl<Parts>, Parts>;
     if (isZodType(impl)) {
-      return new SchemaAssertion(slots, impl);
+      assertion = new SchemaAssertion(slots, impl);
+    } else if (isFunction(impl)) {
+      assertion = new FunctionAssertion(slots, impl);
+    } else {
+      throw new TypeError(
+        'Assertion implementation must be a function, Zod schema or Zod schema factory',
+      );
     }
-    if (isFunction(impl)) {
-      return new FunctionAssertion(slots, impl);
-    }
-    throw new TypeError(
-      'Assertion implementation must be a function, Zod schema or Zod schema factory',
-    );
+    return assertion;
   }
 
   /**
@@ -127,6 +132,11 @@ export abstract class BupkisAssertion<
       }
 
       if (isStringTupleAssertionPart(part)) {
+        if (part.some((p) => p.startsWith('not '))) {
+          throw new TypeError(
+            `Failed to create Assertion containing phrases ${inspect(part, { depth: 1 })}; string literal parts cannot begin with "not"`,
+          );
+        }
         result.push(
           z
             .literal(part)
@@ -137,6 +147,11 @@ export abstract class BupkisAssertion<
             }),
         );
       } else if (isString(part)) {
+        if (part.startsWith('not ')) {
+          throw new TypeError(
+            `Failed to create Assertion containing phrase ${inspect(part, { depth: 1 })}; string literal parts cannot begin with "not"`,
+          );
+        }
         result.push(
           z
             .literal(part)
@@ -162,7 +177,7 @@ export abstract class BupkisAssertion<
    */
 
   abstract execute(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): void;
@@ -176,7 +191,7 @@ export abstract class BupkisAssertion<
    */
 
   abstract executeAsync(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): Promise<void>;
@@ -186,6 +201,54 @@ export abstract class BupkisAssertion<
    * determine if they match this `Assertion`.
    *
    * @param args Raw arguments provided to `expect()`
+   * @returns Result of parsing attempt
+   */
+
+  public parseSlotForLiteral<T extends (typeof this.slots)[number]>(
+    slot: T,
+    i: number,
+    arg: unknown,
+  ): boolean | ParsedResult<Parts> {
+    const meta = BupkisRegistry.get(slot) ?? {};
+    // our branded literal slots are also tagged in meta for runtime
+    // const metadata = BupkisRegistrySchema.safeParse(meta);
+    if (kStringLiteral in meta) {
+      if ('value' in meta) {
+        if (arg !== meta.value) {
+          return {
+            assertion: `${this}`,
+            reason: `Expected ${meta.value} for slot ${i}, got ${inspect(arg)}`,
+            success: false,
+          };
+        }
+      } else if ('values' in meta) {
+        const allowed = meta.values as readonly string[];
+        if (!allowed.includes(`${arg}`)) {
+          return {
+            assertion: `${this}`,
+            reason: `Expected one of ${allowed.join(', ')} for slot ${i}, got ${inspect(arg)}`,
+            success: false,
+          };
+        }
+      } else {
+        debug('Invalid metadata for slot', i, 'with value', arg);
+        return {
+          assertion: `${this}`,
+          reason: `Invalid metadata for slot ${i}`,
+          success: false,
+        };
+      }
+      return true;
+      // skip from impl params
+    }
+    return false;
+  }
+
+  /**
+   * Parses raw arguments asynchronously against this `Assertion`'s Slots to
+   * determine if they match this `Assertion`.
+   *
+   * @param args Raw arguments provided to `expectAsync()`
    * @returns Result of parsing attempt
    */
 
@@ -253,11 +316,7 @@ export abstract class BupkisAssertion<
   }
 
   /**
-   * Parses raw arguments asynchronously against this `Assertion`'s Slots to
-   * determine if they match this `Assertion`.
-   *
-   * @param args Raw arguments provided to `expectAsync()`
-   * @returns Result of parsing attempt
+   * @returns String representation
    */
 
   async parseValuesAsync<Args extends readonly unknown[]>(
@@ -318,27 +377,28 @@ export abstract class BupkisAssertion<
     };
   }
 
-  /**
-   * @returns String representation
-   */
-
   toString(): string {
     const expand = (zodType: z.ZodType): string => {
       switch (zodType.def.type) {
+        case 'custom': {
+          const meta = BupkisRegistry.get(zodType);
+          if (meta?.name) {
+            // our name
+            return `${meta.name}`;
+          } else if ('Class' in zodType._zod.bag) {
+            // internal Zod class name. will probably break.
+            return (zodType._zod.bag.Class as new (...args: any[]) => any).name;
+          }
+          return 'custom';
+        }
         case 'enum':
-          return `${(zodType as z.ZodEnum<any>).options.join('/')}`;
+          return `${(zodType as z.ZodEnum<any>).options.join(' / ')}`;
         case 'literal':
-          return [...(zodType as z.ZodLiteral).def.values].join('/');
+          return [...(zodType as z.ZodLiteral).def.values].join(' / ');
         case 'union':
           return ((zodType as z.ZodUnion<any>).options as z.ZodType[])
             .map(expand)
             .join(' | ');
-        case 'custom': {
-          const meta = BupkisRegistry.get(zodType);
-          if (meta?.name) {
-            return `<${meta.name}>`;
-          }
-        }
         // falls through
         default:
           return `{${zodType.def.type}}`;
@@ -351,7 +411,7 @@ export abstract class BupkisAssertion<
   protected translateZodError(
     stackStartFn: (...args: any[]) => any,
     zodError: z.ZodError,
-    ...values: AnyParsedValues
+    ...values: ParsedValues<Parts>
   ): AssertionError {
     const flat = z.flattenError(zodError);
 
@@ -367,46 +427,6 @@ export abstract class BupkisAssertion<
       operator: `${this}`,
       stackStartFn,
     });
-  }
-
-  private parseSlotForLiteral<T extends (typeof this.slots)[number]>(
-    slot: T,
-    i: number,
-    arg: unknown,
-  ): boolean | ParsedResult<Parts> {
-    const meta = BupkisRegistry.get(slot) ?? {};
-    // our branded literal slots are also tagged in meta for runtime
-    // const metadata = BupkisRegistrySchema.safeParse(meta);
-    if (kStringLiteral in meta) {
-      if ('value' in meta) {
-        if (arg !== meta.value) {
-          return {
-            assertion: `${this}`,
-            reason: `Expected ${meta.value} for slot ${i}, got ${inspect(arg)}`,
-            success: false,
-          };
-        }
-      } else if ('values' in meta) {
-        const allowed = meta.values as readonly string[];
-        if (!allowed.includes(`${arg}`)) {
-          return {
-            assertion: `${this}`,
-            reason: `Expected one of ${allowed.join(', ')} for slot ${i}, got ${inspect(arg)}`,
-            success: false,
-          };
-        }
-      } else {
-        debug('Invalid metadata for slot', i, 'with value', arg);
-        return {
-          assertion: `${this}`,
-          reason: `Invalid metadata for slot ${i}`,
-          success: false,
-        };
-      }
-      return true;
-      // skip from impl params
-    }
-    return false;
   }
 }
 
@@ -431,7 +451,7 @@ export class FunctionAssertion<
   implements Assertion<Impl, Parts>
 {
   execute(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): void {
@@ -443,7 +463,7 @@ export class FunctionAssertion<
     if (isPromiseLike(result)) {
       // Avoid unhandled promise rejection
       Promise.resolve(result).catch((err) => {
-        debug(`Ignored unhandled rejection from assertion %s: %O`, this, err);
+        debug(`Ate unhandled rejection from assertion %s: %O`, this, err);
       });
 
       throw new TypeError(
@@ -469,15 +489,12 @@ export class FunctionAssertion<
   }
 
   async executeAsync(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): Promise<void> {
-    const result = await (this.impl as AssertionImplAsyncFn<Parts>).call(
-      null,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      ...(parsedValues as any),
-    );
+    const { impl } = this;
+    const result = await impl(...parsedValues);
     if (isZodType(result)) {
       try {
         await result.parseAsync(parsedValues[0]);
@@ -511,11 +528,11 @@ export class SchemaAssertion<
   implements Assertion<Impl, Parts>
 {
   execute(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     _args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): void {
-    const [subject] = parsedValues as unknown as AnyParsedValues;
+    const [subject] = parsedValues;
     try {
       this.impl.parse(subject);
     } catch (error) {
@@ -527,11 +544,11 @@ export class SchemaAssertion<
   }
 
   async executeAsync(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     _args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): Promise<void> {
-    const [subject] = parsedValues as unknown as AnyParsedValues;
+    const [subject] = parsedValues;
     try {
       await this.impl.parseAsync(subject);
     } catch (error) {

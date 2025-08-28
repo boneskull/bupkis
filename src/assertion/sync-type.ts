@@ -1,6 +1,11 @@
 import { z } from 'zod/v4';
 
-import { ClassSchema, FunctionSchema } from '../schema.js';
+import {
+  AsyncFunctionSchema,
+  ClassSchema,
+  FunctionSchema,
+  PropertyKeySchema,
+} from '../schema.js';
 import { createAssertion } from './assertion.js';
 
 export const TypeAssertions = [
@@ -71,23 +76,29 @@ export const TypeAssertions = [
    */
   createAssertion(['to be a string'], z.string()),
   createAssertion([['to be a number', 'to be finite']], z.number()),
-  createAssertion([['to be infinite', 'to be Infinity']], z.literal(Infinity)),
+  createAssertion(['to be infinite'], z.literal([Infinity, -Infinity])),
   createAssertion(
     [['to be a safe number', 'to be safe']],
     z.number().refine((n) => Number.isSafeInteger(n)),
   ),
-  createAssertion(['to be a boolean'], z.boolean()),
-  createAssertion(['to be positive'], z.number().positive()),
-  createAssertion(['to be negative'], z.number().negative()),
-  createAssertion([['to be zero', 'to be 0']], z.literal(0)),
-  createAssertion([['to be 1', 'to be one']], z.literal(1)),
-  // createAssertion([['to be true', 'not to be false']], z.literal(true)),
+  createAssertion(
+    [['to be a boolean', 'to be boolean', 'to be a bool']],
+    z.boolean(),
+  ),
+  createAssertion(
+    [['to be positive', 'to be a positive number']],
+    z.number().positive(),
+  ),
+  createAssertion(
+    [['to be negative', 'to be a negative number']],
+    z.number().negative(),
+  ),
   createAssertion(['to be true'], z.literal(true)),
+  createAssertion(['to be false'], z.literal(false)),
   createAssertion([['to be a bigint', 'to be a BigInt']], z.bigint()),
   createAssertion([['to be a symbol', 'to be a Symbol']], z.symbol()),
   createAssertion(['to be a function'], FunctionSchema),
-  // createAssertion([['to be false', 'not to be true']], z.literal(false)),
-  createAssertion(['to be false'], z.literal(false)),
+  createAssertion(['to be an async function'], AsyncFunctionSchema),
   createAssertion(['to be NaN'], z.nan()),
   createAssertion(['to be an integer'], z.number().int()),
   createAssertion(['to be null'], z.null()),
@@ -95,6 +106,18 @@ export const TypeAssertions = [
   createAssertion([['to be an array', 'to be array']], z.array(z.any())),
   createAssertion([['to be a date', 'to be a Date']], z.date()),
   createAssertion([['to be a class', 'to be a constructor']], ClassSchema),
+  createAssertion(
+    ['to be a primitive'],
+    z.union([
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.bigint(),
+      z.symbol(),
+      z.null(),
+      z.undefined(),
+    ]),
+  ),
 
   createAssertion(
     [['to be a RegExp', 'to be a regex', 'to be a regexp']],
@@ -105,10 +128,17 @@ export const TypeAssertions = [
     z.any().refine((value) => !!value),
   ),
   createAssertion(
-    [['to be falsy', 'not to exist']],
+    ['to be falsy'],
     z.any().refine((value) => !value),
   ),
-  createAssertion(['to be an object'], z.looseObject({}).or(z.array(z.any()))),
+  createAssertion(
+    ['to be an object'],
+    z.any().refine((value) => typeof value == 'object' && value !== null),
+  ),
+  createAssertion(
+    [['to be a record', 'to be a plain object']],
+    z.record(PropertyKeySchema, z.unknown()),
+  ),
   createAssertion([z.array(z.any()), 'to be empty'], z.array(z.any()).max(0)),
   createAssertion(
     [z.record(z.any(), z.unknown()), ['to be empty']],

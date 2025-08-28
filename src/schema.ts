@@ -50,8 +50,8 @@ export const FunctionSchema = z
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
-  .register(BupkisRegistry, { name: 'PropertyKeySchema' })
-  .describe('PropertyKey');
+  .describe('PropertyKey')
+  .register(BupkisRegistry, { name: 'PropertyKeySchema' });
 
 /**
  * A Zod Schema that validates "thenable" objects, i.e. those with a `.then()`
@@ -61,10 +61,10 @@ export const PropertyKeySchema = z
  */
 export const WrappedPromiseLikeSchema = z
   .custom<PromiseLike<unknown>>((value) => isPromiseLike(value))
-  .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' })
   .describe(
     'PromiseLike; unlike z.promise(), does not unwrap the resolved value',
-  );
+  )
+  .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' });
 
 /**
  * A Zod Schema that validates `Map` objects that are _not_ `WeakMap`s.
@@ -72,6 +72,7 @@ export const WrappedPromiseLikeSchema = z
 export const StrongMapSchema = z
   .instanceof(Map)
   .refine((value) => !isA(value, WeakMap))
+  .describe('A Map that is not a WeakMap')
   .register(BupkisRegistry, { name: 'StrongMapSchema' });
 
 /**
@@ -80,11 +81,28 @@ export const StrongMapSchema = z
 export const StrongSetSchema = z
   .instanceof(Set)
   .refine((value) => !isA(value, WeakSet))
+  .describe('A Set that is not a WeakSet')
   .register(BupkisRegistry, { name: 'StrongSetSchema' });
 
+/**
+ * A Zod Schema that validates plain objects having a `null` prototype
+ */
 export const NullProtoObjectSchema = z
-  .custom<object>(
+  .custom<Record<PropertyKey, unknown>>(
     (value) => isNonNullObject(value) && Object.getPrototypeOf(value) === null,
   )
-  .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' })
-  .describe('Object with null prototype');
+  .describe('Object with null prototype')
+  .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' });
+
+/**
+ * A Zod Schema that validates `async` functions.
+ *
+ * **Warning!** This will not validate a function which happens to return a
+ * `Promise` or thenable (AFAIK this cannot be determined reliably via static
+ * analysis). The function must be declared using the `async` keyword.
+ */
+export const AsyncFunctionSchema = FunctionSchema.refine(
+  (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
+)
+  .describe('Function declared with the `async` keyword')
+  .register(BupkisRegistry, { name: 'AsyncFunctionSchema' });

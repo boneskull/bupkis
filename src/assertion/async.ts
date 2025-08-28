@@ -70,18 +70,6 @@ export const AsyncAssertions = [
     }
     return rejected;
   }),
-  createAssertion(
-    [FunctionSchema, ['not to reject', 'to not reject']],
-    async (subject) => {
-      let rejected = false;
-      try {
-        await subject();
-      } catch {
-        rejected = true;
-      }
-      return !rejected;
-    },
-  ),
   createAssertion([WrappedPromiseLikeSchema, 'to reject'], async (subject) => {
     let rejected = false;
     try {
@@ -91,19 +79,6 @@ export const AsyncAssertions = [
     }
     return rejected;
   }),
-  createAssertion(
-    [WrappedPromiseLikeSchema, ['not to reject', 'to not reject']],
-    async (subject) => {
-      let rejected = false;
-      try {
-        await subject;
-      } catch {
-        rejected = true;
-      }
-      return !rejected;
-    },
-  ),
-
   // Parameterized "to reject" with class constructor
   createAssertion(
     [FunctionSchema, ['to reject with a', 'to reject with an'], ClassSchema],

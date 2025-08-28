@@ -180,3 +180,5 @@ export const isA = <T extends Constructor<any>>(
 ): value is InstanceType<T> => {
   return isNonNullObject(value) && value instanceof ctor;
 };
+
+export const isError = (value: unknown): value is Error => isA(value, Error);

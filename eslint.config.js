@@ -30,7 +30,6 @@ export default tseslint.config(
     },
     rules: {
       '@perfectionist/sort-classes': ['error', { partitionByNewLine: true }],
-
       '@stylistic/lines-around-comment': [
         'warn',
         {
@@ -81,8 +80,8 @@ export default tseslint.config(
 
       // too many false positives
       '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
 
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -106,6 +105,8 @@ export default tseslint.config(
           ignoreDifferentlyNamedParameters: true,
         },
       ],
+
+      'no-empty': ['error', { allowEmptyCatch: true }],
     },
   },
   {

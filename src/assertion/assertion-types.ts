@@ -43,7 +43,7 @@ export interface Assertion<
    * @param stackStartFn Function to use as stack start for error reporting
    */
   execute(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): void;
@@ -56,10 +56,12 @@ export interface Assertion<
    * @param stackStartFn Function to use as stack start for error reporting
    */
   executeAsync(
-    parsedValues: AnyParsedValues,
+    parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
   ): Promise<void>;
+
+  readonly id: string;
 
   /**
    * The implementation function or schema for this assertion.
@@ -98,13 +100,14 @@ export interface Assertion<
 }
 
 // Union type for implementation function or static schema
-export type AssertionImpl<Parts extends AssertionParts> =
-  | AssertionImplAsyncFn<Parts>
-  | AssertionImplFn<Parts>
-  | z.ZodType<ParsedSubject<Parts>>;
+export type AssertionImpl<Parts extends AssertionParts> = ThisType<void> &
+  (
+    | AssertionImplAsyncFn<Parts>
+    | AssertionImplFn<Parts>
+    | z.ZodType<ParsedSubject<Parts>>
+  );
 
 export type AssertionImplAsyncFn<Parts extends AssertionParts> = (
-  this: null,
   ...values: ParsedValues<Parts>
 ) => Promise<boolean | void | z.ZodType<ParsedSubject<Parts>>>;
 
@@ -114,7 +117,7 @@ export type AssertionImplFn<
     | boolean
     | void
     | z.ZodType<ParsedSubject<Parts>>,
-> = (this: null, ...values: ParsedValues<Parts>) => Return;
+> = (...values: ParsedValues<Parts>) => Return;
 
 /**
  * Maps an {@link AssertionPart} to a parameter to an {@link AssertionImpl}.
@@ -143,6 +146,10 @@ export type AssertionImplParts<Parts extends AssertionParts> =
   ]
     ? readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
     : readonly [];
+
+export interface AssertionOptions {
+  id?: string;
+}
 
 /**
  * An item of the first parameter to `createAssertion`, representing the inputs
