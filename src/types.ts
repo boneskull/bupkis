@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import type { Constructor as TypeFestConstructor } from 'type-fest';
 import type { z } from 'zod/v4';
 
 import type {
@@ -16,10 +17,10 @@ import type {
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
 
+import { type NoNeverTuple } from './assertion/assertion-types.js';
 import { type BupkisAssertion } from './assertion/assertion.js';
 import { type AsyncAssertions } from './assertion/async.js';
 import { type SyncAssertions } from './assertion/sync.js';
-import { type NoNeverTuple } from './assertion/types.js';
 
 /**
  * Helper type to create negated version of assertion parts. For phrase
@@ -44,14 +45,19 @@ export type AddNegation<T extends AssertionParts> = T extends readonly [
       : readonly [First, ...AddNegation<Rest>]
   : readonly [];
 
-/**
- * Properties and methods available on {@link expect} and {@link expectAsync}.
- */
-
 export interface BaseExpect {
   createAssertion: (typeof BupkisAssertion)['create'];
   fail(reason?: string): never;
 }
+
+/**
+ * Properties and methods available on {@link expect} and {@link expectAsync}.
+ */
+
+export type Constructor<
+  T = any,
+  Arguments extends unknown[] = any[],
+> = TypeFestConstructor<T, Arguments>;
 
 /**
  * The main synchronous assertion function.
@@ -73,7 +79,7 @@ export interface ExpectAsync extends BaseExpect, ExpectAsyncFunction {}
 export type ExpectAsyncFunction = {
   [K in keyof typeof AsyncAssertions]: (typeof AsyncAssertions)[K] extends BuiltinAsyncAssertion
     ? (
-        ...args: InferredExpectSlots<(typeof AsyncAssertions)[K]['__parts']>
+        ...args: InferredExpectSlots<(typeof AsyncAssertions)[K]['parts']>
       ) => Promise<void>
     : never;
 }[number];
@@ -84,7 +90,7 @@ export type ExpectAsyncFunction = {
 export type ExpectFunction = {
   [K in keyof typeof SyncAssertions]: (typeof SyncAssertions)[K] extends BuiltinAssertion
     ? (
-        ...args: InferredExpectSlots<(typeof SyncAssertions)[K]['__parts']>
+        ...args: InferredExpectSlots<(typeof SyncAssertions)[K]['parts']>
       ) => void
     : never;
 }[number];
@@ -127,7 +133,6 @@ export type MapExpectSlots<Parts extends AssertionParts> =
         ...MapExpectSlots<Rest>,
       ]
     : [];
-
 /**
  * The type of a phrase which is negated, e.g. "not to be"
  */

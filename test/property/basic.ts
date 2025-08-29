@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
-import { type TypeAssertions } from '../../src/assertion/sync-type.js';
+import { type BasicAssertions } from '../../src/assertion/sync-basic.js';
 import { AssertionError } from '../../src/error.js';
 import { expect, expectAsync } from '../../src/index.js';
 import { type InferredExpectSlots } from '../../src/types.js';
@@ -10,7 +10,7 @@ describe('Property-Based Tests for Bupkis Assertions', () => {
   describe('Core Assertion Properties', () => {
     it('should satisfy negation property for type assertions', () => {
       interface AssertionConfig {
-        args: InferredExpectSlots<(typeof TypeAssertions)[number]['__parts']>;
+        args: InferredExpectSlots<(typeof BasicAssertions)[number]['parts']>;
       }
 
       fc.assert(

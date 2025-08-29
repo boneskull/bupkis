@@ -11,8 +11,6 @@
  * @packageDocumentation
  */
 
-import type { Constructor } from 'type-fest';
-
 import { z } from 'zod/v4';
 
 import {
@@ -23,17 +21,62 @@ import {
   isPromiseLike,
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
+import { type Constructor } from './types.js';
 
 /**
- * A Zod Schema that validates JavaScript classes or constructor functions.
+ * A Zod schema that validates JavaScript classes or constructor functions.
+ *
+ * This schema validates values that can be used as constructors, including ES6
+ * classes, traditional constructor functions, and built-in constructors. It
+ * uses the {@link isConstructable} guard function to determine if a value can be
+ * invoked with the `new` operator to create object instances.
+ *
+ * @remarks
+ * The schema is registered in the {@link BupkisRegistry} with the name
+ * `ClassSchema` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * class MyClass {}
+ * function MyConstructor() {}
+ *
+ * ClassSchema.parse(MyClass); // ✓ Valid
+ * ClassSchema.parse(MyConstructor); // ✓ Valid
+ * ClassSchema.parse(Array); // ✓ Valid
+ * ClassSchema.parse(Date); // ✓ Valid
+ * ClassSchema.parse(() => {}); // ✗ Throws validation error
+ * ClassSchema.parse({}); // ✗ Throws validation error
+ * ```
  */
+
 export const ClassSchema = z
-  .custom<Constructor<unknown>>(isConstructable)
+  .custom<Constructor>(isConstructable)
   .register(BupkisRegistry, { name: 'ClassSchema' })
   .describe('Class / Constructor');
 
 /**
- * A Zod Schema that validates JavaScript functions.
+ * A Zod schema that validates any JavaScript function.
+ *
+ * This schema provides function validation capabilities similar to the
+ * parseable-only `z.function()` from Zod v3.x, but works with Zod v4's
+ * architecture. It validates that the input value is any callable function,
+ * including regular functions, arrow functions, async functions, generator
+ * functions, and methods.
+ *
+ * @remarks
+ * The schema is registered in the {@link BupkisRegistry} with the name
+ * `FunctionSchema` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * FunctionSchema.parse(function () {}); // ✓ Valid
+ * FunctionSchema.parse(() => {}); // ✓ Valid
+ * FunctionSchema.parse(async () => {}); // ✓ Valid
+ * FunctionSchema.parse(function* () {}); // ✓ Valid
+ * FunctionSchema.parse(Math.max); // ✓ Valid
+ * FunctionSchema.parse('not a function'); // ✗ Throws validation error
+ * FunctionSchema.parse({}); // ✗ Throws validation error
+ * ```
  */
 export const FunctionSchema = z
   .custom<(...args: any[]) => any>(isFunction)
@@ -45,8 +88,25 @@ export const FunctionSchema = z
   );
 
 /**
- * A Zod Schema that validates valid JavaScript property keys, i.e. strings,
- * numbers, or symbols.
+ * A Zod schema that validates JavaScript property keys.
+ *
+ * This schema validates values that can be used as object property keys in
+ * JavaScript, which includes strings, numbers, and symbols. These are the three
+ * types that JavaScript automatically converts to property keys when used in
+ * object access or assignment operations.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `PropertyKeySchema` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * PropertyKeySchema.parse('stringKey'); // ✓ Valid
+ * PropertyKeySchema.parse(42); // ✓ Valid
+ * PropertyKeySchema.parse(Symbol('symbolKey')); // ✓ Valid
+ * PropertyKeySchema.parse({}); // ✗ Throws validation error
+ * PropertyKeySchema.parse(null); // ✗ Throws validation error
+ * ```
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
@@ -54,10 +114,27 @@ export const PropertyKeySchema = z
   .register(BupkisRegistry, { name: 'PropertyKeySchema' });
 
 /**
- * A Zod Schema that validates "thenable" objects, i.e. those with a `.then()`
- * method. Unlike `z.promise()`, this does not unwrap the resolved value (the
- * result of calling `WrappedPromiseLikeSchema.parse(Promise.resolve())` will be
- * a `Promise`).
+ * A Zod schema that validates "thenable" objects with a `.then()` method.
+ *
+ * This schema validates objects that implement the PromiseLike interface by
+ * having a `.then()` method, which includes Promises and other thenable
+ * objects. Unlike Zod's built-in `z.promise()`, this schema does not unwrap the
+ * resolved value, meaning the result of parsing remains a Promise or thenable
+ * object.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `WrappedPromiseLikeSchema` for later reference and type checking purposes.
+ * This is useful when you need to validate that something is thenable without
+ * automatically resolving it.
+ * @example
+ *
+ * ```typescript
+ * WrappedPromiseLikeSchema.parse(Promise.resolve(42)); // ✓ Valid (returns Promise)
+ * WrappedPromiseLikeSchema.parse({ then: () => {} }); // ✓ Valid (thenable)
+ * WrappedPromiseLikeSchema.parse(42); // ✗ Throws validation error
+ * WrappedPromiseLikeSchema.parse({}); // ✗ Throws validation error
+ * ```
  */
 export const WrappedPromiseLikeSchema = z
   .custom<PromiseLike<unknown>>((value) => isPromiseLike(value))
@@ -67,7 +144,28 @@ export const WrappedPromiseLikeSchema = z
   .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' });
 
 /**
- * A Zod Schema that validates `Map` objects that are _not_ `WeakMap`s.
+ * A Zod schema that validates Map instances excluding WeakMap instances.
+ *
+ * This schema ensures that the validated value is a Map and specifically
+ * excludes WeakMap instances through refinement validation. This is useful when
+ * you need to ensure you're working with a regular Map that allows iteration
+ * and enumeration of keys, unlike WeakMaps which are not enumerable.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `StrongMapSchema` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * const validMap = new Map([
+ *   ['key1', 'value1'],
+ *   ['key2', 'value2'],
+ * ]);
+ * StrongMapSchema.parse(validMap); // ✓ Valid
+ *
+ * const weakMap = new WeakMap();
+ * StrongMapSchema.parse(weakMap); // ✗ Throws validation error
+ * ```
  */
 export const StrongMapSchema = z
   .instanceof(Map)
@@ -76,7 +174,25 @@ export const StrongMapSchema = z
   .register(BupkisRegistry, { name: 'StrongMapSchema' });
 
 /**
- * A Zod Schema that validates `Set` objects that are _not_ `WeakSet`s.
+ * A Zod schema that validates Set instances excluding WeakSet instances.
+ *
+ * This schema ensures that the validated value is a Set and specifically
+ * excludes WeakSet instances through refinement validation. This is useful when
+ * you need to ensure you're working with a regular Set that allows iteration
+ * and enumeration of values, unlike WeakSets which are not enumerable.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `StrongSetSchema` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * const validSet = new Set([1, 2, 3]);
+ * StrongSetSchema.parse(validSet); // ✓ Valid
+ *
+ * const weakSet = new WeakSet();
+ * StrongSetSchema.parse(weakSet); // ✗ Throws validation error
+ * ```
  */
 export const StrongSetSchema = z
   .instanceof(Set)
@@ -85,7 +201,30 @@ export const StrongSetSchema = z
   .register(BupkisRegistry, { name: 'StrongSetSchema' });
 
 /**
- * A Zod Schema that validates plain objects having a `null` prototype
+ * A Zod schema that validates plain objects with null prototypes.
+ *
+ * This schema validates objects that have been created with
+ * `Object.create(null)` or otherwise have their prototype set to `null`. Such
+ * objects are "plain" objects without any inherited properties or methods from
+ * `Object.prototype`, making them useful as pure data containers or
+ * dictionaries.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `ObjectWithNullPrototype` for later reference and type checking purposes.
+ * @example
+ *
+ * ```typescript
+ * const nullProtoObj = Object.create(null);
+ * nullProtoObj.key = 'value';
+ * NullProtoObjectSchema.parse(nullProtoObj); // ✓ Valid
+ *
+ * const regularObj = { key: 'value' };
+ * NullProtoObjectSchema.parse(regularObj); // ✗ Throws validation error
+ *
+ * const emptyObj = {};
+ * NullProtoObjectSchema.parse(emptyObj); // ✗ Throws validation error
+ * ```
  */
 export const NullProtoObjectSchema = z
   .custom<Record<PropertyKey, unknown>>(
@@ -95,14 +234,151 @@ export const NullProtoObjectSchema = z
   .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' });
 
 /**
- * A Zod Schema that validates `async` functions.
+ * A Zod schema that validates functions declared with the `async` keyword.
  *
- * **Warning!** This will not validate a function which happens to return a
- * `Promise` or thenable (AFAIK this cannot be determined reliably via static
- * analysis). The function must be declared using the `async` keyword.
+ * This schema validates functions that are explicitly declared as asynchronous
+ * using the `async` keyword. It uses runtime introspection to check the
+ * function's internal `[[ToString]]` representation to distinguish async
+ * functions from regular functions that might return Promises.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name
+ * `AsyncFunctionSchema` for later reference and type checking purposes. This
+ * schema cannot reliably detect functions that return Promises but are not
+ * declared with `async`, as this determination requires static analysis that is
+ * not available at runtime.
+ * @example
+ *
+ * ```typescript
+ * async function asyncFn() {
+ *   return 42;
+ * }
+ * AsyncFunctionSchema.parse(asyncFn); // ✓ Valid
+ *
+ * const asyncArrow = async () => 42;
+ * AsyncFunctionSchema.parse(asyncArrow); // ✓ Valid
+ *
+ * function syncFn() {
+ *   return Promise.resolve(42);
+ * }
+ * AsyncFunctionSchema.parse(syncFn); // ✗ Throws validation error
+ *
+ * const regularFn = () => 42;
+ * AsyncFunctionSchema.parse(regularFn); // ✗ Throws validation error
+ * ```
  */
 export const AsyncFunctionSchema = FunctionSchema.refine(
   (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
 )
   .describe('Function declared with the `async` keyword')
   .register(BupkisRegistry, { name: 'AsyncFunctionSchema' });
+
+/**
+ * A Zod schema that validates truthy JavaScript values.
+ *
+ * This schema accepts any input value but only validates successfully if the
+ * value is truthy according to JavaScript's truthiness rules. A value is truthy
+ * if it converts to `true` when evaluated in a boolean context - essentially
+ * any value that is not one of the eight falsy values.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name `Truthy` and
+ * indicates that it accepts anything as valid input for evaluation.
+ * @example
+ *
+ * ```typescript
+ * TruthySchema.parse(true); // ✓ Valid
+ * TruthySchema.parse(1); // ✓ Valid
+ * TruthySchema.parse('hello'); // ✓ Valid
+ * TruthySchema.parse([]); // ✓ Valid (arrays are truthy)
+ * TruthySchema.parse({}); // ✓ Valid (objects are truthy)
+ * TruthySchema.parse(false); // ✗ Throws validation error
+ * TruthySchema.parse(0); // ✗ Throws validation error
+ * TruthySchema.parse(''); // ✗ Throws validation error
+ * TruthySchema.parse(null); // ✗ Throws validation error
+ * ```
+ */
+export const TruthySchema = z
+  .any()
+  .nonoptional()
+  .refine((value) => !!value)
+  .describe('Truthy value')
+  .register(BupkisRegistry, {
+    name: 'Truthy',
+    validInput: 'truthy',
+  });
+
+/**
+ * A Zod schema that validates falsy JavaScript values.
+ *
+ * This schema accepts any input value but only validates successfully if the
+ * value is falsy according to JavaScript's truthiness rules. The falsy values
+ * in JavaScript are: `false`, `0`, `-0`, `0n`, `""` (empty string), `null`,
+ * `undefined`, and `NaN`.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name `Falsy` and
+ * indicates that it accepts anything as valid input for evaluation.
+ * @example
+ *
+ * ```typescript
+ * FalsySchema.parse(false); // ✓ Valid
+ * FalsySchema.parse(0); // ✓ Valid
+ * FalsySchema.parse(-0); // ✓ Valid
+ * FalsySchema.parse(0n); // ✓ Valid (BigInt zero)
+ * FalsySchema.parse(''); // ✓ Valid (empty string)
+ * FalsySchema.parse(null); // ✓ Valid
+ * FalsySchema.parse(undefined); // ✓ Valid
+ * FalsySchema.parse(NaN); // ✓ Valid
+ * FalsySchema.parse(true); // ✗ Throws validation error
+ * FalsySchema.parse(1); // ✗ Throws validation error
+ * FalsySchema.parse('hello'); // ✗ Throws validation error
+ * FalsySchema.parse({}); // ✗ Throws validation error
+ * ```
+ */
+export const FalsySchema = z
+  .any()
+  .nullable()
+  .refine((value) => !value)
+  .describe('Falsy value')
+  .register(BupkisRegistry, { name: 'Falsy', validInput: 'falsy' });
+
+/**
+ * A Zod schema that validates primitive JavaScript values.
+ *
+ * This schema validates any of the seven primitive data types in JavaScript:
+ * string, number, boolean, bigint, symbol, null, and undefined. Primitive
+ * values are immutable and are passed by value rather than by reference,
+ * distinguishing them from objects and functions which are non-primitive
+ * reference types.
+ *
+ * @remarks
+ * The schema is registered in the `BupkisRegistry` with the name `Primitive`
+ * and indicates that it accepts primitive values as valid input.
+ * @example
+ *
+ * ```typescript
+ * PrimitiveSchema.parse('hello'); // ✓ Valid (string)
+ * PrimitiveSchema.parse(42); // ✓ Valid (number)
+ * PrimitiveSchema.parse(true); // ✓ Valid (boolean)
+ * PrimitiveSchema.parse(BigInt(123)); // ✓ Valid (bigint)
+ * PrimitiveSchema.parse(Symbol('test')); // ✓ Valid (symbol)
+ * PrimitiveSchema.parse(null); // ✓ Valid (null)
+ * PrimitiveSchema.parse(undefined); // ✓ Valid (undefined)
+ * PrimitiveSchema.parse({}); // ✗ Throws validation error (object)
+ * PrimitiveSchema.parse([]); // ✗ Throws validation error (array)
+ * PrimitiveSchema.parse(() => {}); // ✗ Throws validation error (function)
+ * ```
+ */
+export const PrimitiveSchema = z
+  .union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.bigint(),
+    z.symbol(),
+    z.null(),
+    z.undefined(),
+  ])
+  .describe('Primitive value')
+  .register(BupkisRegistry, { name: 'Primitive', validInput: 'primitive' });

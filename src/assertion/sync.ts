@@ -9,10 +9,10 @@
  * @packageDocumentation
  */
 
+import { BasicAssertions } from './sync-basic.js';
 import { CollectionAssertions } from './sync-collection.js';
 import { EsotericAssertions } from './sync-esoteric.js';
 import { ParametricAssertions } from './sync-parametric.js';
-import { TypeAssertions } from './sync-type.js';
 
 export const trapError = (fn: () => unknown) => {
   try {
@@ -24,7 +24,7 @@ export const trapError = (fn: () => unknown) => {
 
 export const SyncAssertions = [
   ...CollectionAssertions,
-  ...TypeAssertions,
+  ...BasicAssertions,
   ...EsotericAssertions,
   ...ParametricAssertions,
 ] as const;

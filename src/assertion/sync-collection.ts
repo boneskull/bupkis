@@ -6,9 +6,8 @@ import { createAssertion } from './assertion.js';
 
 export const CollectionAssertions = [
   // Map assertions (including WeakMap)
-  createAssertion(['to be a Map'], z.instanceof(Map)),
   createAssertion(
-    [z.instanceof(Map), ['to contain', 'to include'], z.any()],
+    [z.map(z.any(), z.any()), ['to contain', 'to include'], z.any()],
     (subject, key) => subject.has(key),
   ),
   // Size-based assertions only for strong Maps (not WeakMaps)
@@ -21,9 +20,8 @@ export const CollectionAssertions = [
     (subject) => subject.size === 0,
   ),
   // Set assertions (including WeakSet)
-  createAssertion(['to be a Set'], z.instanceof(Set)),
   createAssertion(
-    [z.instanceof(Set), ['to contain', 'to include'], z.any()],
+    [z.set(z.any()), ['to contain', 'to include'], z.any()],
     (subject, value) => subject.has(value),
   ),
   // Size-based assertions only for strong Sets (not WeakSets)
@@ -36,7 +34,6 @@ export const CollectionAssertions = [
     (subject) => subject.size === 0,
   ),
   // WeakMap specific assertions
-  createAssertion(['to be a WeakMap'], z.instanceof(WeakMap)),
   createAssertion(
     [z.instanceof(WeakMap), ['to contain', 'to include'], z.any()],
     (subject, key) => {
@@ -48,7 +45,6 @@ export const CollectionAssertions = [
     },
   ),
   // WeakSet specific assertions
-  createAssertion(['to be a WeakSet'], z.instanceof(WeakSet)),
   createAssertion(
     [z.instanceof(WeakSet), ['to contain', 'to include'], z.any()],
     (subject, value) => {

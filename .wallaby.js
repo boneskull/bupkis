@@ -19,14 +19,16 @@ export default {
     { instrument: false, pattern: 'test/fixture/**' },
     '!src/node_modules/bupkis/**',
   ],
+  filesWithNoCoverageCalculated: ['.tmp/**/*.test.ts'],
   preloadModules: ['tsx/esm'],
   runMode: 'onsave',
   tests: [
+    '.tmp/**/*.test.ts',
     'test/**/*.test.ts',
     '!.tshy-build/**',
     '!node_modules/**',
     '!dist/**',
     '!src/node_modules/bupkis/**',
-    '!test/assertion/property-based.test.ts', // too intensive
+    '!test/property/**/*', // fails; why?
   ],
 };

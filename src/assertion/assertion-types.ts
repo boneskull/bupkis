@@ -14,8 +14,6 @@ import { type z } from 'zod/v4';
 import type { AsyncAssertions } from './async.js';
 import type { SyncAssertions } from './sync.js';
 
-import { type NoNeverTuple } from './types.js';
-
 export type AnyParsedValues = ParsedValues<readonly [any, ...any[]]>;
 /**
  * Interface for the base abstract `Assertion` class.
@@ -29,23 +27,18 @@ export interface Assertion<
   Parts extends AssertionParts,
 > {
   /**
-   * The assertion parts used to create this assertion.
-   *
-   * **Type-only field** - do not use at runtime.
-   */
-  readonly __parts: Parts;
-
-  /**
    * Execute the assertion implementation synchronously.
    *
    * @param parsedValues Parameters for the assertion implementation
    * @param args Raw parameters passed to `expect()`
    * @param stackStartFn Function to use as stack start for error reporting
+   * @param parseResult Optional parse result containing cached validation data
    */
   execute(
     parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
+    parseResult?: ParsedResult<Parts>,
   ): void;
 
   /**
@@ -54,11 +47,13 @@ export interface Assertion<
    * @param parsedValues Parameters for the assertion implementation
    * @param args Raw parameters passed to `expectAsync()`
    * @param stackStartFn Function to use as stack start for error reporting
+   * @param parseResult Optional parse result containing cached validation data
    */
   executeAsync(
     parsedValues: ParsedValues<Parts>,
     args: unknown[],
     stackStartFn: (...args: any[]) => any,
+    parseResult?: ParsedResult<Parts>,
   ): Promise<void>;
 
   readonly id: string;
@@ -87,6 +82,13 @@ export interface Assertion<
   parseValuesAsync<Args extends readonly unknown[]>(
     args: Args,
   ): Promise<ParsedResult<Parts>>;
+
+  /**
+   * The assertion parts used to create this assertion.
+   *
+   * Available at runtime for introspection.
+   */
+  readonly parts: Parts;
 
   /**
    * The slots derived from assertion parts for validation.
@@ -265,6 +267,18 @@ export type HoleyParsedValues<Parts extends AssertionParts> = NoNeverTuple<
 >;
 
 /**
+ * Strips `never` from a tuple type, retaining tupleness.
+ */
+export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
+  infer First,
+  ...infer Rest,
+]
+  ? [First] extends [never]
+    ? readonly [...NoNeverTuple<Rest>]
+    : readonly [First, ...NoNeverTuple<Rest>]
+  : readonly [];
+
+/**
  * A result of `Assertion.parseValues()` or `Assertion.parseValuesAsync()`
  */
 export type ParsedResult<Parts extends AssertionParts> =
@@ -287,6 +301,20 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
   exactMatch: boolean;
   parsedValues: ParsedValues<Parts>;
   reason?: never;
+  /**
+   * Optional cached subject validation result for optimized schema assertions.
+   * When present, indicates that subject validation was already performed
+   * during parseValues() and doesn't need to be repeated in execute().
+   */
+  subjectValidationResult?:
+    | {
+        data: any;
+        success: true;
+      }
+    | {
+        error: z.ZodError;
+        success: false;
+      };
   success: true;
 }
 
@@ -346,9 +374,7 @@ export type PhraseLiteralChoice = readonly [string, ...string[]];
 export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
-  };
-
-/**
+  }; /**
  * The type of a phrase literal slot.
  *
  * @privateRemarks

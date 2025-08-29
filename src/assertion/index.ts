@@ -33,6 +33,7 @@ export {
   BupkisAssertion,
   createAssertion,
   FunctionAssertion,
+  SchemaAssertion as OptimizedSchemaAssertion,
   SchemaAssertion,
 } from './assertion.js';
 export { AsyncAssertions } from './async.js';

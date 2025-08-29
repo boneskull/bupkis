@@ -1,17 +1,101 @@
 import { z } from 'zod/v4';
 
+import { isA, isNonNullObject, isString } from '../guards.js';
 import {
-  isA,
-  isNonNullObject,
-  isNullOrNonObject,
-  isString,
-} from '../guards.js';
-import { ClassSchema, FunctionSchema } from '../schema.js';
+  ClassSchema,
+  FunctionSchema,
+  StrongMapSchema,
+  StrongSetSchema,
+  WrappedPromiseLikeSchema,
+} from '../schema.js';
 import { satisfies, shallowSatisfiesShape } from '../util.js';
 import { createAssertion } from './assertion.js';
 import { trapError } from './sync.js';
 
+const knownTypes = Object.freeze(
+  new Set([
+    'string',
+    'number',
+    'boolean',
+    'undefined',
+    'null',
+    'BigInt',
+    'Symbol',
+    'Object',
+    'Function',
+    'Array',
+    'Date',
+    'Map',
+    'Set',
+    'WeakMap',
+    'WeakSet',
+    'RegExp',
+    'Promise',
+    'Error',
+    'WeakRef',
+  ] as const),
+);
+
 export const ParametricAssertions = [
+  createAssertion(
+    [
+      ['to be a', 'to be an'],
+      z.enum(
+        [...knownTypes].flatMap((t) => [t, t.toLowerCase()]) as [
+          string,
+          ...string[],
+        ],
+      ),
+    ],
+    (_, type) => {
+      type = type.toLowerCase() as Lowercase<typeof type>;
+      // these first three are names that are _not_ results of the `typeof` operator; i.e. `typeof x` will never return these strings
+      switch (type) {
+        case 'array':
+          return z.array(z.any());
+        case 'bigint':
+          return z.bigint();
+        case 'boolean':
+          return z.boolean();
+        case 'date':
+          return z.date();
+        case 'error':
+          return z.instanceof(Error);
+        case 'function':
+          return z.function();
+        case 'map':
+          return StrongMapSchema;
+        case 'null':
+          return z.null();
+        case 'number':
+          return z.number();
+        case 'object':
+          return z.looseObject({});
+        case 'promise':
+          return WrappedPromiseLikeSchema;
+        case 'regex': // fallthrough
+        case 'regexp':
+          return z.instanceof(RegExp);
+        case 'set':
+          return StrongSetSchema;
+        case 'string':
+          return z.string();
+        case 'symbol':
+          return z.symbol();
+        case 'undefined':
+          return z.undefined();
+        case 'weakmap':
+          return z.instanceof(WeakMap);
+        case 'weakref':
+          return z.instanceof(WeakRef);
+        case 'weakset':
+          return z.instanceof(WeakSet);
+        // c8 ignore next 2
+        default:
+          throw new TypeError(`Unknown type: "${type}"`);
+      }
+    },
+  ),
   createAssertion([z.number(), 'to be greater than', z.number()], (_, other) =>
     z.number().gt(other),
   ),
@@ -138,14 +222,15 @@ export const ParametricAssertions = [
     (subject, regex) => regex.test(subject),
   ),
   createAssertion(
-    [['to satisfy', 'to be like'], z.looseObject({})],
-    (subject, expected) => {
-      if (isNullOrNonObject(subject)) {
-        return false;
-      }
-
-      // Deep recursive object matching with circular reference protection
-      return satisfies(subject, expected);
-    },
+    [
+      z.looseObject({}).nonoptional(),
+      ['to satisfy', 'to be like'],
+      z.looseObject({}),
+    ],
+    (subject, expected) => satisfies(subject, expected),
+  ),
+  createAssertion(
+    [['to be an instance of', 'to be a'], ClassSchema],
+    (_, ctor) => z.instanceof(ctor),
   ),
 ] as const; // Shared validation/match helper

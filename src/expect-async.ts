@@ -16,6 +16,7 @@ import {
   type AssertionImpl,
   type AssertionParts,
   type BuiltinAsyncAssertion,
+  type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
 import { AsyncAssertions } from './assertion/async.js';
@@ -43,22 +44,23 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
         assertion: BuiltinAsyncAssertion;
         exactMatch: boolean;
         parsedValues: AnyParsedValues;
+        parseResult: ParsedResult<AssertionParts>;
       };
   const failureReasons: [assertionRepor: string, reason: string][] = [];
   for (const assertion of AsyncAssertions) {
-    const { exactMatch, parsedValues, reason, success } =
-      await assertion.parseValuesAsync(processedArgs);
+    const parseResult = await assertion.parseValuesAsync(processedArgs);
+    const { exactMatch, parsedValues, reason, success } = parseResult;
     if (success) {
       if (found) {
         assertSingleExactMatch(found, assertion, exactMatch);
       }
-      found = { assertion, exactMatch, parsedValues };
+      found = { assertion, exactMatch, parsedValues, parseResult };
     } else {
       failureReasons.push([`${assertion}`, reason]);
     }
   }
   if (found) {
-    const { assertion, parsedValues } = found;
+    const { assertion, parsedValues, parseResult } = found;
     await executeAsync(
       assertion as unknown as Assertion<
         AssertionImpl<AssertionParts>,
@@ -68,6 +70,7 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
       [...args],
       expectAsyncFunction,
       isNegated,
+      parseResult,
     );
     return;
   }
@@ -104,14 +107,20 @@ const executeAsync = async <
   args: unknown[],
   stackStartFn: (...args: any[]) => any,
   isNegated: boolean,
+  parseResult?: ParsedResult<Parts>,
 ): Promise<void> => {
   if (!isNegated) {
-    return assertion.executeAsync(parsedValues, args, stackStartFn);
+    return assertion.executeAsync(
+      parsedValues,
+      args,
+      stackStartFn,
+      parseResult,
+    );
   }
 
   try {
     debug('Executing negated async assertion: %s', assertion);
-    await assertion.executeAsync(parsedValues, args, stackStartFn);
+    await assertion.executeAsync(parsedValues, args, stackStartFn, parseResult);
     // If we reach here, the assertion passed but we expected it to fail
     throw new NegatedAssertionError({
       message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,

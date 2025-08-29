@@ -2,7 +2,14 @@
 
 ## Architecture Overview
 
-**Bupkis** is a TypeScript assertion library built around natural language assertions using Zod v4 for validation. Unlike chainable APIs, it uses function calls with phrase arguments: `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.
+**Bupkis** is a TypeScript assertion library built arou**Test Results & Coverage**: Use Wallaby MCP tools for real-time insights when Wallaby is installed:
+
+- `mcp_wallaby_wallaby_allTests` - Get all test results with execution times and errors
+- `mcp_wallaby_wallaby_failingTests` - Focus on failing tests only
+- `mcp_wallaby_wallaby_coveredLinesForFile` - Check code coverage for specific files
+- `mcp_wallaby_wallaby_runtimeValues` - Inspect variable values at specific code locations
+- Additional tools: `mcp_wallaby_wallaby_allTestsForFile`, `mcp_wallaby_wallaby_testById`, `mcp_wallaby_wallaby_updateFileSnapshots`
+- Fallback: `npm test` for basic test execution when Wallaby MCP is not installedal language assertions using Zod v4 for validation. Unlike chainable APIs, it uses function calls with phrase arguments: `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.
 
 ### Core Components
 
@@ -110,13 +117,16 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 ## Debugging & Validation
 
-**Test Results & Coverage**: Use Wallaby MCP tools when available for real-time insights:
+**Test Results & Coverage**: Use Wallaby MCP tools for real-time insights (Wallaby MCP server should be enabled):
 
-- `wallaby_allTests` - Get all test results with execution times and errors
-- `wallaby_failingTests` - Focus on failing tests only
-- `wallaby_coveredLinesForFile` - Check code coverage for specific files
-- `wallaby_runtimeValues` - Inspect variable values at specific code locations
-- Fallback: `npm test` for basic test execution without real-time feedback
+- `mcp_wallaby_wallaby_allTests` - Get all test results with execution times and errors
+- `mcp_wallaby_wallaby_failingTests` - Focus on failing tests only
+- `mcp_wallaby_wallaby_coveredLinesForFile` - Check code coverage for specific files
+- `mcp_wallaby_wallaby_runtimeValues` - Inspect variable values at specific code locations
+- Additional tools: `mcp_wallaby_wallaby_allTestsForFile`, `mcp_wallaby_wallaby_testById`, `mcp_wallaby_wallaby_updateFileSnapshots`
+- Fallback: `npm test` for basic test execution when Wallaby MCP is unavailable
+
+**Property-Based Testing**: Property-based test suites must be executed from the command-line and cannot be executed nor queried through the Wallaby MCP server. Use the command `node --test --import tsx <filepath>` to run property-based test suites.
 
 **Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
 
@@ -134,9 +144,10 @@ Choose only the tail end of the output to confirm success.
 - **Type Inference Issues**: Complex recursive types in `types.ts` may hit TypeScript recursion limits
 - **Async/Sync Mismatch**: `expect()` throws TypeError if assertion returns Promise; use `expectAsync()` instead
 - **Slot Validation**: Arguments must match assertion "slots" exactly; check `DEBUG=bupkis*` output for validation details
-- **Use Wallaby MCP**, if available. It will execute any code found in a temporary test file matching the glob pattern `test/**/*.test.ts`. These will be run automatically by Wallaby. You can create a temporary test file here to gather feedback about specific issues, put breakpoints to log values and/or query runtime values, and also query Wallaby for test results.
-  - If Wallaby MCP is available, **avoid running arbitrary code in a terminal**.
+- **Use Wallaby MCP**, if installed. It will execute any code found in a temporary test file matching the glob pattern `test/**/*.test.ts`. These will be run automatically by Wallaby. You can create a temporary test file here to gather feedback about specific issues, put breakpoints to log values and/or query runtime values, and also query Wallaby for test results.
+  - If Wallaby MCP is installed and you are able to Start Wallaby, do so.
   - If the Wallaby extension is installed and you are able to Start Wallaby, do so.
+- If you need to create and run a temporary file, **always** put the file in `.tmp/`. If the directory does not exist, create it. `.tmp` is ignored by Git.
 
 **Error Investigation**:
 

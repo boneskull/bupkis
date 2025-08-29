@@ -18,6 +18,7 @@ import {
   type AssertionParts,
   type BuiltinAssertion,
   type BuiltinAsyncAssertion,
+  type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
 import { BupkisAssertion } from './assertion/assertion.js';
@@ -74,14 +75,15 @@ const execute = <
   args: unknown[],
   stackStartFn: (...args: any[]) => any,
   isNegated: boolean,
+  parseResult?: ParsedResult<Parts>,
 ): void => {
   if (!isNegated) {
-    return assertion.execute(parsedValues, args, stackStartFn);
+    return assertion.execute(parsedValues, args, stackStartFn, parseResult);
   }
 
   try {
     debug('Executing negated assertion: %s', assertion);
-    assertion.execute(parsedValues, args, stackStartFn);
+    assertion.execute(parsedValues, args, stackStartFn, parseResult);
     // If we reach here, the assertion passed but we expected it to fail
     throw new NegatedAssertionError({
       message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
@@ -150,6 +152,7 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
         assertion: BuiltinAssertion;
         exactMatch: boolean;
         parsedValues: AnyParsedValues;
+        parseResult: ParsedResult<AssertionParts>;
       };
 
   /**
@@ -157,8 +160,8 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
    */
   const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
   for (const assertion of SyncAssertions) {
-    const { exactMatch, parsedValues, reason, success } =
-      assertion.parseValues(processedArgs);
+    const parseResult = assertion.parseValues(processedArgs);
+    const { exactMatch, parsedValues, reason, success } = parseResult;
     if (success) {
       if (found) {
         assertSingleExactMatch(found, assertion, exactMatch);
@@ -167,13 +170,14 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
         assertion,
         exactMatch,
         parsedValues: parsedValues as readonly [unknown, any],
+        parseResult,
       };
     } else {
       parseFailureReasons.push([`${assertion}`, reason]);
     }
   }
   if (found) {
-    const { assertion, parsedValues } = found;
+    const { assertion, parsedValues, parseResult } = found;
 
     return execute(
       assertion as unknown as Assertion<
@@ -184,6 +188,7 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
       [...args],
       expectFunction,
       isNegated,
+      parseResult,
     );
   }
   throwInvalidParametersError(args, parseFailureReasons);

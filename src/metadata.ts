@@ -19,6 +19,85 @@ export type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
  * Zod metadata registry for Bupkis
  */
 export const BupkisRegistry = z.registry<BupkisMeta>();
+/**
+ * Set of all fast-check function names that return fc.Arbitrary types.
+ * Extracted from fast-check type definitions.
+ */
+export const FC_ARBITRARY_FUNCTIONS = [
+  // Basic primitives
+  'boolean',
+  'falsy',
+  'float',
+  'double',
+  'integer',
+  'nat',
+  'maxSafeInteger',
+  'maxSafeNat',
+  'bigInt',
+
+  // String generators
+  'mixedCase',
+  'string',
+  'base64String',
+  'stringMatching',
+  'lorem',
+
+  // Constants and combinators
+  'constant',
+  'constantFrom',
+  'mapToConstant',
+  'option',
+
+  // Complex objects
+  'anything',
+  'object',
+  'json',
+  'jsonValue',
+
+  // Functions
+  'compareBooleanFunc',
+  'compareFunc',
+  'func',
+
+  // Date and time
+  'date',
+
+  // Network and web
+  'ipV4',
+  'ipV4Extended',
+  'ipV6',
+  'domain',
+  'webAuthority',
+  'webSegment',
+  'webFragments',
+  'webPath',
+  'webQueryParameters',
+  'webUrl',
+  'emailAddress',
+
+  // Identifiers
+  'ulid',
+  'uuid',
+
+  // Typed arrays
+  'int8Array',
+  'uint8Array',
+  'uint8ClampedArray',
+  'int16Array',
+  'uint16Array',
+  'int32Array',
+  'uint32Array',
+  'float32Array',
+  'float64Array',
+  'bigInt64Array',
+  'bigUint64Array',
+
+  // custom
+  'primitive',
+  'positiveNumber',
+  'negativeNumber',
+  'truthy',
+] as const;
 
 /**
  * Base schema for all metadata
@@ -29,6 +108,10 @@ const BaseBupkisMetadataSchema = z.object({
     .string()
     .optional()
     .describe('Internal name; used by Assertion.prototype.toString()'),
+  validInput: z
+    .enum([...FC_ARBITRARY_FUNCTIONS])
+    .optional()
+    .describe('String representing valid input'),
 });
 
 /**

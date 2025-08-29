@@ -9,10 +9,11 @@
  * @packageDocumentation
  */
 
-import { type Constructor, type Primitive } from 'type-fest';
+import { type Primitive } from 'type-fest';
 import { type z } from 'zod';
 
 import type { AssertionPart } from './assertion/assertion-types.js';
+import type { Constructor } from './types.js';
 
 /**
  * Returns true if the given value looks like a Zod schema (v4), determined by
@@ -67,9 +68,7 @@ export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
  * @param fn - Function to test
  * @returns Whether the function is constructable
  */
-export const isConstructable = (
-  fn: any,
-): fn is Constructor<InstanceType<typeof fn>> => {
+export const isConstructable = (fn: any): fn is Constructor => {
   try {
     // this will throw if there is no `[[construct]]` slot.. or so I've heard.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -174,7 +173,7 @@ export const isType = <T extends PrimitiveTypeName>(
   return typeof a === b;
 };
 
-export const isA = <T extends Constructor<any>>(
+export const isA = <T extends Constructor>(
   value: unknown,
   ctor: T,
 ): value is InstanceType<T> => {
