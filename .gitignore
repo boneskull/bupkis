@@ -145,3 +145,5 @@ test/**/*.js*
 docs
 
 .tmp
+
+.tshy-build
