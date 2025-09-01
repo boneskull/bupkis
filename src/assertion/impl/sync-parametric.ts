@@ -1,15 +1,15 @@
 import { z } from 'zod/v4';
 
-import { isA, isNonNullObject, isString } from '../guards.js';
+import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ClassSchema,
   FunctionSchema,
   StrongMapSchema,
   StrongSetSchema,
   WrappedPromiseLikeSchema,
-} from '../schema.js';
-import { satisfies, shallowSatisfiesShape } from '../util.js';
-import { createAssertion } from './assertion.js';
+} from '../../schema.js';
+import { satisfies, shallowSatisfiesShape } from '../../util.js';
+import { createAssertion } from '../assertion.js';
 import { trapError } from './sync.js';
 
 const knownTypes = Object.freeze(

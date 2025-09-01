@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
-import { NullProtoObjectSchema, PropertyKeySchema } from '../schema.js';
-import { createAssertion } from './assertion.js';
+import { NullProtoObjectSchema, PropertyKeySchema } from '../../schema.js';
+import { createAssertion } from '../assertion.js';
 
 export const EsotericAssertions = [
   createAssertion(['to have a null prototype'], NullProtoObjectSchema),

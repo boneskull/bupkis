@@ -189,4 +189,60 @@ describe('Collection assertions', () => {
       });
     });
   });
+
+  describe('Array assertions', () => {
+    describe('to contain / to include', () => {
+      describe('when Array contains the value', () => {
+        it('should pass', () => {
+          const array = [1, 'hello', true, null, undefined];
+          expect(() => expect(array, 'to contain', 'hello'), 'not to throw');
+          expect(() => expect(array, 'to include', 1), 'not to throw');
+          expect(() => expect(array, 'to contain', true), 'not to throw');
+          expect(() => expect(array, 'to include', null), 'not to throw');
+          expect(() => expect(array, 'to contain', undefined), 'not to throw');
+        });
+      });
+
+      describe('when Array does not contain the value', () => {
+        it('should fail', () => {
+          const array = ['value1', 42];
+          expect(() => expect(array, 'to contain', 'value2'), 'to throw');
+          expect(() => expect(array, 'to include', 'missing'), 'to throw');
+          expect(() => expect(array, 'to contain', 43), 'to throw');
+        });
+      });
+    });
+
+    describe('to have size', () => {
+      describe('when Array has the correct size', () => {
+        it('should pass', () => {
+          const array = ['a', 'b', 'c'];
+          expect(() => expect(array, 'to have size', 3), 'not to throw');
+        });
+      });
+
+      describe('when Array has incorrect size', () => {
+        it('should fail', () => {
+          const array = ['a', 'b'];
+          expect(() => expect(array, 'to have size', 5), 'to throw');
+        });
+      });
+    });
+
+    describe('to have length', () => {
+      describe('when Array has the correct length', () => {
+        it('should pass', () => {
+          const array = [1, 2, 3, 4];
+          expect(() => expect(array, 'to have length', 4), 'not to throw');
+        });
+      });
+
+      describe('when Array has incorrect length', () => {
+        it('should fail', () => {
+          const array = [1, 2];
+          expect(() => expect(array, 'to have length', 7), 'to throw');
+        });
+      });
+    });
+  });
 });

@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 import { type Entries } from 'type-fest';
 import { type z } from 'zod/v4';
 
-import { BasicAssertions } from '../../src/assertion/sync-basic.js';
+import { BasicAssertions } from '../../src/assertion/impl/sync-basic.js';
 import { AssertionError } from '../../src/error.js';
 import { isZodType } from '../../src/guards.js';
 import { expect } from '../../src/index.js';

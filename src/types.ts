@@ -16,11 +16,13 @@ import type {
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
+import type {
+  AsyncAssertions,
+  SyncAssertions,
+} from './assertion/impl/index.js';
 
 import { type NoNeverTuple } from './assertion/assertion-types.js';
 import { type BupkisAssertion } from './assertion/assertion.js';
-import { type AsyncAssertions } from './assertion/async.js';
-import { type SyncAssertions } from './assertion/sync.js';
 
 /**
  * Helper type to create negated version of assertion parts. For phrase

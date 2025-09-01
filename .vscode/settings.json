@@ -6,7 +6,6 @@
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "eslint.onIgnoredFiles": "warn",
   "eslint.useFlatConfig": true,
   "files.exclude": {
     "**/node_modules": true

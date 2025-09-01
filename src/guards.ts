@@ -97,6 +97,11 @@ export const isBoolean = (value: unknown): value is boolean =>
 export const isFunction = (value: unknown): value is (...args: any[]) => any =>
   typeof value === 'function';
 
+export const isAsyncFunction = (
+  value: unknown,
+): value is (...args: any[]) => Promise<any> =>
+  isFunction(value) && value.constructor.name === 'AsyncFunction';
+
 /**
  * Type guard for a string value
  *

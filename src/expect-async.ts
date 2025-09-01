@@ -19,8 +19,7 @@ import {
   type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
-import { AsyncAssertions } from './assertion/async.js';
-import { BupkisAssertion } from './assertion/index.js';
+import { AsyncAssertions, BupkisAssertion } from './assertion/index.js';
 import { AssertionError, NegatedAssertionError } from './error.js';
 import {
   assertSingleExactMatch,

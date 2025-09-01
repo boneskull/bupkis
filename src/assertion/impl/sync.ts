@@ -9,10 +9,10 @@
  * @packageDocumentation
  */
 
-import { BasicAssertions } from './impl/sync-basic.js';
-import { CollectionAssertions } from './impl/sync-collection.js';
-import { EsotericAssertions } from './impl/sync-esoteric.js';
-import { ParametricAssertions } from './impl/sync-parametric.js';
+import { BasicAssertions } from './sync-basic.js';
+import { CollectionAssertions } from './sync-collection.js';
+import { EsotericAssertions } from './sync-esoteric.js';
+import { ParametricAssertions } from './sync-parametric.js';
 
 export const trapError = (fn: () => unknown) => {
   try {

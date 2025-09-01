@@ -11,8 +11,7 @@
 
 import { type z } from 'zod/v4';
 
-import type { AsyncAssertions } from './async.js';
-import type { SyncAssertions } from './sync.js';
+import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
 export type AnyParsedValues = ParsedValues<readonly [any, ...any[]]>;
 /**

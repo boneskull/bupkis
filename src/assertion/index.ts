@@ -10,14 +10,11 @@
 
 export type {
   AssertionImpl,
-  AssertionImplAsyncFn,
-  AssertionImplFn,
   AssertionPart,
   AssertionParts,
   AssertionPartsToSlots,
   AssertionSlot,
   AssertionSlots,
-  HoleyParsedValues,
   ParsedResult,
   ParsedResultFailure,
   ParsedResultSuccess,
@@ -25,16 +22,10 @@ export type {
   ParsedValues,
   Phrase,
   PhraseLiteral,
-  PhraseLiteralChoice as PhraseLiteralEnum,
-  PhraseLiteralChoiceSlot as PhraseLiteralEnumSlot,
+  PhraseLiteralChoice,
+  PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion-types.js';
-export {
-  BupkisAssertion,
-  createAssertion,
-  FunctionAssertion,
-  SchemaAssertion as OptimizedSchemaAssertion,
-  SchemaAssertion,
-} from './assertion.js';
-export { AsyncAssertions } from './async.js';
-export { SyncAssertions } from './sync.js';
+export { BupkisAssertion, createAssertion } from './assertion.js';
+export { AsyncAssertions } from './impl/async.js';
+export { SyncAssertions } from './impl/sync.js';

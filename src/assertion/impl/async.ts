@@ -11,14 +11,14 @@
 
 import { z } from 'zod/v4';
 
-import { isA, isNonNullObject, isString } from '../guards.js';
+import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ClassSchema,
   FunctionSchema,
   WrappedPromiseLikeSchema,
-} from '../schema.js';
-import { shallowSatisfiesShape } from '../util.js';
-import { createAssertion } from './assertion.js';
+} from '../../schema.js';
+import { shallowSatisfiesShape } from '../../util.js';
+import { createAssertion } from '../assertion.js';
 
 const trapAsyncFnError = async (fn: () => unknown) => {
   try {
