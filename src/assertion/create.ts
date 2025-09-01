@@ -1,4 +1,71 @@
-import { inspect } from 'util';
+/**
+ * Assertion creation factory functions with type-safe sync/async separation.
+ *
+ * This module provides the core factory functions for creating both synchronous
+ * and asynchronous assertions in the Bupkis assertion framework. It implements
+ * a dual-creation pattern where `createAssertion()` creates synchronous-only
+ * assertions and `createAsyncAssertion()` creates potentially asynchronous
+ * assertions, using branded Zod schema types to enforce compile-time safety and
+ * prevent accidental mixing of sync and async implementations.
+ *
+ * The module supports two primary assertion implementation types:
+ *
+ * - **Schema-based assertions**: Using {@link z.ZodType Zod schemas} for
+ *   validation
+ * - **Function-based assertions**: Using implementation functions that return
+ *   boolean, void, or Zod schemas for dynamic validation
+ *
+ * @remarks
+ * The factory functions use branded types to distinguish between synchronous
+ * and asynchronous schema implementations at compile time. This prevents
+ * accidentally passing async schemas to sync assertion creators and vice versa,
+ * ensuring type safety throughout the assertion system.
+ * @example Creating a synchronous string assertion:
+ *
+ * ```ts
+ * import { createAssertion } from './create.js';
+ * import { z } from 'zod/v4';
+ *
+ * const stringAssertion = createAssertion(['to be a string'], z.string());
+ * ```
+ *
+ * @example Creating an asynchronous Promise resolution assertion:
+ *
+ * ```ts
+ * import { createAsyncAssertion } from './create.js';
+ *
+ * const promiseAssertion = createAsyncAssertion(
+ *   ['to resolve'],
+ *   async (promise) => {
+ *     try {
+ *       await promise;
+ *       return true;
+ *     } catch {
+ *       return false;
+ *     }
+ *   },
+ * );
+ * ```
+ *
+ * @example Creating parameterized assertions:
+ *
+ * ```ts
+ * import { createAssertion } from './create.js';
+ * import { z } from 'zod/v4';
+ *
+ * const greaterThanAssertion = createAssertion(
+ *   [z.number(), 'to be greater than', z.number()],
+ *   (subject, expected) => subject > expected,
+ * );
+ * ```
+ *
+ * @packageDocumentation
+ * @see {@link AssertionParts} for assertion part structure
+ * @see {@link AssertionSlots} for processed slot definitions
+ * @see {@link AssertionImplSync} for synchronous implementation types
+ * @see {@link AssertionImplAsync} for asynchronous implementation types
+ */
+
 import { z } from 'zod/v4';
 
 import type {
@@ -17,14 +84,7 @@ import type {
   RawAssertionImplSchemaSync,
 } from './assertion-types.js';
 
-import { kStringLiteral } from '../constant.js';
-import {
-  isFunction,
-  isString,
-  isStringTupleAssertionPart,
-  isZodType,
-} from '../guards.js';
-import { BupkisRegistry } from '../metadata.js';
+import { isFunction, isZodType } from '../guards.js';
 import {
   BupkisAssertionFunctionAsync,
   BupkisAssertionSchemaAsync,
@@ -33,6 +93,7 @@ import {
   BupkisAssertionFunctionSync,
   BupkisAssertionSchemaSync,
 } from './assertion-sync.js';
+import { slotify } from './slotify.js';
 
 /**
  * Create an async `Assertion` from {@link AssertionParts parts} and an async
@@ -118,12 +179,19 @@ function create<
   if (!parts || parts.length === 0) {
     throw new TypeError('At least one value is required for an assertion');
   }
-  const slots = slotify<Parts>(parts);
+  try {
+    const slots = slotify<Parts>(parts);
 
-  if (isZodType(impl)) {
-    return new BupkisAssertionSchemaSync(parts, slots, impl);
-  } else if (isFunction(impl)) {
-    return new BupkisAssertionFunctionSync(parts, slots, impl);
+    if (isZodType(impl)) {
+      return new BupkisAssertionSchemaSync(parts, slots, impl);
+    } else if (isFunction(impl)) {
+      return new BupkisAssertionFunctionSync(parts, slots, impl);
+    }
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      throw new TypeError(z.prettifyError(err));
+    }
+    throw err;
   }
   throw new TypeError(
     'Assertion implementation must be a function, Zod schema or Zod schema factory',
@@ -138,55 +206,4 @@ export const createAssertion = create;
  * Create an asynchronous assertion from parts and implementation.
  */
 
-export const createAsyncAssertion = createAsync; /**
- * Builds slots out of assertion parts.
- *
- * @param parts Assertion parts
- * @returns Slots
- */
-
-export function slotify<const Parts extends AssertionParts>(
-  parts: Parts,
-): AssertionSlots<Parts> {
-  return parts.flatMap((part, index) => {
-    const result: z.ZodType[] = [];
-    if (index === 0 && (isStringTupleAssertionPart(part) || isString(part))) {
-      result.push(z.unknown().describe('subject'));
-    }
-
-    if (isStringTupleAssertionPart(part)) {
-      if (part.some((p) => p.startsWith('not '))) {
-        throw new TypeError(
-          `Failed to create Assertion containing phrases ${inspect(part, { depth: 1 })}; string literal parts cannot begin with "not"`,
-        );
-      }
-      result.push(
-        z
-          .literal(part)
-          .brand('string-literal')
-          .register(BupkisRegistry, {
-            [kStringLiteral]: true,
-            values: part,
-          }),
-      );
-    } else if (isString(part)) {
-      if (part.startsWith('not ')) {
-        throw new TypeError(
-          `Failed to create Assertion containing phrase ${inspect(part, { depth: 1 })}; string literal parts cannot begin with "not"`,
-        );
-      }
-      result.push(
-        z
-          .literal(part)
-          .brand('string-literal')
-          .register(BupkisRegistry, {
-            [kStringLiteral]: true,
-            value: part,
-          }),
-      );
-    } else {
-      result.push(part);
-    }
-    return result;
-  }) as unknown as AssertionSlots<Parts>;
-}
+export const createAsyncAssertion = createAsync;

@@ -9,6 +9,7 @@
  * @packageDocumentation
  */
 
+import { type NonEmptyTuple } from 'type-fest';
 import { type z } from 'zod/v4';
 
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
@@ -128,8 +129,8 @@ export type AssertionImplFnSync<
  * @knipignore
  */
 export type AssertionImplPart<Part extends AssertionPart> = Part extends
-  | readonly [string, ...string[]]
-  | string
+  | PhraseLiteral
+  | PhraseLiteralChoice
   ? never
   : Part extends z.ZodPromise
     ? Promise<z.infer<Part>>
@@ -140,10 +141,10 @@ export type AssertionImplPart<Part extends AssertionPart> = Part extends
  *
  * @knipignore
  */
-export type AssertionImplParts<Parts extends AssertionParts> =
+export type AssertionImplParts<Parts extends readonly AssertionPart[]> =
   Parts extends readonly [
     infer First extends AssertionPart,
-    ...infer Rest extends AssertionParts,
+    ...infer Rest extends readonly AssertionPart[],
   ]
     ? readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
     : readonly [];
@@ -172,7 +173,7 @@ export type AssertionPart = Phrase | z.ZodType;
  * The first parameter to `createAssertion`, representing the inputs and
  * phrases.
  */
-export type AssertionParts = readonly AssertionPart[];
+export type AssertionParts = NonEmptyTuple<AssertionPart>;
 
 /**
  * Maps {@link AssertionParts} to their corresponding {@link AssertionSlots}.
@@ -180,10 +181,10 @@ export type AssertionParts = readonly AssertionPart[];
  * Can contain `never` entries and should be filtered with {@link NoNeverTuple}
  * to retain tupleness.
  */
-export type AssertionPartsToSlots<Parts extends AssertionParts> =
+export type AssertionPartsToSlots<Parts extends readonly AssertionPart[]> =
   Parts extends readonly [
     infer First extends AssertionPart,
-    ...infer Rest extends AssertionParts,
+    ...infer Rest extends readonly AssertionPart[],
   ]
     ? readonly [AssertionSlot<First>, ...AssertionPartsToSlots<Rest>]
     : readonly [];
@@ -226,12 +227,12 @@ export type AssertionSlot<Part extends AssertionPart> = Part extends string
  *
  * This is a tuple.
  */
-export type AssertionSlots<Parts extends AssertionParts> =
+export type AssertionSlots<Parts extends AssertionParts = AssertionParts> =
   Parts extends readonly [
     infer First extends AssertionPart,
     ...infer _ extends AssertionParts,
   ]
-    ? First extends readonly [string, ...string[]] | string
+    ? First extends PhraseLiteral | PhraseLiteralChoice
       ? NoNeverTuple<readonly [z.ZodUnknown, ...AssertionPartsToSlots<Parts>]>
       : NoNeverTuple<AssertionPartsToSlots<Parts>>
     : never;
@@ -306,20 +307,21 @@ export type BuiltinAssertion = (typeof SyncAssertions)[number];
 
 export type BuiltinAsyncAssertion = (typeof AsyncAssertions)[number];
 
-export type HoleyParsedValues<Parts extends AssertionParts> = NoNeverTuple<
-  Parts extends readonly [
-    infer First extends AssertionPart,
-    ...infer Rest extends AssertionParts,
-  ]
-    ? First extends readonly [string, ...string[]] | string
-      ? readonly [
-          unknown,
-          AssertionImplPart<First>,
-          ...AssertionImplParts<Rest>,
-        ]
-      : readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
-    : readonly []
->;
+export type MaybeEmptyParsedValues<Parts extends readonly AssertionPart[]> =
+  NoNeverTuple<
+    Parts extends readonly [
+      infer First extends AssertionPart,
+      ...infer Rest extends readonly AssertionPart[],
+    ]
+      ? First extends PhraseLiteral | PhraseLiteralChoice
+        ? readonly [
+            unknown,
+            AssertionImplPart<First>,
+            ...AssertionImplParts<Rest>,
+          ]
+        : readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
+      : readonly []
+  >;
 
 /**
  * Strips `never` from a tuple type, retaining tupleness.
@@ -386,9 +388,9 @@ export type ParsedSubject<Parts extends AssertionParts> =
  * {@link AssertionImpl assertion implementation}.
  */
 export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
-  HoleyParsedValues<Parts> extends readonly []
+  MaybeEmptyParsedValues<Parts> extends readonly []
     ? never
-    : HoleyParsedValues<Parts>; /**
+    : MaybeEmptyParsedValues<Parts>; /**
  * Either type of phrase.
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;

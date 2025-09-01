@@ -15,6 +15,8 @@ import { type z } from 'zod';
 import type { AssertionPart } from './assertion/assertion-types.js';
 import type { Constructor } from './types.js';
 
+import { type PhraseLiteralChoice } from '../dist/commonjs/assertion/assertion-types.js';
+
 /**
  * Returns true if the given value looks like a Zod schema (v4), determined by
  * the presence of an internal `def.type` field.
@@ -130,16 +132,27 @@ export const isNullOrNonObject = (value: unknown): value is null | Primitive =>
   typeof value !== 'object' || value === null;
 
 /**
- * Checks if a {@link AssertionPart} is a string tuple (which will be converted
- * to a Zod enum of literals)
+ * Type guard for a {@link PhraseLiteralChoice}, which is a tuple of strings.
  *
  * @param value Assertion part to check
- * @returns `true` if the part is a string tuple, `false` otherwise
+ * @returns `true` if the part is a `PhraseLiteralChoice`, `false` otherwise
  * @internal
  */
-export const isStringTupleAssertionPart = (
+export const isPhraseLiteralChoice = (
   value: AssertionPart,
-): value is readonly [string, ...string[]] => Array.isArray(value);
+): value is PhraseLiteralChoice =>
+  Array.isArray(value) && value.every(isPhraseLiteral);
+
+/**
+ * Type guard for a {@link PhraseLiteral}, which is just a string that does not
+ * begin with `not `.
+ *
+ * @param value Assertion part to check
+ * @returns `true` if the part is a `PhraseLiteral`, `false` otherwise
+ * @internal
+ */
+export const isPhraseLiteral = (value: AssertionPart): value is string =>
+  isString(value) && !value.startsWith('not ');
 
 export type PrimitiveTypeName =
   | 'bigint'

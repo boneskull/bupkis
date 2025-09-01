@@ -13,6 +13,8 @@ import type {
   AssertionSlot,
   BuiltinAssertion,
   BuiltinAsyncAssertion,
+  PhraseLiteral,
+  PhraseLiteralChoice,
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
@@ -32,23 +34,24 @@ import {
  * literals, creates "not phrase" version. For phrase arrays, creates negated
  * versions of each phrase in the array.
  */
-export type AddNegation<T extends AssertionParts> = T extends readonly [
-  infer First extends AssertionPart,
-  ...infer Rest extends AssertionParts,
-]
-  ? First extends readonly [string, ...string[]]
-    ? readonly [
-        {
-          [K in keyof First]: First[K] extends string
-            ? `not ${First[K]}`
-            : never;
-        },
-        ...AddNegation<Rest>,
-      ]
-    : First extends string
-      ? readonly [`not ${First}`, ...AddNegation<Rest>]
-      : readonly [First, ...AddNegation<Rest>]
-  : readonly [];
+export type AddNegation<T extends readonly AssertionPart[]> =
+  T extends readonly [
+    infer First extends AssertionPart,
+    ...infer Rest extends readonly AssertionPart[],
+  ]
+    ? First extends readonly [string, ...string[]]
+      ? readonly [
+          {
+            [K in keyof First]: First[K] extends string
+              ? `not ${First[K]}`
+              : never;
+          },
+          ...AddNegation<Rest>,
+        ]
+      : First extends string
+        ? readonly [`not ${First}`, ...AddNegation<Rest>]
+        : readonly [First, ...AddNegation<Rest>]
+    : readonly [];
 
 export interface BaseExpect {
   fail(reason?: string): never;
@@ -115,7 +118,7 @@ export type ExpectFunction = {
  */
 export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
   Parts extends readonly [infer First extends AssertionPart, ...infer _]
-    ? First extends readonly [string, ...string[]] | string
+    ? First extends PhraseLiteral | PhraseLiteralChoice
       ? [unknown, ...MapExpectSlots<Parts>]
       : MapExpectSlots<Parts>
     : never
@@ -127,10 +130,10 @@ export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
  *
  * Overloads each phrase literal slot with a negated version using a union.
  */
-export type MapExpectSlots<Parts extends AssertionParts> =
+export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
   Parts extends readonly [
     infer First extends AssertionPart,
-    ...infer Rest extends AssertionParts,
+    ...infer Rest extends readonly AssertionPart[],
   ]
     ? [
         AssertionSlot<First> extends PhraseLiteralSlot<infer StringLiteral>
