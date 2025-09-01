@@ -12,14 +12,15 @@ import Debug from 'debug';
 
 import {
   type AnyParsedValues,
-  type Assertion,
-  type AssertionImpl,
+  type AssertionAsync,
+  type AssertionImplAsync,
   type AssertionParts,
+  type AssertionSlots,
   type BuiltinAsyncAssertion,
   type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
-import { AsyncAssertions, BupkisAssertion } from './assertion/index.js';
+import { AsyncAssertions, createAsyncAssertion } from './assertion/index.js';
 import { AssertionError, NegatedAssertionError } from './error.js';
 import {
   assertSingleExactMatch,
@@ -43,7 +44,7 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
         assertion: BuiltinAsyncAssertion;
         exactMatch: boolean;
         parsedValues: AnyParsedValues;
-        parseResult: ParsedResult<AssertionParts>;
+        parseResult: ParsedResult;
       };
   const failureReasons: [assertionRepor: string, reason: string][] = [];
   for (const assertion of AsyncAssertions) {
@@ -61,11 +62,8 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
   if (found) {
     const { assertion, parsedValues, parseResult } = found;
     await executeAsync(
-      assertion as unknown as Assertion<
-        AssertionImpl<AssertionParts>,
-        AssertionParts
-      >,
-      parsedValues as unknown as ParsedValues<AssertionParts>,
+      assertion as unknown as AssertionAsync,
+      parsedValues as unknown as ParsedValues,
       [...args],
       expectAsyncFunction,
       isNegated,
@@ -78,7 +76,7 @@ const expectAsyncFunction: ExpectAsyncFunction = async (
 
 /** {@inheritDoc ExpectAsync} */
 export const expectAsync: ExpectAsync = Object.assign(expectAsyncFunction, {
-  createAssertion: BupkisAssertion.create,
+  createAssertion: createAsyncAssertion,
   fail(reason?: string): never {
     throw new AssertionError({ message: reason });
   },
@@ -98,8 +96,9 @@ export const expectAsync: ExpectAsync = Object.assign(expectAsyncFunction, {
  */
 
 const executeAsync = async <
-  T extends Assertion<AssertionImpl<Parts>, Parts>,
+  T extends AssertionAsync<Parts, AssertionImplAsync<Parts>, Slots>,
   Parts extends AssertionParts,
+  Slots extends AssertionSlots<Parts>,
 >(
   assertion: T,
   parsedValues: ParsedValues<Parts>,

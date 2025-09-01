@@ -18,7 +18,7 @@ import {
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
 import { shallowSatisfiesShape } from '../../util.js';
-import { createAssertion } from '../assertion.js';
+import { createAsyncAssertion } from '../create.js';
 
 const trapAsyncFnError = async (fn: () => unknown) => {
   try {
@@ -37,7 +37,7 @@ const trapPromiseError = async (promise: PromiseLike<unknown>) => {
 };
 
 export const AsyncAssertions = [
-  createAssertion(
+  createAsyncAssertion(
     [FunctionSchema, ['to resolve', 'to fulfill']],
     async (subject) => {
       try {
@@ -48,7 +48,7 @@ export const AsyncAssertions = [
       }
     },
   ),
-  createAssertion(
+  createAsyncAssertion(
     [WrappedPromiseLikeSchema, ['to resolve', 'to fulfill']],
     async (subject) => {
       try {
@@ -61,7 +61,7 @@ export const AsyncAssertions = [
   ),
 
   // Non-parameterized "to reject" assertions
-  createAssertion([FunctionSchema, 'to reject'], async (subject) => {
+  createAsyncAssertion([FunctionSchema, 'to reject'], async (subject) => {
     let rejected = false;
     try {
       await subject();
@@ -70,17 +70,20 @@ export const AsyncAssertions = [
     }
     return rejected;
   }),
-  createAssertion([WrappedPromiseLikeSchema, 'to reject'], async (subject) => {
-    let rejected = false;
-    try {
-      await subject;
-    } catch {
-      rejected = true;
-    }
-    return rejected;
-  }),
+  createAsyncAssertion(
+    [WrappedPromiseLikeSchema, 'to reject'],
+    async (subject) => {
+      let rejected = false;
+      try {
+        await subject;
+      } catch {
+        rejected = true;
+      }
+      return rejected;
+    },
+  ),
   // Parameterized "to reject" with class constructor
-  createAssertion(
+  createAsyncAssertion(
     [FunctionSchema, ['to reject with a', 'to reject with an'], ClassSchema],
     async (subject, ctor) => {
       const error = await trapAsyncFnError(subject);
@@ -90,7 +93,7 @@ export const AsyncAssertions = [
       return isA(error, ctor);
     },
   ),
-  createAssertion(
+  createAsyncAssertion(
     [
       WrappedPromiseLikeSchema,
       ['to reject with a', 'to reject with an'],
@@ -106,7 +109,7 @@ export const AsyncAssertions = [
   ),
 
   // Parameterized "to reject" with string, RegExp, or object patterns
-  createAssertion(
+  createAsyncAssertion(
     [
       FunctionSchema,
       ['to reject'],
@@ -139,7 +142,7 @@ export const AsyncAssertions = [
       }
     },
   ),
-  createAssertion(
+  createAsyncAssertion(
     [
       WrappedPromiseLikeSchema,
       ['to reject'],

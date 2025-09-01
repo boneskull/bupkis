@@ -22,7 +22,10 @@ import type {
 } from './assertion/impl/index.js';
 
 import { type NoNeverTuple } from './assertion/assertion-types.js';
-import { type BupkisAssertion } from './assertion/assertion.js';
+import {
+  type createAssertion,
+  type createAsyncAssertion,
+} from './assertion/create.js';
 
 /**
  * Helper type to create negated version of assertion parts. For phrase
@@ -48,8 +51,15 @@ export type AddNegation<T extends AssertionParts> = T extends readonly [
   : readonly [];
 
 export interface BaseExpect {
-  createAssertion: (typeof BupkisAssertion)['create'];
   fail(reason?: string): never;
+}
+
+export interface BaseExpectAsync extends BaseExpect {
+  createAssertion: typeof createAsyncAssertion;
+}
+
+export interface BaseExpectSync extends BaseExpect {
+  createAssertion: typeof createAssertion;
 }
 
 /**
@@ -73,7 +83,7 @@ export interface Expect extends BaseExpect, ExpectFunction {}
  *
  * Contains properties in {@link BaseExpect}.
  */
-export interface ExpectAsync extends BaseExpect, ExpectAsyncFunction {}
+export interface ExpectAsync extends BaseExpectAsync, ExpectAsyncFunction {}
 
 /**
  * All overloads for {@link expectAsync}

@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 
 import { isNullOrNonObject } from '../../guards.js';
 import { StrongMapSchema, StrongSetSchema } from '../../schema.js';
-import { createAssertion } from '../assertion.js';
+import { createAssertion } from '../create.js';
 
 export const CollectionAssertions = [
   // Map assertions (including WeakMap)

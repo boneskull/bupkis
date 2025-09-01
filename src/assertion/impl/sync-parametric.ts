@@ -9,7 +9,7 @@ import {
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
 import { satisfies, shallowSatisfiesShape } from '../../util.js';
-import { createAssertion } from '../assertion.js';
+import { createAssertion } from '../create.js';
 import { trapError } from './sync.js';
 
 const knownTypes = Object.freeze(

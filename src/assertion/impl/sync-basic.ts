@@ -11,7 +11,7 @@ import {
   StrongSetSchema,
   TruthySchema,
 } from '../../schema.js';
-import { createAssertion } from '../assertion.js';
+import { createAssertion } from '../create.js';
 
 export const BasicAssertions = [
   /**

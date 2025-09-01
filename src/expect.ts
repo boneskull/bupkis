@@ -13,16 +13,17 @@ import { inspect } from 'node:util';
 
 import {
   type AnyParsedValues,
-  type Assertion,
-  type AssertionImpl,
+  type AssertionImplSync,
   type AssertionParts,
+  type AssertionSlots,
+  type AssertionSync,
   type BuiltinAssertion,
   type BuiltinAsyncAssertion,
   type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
-import { BupkisAssertion } from './assertion/assertion.js';
-import { SyncAssertions } from './assertion/sync.js';
+import { createAssertion } from './assertion/create.js';
+import { SyncAssertions } from './assertion/impl/sync.js';
 import { AssertionError, NegatedAssertionError } from './error.js';
 import { isString } from './guards.js';
 import { type Expect, type ExpectFunction } from './types.js';
@@ -67,8 +68,9 @@ const detectNegation = (
  * @param isNegated - Whether the assertion should be negated
  */
 const execute = <
-  T extends Assertion<AssertionImpl<Parts>, Parts>,
+  T extends AssertionSync<Parts, AssertionImplSync<Parts>, Slots>,
   Parts extends AssertionParts,
+  Slots extends AssertionSlots<Parts>,
 >(
   assertion: T,
   parsedValues: ParsedValues<Parts>,
@@ -180,11 +182,8 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
     const { assertion, parsedValues, parseResult } = found;
 
     return execute(
-      assertion as unknown as Assertion<
-        AssertionImpl<AssertionParts>,
-        AssertionParts
-      >,
-      parsedValues as unknown as ParsedValues<AssertionParts>,
+      assertion as unknown as AssertionSync,
+      parsedValues as unknown as ParsedValues,
       [...args],
       expectFunction,
       isNegated,
@@ -196,7 +195,7 @@ const expectFunction: ExpectFunction = (...args: readonly unknown[]) => {
 
 /** {@inheritDoc Expect} */
 export const expect: Expect = Object.assign(expectFunction, {
-  createAssertion: BupkisAssertion.create,
+  createAssertion,
   fail(reason?: string): never {
     throw new AssertionError({ message: reason });
   },

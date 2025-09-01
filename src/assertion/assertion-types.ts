@@ -22,24 +22,40 @@ export type AnyParsedValues = ParsedValues<readonly [any, ...any[]]>;
  * parsing and executing assertions both synchronously and asynchronously.
  */
 export interface Assertion<
-  Impl extends AssertionImpl<Parts>,
   Parts extends AssertionParts,
+  Impl extends AssertionImpl<Parts>,
+  Slots extends AssertionSlots<Parts>,
 > {
-  /**
-   * Execute the assertion implementation synchronously.
-   *
-   * @param parsedValues Parameters for the assertion implementation
-   * @param args Raw parameters passed to `expect()`
-   * @param stackStartFn Function to use as stack start for error reporting
-   * @param parseResult Optional parse result containing cached validation data
-   */
-  execute(
-    parsedValues: ParsedValues<Parts>,
-    args: unknown[],
-    stackStartFn: (...args: any[]) => any,
-    parseResult?: ParsedResult<Parts>,
-  ): void;
+  readonly id: string;
 
+  /**
+   * The implementation function or schema for this assertion.
+   */
+  readonly impl: Impl;
+
+  /**
+   * The assertion parts used to create this assertion.
+   *
+   * Available at runtime for introspection.
+   */
+  readonly parts: Parts;
+
+  /**
+   * The slots derived from assertion parts for validation.
+   */
+  readonly slots: Slots;
+
+  /**
+   * Returns the string representation of this assertion.
+   */
+  toString(): string;
+}
+
+export interface AssertionAsync<
+  Parts extends AssertionParts = AssertionParts,
+  Impl extends AssertionImplAsync<Parts> = AssertionImplAsync<Parts>,
+  Slots extends AssertionSlots<Parts> = AssertionSlots<Parts>,
+> extends Assertion<Parts, Impl, Slots> {
   /**
    * Execute the assertion implementation asynchronously.
    *
@@ -55,22 +71,6 @@ export interface Assertion<
     parseResult?: ParsedResult<Parts>,
   ): Promise<void>;
 
-  readonly id: string;
-
-  /**
-   * The implementation function or schema for this assertion.
-   */
-  readonly impl: Impl;
-
-  /**
-   * Parses raw arguments synchronously against this assertion's slots to
-   * determine if they match this assertion.
-   *
-   * @param args Raw arguments provided to `expect()`
-   * @returns Result of parsing attempt
-   */
-  parseValues<Args extends readonly unknown[]>(args: Args): ParsedResult<Parts>;
-
   /**
    * Parses raw arguments asynchronously against this assertion's slots to
    * determine if they match this assertion.
@@ -81,38 +81,38 @@ export interface Assertion<
   parseValuesAsync<Args extends readonly unknown[]>(
     args: Args,
   ): Promise<ParsedResult<Parts>>;
+}
 
-  /**
-   * The assertion parts used to create this assertion.
-   *
-   * Available at runtime for introspection.
-   */
-  readonly parts: Parts;
+export interface AssertionFunctionAsync<
+  Parts extends AssertionParts,
+  Impl extends AssertionImplFnAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionAsync<Parts, Impl, Slots> {
+  impl: Impl;
+}
 
-  /**
-   * The slots derived from assertion parts for validation.
-   */
-  readonly slots: AssertionSlots<Parts>;
-
-  /**
-   * Returns the string representation of this assertion.
-   */
-  toString(): string;
+export interface AssertionFunctionSync<
+  Parts extends AssertionParts,
+  Impl extends AssertionImplFnSync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionSync<Parts, Impl, Slots> {
+  impl: Impl;
 }
 
 // Union type for implementation function or static schema
-export type AssertionImpl<Parts extends AssertionParts> = ThisType<void> &
-  (
-    | AssertionImplAsyncFn<Parts>
-    | AssertionImplFn<Parts>
-    | z.ZodType<ParsedSubject<Parts>>
-  );
+export type AssertionImpl<Parts extends AssertionParts> =
+  | AssertionImplAsync<Parts>
+  | AssertionImplSync<Parts>;
 
-export type AssertionImplAsyncFn<Parts extends AssertionParts> = (
+export type AssertionImplAsync<Parts extends AssertionParts> =
+  | AssertionImplFnAsync<Parts>
+  | AssertionImplSchemaAsync<Parts>;
+
+export type AssertionImplFnAsync<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
 ) => Promise<boolean | void | z.ZodType<ParsedSubject<Parts>>>;
 
-export type AssertionImplFn<
+export type AssertionImplFnSync<
   Parts extends AssertionParts,
   Return extends boolean | void | z.ZodType<ParsedSubject<Parts>> =
     | boolean
@@ -148,9 +148,19 @@ export type AssertionImplParts<Parts extends AssertionParts> =
     ? readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
     : readonly [];
 
-export interface AssertionOptions {
-  id?: string;
-}
+/**
+ * A Zod schema implementation created with createAsync() - potentially
+ * asynchronous
+ */
+export type AssertionImplSchemaAsync<Parts extends AssertionParts> =
+  z.core.$ZodBranded<z.ZodType<ParsedSubject<Parts>>, 'async-schema'>;
+
+export type AssertionImplSchemaSync<Parts extends AssertionParts> =
+  z.core.$ZodBranded<z.ZodType<ParsedSubject<Parts>>, 'sync-schema'>;
+
+export type AssertionImplSync<Parts extends AssertionParts> =
+  | AssertionImplFnSync<Parts>
+  | AssertionImplSchemaSync<Parts>;
 
 /**
  * An item of the first parameter to `createAssertion`, representing the inputs
@@ -177,6 +187,22 @@ export type AssertionPartsToSlots<Parts extends AssertionParts> =
   ]
     ? readonly [AssertionSlot<First>, ...AssertionPartsToSlots<Rest>]
     : readonly [];
+
+export interface AssertionSchemaAsync<
+  Parts extends AssertionParts,
+  Impl extends AssertionImplSchemaAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionAsync<Parts, Impl, Slots> {
+  impl: Impl;
+}
+
+export interface AssertionSchemaSync<
+  Parts extends AssertionParts,
+  Impl extends AssertionImplSchemaSync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionSync<Parts, Impl, Slots> {
+  impl: Impl;
+}
 
 /**
  * A "slot" is derived from an {@link AssertionPart} and represents one Zod
@@ -209,6 +235,36 @@ export type AssertionSlots<Parts extends AssertionParts> =
       ? NoNeverTuple<readonly [z.ZodUnknown, ...AssertionPartsToSlots<Parts>]>
       : NoNeverTuple<AssertionPartsToSlots<Parts>>
     : never;
+
+export interface AssertionSync<
+  Parts extends AssertionParts = AssertionParts,
+  Impl extends AssertionImplSync<Parts> = AssertionImplSync<Parts>,
+  Slots extends AssertionSlots<Parts> = AssertionSlots<Parts>,
+> extends Assertion<Parts, Impl, Slots> {
+  /**
+   * Execute the assertion implementation synchronously.
+   *
+   * @param parsedValues Parameters for the assertion implementation
+   * @param args Raw parameters passed to `expectSync()`
+   * @param stackStartFn Function to use as stack start for error reporting
+   * @param parseResult Optional parse result containing cached validation data
+   */
+  execute(
+    parsedValues: ParsedValues<Parts>,
+    args: unknown[],
+    stackStartFn: (...args: any[]) => any,
+    parseResult?: ParsedResult<Parts>,
+  ): void;
+
+  /**
+   * Parses raw arguments synchronously against this assertion's slots to
+   * determine if they match this assertion.
+   *
+   * @param args Raw arguments provided to `expectSync()`
+   * @returns Result of parsing attempt
+   */
+  parseValues<Args extends readonly unknown[]>(args: Args): ParsedResult<Parts>;
+}
 
 /**
  * The base structure for parsed assertion results.
@@ -280,7 +336,7 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
 /**
  * A result of `Assertion.parseValues()` or `Assertion.parseValuesAsync()`
  */
-export type ParsedResult<Parts extends AssertionParts> =
+export type ParsedResult<Parts extends AssertionParts = AssertionParts> =
   | ParsedResultFailure
   | ParsedResultSuccess<Parts>;
 
@@ -325,17 +381,14 @@ export type ParsedSubject<Parts extends AssertionParts> =
   ParsedValues<Parts> extends readonly [infer Subject, ...any[]]
     ? Subject
     : never;
-
 /**
  * A tuple of parsed input arguments which will be provided to an
  * {@link AssertionImpl assertion implementation}.
  */
-export type ParsedValues<Parts extends AssertionParts> =
+export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
   HoleyParsedValues<Parts> extends readonly []
     ? never
-    : HoleyParsedValues<Parts>;
-
-/**
+    : HoleyParsedValues<Parts>; /**
  * Either type of phrase.
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
@@ -361,9 +414,7 @@ export type PhraseLiteral = string;
  * @remarks
  * It is represented internally as a `ZodLiteral` with multiple values.
  */
-export type PhraseLiteralChoice = readonly [string, ...string[]];
-
-/**
+export type PhraseLiteralChoice = readonly [string, ...string[]]; /**
  * The type of a multi-phrase literal slot
  *
  * @privateRemarks
@@ -373,7 +424,9 @@ export type PhraseLiteralChoice = readonly [string, ...string[]];
 export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
-  }; /**
+  };
+
+/**
  * The type of a phrase literal slot.
  *
  * @privateRemarks
@@ -384,3 +437,6 @@ export type PhraseLiteralSlot<T extends string> = z.core.$ZodBranded<
   z.ZodLiteral<T>,
   'string-literal'
 >;
+
+export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
+  z.ZodType<ParsedSubject<Parts>>;

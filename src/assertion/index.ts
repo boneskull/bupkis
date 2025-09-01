@@ -26,6 +26,7 @@ export type {
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion-types.js';
-export { BupkisAssertion, createAssertion } from './assertion.js';
+export { BupkisAssertion } from './assertion.js';
+export { createAssertion, createAsyncAssertion } from './create.js';
 export { AsyncAssertions } from './impl/async.js';
 export { SyncAssertions } from './impl/sync.js';
