@@ -2,10 +2,7 @@
   "tasks": [
     {
       "detail": "tshy",
-      "group": {
-        "isDefault": true,
-        "kind": "build"
-      },
+      "group": "build",
       "label": "npm: build",
       "problemMatcher": ["$tsc"],
       "script": "build",
@@ -29,7 +26,10 @@
     },
     {
       "detail": "tshy --watch",
-      "group": "build",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
       "label": "npm: dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "dev",
