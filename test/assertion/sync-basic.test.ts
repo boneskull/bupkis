@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 
-import { expect } from '../../src/expect.js';
+import { expect } from '../../src/bootstrap.js';
 
 describe('Synchronous basic assertions', () => {
   describe('to be a string', () => {

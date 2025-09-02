@@ -2,7 +2,7 @@ import Debug from 'debug';
 import { describe, it } from 'node:test';
 
 import { AsyncAssertions, SyncAssertions } from '../src/assertion/index.js';
-import { expect } from '../src/expect.js';
+import { expect } from '../src/bootstrap.js';
 
 const debug = Debug('bupkis:test');
 

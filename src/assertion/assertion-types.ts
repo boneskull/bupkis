@@ -29,6 +29,8 @@ export interface Assertion<
 > {
   readonly id: string;
 
+  // readonly type: 'async' | 'sync';
+
   /**
    * The implementation function or schema for this assertion.
    */

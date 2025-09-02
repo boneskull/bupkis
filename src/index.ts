@@ -9,9 +9,8 @@
  */
 
 export * as assertion from './assertion/index.js';
+export { expect, expectAsync } from './bootstrap.js';
 export * as error from './error.js';
-export { expectAsync } from './expect-async.js';
-export { expect } from './expect.js';
 export * as guards from './guards.js';
 export * as schema from './schema.js';
 export type * as types from './types.js';

@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test';
 
-import { expectAsync } from '../../src/expect-async.js';
-import { expect } from '../../src/expect.js';
+import { expect, expectAsync } from '../../src/bootstrap.js';
 
 describe('Asynchronous assertions', () => {
   describe('Promise resolution', () => {
