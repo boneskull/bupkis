@@ -74,24 +74,23 @@ const ZodToFastCheckMapping = {
   //     }
   //   });
   // },
-  intersection: (schema: any, assertion: TypeAssertion) => {
+  intersection: (schema: any) => {
     // For intersections, we'll try to generate from the left side
     // This is a simplification - true intersection would be more complex
-    return zodTypeToArbitrary(schema.left, assertion);
+    return zodTypeToArbitrary(schema.left);
   },
   literal: (schema: z.ZodLiteral) => fc.constantFrom(...schema.values),
   nan: () => fc.constant(NaN),
   never: () => fc.constantFrom(), // Empty constantFrom creates impossible values
   nonoptional: <T extends z.ZodNonOptional<Inner>, Inner extends z.ZodType>(
     schema: T,
-    assertion: TypeAssertion,
   ) => {
-    const innerArb = zodTypeToArbitrary(schema.unwrap(), assertion);
+    const innerArb = zodTypeToArbitrary(schema.unwrap());
     return innerArb ? innerArb : fc.anything();
   },
   null: () => fc.constant(null),
-  nullable: (schema: any, assertion: TypeAssertion) => {
-    const innerArb = zodTypeToArbitrary(schema.innerType, assertion);
+  nullable: (schema: any) => {
+    const innerArb = zodTypeToArbitrary(schema.innerType);
     return innerArb
       ? fc.option(innerArb, { nil: null })
       : fc.option(fc.anything(), { nil: null });
@@ -181,9 +180,8 @@ const ZodToFastCheckMapping = {
   object: () => fc.object(),
   optional: <T extends z.ZodOptional<Inner>, Inner extends z.ZodType>(
     schema: T,
-    assertion: TypeAssertion,
   ) => {
-    const innerArb = zodTypeToArbitrary(schema.unwrap(), assertion);
+    const innerArb = zodTypeToArbitrary(schema.unwrap());
     return innerArb ? fc.option(innerArb) : fc.option(fc.anything());
   },
   // promise: (schema: z.ZodPromise) => {
@@ -216,9 +214,9 @@ const ZodToFastCheckMapping = {
     return itemArbs.length > 0 ? fc.tuple(...itemArbs) : fc.tuple();
   },
   undefined: () => fc.constant(undefined),
-  union: (schema: z.ZodUnion, assertion: TypeAssertion) => {
+  union: (schema: z.ZodUnion) => {
     const options = (schema.options || [])
-      .map((opt) => zodTypeToArbitrary(opt, assertion))
+      .map((opt) => zodTypeToArbitrary(opt as any))
       .filter((value) => !!value);
     return options.length > 0 ? fc.oneof(...options) : fc.anything();
   },
@@ -372,6 +370,7 @@ function generateComprehensiveTests() {
               totalCount++;
 
               try {
+                // @ts-expect-error FIXME
                 expect(value, phrase);
               } catch (error) {
                 if (!(error instanceof AssertionError)) {
@@ -406,7 +405,7 @@ function generateTestsForAssertion(assertion: TypeAssertion) {
       return;
     }
 
-    const positiveArbitrary = zodTypeToArbitrary(expectedSchema, assertion);
+    const positiveArbitrary = zodTypeToArbitrary(expectedSchema);
     if (!positiveArbitrary) {
       it.skip(`should pass for valid values`);
       console.error(`Skipping ${assertion} - cannot create generator`);
@@ -535,7 +534,6 @@ function generateTestsForAssertion(assertion: TypeAssertion) {
  */
 function zodTypeToArbitrary<T extends z.core.$ZodTypeInternals | z.ZodType>(
   schema: T,
-  assertion?: TypeAssertion,
 ): fc.Arbitrary<any> | undefined {
   if (!schema || !schema.def) {
     return;
@@ -564,10 +562,8 @@ function zodTypeToArbitrary<T extends z.core.$ZodTypeInternals | z.ZodType>(
   }
 
   try {
-    return (generator as (schema: z.ZodType) => fc.Arbitrary<any>)(
-      schema,
-      assertion,
-    );
+    // @ts-expect-error FIXME
+    return (generator as (schema: z.ZodType) => fc.Arbitrary<any>)(schema);
   } catch (error) {
     console.warn(`Error creating generator for ${type}:`, error);
     // return fc.anything();
