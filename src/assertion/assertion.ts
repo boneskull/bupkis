@@ -11,6 +11,7 @@
 
 import Debug from 'debug';
 import slug from 'slug';
+import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
 import { z } from 'zod/v4';
 
@@ -120,7 +121,7 @@ export abstract class BupkisAssertion<
     }
   }
 
-  protected parseSlotForLiteral<Slot extends Slots[number]>(
+  protected parseSlotForLiteral<Slot extends ArrayValues<Slots>>(
     slot: Slot,
     i: number,
     arg: unknown,

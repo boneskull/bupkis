@@ -2,7 +2,7 @@
 
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
-import { type Entries } from 'type-fest';
+import { type ArrayValues, type Entries } from 'type-fest';
 import { type z } from 'zod/v4';
 
 import { BasicAssertions } from '../../src/assertion/impl/sync-basic.js';
@@ -11,7 +11,7 @@ import { isZodType } from '../../src/guards.js';
 import { expect } from '../../src/index.js';
 import { BupkisRegistry } from '../../src/metadata.js';
 
-type TypeAssertion = (typeof BasicAssertions)[number];
+type TypeAssertion = ArrayValues<typeof BasicAssertions>;
 
 /**
  * Maps Zod type kinds to fast-check Arbitrary generators. This static mapping

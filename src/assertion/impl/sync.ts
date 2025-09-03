@@ -28,5 +28,3 @@ export const SyncAssertions = [
   ...EsotericAssertions,
   ...ParametricAssertions,
 ] as const;
-
-export type BuiltinSyncAssertion = (typeof SyncAssertions)[number];

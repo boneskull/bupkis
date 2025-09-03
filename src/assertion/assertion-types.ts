@@ -9,12 +9,28 @@
  * @packageDocumentation
  */
 
-import { type NonEmptyTuple } from 'type-fest';
+import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
 import { type z } from 'zod/v4';
 
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
-export type AnyParsedValues = ParsedValues<readonly [any, ...any[]]>;
+export type AnyAssertion = AnyAsyncAssertion | AnySyncAssertion;
+
+export type AnyAssertions = readonly AnyAssertion[];
+
+export type AnyAsyncAssertion =
+  // | AssertionAsync<any, any, any>
+  AssertionFunctionAsync<any, any, any> | AssertionSchemaAsync<any, any, any>;
+
+export type AnyAsyncAssertions = readonly AnyAsyncAssertion[];
+
+export type AnySyncAssertion =
+  | AssertionFunctionSync<any, any, any>
+  | AssertionSchemaSync<any, any, any>;
+// | AssertionSync<any, any, any>;
+
+export type AnySyncAssertions = readonly AnySyncAssertion[];
+
 /**
  * Interface for the base abstract `Assertion` class.
  *
@@ -303,9 +319,13 @@ export interface BaseParsedResult<Parts extends AssertionParts> {
   success: boolean;
 }
 
-export type BuiltinAssertion = (typeof SyncAssertions)[number];
+export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
 
-export type BuiltinAsyncAssertion = (typeof AsyncAssertions)[number];
+export type BuiltinAsyncAssertions = typeof AsyncAssertions;
+
+export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
+
+export type BuiltinSyncAssertions = typeof SyncAssertions;
 
 export type MaybeEmptyParsedValues<Parts extends readonly AssertionPart[]> =
   NoNeverTuple<
@@ -334,14 +354,12 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
     ? readonly [...NoNeverTuple<Rest>]
     : readonly [First, ...NoNeverTuple<Rest>]
   : readonly [];
-
 /**
  * A result of `Assertion.parseValues()` or `Assertion.parseValuesAsync()`
  */
 export type ParsedResult<Parts extends AssertionParts = AssertionParts> =
   | ParsedResultFailure
   | ParsedResultSuccess<Parts>;
-
 export interface ParsedResultFailure extends BaseParsedResult<never> {
   exactMatch?: never;
   parsedValues?: never;
@@ -382,15 +400,16 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
 export type ParsedSubject<Parts extends AssertionParts> =
   ParsedValues<Parts> extends readonly [infer Subject, ...any[]]
     ? Subject
-    : never;
-/**
+    : never; /**
  * A tuple of parsed input arguments which will be provided to an
  * {@link AssertionImpl assertion implementation}.
  */
 export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
   MaybeEmptyParsedValues<Parts> extends readonly []
     ? never
-    : MaybeEmptyParsedValues<Parts>; /**
+    : MaybeEmptyParsedValues<Parts>;
+
+/**
  * Either type of phrase.
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
@@ -406,7 +425,6 @@ export type Phrase = PhraseLiteral | PhraseLiteralChoice;
  * It is represented internally as a `ZodLiteral`.
  */
 export type PhraseLiteral = string;
-
 /**
  * The type of a phrase that can be a choice of string literals. `expect()` will
  * match _any_ of the provided literals in its exact parameter position.
@@ -416,7 +434,8 @@ export type PhraseLiteral = string;
  * @remarks
  * It is represented internally as a `ZodLiteral` with multiple values.
  */
-export type PhraseLiteralChoice = readonly [string, ...string[]]; /**
+export type PhraseLiteralChoice = readonly [string, ...string[]];
+/**
  * The type of a multi-phrase literal slot
  *
  * @privateRemarks
@@ -426,9 +445,7 @@ export type PhraseLiteralChoice = readonly [string, ...string[]]; /**
 export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
-  };
-
-/**
+  }; /**
  * The type of a phrase literal slot.
  *
  * @privateRemarks
@@ -439,6 +456,5 @@ export type PhraseLiteralSlot<T extends string> = z.core.$ZodBranded<
   z.ZodLiteral<T>,
   'string-literal'
 >;
-
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;

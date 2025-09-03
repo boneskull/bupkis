@@ -4,30 +4,36 @@
  * @packageDocumentation
  */
 
-import type { Constructor as TypeFestConstructor } from 'type-fest';
+import type {
+  ArrayValues,
+  Constructor as TypeFestConstructor,
+} from 'type-fest';
 import type { z } from 'zod/v4';
 
 import type {
+  AnyAsyncAssertion,
+  AnyAsyncAssertions,
+  AnySyncAssertion,
+  AnySyncAssertions,
   AssertionPart,
   AssertionParts,
   AssertionSlot,
-  BuiltinAssertion,
   BuiltinAsyncAssertion,
+  BuiltinAsyncAssertions,
+  BuiltinSyncAssertion,
+  BuiltinSyncAssertions,
   PhraseLiteral,
   PhraseLiteralChoice,
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
-import type {
-  AsyncAssertions,
-  SyncAssertions,
-} from './assertion/impl/index.js';
 
 import { type NoNeverTuple } from './assertion/assertion-types.js';
 import {
   type createAssertion,
   type createAsyncAssertion,
 } from './assertion/create.js';
+import { type UseFn } from './use.js';
 
 /**
  * Helper type to create negated version of assertion parts. For phrase
@@ -54,20 +60,10 @@ export type AddNegation<T extends readonly AssertionPart[]> =
     : readonly [];
 
 export interface BaseExpect {
+  createAssertion: typeof createAssertion;
+  createAsyncAssertion: typeof createAsyncAssertion;
   fail(reason?: string): never;
 }
-
-export interface BaseExpectAsync extends BaseExpect {
-  createAssertion: typeof createAsyncAssertion;
-}
-
-export interface BaseExpectSync extends BaseExpect {
-  createAssertion: typeof createAssertion;
-}
-
-/**
- * Properties and methods available on {@link expect} and {@link expectAsync}.
- */
 
 export type Constructor<
   T = any,
@@ -79,36 +75,78 @@ export type Constructor<
  *
  * Contains properties in {@link BaseExpect}.
  */
-export interface Expect extends BaseExpect, ExpectFunction {}
+export type Expect<
+  T extends AnySyncAssertions = BuiltinSyncAssertions,
+  U extends AnyAsyncAssertions = BuiltinAsyncAssertions,
+> = ExpectFunction<T> & ExpectSyncProps<T, U>;
+
+/**
+ * Properties and methods available on {@link expect} and {@link expectAsync}.
+ */
 
 /**
  * The main asynchronous assertion function.
  *
  * Contains properties in {@link BaseExpect}.
  */
-export interface ExpectAsync extends BaseExpectAsync, ExpectAsyncFunction {}
+export type ExpectAsync<
+  T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
+  U extends AnySyncAssertions = BuiltinSyncAssertions,
+> = ExpectAsyncFunction<T> & ExpectAsyncProps<T, U>;
 
 /**
  * All overloads for {@link expectAsync}
  */
-export type ExpectAsyncFunction = {
-  [K in keyof typeof AsyncAssertions]: (typeof AsyncAssertions)[K] extends BuiltinAsyncAssertion
-    ? (
-        ...args: InferredExpectSlots<(typeof AsyncAssertions)[K]['parts']>
-      ) => Promise<void>
-    : never;
-}[number];
+export type ExpectAsyncFunction<
+  T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
+> = T extends BuiltinSyncAssertions
+  ? ArrayValues<{
+      [K in keyof BuiltinAsyncAssertions]: BuiltinAsyncAssertions[K] extends BuiltinAsyncAssertion
+        ? (
+            ...args: InferredExpectSlots<BuiltinAsyncAssertions[K]['parts']>
+          ) => Promise<void>
+        : never;
+    }>
+  : ArrayValues<{
+      [K in keyof T]: T[K] extends AnyAsyncAssertion
+        ? (...args: InferredExpectSlots<T[K]['parts']>) => Promise<void>
+        : never;
+    }>;
+
+export interface ExpectAsyncProps<
+  T extends AnyAsyncAssertions,
+  U extends AnySyncAssertions,
+> extends BaseExpect {
+  assertions: T;
+  use: UseFn<U, T>;
+}
 
 /**
  * All overloads for {@link expect}
  */
-export type ExpectFunction = {
-  [K in keyof typeof SyncAssertions]: (typeof SyncAssertions)[K] extends BuiltinAssertion
-    ? (
-        ...args: InferredExpectSlots<(typeof SyncAssertions)[K]['parts']>
-      ) => void
-    : never;
-}[number];
+export type ExpectFunction<
+  T extends AnySyncAssertions = BuiltinSyncAssertions,
+> = T extends BuiltinSyncAssertions
+  ? ArrayValues<{
+      [K in keyof BuiltinSyncAssertions]: BuiltinSyncAssertions[K] extends BuiltinSyncAssertion
+        ? (
+            ...args: InferredExpectSlots<BuiltinSyncAssertions[K]['parts']>
+          ) => void
+        : never;
+    }>
+  : ArrayValues<{
+      [K in keyof T]: T[K] extends AnySyncAssertion
+        ? (...args: InferredExpectSlots<T[K]['parts']>) => void
+        : never;
+    }>;
+
+export interface ExpectSyncProps<
+  T extends AnySyncAssertions,
+  U extends AnyAsyncAssertions,
+> extends BaseExpect {
+  assertions: T;
+  use: UseFn<T, U>;
+}
 
 /**
  * Prepares {@link MapExpectSlots} by injecting `unknown` if the `AssertionParts`
@@ -141,7 +179,9 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
           : AssertionSlot<First> extends PhraseLiteralChoiceSlot<
                 infer StringLiterals
               >
-            ? Negation<StringLiterals[number]> | StringLiterals[number]
+            ?
+                | ArrayValues<StringLiterals>
+                | Negation<ArrayValues<StringLiterals>>
             : AssertionSlot<First> extends z.ZodType
               ? z.infer<AssertionSlot<First>>
               : never,

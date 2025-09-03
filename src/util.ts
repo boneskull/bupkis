@@ -181,3 +181,8 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
       return [key, z.literal(value)];
     }),
   );
+// Helper type to concatenate two tuples
+export type Concat<
+  A extends readonly unknown[],
+  B extends readonly unknown[],
+> = [...A, ...B];

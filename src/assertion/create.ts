@@ -81,6 +81,8 @@ import type {
   AssertionSchemaAsync,
   AssertionSchemaSync,
   AssertionSlots,
+  BuiltinAsyncAssertion,
+  BuiltinSyncAssertion,
   RawAssertionImplSchemaSync,
 } from './assertion-types.js';
 
@@ -141,7 +143,8 @@ export function createAsync<
   throw new TypeError(
     'Assertion implementation must be a function, Zod schema or Zod schema factory',
   );
-} /**
+}
+/**
  * Create a synchronous `Assertion` from {@link AssertionParts parts} and a
  * {@link z.ZodType Zod schema}.
  *
@@ -158,6 +161,7 @@ function create<
   parts: Parts,
   impl: Impl,
 ): AssertionSchemaSync<Parts, AssertionImplSchemaSync<Parts>, Slots>;
+
 /**
  * Create a synchronous `Assertion` from {@link AssertionParts parts} and an
  * implementation function.
@@ -207,3 +211,31 @@ export const createAssertion = create;
  */
 
 export const createAsyncAssertion = createAsync;
+
+/**
+ * @param found Object containing information about a previously found matching
+ *   `Assertion`
+ * @param assertion The current matching `Assertion`
+ * @param exactMatch Whether the current match is an exact match
+ * @throws {TypeError} If multiple exact matching assertions are found
+ * @internal
+ */
+
+export const assertSingleExactMatch = <
+  T extends BuiltinAsyncAssertion | BuiltinSyncAssertion,
+>(
+  found: {
+    assertion: T;
+    exactMatch: boolean;
+  },
+  assertion: T,
+  exactMatch: boolean,
+): void => {
+  // if we have an exact match already and this match is not exact, keep the current one.
+  // if we have an exact match already and this match is also exact, throw an error.
+  if (found.exactMatch && exactMatch) {
+    throw new TypeError(
+      `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
+    );
+  }
+};
