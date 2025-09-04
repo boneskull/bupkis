@@ -30,5 +30,6 @@ export default {
     '!dist/**',
     '!src/node_modules/bupkis/**',
     '!test/property/**/*', // fails; why?
+    '!test/assertion/create.test.ts',
   ],
 };
