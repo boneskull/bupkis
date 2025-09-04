@@ -1,15 +1,11 @@
 import { describe, it } from 'node:test';
 import { z } from 'zod/v4';
 
+import { type AnySyncAssertions } from '../src/assertion/assertion-types.js';
 import { expect } from '../src/bootstrap.js';
 
 describe('use()', () => {
   it('should work exactly like the design document example', () => {
-    // Test basic functionality first
-    expect('bar', 'to be a string'); // this comes from the builtin assertions
-    console.log('✅ Built-in assertion works');
-
-    // Create our own assertion exactly as shown in the design doc
     class Foo {
       bar = 'bar';
     }
@@ -18,19 +14,15 @@ describe('use()', () => {
       z.instanceof(Foo),
     );
 
-    const { expect: myExpected, expectAsync: _ } = expect.use([myAssertion]);
+    const assertions = [myAssertion] as const satisfies AnySyncAssertions;
+
+    const { expect: myExpected, expectAsync: _ } = expect.use(assertions);
 
     const foo = new Foo();
 
-    // This will be typesafe - should not throw
-    myExpected(foo, 'to be a Foo');
-    console.log('✅ Custom assertion works');
+    expect(() => myExpected(foo, 'to be a Foo'), 'not to throw');
 
-    // This will be typesafe - should not throw; retained from original expect()
-    myExpected(foo.bar, 'to be a string');
-    console.log('✅ Built-in assertions retained in extended expect');
-
-    console.log('✅ Complete design document example works!');
+    expect(() => myExpected(foo.bar, 'to be a string'), 'not to throw');
   });
 
   it('should validate type safety and proper error messages', () => {
@@ -46,6 +38,7 @@ describe('use()', () => {
     // Test failure case
     let error: Error | undefined;
     try {
+      // @ts-expect-error bad type
       myExpected('not a foo', 'to be a Foo');
     } catch (err) {
       error = err as Error;

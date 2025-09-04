@@ -2,7 +2,9 @@ import Debug from 'debug';
 import { inspect } from 'util';
 
 import {
+  type AnyAsyncAssertion,
   type AnyAsyncAssertions,
+  type AnySyncAssertion,
   type AnySyncAssertions,
   type AssertionAsync,
   type AssertionImplAsync,
@@ -10,8 +12,6 @@ import {
   type AssertionParts,
   type AssertionSlots,
   type AssertionSync,
-  type BuiltinAsyncAssertion,
-  type BuiltinSyncAssertion,
   type ParsedResult,
   type ParsedValues,
 } from './assertion/assertion-types.js';
@@ -33,7 +33,7 @@ export const debug = Debug('bupkis:expect');
 export function createExpectAsyncFunction<
   T extends AnyAsyncAssertions,
   U extends ExpectAsync<AnyAsyncAssertions>,
->(assertions: T, expect: U): ExpectAsyncFunction<T & U>;
+>(assertions: T, expect: U): ExpectAsyncFunction<T & U['assertions']>;
 export function createExpectAsyncFunction<T extends AnyAsyncAssertions>(
   assertions: T,
 ): ExpectAsyncFunction<T>;
@@ -49,34 +49,55 @@ export function createExpectAsyncFunction<
     await Promise.resolve();
     const [isNegated, processedArgs] = maybeProcessNegation(args);
     const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
+    const candidates: Array<{
+      assertion: AnyAsyncAssertion;
+      parseResult: ParsedResult<AssertionParts>;
+    }> = [];
     for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
       const parseResult = await assertion.parseValuesAsync(processedArgs);
-      const { parsedValues, reason, success } = parseResult;
-      if (reason) {
-        parseFailureReasons.push([`${assertion}`, reason]);
-      } else if (success) {
-        return executeAsync(
-          assertion,
-          parsedValues,
-          [...args],
-          expectAsyncFunction,
-          isNegated,
-          parseResult,
-        );
+      const { exactMatch, parsedValues, reason, success } = parseResult;
+
+      if (
+        findMatchingAssertion(parseFailureReasons, reason, success, assertion)
+      ) {
+        if (exactMatch) {
+          return executeAsync(
+            assertion,
+            parsedValues,
+            [...args],
+            expectAsyncFunction,
+            isNegated,
+            parseResult,
+          );
+        }
+        candidates.push({ assertion, parseResult });
       }
+    }
+    if (candidates.length) {
+      const { assertion, parseResult } = candidates[0]!;
+      return executeAsync(
+        assertion as any,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        parseResult.parsedValues as any,
+        [...args],
+        expectAsyncFunction,
+        isNegated,
+        parseResult,
+      );
     }
     throwInvalidParametersError(args, parseFailureReasons);
   };
   return expectAsyncFunction;
 }
+
 export function createExpectSyncFunction<
   T extends AnySyncAssertions,
   U extends Expect<AnySyncAssertions>,
 >(assertions: T, expect: U): ExpectFunction<T & U['assertions']>;
+
 export function createExpectSyncFunction<T extends AnySyncAssertions>(
   assertions: T,
 ): ExpectFunction<T>;
-
 export function createExpectSyncFunction<
   T extends AnySyncAssertions,
   U extends Expect<AnySyncAssertions>,
@@ -88,26 +109,66 @@ export function createExpectSyncFunction<
   const expectFunction = (...args: readonly unknown[]) => {
     const [isNegated, processedArgs] = maybeProcessNegation(args);
     const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
+    const candidates: Array<{
+      assertion: AnySyncAssertion;
+      parseResult: ParsedResult<AssertionParts>;
+    }> = [];
     for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
       const parseResult = assertion.parseValues(processedArgs);
-      const { parsedValues, reason, success } = parseResult;
-      if (reason) {
-        parseFailureReasons.push([`${assertion}`, reason]);
-      } else if (success) {
-        return execute(
-          assertion,
-          parsedValues,
-          [...args],
-          expectFunction,
-          isNegated,
-          parseResult,
-        );
+      const { exactMatch, parsedValues, reason, success } = parseResult;
+
+      if (
+        findMatchingAssertion(parseFailureReasons, reason, success, assertion)
+      ) {
+        if (exactMatch) {
+          return execute(
+            assertion,
+            parsedValues,
+            [...args],
+            expectFunction,
+            isNegated,
+            parseResult,
+          );
+        }
+        candidates.push({ assertion, parseResult });
       }
+    }
+    if (candidates.length) {
+      const { assertion, parseResult } = candidates[0]!;
+      return execute(
+        assertion as any,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        parseResult.parsedValues as any,
+        [...args],
+        expectFunction,
+        isNegated,
+        parseResult,
+      );
     }
     throwInvalidParametersError(args, parseFailureReasons);
   };
   return expectFunction;
 }
+
+/**
+ * Shared logic for iterating through assertions and finding a match.
+ *
+ * Both sync and async `createExpect*` functions use this same pattern.
+ */
+const findMatchingAssertion = (
+  parseFailureReasons: [assertionRepr: string, reason: string][],
+  reason: string | undefined,
+  success: boolean,
+  assertion: { toString(): string },
+): boolean => {
+  if (reason) {
+    parseFailureReasons.push([`${assertion}`, reason]);
+    return false; // Continue to next assertion
+  } else if (success) {
+    return true; // Found a match
+  }
+  return false; // Continue to next assertion
+};
 
 /**
  * Executes an assertion with optional negation logic.
@@ -258,36 +319,9 @@ export const throwInvalidParametersError = (
   throw new TypeError(
     `Invalid arguments. No assertion matched: ${inspectedArgs}`,
   );
-}; /**
- * Used by `expect` and `expectAsync` to ensure only one exact matching
- * `Assertion` is found.
- *
- * @param found Object containing information about a previously found matching
- *   `Assertion`
- * @param assertion The current matching `Assertion`
- * @param exactMatch Whether the current match is an exact match
- * @throws {TypeError} If multiple exact matching assertions are found
- * @internal
- */
+};
 
-export const assertSingleExactMatch = <
-  T extends BuiltinAsyncAssertion | BuiltinSyncAssertion,
->(
-  found: {
-    assertion: T;
-    exactMatch: boolean;
-  },
-  assertion: T,
-  exactMatch: boolean,
-): void => {
-  // if we have an exact match already and this match is not exact, keep the current one.
-  // if we have an exact match already and this match is also exact, throw an error.
-  if (found.exactMatch && exactMatch) {
-    throw new TypeError(
-      `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
-    );
-  }
-}; /**
+/**
  * Detects if an assertion phrase starts with "not " and returns the cleaned
  * phrase.
  *

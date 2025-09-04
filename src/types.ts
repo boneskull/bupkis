@@ -6,21 +6,27 @@
 
 import type {
   ArrayValues,
+  TupleToUnion,
   Constructor as TypeFestConstructor,
+  UnionToIntersection,
 } from 'type-fest';
 import type { z } from 'zod/v4';
 
 import type {
+  AnyAssertion,
+  AnyAssertions,
   AnyAsyncAssertion,
   AnyAsyncAssertions,
   AnySyncAssertion,
   AnySyncAssertions,
+  AssertionFunctionAsync,
+  AssertionFunctionSync,
   AssertionPart,
   AssertionParts,
+  AssertionSchemaAsync,
+  AssertionSchemaSync,
   AssertionSlot,
-  BuiltinAsyncAssertion,
   BuiltinAsyncAssertions,
-  BuiltinSyncAssertion,
   BuiltinSyncAssertions,
   PhraseLiteral,
   PhraseLiteralChoice,
@@ -74,6 +80,10 @@ export type Constructor<
  * The main synchronous assertion function.
  *
  * Contains properties in {@link BaseExpect}.
+ *
+ * @template T All synchronous assertions available
+ * @template U All asynchronous assertions available; for use in
+ *   {@link ExpectSyncProps.use}
  */
 export type Expect<
   T extends AnySyncAssertions = BuiltinSyncAssertions,
@@ -99,19 +109,13 @@ export type ExpectAsync<
  */
 export type ExpectAsyncFunction<
   T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-> = T extends BuiltinSyncAssertions
-  ? ArrayValues<{
-      [K in keyof BuiltinAsyncAssertions]: BuiltinAsyncAssertions[K] extends BuiltinAsyncAssertion
-        ? (
-            ...args: InferredExpectSlots<BuiltinAsyncAssertions[K]['parts']>
-          ) => Promise<void>
-        : never;
-    }>
-  : ArrayValues<{
-      [K in keyof T]: T[K] extends AnyAsyncAssertion
-        ? (...args: InferredExpectSlots<T[K]['parts']>) => Promise<void>
-        : never;
-    }>;
+> = UnionToIntersection<
+  TupleToUnion<{
+    [K in keyof T]: T[K] extends AnyAsyncAssertion
+      ? (...args: InferredExpectSlots<T[K]['parts']>) => Promise<void>
+      : never;
+  }>
+>;
 
 export interface ExpectAsyncProps<
   T extends AnyAsyncAssertions,
@@ -126,19 +130,13 @@ export interface ExpectAsyncProps<
  */
 export type ExpectFunction<
   T extends AnySyncAssertions = BuiltinSyncAssertions,
-> = T extends BuiltinSyncAssertions
-  ? ArrayValues<{
-      [K in keyof BuiltinSyncAssertions]: BuiltinSyncAssertions[K] extends BuiltinSyncAssertion
-        ? (
-            ...args: InferredExpectSlots<BuiltinSyncAssertions[K]['parts']>
-          ) => void
-        : never;
-    }>
-  : ArrayValues<{
-      [K in keyof T]: T[K] extends AnySyncAssertion
-        ? (...args: InferredExpectSlots<T[K]['parts']>) => void
-        : never;
-    }>;
+> = UnionToIntersection<
+  TupleToUnion<{
+    [K in keyof T]: T[K] extends AnySyncAssertion
+      ? (...args: InferredExpectSlots<T[K]['parts']>) => void
+      : never;
+  }>
+>;
 
 export interface ExpectSyncProps<
   T extends AnySyncAssertions,
@@ -147,6 +145,41 @@ export interface ExpectSyncProps<
   assertions: T;
   use: UseFn<T, U>;
 }
+
+/**
+ * Infers the type arguments from each assertion in a tuple of assertions.
+ *
+ * Given `T extends AnyAssertions`, this type returns a tuple where each element
+ * is a tuple of the three type arguments for the corresponding assertion:
+ *
+ * - For `AssertionFunctionSync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
+ * - For `AssertionSchemaSync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
+ * - For `AssertionFunctionAsync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
+ * - For `AssertionSchemaAsync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
+ */
+export type InferAssertionTypeArgs<T extends AnyAssertions> =
+  T extends readonly [
+    infer First extends AnyAssertion,
+    ...infer Rest extends AnyAssertions,
+  ]
+    ? First extends AssertionFunctionSync<infer Parts, infer Impl, infer Slots>
+      ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
+      : First extends AssertionSchemaSync<infer Parts, infer Impl, infer Slots>
+        ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
+        : First extends AssertionFunctionAsync<
+              infer Parts,
+              infer Impl,
+              infer Slots
+            >
+          ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
+          : First extends AssertionSchemaAsync<
+                infer Parts,
+                infer Impl,
+                infer Slots
+              >
+            ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
+            : InferAssertionTypeArgs<Rest>
+    : readonly [];
 
 /**
  * Prepares {@link MapExpectSlots} by injecting `unknown` if the `AssertionParts`
@@ -161,7 +194,6 @@ export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
       : MapExpectSlots<Parts>
     : never
 >;
-
 /**
  * Maps `AssertionParts` to the corresponding argument types for `expect` and
  * `expectAsync`, as provided by the user.
@@ -188,6 +220,7 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
         ...MapExpectSlots<Rest>,
       ]
     : [];
+
 /**
  * The type of a phrase which is negated, e.g. "not to be"
  */

@@ -212,14 +212,18 @@ export const bootstrap = (): {
 } => {
   /** {@inheritDoc Expect} */
 
-  const expect: Expect<typeof SyncAssertions> = Object.assign(
-    createExpectSyncFunction(SyncAssertions),
-    createBaseExpect(SyncAssertions, AsyncAssertions, 'sync'),
-  );
+  const expect: Expect<typeof SyncAssertions, typeof AsyncAssertions> =
+    Object.assign(
+      createExpectSyncFunction(SyncAssertions),
+      createBaseExpect(SyncAssertions, AsyncAssertions, 'sync'),
+    );
 
   /** {@inheritDoc ExpectAsync} */
 
-  const expectAsync = Object.assign(
+  const expectAsync: ExpectAsync<
+    typeof AsyncAssertions,
+    typeof SyncAssertions
+  > = Object.assign(
     createExpectAsyncFunction(AsyncAssertions),
     createBaseExpect(SyncAssertions, AsyncAssertions, 'async'),
   );

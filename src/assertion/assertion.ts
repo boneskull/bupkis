@@ -43,6 +43,7 @@ export abstract class BupkisAssertion<
     readonly impl: Impl,
   ) {
     this.id = slug(`${this}`);
+    debug('Created assertion %s', this);
   }
 
   /**

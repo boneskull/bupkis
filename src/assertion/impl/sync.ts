@@ -14,7 +14,7 @@ import { CollectionAssertions } from './sync-collection.js';
 import { EsotericAssertions } from './sync-esoteric.js';
 import { ParametricAssertions } from './sync-parametric.js';
 
-export const trapError = (fn: () => unknown) => {
+export const trapError = (fn: () => unknown): unknown => {
   try {
     fn();
   } catch (err) {

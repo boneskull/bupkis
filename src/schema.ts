@@ -382,3 +382,43 @@ export const PrimitiveSchema = z
   ])
   .describe('Primitive value')
   .register(BupkisRegistry, { name: 'Primitive', validInput: 'primitive' });
+
+/**
+ * A Zod schema that validates array-like structures including mutable and
+ * readonly variants.
+ *
+ * This schema validates values that behave like arrays, including standard
+ * arrays, tuples with rest elements, and their readonly counterparts. It
+ * accepts any array-like structure that can hold elements of any type, making
+ * it useful for validating collections where the specific array mutability or
+ * tuple structure is not critical.
+ *
+ * @remarks
+ * The schema is registered in the {@link BupkisRegistry} with the name
+ * `ArrayLike` for later reference and type checking purposes. This schema is
+ * particularly useful when you need to accept various forms of array-like data
+ * without being restrictive about mutability or exact tuple structure.
+ * @example
+ *
+ * ```typescript
+ * ArrayLikeSchema.parse([1, 2, 3]); // ✓ Valid (mutable array)
+ * ArrayLikeSchema.parse(['a', 'b'] as const); // ✓ Valid (readonly array)
+ * ArrayLikeSchema.parse([]); // ✓ Valid (empty array)
+ * ArrayLikeSchema.parse([42, 'mixed', true]); // ✓ Valid (mixed types)
+ * ArrayLikeSchema.parse('not an array'); // ✗ Throws validation error
+ * ArrayLikeSchema.parse({}); // ✗ Throws validation error
+ * ArrayLikeSchema.parse(null); // ✗ Throws validation error
+ * ```
+ */
+export const ArrayLikeSchema = z
+  .union([
+    z.array(z.any()),
+    z.tuple([z.any()], z.any()),
+    z.array(z.any()).readonly(),
+    z.tuple([z.any()], z.any()).readonly(),
+    z.looseObject({ length: z.number().nonnegative().int() }),
+  ])
+  .describe('Array-like value')
+  .register(BupkisRegistry, {
+    name: 'ArrayLike',
+  });

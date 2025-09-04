@@ -14,22 +14,24 @@ import { type z } from 'zod/v4';
 
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
+import { type AssertionFailure } from '../guards.js';
+
 export type AnyAssertion = AnyAsyncAssertion | AnySyncAssertion;
 
-export type AnyAssertions = readonly AnyAssertion[];
+export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
 
 export type AnyAsyncAssertion =
   // | AssertionAsync<any, any, any>
   AssertionFunctionAsync<any, any, any> | AssertionSchemaAsync<any, any, any>;
 
-export type AnyAsyncAssertions = readonly AnyAsyncAssertion[];
+export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
 
 export type AnySyncAssertion =
   | AssertionFunctionSync<any, any, any>
   | AssertionSchemaSync<any, any, any>;
 // | AssertionSync<any, any, any>;
 
-export type AnySyncAssertions = readonly AnySyncAssertion[];
+export type AnySyncAssertions = NonEmptyTuple<AnySyncAssertion>;
 
 /**
  * Interface for the base abstract `Assertion` class.
@@ -127,15 +129,13 @@ export type AssertionImplAsync<Parts extends AssertionParts> =
 
 export type AssertionImplFnAsync<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
-) => Promise<boolean | void | z.ZodType<ParsedSubject<Parts>>>;
+) => Promise<
+  AssertionFailure | boolean | void | z.ZodType<ParsedSubject<Parts>>
+>;
 
-export type AssertionImplFnSync<
-  Parts extends AssertionParts,
-  Return extends boolean | void | z.ZodType<ParsedSubject<Parts>> =
-    | boolean
-    | void
-    | z.ZodType<ParsedSubject<Parts>>,
-> = (...values: ParsedValues<Parts>) => Return;
+export type AssertionImplFnSync<Parts extends AssertionParts> = (
+  ...values: ParsedValues<Parts>
+) => AssertionFailure | boolean | void | z.ZodType<ParsedSubject<Parts>>;
 
 /**
  * Maps an {@link AssertionPart} to a parameter to an {@link AssertionImpl}.

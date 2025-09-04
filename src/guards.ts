@@ -10,7 +10,7 @@
  */
 
 import { type Primitive } from 'type-fest';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 import type { AssertionPart } from './assertion/assertion-types.js';
 import type { Constructor } from './types.js';
@@ -98,6 +98,17 @@ export const isBoolean = (value: unknown): value is boolean =>
  */
 export const isFunction = (value: unknown): value is (...args: any[]) => any =>
   typeof value === 'function';
+
+const AssertionFailureSchema = z.object({
+  actual: z.any().optional(),
+  expected: z.any().optional(),
+  message: z.string().optional(),
+});
+
+export type AssertionFailure = z.infer<typeof AssertionFailureSchema>;
+
+export const isAssertionFailure = (value: unknown): value is AssertionFailure =>
+  AssertionFailureSchema.safeParse(value).success;
 
 export const isAsyncFunction = (
   value: unknown,

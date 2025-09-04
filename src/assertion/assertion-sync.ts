@@ -6,6 +6,7 @@ import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
 import {
   isA,
+  isAssertionFailure,
   isBoolean,
   isPromiseLike,
   isZodPromise,
@@ -174,6 +175,16 @@ export class BupkisAssertionFunctionSync<
           message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
         });
       }
+    } else if (isAssertionFailure(result)) {
+      throw new AssertionError({
+        actual: result.actual,
+        expected: result.expected,
+        message: result.message ?? `Assertion ${this} failed`,
+      });
+    } else if (result as unknown) {
+      throw new TypeError(
+        `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
+      );
     }
   }
 }

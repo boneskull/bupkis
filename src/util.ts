@@ -185,4 +185,4 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
 export type Concat<
   A extends readonly unknown[],
   B extends readonly unknown[],
-> = [...A, ...B];
+> = readonly [...A, ...B];

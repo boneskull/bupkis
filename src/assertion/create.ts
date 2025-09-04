@@ -81,8 +81,6 @@ import type {
   AssertionSchemaAsync,
   AssertionSchemaSync,
   AssertionSlots,
-  BuiltinAsyncAssertion,
-  BuiltinSyncAssertion,
   RawAssertionImplSchemaSync,
 } from './assertion-types.js';
 
@@ -98,53 +96,6 @@ import {
 import { slotify } from './slotify.js';
 
 /**
- * Create an async `Assertion` from {@link AssertionParts parts} and an async
- * {@link z.ZodType Zod schema}.
- *
- * @param parts Assertion parts defining the shape of the assertion
- * @param impl Implementation as a Zod schema (potentially async)
- * @param slots Slots type parameter to help with inference
- * @returns New `BupkisAssertionSchemaAsync` instance
- * @throws {TypeError} Invalid assertion implementation type
- */
-export function createAsync<
-  const Parts extends AssertionParts,
-  Impl extends AssertionImplSchemaAsync<Parts>,
-  Slots extends AssertionSlots<Parts>,
->(parts: Parts, impl: Impl): AssertionSchemaAsync<Parts, Impl, Slots>;
-/**
- * Create an async `Assertion` from {@link AssertionParts parts} and an
- * implementation function.
- *
- * @param parts Assertion parts defining the shape of the assertion
- * @param impl Implementation as a function (potentially async)
- * @returns New `FunctionAssertion` instance
- * @throws {TypeError} Invalid assertion implementation type
- */
-export function createAsync<
-  const Parts extends AssertionParts,
-  Impl extends AssertionImplFnAsync<Parts>,
-  Slots extends AssertionSlots<Parts>,
->(parts: Parts, impl: Impl): AssertionFunctionAsync<Parts, Impl, Slots>;
-export function createAsync<
-  const Parts extends AssertionParts,
-  Impl extends AssertionImplAsync<Parts>,
->(parts: Parts, impl: Impl) {
-  if (!parts || parts.length === 0) {
-    throw new TypeError('At least one value is required for an assertion');
-  }
-  const slots = slotify<Parts>(parts);
-
-  if (isZodType(impl)) {
-    return new BupkisAssertionSchemaAsync(parts, slots, impl);
-  } else if (isFunction(impl)) {
-    return new BupkisAssertionFunctionAsync(parts, slots, impl);
-  }
-  throw new TypeError(
-    'Assertion implementation must be a function, Zod schema or Zod schema factory',
-  );
-}
-/**
  * Create a synchronous `Assertion` from {@link AssertionParts parts} and a
  * {@link z.ZodType Zod schema}.
  *
@@ -153,7 +104,7 @@ export function createAsync<
  * @returns New `SchemaAssertion` instance
  * @throws {TypeError} Invalid assertion implementation type
  */
-function create<
+export function createAssertion<
   const Parts extends AssertionParts,
   Impl extends RawAssertionImplSchemaSync<Parts>,
   Slots extends AssertionSlots<Parts>,
@@ -161,7 +112,6 @@ function create<
   parts: Parts,
   impl: Impl,
 ): AssertionSchemaSync<Parts, AssertionImplSchemaSync<Parts>, Slots>;
-
 /**
  * Create a synchronous `Assertion` from {@link AssertionParts parts} and an
  * implementation function.
@@ -171,12 +121,12 @@ function create<
  * @returns New `FunctionAssertion` instance
  * @throws {TypeError} Invalid assertion implementation type
  */
-function create<
+export function createAssertion<
   const Parts extends AssertionParts,
   Impl extends AssertionImplFnSync<Parts>,
   Slots extends AssertionSlots<Parts>,
 >(parts: Parts, impl: Impl): AssertionFunctionSync<Parts, Impl, Slots>;
-function create<
+export function createAssertion<
   Impl extends AssertionImplSync<Parts>,
   const Parts extends AssertionParts,
 >(parts: Parts, impl: Impl) {
@@ -202,40 +152,55 @@ function create<
   );
 }
 /**
- * Create a synchronous assertion from parts and implementation.
+ * Create an async `Assertion` from {@link AssertionParts parts} and an async
+ * {@link z.ZodType Zod schema}.
+ *
+ * @param parts Assertion parts defining the shape of the assertion
+ * @param impl Implementation as a Zod schema (potentially async)
+ * @param slots Slots type parameter to help with inference
+ * @returns New `BupkisAssertionSchemaAsync` instance
+ * @throws {TypeError} Invalid assertion implementation type
  */
+export function createAsyncAssertion<
+  const Parts extends AssertionParts,
+  Impl extends AssertionImplSchemaAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>(parts: Parts, impl: Impl): AssertionSchemaAsync<Parts, Impl, Slots>;
 
-export const createAssertion = create;
 /**
- * Create an asynchronous assertion from parts and implementation.
+ * Create an async `Assertion` from {@link AssertionParts parts} and an
+ * implementation function.
+ *
+ * @param parts Assertion parts defining the shape of the assertion
+ * @param impl Implementation as a function (potentially async)
+ * @returns New `FunctionAssertion` instance
+ * @throws {TypeError} Invalid assertion implementation type
  */
-
-export const createAsyncAssertion = createAsync;
-
-/**
- * @param found Object containing information about a previously found matching
- *   `Assertion`
- * @param assertion The current matching `Assertion`
- * @param exactMatch Whether the current match is an exact match
- * @throws {TypeError} If multiple exact matching assertions are found
- * @internal
- */
-
-export const assertSingleExactMatch = <
-  T extends BuiltinAsyncAssertion | BuiltinSyncAssertion,
->(
-  found: {
-    assertion: T;
-    exactMatch: boolean;
-  },
-  assertion: T,
-  exactMatch: boolean,
-): void => {
-  // if we have an exact match already and this match is not exact, keep the current one.
-  // if we have an exact match already and this match is also exact, throw an error.
-  if (found.exactMatch && exactMatch) {
-    throw new TypeError(
-      `Multiple exact matching assertions found: ${found.assertion} and ${assertion}`,
-    );
+export function createAsyncAssertion<
+  const Parts extends AssertionParts,
+  Impl extends AssertionImplFnAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>(parts: Parts, impl: Impl): AssertionFunctionAsync<Parts, Impl, Slots>;
+export function createAsyncAssertion<
+  const Parts extends AssertionParts,
+  Impl extends AssertionImplAsync<Parts>,
+>(parts: Parts, impl: Impl) {
+  if (!parts || parts.length === 0) {
+    throw new TypeError('At least one value is required for an assertion');
   }
-};
+  const slots = slotify<Parts>(parts);
+
+  if (isZodType(impl)) {
+    return new BupkisAssertionSchemaAsync(parts, slots, impl);
+  } else if (isFunction(impl)) {
+    return new BupkisAssertionFunctionAsync(parts, slots, impl);
+  }
+  throw new TypeError(
+    'Assertion implementation must be a function, Zod schema or Zod schema factory',
+  );
+}
+
+/**
+ * {@inheritDoc createAssertion}
+ */
+export const createSyncAssertion = createAssertion;

@@ -4,7 +4,7 @@ import z from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
-import { isA, isBoolean, isZodType } from '../guards.js';
+import { isA, isAssertionFailure, isBoolean, isZodType } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionAsync,
@@ -140,6 +140,16 @@ export class BupkisAssertionFunctionAsync<
           message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
         });
       }
+    } else if (isAssertionFailure(result)) {
+      throw new AssertionError({
+        actual: result.actual,
+        expected: result.expected,
+        message: result.message ?? `Assertion ${this} failed`,
+      });
+    } else if (result as unknown) {
+      throw new TypeError(
+        `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
+      );
     }
   }
 }

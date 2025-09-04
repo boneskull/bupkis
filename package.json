@@ -107,6 +107,7 @@
   },
   "dependencies": {
     "debug": "^4.4.1",
+    "deep-object-diff": "1.1.9",
     "slug": "11.0.0"
   },
   "optionalDependencies": {

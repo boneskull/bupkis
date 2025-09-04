@@ -1,7 +1,11 @@
+import { diff } from 'deep-object-diff';
+import deepEqual from 'fast-deep-equal';
+import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
-import { isA, isNonNullObject, isString } from '../../guards.js';
+import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
+  ArrayLikeSchema,
   ClassSchema,
   FunctionSchema,
   StrongMapSchema,
@@ -38,7 +42,12 @@ const knownTypes = Object.freeze(
 
 export const ParametricAssertions = [
   createAssertion(
+    [['to be an instance of', 'to be a'], ClassSchema],
+    (_, ctor) => z.instanceof(ctor),
+  ),
+  createAssertion(
     [
+      z.any(),
       ['to be a', 'to be an'],
       z.enum(
         [...knownTypes].flatMap((t) => [t, t.toLowerCase()]) as [
@@ -119,7 +128,45 @@ export const ParametricAssertions = [
       ['to be', 'to equal', 'equals', 'is', 'is equal to', 'to strictly equal'],
       z.any(),
     ],
-    (subject, value) => subject === value,
+    (subject, value) => {
+      if (subject !== value) {
+        return {
+          actual: subject,
+          expected: value,
+          message: `Expected ${inspect(subject)} to equal ${inspect(value)}`,
+        };
+      }
+    },
+  ),
+  createAssertion(
+    [
+      z.looseObject({}),
+      ['to deep equal', 'to deeply equal'],
+      z.looseObject({}),
+    ],
+    (subject, expected) => {
+      const result = deepEqual(subject, expected);
+      if (!result) {
+        return {
+          actual: subject,
+          expected: expected,
+          message: `Expected ${inspect(subject)} to deep equal ${inspect(expected)}: ${inspect(diff(expected, subject))}`,
+        };
+      }
+    },
+  ),
+  createAssertion(
+    [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], ArrayLikeSchema],
+    (subject, expected) => {
+      const result = deepEqual(subject, expected);
+      if (!result) {
+        return {
+          actual: subject,
+          expected: expected,
+          message: `Expected ${inspect(subject)} to deep equal ${inspect(expected)}: ${inspect(diff(expected, subject))}`,
+        };
+      }
+    },
   ),
   createAssertion([FunctionSchema, 'to throw'], (subject) => {
     let threw = false;
@@ -137,7 +184,19 @@ export const ParametricAssertions = [
       if (!error) {
         return false;
       }
-      return isA(error, ctor);
+      if (!(error instanceof ctor)) {
+        let message: string;
+        if (isError(error)) {
+          message = `Expected function to throw an instance of ${ctor.name}, but it threw ${error.constructor.name}`;
+        } else {
+          message = `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${error as unknown}`;
+        }
+        return {
+          actual: error,
+          expected: ctor,
+          message,
+        };
+      }
     },
   ),
   createAssertion(
@@ -227,10 +286,20 @@ export const ParametricAssertions = [
       ['to satisfy', 'to be like'],
       z.looseObject({}),
     ],
-    (subject, expected) => satisfies(subject, expected),
+    (subject, shape) => {
+      return z.looseObject(shape);
+    },
   ),
   createAssertion(
-    [['to be an instance of', 'to be a'], ClassSchema],
-    (_, ctor) => z.instanceof(ctor),
+    [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
+    (subject, expected) => {
+      if (!satisfies(subject, expected)) {
+        return {
+          actual: subject,
+          expected,
+          message: `Expected array-like ${inspect(subject)} to satisfy ${inspect(expected)}`,
+        };
+      }
+    },
   ),
 ] as const; // Shared validation/match helper
