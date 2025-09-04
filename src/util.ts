@@ -185,4 +185,25 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
 export type Concat<
   A extends readonly unknown[],
   B extends readonly unknown[],
-> = readonly [...A, ...B];
+> = readonly [...A, ...B]; /**
+ * Creates an object composed of keys generated from the results of running
+ * each element of collection through iteratee. The corresponding value of each
+ * key is the last element responsible for generating the key.
+ */
+export function keyBy<T extends readonly unknown[]>(
+  collection: T,
+  iteratee: ((item: T[number]) => number | string) | keyof T[number],
+): Record<number | string, T[number]> {
+  const result: Record<number | string, T[number]> = {};
+
+  for (const item of collection) {
+    const key =
+      typeof iteratee === 'function'
+        ? iteratee(item)
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ((item as any)[iteratee] as number | string);
+    result[key] = item;
+  }
+
+  return result;
+}

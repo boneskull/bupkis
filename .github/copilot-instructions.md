@@ -78,6 +78,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - `AssertionParts` → `AssertionSlots` → `ParsedValues` transformation pipeline
 - `InferredExpectSlots` maps assertion definitions to function signatures
 - Recent work simplified some recursive types but maintained compatibility
+- Consume types from [`type-fest`](https://npm.im/type-fest) instead of hand-rolled equivalents.
 
 **Dual Implementation Classes**:
 

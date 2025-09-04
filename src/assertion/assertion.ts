@@ -42,7 +42,7 @@ export abstract class BupkisAssertion<
     readonly slots: Slots,
     readonly impl: Impl,
   ) {
-    this.id = slug(`${this}`);
+    this.id = this.generateUniqueId();
     debug('Created assertion %s', this);
   }
 
@@ -192,5 +192,24 @@ export abstract class BupkisAssertion<
       operator: `${this}`,
       stackStartFn,
     });
+  }
+
+  /**
+   * Generates a unique ID for this assertion by combining content, structure,
+   * and type information.
+   *
+   * @returns A human-readable unique identifier
+   */
+  private generateUniqueId(): string {
+    // Base slug with charmap fix for hyphens
+    const baseSlug = slug(`${this}`, {
+      charmap: { ...slug.charmap, '-': '_' },
+    });
+
+    // Add structural signature for additional uniqueness
+    // Use simple slot count and parts count as differentiators
+    const signature = `${this.slots.length}s${this.parts.length}p`;
+
+    return `${baseSlug}-${signature}`;
   }
 }

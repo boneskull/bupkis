@@ -91,7 +91,7 @@ export const BasicAssertions = [
   ),
   createAssertion([z.array(z.any()), 'to be empty'], z.array(z.any()).max(0)),
   createAssertion(
-    [z.record(z.any(), z.unknown()), ['to be empty']],
+    [z.record(z.any(), z.unknown()), 'to be empty'],
     z.record(z.any(), z.never()),
   ),
   // Basic collection type assertions
