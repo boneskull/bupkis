@@ -100,6 +100,8 @@
     "lint:types:dev": "npm run lint:types -- --watch",
     "prepare": "husky",
     "test": "node --import tsx --test \"test/**/*.ts\"",
+    "test:property": "node --import tsx --test \"test/property/**/*.test.ts\"",
+    "test:property:dev": "node --import tsx --test --watch \"test/property/**/*.test.ts\"",
     "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
   },
   "peerDependencies": {
