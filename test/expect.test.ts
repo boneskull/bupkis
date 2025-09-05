@@ -54,7 +54,6 @@ describe('expect() API', () => {
     it('should throw TypeError for unknown assertions', () => {
       expect(
         () => {
-          // @ts-expect-error - intentionally using unknown assertion
           expect(42, 'to do something impossible');
         },
         'to throw a',

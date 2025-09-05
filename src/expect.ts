@@ -48,18 +48,15 @@ export function createExpectAsyncFunction<
   const expectAsyncFunction = async (...args: readonly unknown[]) => {
     await Promise.resolve();
     const [isNegated, processedArgs] = maybeProcessNegation(args);
-    const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
     const candidates: Array<{
       assertion: AnyAsyncAssertion;
       parseResult: ParsedResult<AssertionParts>;
     }> = [];
     for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
       const parseResult = await assertion.parseValuesAsync(processedArgs);
-      const { exactMatch, parsedValues, reason, success } = parseResult;
+      const { exactMatch, parsedValues, success } = parseResult;
 
-      if (
-        findMatchingAssertion(parseFailureReasons, reason, success, assertion)
-      ) {
+      if (success) {
         if (exactMatch) {
           return executeAsync(
             assertion,
@@ -85,7 +82,7 @@ export function createExpectAsyncFunction<
         parseResult,
       );
     }
-    throwInvalidParametersError(args, parseFailureReasons);
+    throwInvalidParametersError(args);
   };
   return expectAsyncFunction;
 }
@@ -108,18 +105,15 @@ export function createExpectSyncFunction<
   );
   const expectFunction = (...args: readonly unknown[]) => {
     const [isNegated, processedArgs] = maybeProcessNegation(args);
-    const parseFailureReasons: [assertionRepr: string, reason: string][] = [];
     const candidates: Array<{
       assertion: AnySyncAssertion;
       parseResult: ParsedResult<AssertionParts>;
     }> = [];
     for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
       const parseResult = assertion.parseValues(processedArgs);
-      const { exactMatch, parsedValues, reason, success } = parseResult;
+      const { exactMatch, parsedValues, success } = parseResult;
 
-      if (
-        findMatchingAssertion(parseFailureReasons, reason, success, assertion)
-      ) {
+      if (success) {
         if (exactMatch) {
           return execute(
             assertion,
@@ -145,30 +139,10 @@ export function createExpectSyncFunction<
         parseResult,
       );
     }
-    throwInvalidParametersError(args, parseFailureReasons);
+    throwInvalidParametersError(args);
   };
   return expectFunction;
 }
-
-/**
- * Shared logic for iterating through assertions and finding a match.
- *
- * Both sync and async `createExpect*` functions use this same pattern.
- */
-const findMatchingAssertion = (
-  parseFailureReasons: [assertionRepr: string, reason: string][],
-  reason: string | undefined,
-  success: boolean,
-  assertion: { toString(): string },
-): boolean => {
-  if (reason) {
-    parseFailureReasons.push([`${assertion}`, reason]);
-    return false; // Continue to next assertion
-  } else if (success) {
-    return true; // Found a match
-  }
-  return false; // Continue to next assertion
-};
 
 /**
  * Executes an assertion with optional negation logic.
@@ -308,14 +282,9 @@ export const maybeProcessNegation = (
  */
 export const throwInvalidParametersError = (
   args: readonly unknown[],
-  failureReasons: [assertionRepr: string, reason: string][],
 ): never => {
   const inspectedArgs = inspect(args, { depth: 1 });
-  debug(
-    `Invalid arguments. No assertion matched: ${inspectedArgs}\\n${failureReasons
-      .map(([assertion, reason]) => `  • ${assertion}: ${reason}`)
-      .join('\\n')}`,
-  );
+  debug(`Invalid arguments. No assertion matched: ${inspectedArgs}`);
   throw new TypeError(
     `Invalid arguments. No assertion matched: ${inspectedArgs}`,
   );

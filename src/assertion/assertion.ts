@@ -29,6 +29,15 @@ import {
 
 export const debug = Debug('bupkis:assertion');
 
+/**
+ * Modified charmap for {@link slug} to use underscores to replace hyphens (and
+ * for hyphens to replace everything else that needs replacing).
+ *
+ * @internal
+ * @see {@link BupkisAssertion.generateUniqueId} for usage
+ */
+const SLUG_CHARMAP = { ...slug.charmap, '-': '_' };
+
 export abstract class BupkisAssertion<
   Parts extends AssertionParts,
   Impl extends AssertionImpl<Parts>,
@@ -42,7 +51,7 @@ export abstract class BupkisAssertion<
     readonly slots: Slots,
     readonly impl: Impl,
   ) {
-    this.id = this.generateUniqueId();
+    this.id = this.generateAssertionId();
     debug('Created assertion %s', this);
   }
 
@@ -80,7 +89,7 @@ export abstract class BupkisAssertion<
           return `${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).left)} & ${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).right)}`;
         case 'literal':
           return (def as z.core.$ZodLiteralDef<any>).values
-            .map((value) => `"${value}"`)
+            .map((value) => `'${value}'`)
             .join(' / ');
         case 'map':
           return `{Map<${expand((def as z.core.$ZodMapDef).keyType)}, ${expand((def as z.core.$ZodMapDef).valueType)}>`;
@@ -115,42 +124,44 @@ export abstract class BupkisAssertion<
   ): ParsedResult<Parts> | undefined {
     if (this.slots.length !== args.length) {
       return {
-        assertion: `${this}`,
-        reason: 'Argument count mismatch',
         success: false,
       };
     }
   }
 
+  /**
+   * TODO: Fix the return types here. This is all sorts of confusing.
+   *
+   * @param slot Slot to check
+   * @param slotIndex Index of slot
+   * @param rawArg Raw argument
+   * @returns
+   */
   protected parseSlotForLiteral<Slot extends ArrayValues<Slots>>(
     slot: Slot,
-    i: number,
-    arg: unknown,
+    slotIndex: number,
+    rawArg: unknown,
   ): boolean | ParsedResult<Parts> {
     const meta = BupkisRegistry.get(slot) ?? {};
     // our branded literal slots are also tagged in meta for runtime
     if (kStringLiteral in meta) {
       if ('value' in meta) {
-        if (arg !== meta.value) {
+        if (rawArg !== meta.value) {
           return {
-            assertion: `${this}`,
-            reason: `Expected ${meta.value} for slot ${i}, got ${inspect(arg)}`,
             success: false,
           };
         }
       } else if ('values' in meta) {
         const allowed = meta.values as readonly string[];
-        if (!allowed.includes(`${arg}`)) {
+        if (!allowed.includes(`${rawArg}`)) {
           return {
-            assertion: `${this}`,
-            reason: `Expected one of ${allowed.join(', ')} for slot ${i}, got ${inspect(arg)}`,
             success: false,
           };
         }
       } else {
         /* c8 ignore next */
         throw new TypeError(
-          `Invalid metadata for slot ${i} with value ${inspect(arg)}`,
+          `Invalid metadata for slot ${slotIndex} with value ${inspect(rawArg)}`,
         );
       }
       return true;
@@ -195,15 +206,24 @@ export abstract class BupkisAssertion<
   }
 
   /**
-   * Generates a unique ID for this assertion by combining content, structure,
+   * Generates a unique¹ ID for this assertion by combining content, structure,
    * and type information.
    *
+   * - `s` is slot count
+   * - `p` is part count
+   *
+   * Slugifies the string representation of the assertion. Does not collapse
+   * adjacent hyphens, as hyphens are significant in phrase literals.
+   *
+   * @remarks
+   * ¹: "Unique" here means "unique enough" for practical purposes. This is not
+   * cryptographically unique, nor does it need to be. The goal is to avoid
+   * collisions in common scenarios while keeping the ID human-readable.
    * @returns A human-readable unique identifier
    */
-  private generateUniqueId(): string {
-    // Base slug with charmap fix for hyphens
+  private generateAssertionId(): string {
     const baseSlug = slug(`${this}`, {
-      charmap: { ...slug.charmap, '-': '_' },
+      charmap: SLUG_CHARMAP,
     });
 
     // Add structural signature for additional uniqueness

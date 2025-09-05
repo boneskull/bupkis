@@ -1,11 +1,13 @@
 /**
- * Types used throughout _BUPKIS_
+ * Types used throughout _BUPKIS_, mainly related to the
+ * `expect()`/`expectAsync()` API.
  *
  * @packageDocumentation
  */
 
 import type {
   ArrayValues,
+  NonEmptyTuple,
   TupleToUnion,
   Constructor as TypeFestConstructor,
   UnionToIntersection,
@@ -13,18 +15,12 @@ import type {
 import type { z } from 'zod/v4';
 
 import type {
-  AnyAssertion,
-  AnyAssertions,
   AnyAsyncAssertion,
   AnyAsyncAssertions,
   AnySyncAssertion,
   AnySyncAssertions,
-  AssertionFunctionAsync,
-  AssertionFunctionSync,
   AssertionPart,
   AssertionParts,
-  AssertionSchemaAsync,
-  AssertionSchemaSync,
   AssertionSlot,
   BuiltinAsyncAssertions,
   BuiltinSyncAssertions,
@@ -51,26 +47,53 @@ export type AddNegation<T extends readonly AssertionPart[]> =
     infer First extends AssertionPart,
     ...infer Rest extends readonly AssertionPart[],
   ]
-    ? First extends readonly [string, ...string[]]
+    ? First extends NonEmptyTuple<string>
       ? readonly [
           {
             [K in keyof First]: First[K] extends string
-              ? `not ${First[K]}`
+              ? Negation<First[K]>
               : never;
           },
           ...AddNegation<Rest>,
         ]
       : First extends string
-        ? readonly [`not ${First}`, ...AddNegation<Rest>]
+        ? readonly [Negation<First>, ...AddNegation<Rest>]
         : readonly [First, ...AddNegation<Rest>]
     : readonly [];
 
+/**
+ * Base set of properties included in both {@link Expect} and {@link ExpectAsync}.
+ */
 export interface BaseExpect {
+  /**
+   * Creates a new synchronous assertion.
+   */
   createAssertion: typeof createAssertion;
+  /**
+   * Creates a new asynchronous assertion.
+   */
   createAsyncAssertion: typeof createAsyncAssertion;
+  /**
+   * Fails immediately with optional `reason`.
+   *
+   * @param reason Reason for failure
+   * @throws {AssertionError}
+   */
   fail(reason?: string): never;
 }
 
+/**
+ * Helper type to concatenate two tuples
+ */
+export type Concat<
+  A extends readonly unknown[],
+  B extends readonly unknown[],
+> = readonly [...A, ...B];
+
+/**
+ * A constructor based on {@link TypeFestConstructor type-fest's Constructor}
+ * with a default instance type argument.
+ */
 export type Constructor<
   T = any,
   Arguments extends unknown[] = any[],
@@ -79,7 +102,7 @@ export type Constructor<
 /**
  * The main synchronous assertion function.
  *
- * Contains properties in {@link BaseExpect}.
+ * Contains properties in {@link ExpectSyncProps}.
  *
  * @template T All synchronous assertions available
  * @template U All asynchronous assertions available; for use in
@@ -91,13 +114,9 @@ export type Expect<
 > = ExpectFunction<T> & ExpectSyncProps<T, U>;
 
 /**
- * Properties and methods available on {@link expect} and {@link expectAsync}.
- */
-
-/**
  * The main asynchronous assertion function.
  *
- * Contains properties in {@link BaseExpect}.
+ * Contains properties in {@link ExpectSyncProps}.
  */
 export type ExpectAsync<
   T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
@@ -105,87 +124,78 @@ export type ExpectAsync<
 > = ExpectAsyncFunction<T> & ExpectAsyncProps<T, U>;
 
 /**
- * All overloads for {@link expectAsync}
+ * All function overloads for `expectAsync()`; part of {@link ExpectAsync}.
  */
 export type ExpectAsyncFunction<
   T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
 > = UnionToIntersection<
   TupleToUnion<{
     [K in keyof T]: T[K] extends AnyAsyncAssertion
-      ? (...args: InferredExpectSlots<T[K]['parts']>) => Promise<void>
+      ? (
+          ...args: MutableOrReadonly<InferredExpectSlots<T[K]['parts']>>
+        ) => Promise<void>
       : never;
   }>
 >;
 
+/**
+ * Properties available on `expectAsync()`; part of {@link ExpectAsync}.
+ */
 export interface ExpectAsyncProps<
   T extends AnyAsyncAssertions,
   U extends AnySyncAssertions,
 > extends BaseExpect {
+  /**
+   * Tuple of all assertions available in this `expect()`.
+   */
   assertions: T;
+  /**
+   * Function to add more assertions to this `expect()`, returning a new
+   * `expect()` and `expectAsync()` pair with the combined assertions.
+   */
   use: UseFn<U, T>;
 }
 
 /**
- * All overloads for {@link expect}
+ * All function overloads for `expect()`; part of {@link Expect}.
  */
 export type ExpectFunction<
   T extends AnySyncAssertions = BuiltinSyncAssertions,
 > = UnionToIntersection<
   TupleToUnion<{
     [K in keyof T]: T[K] extends AnySyncAssertion
-      ? (...args: InferredExpectSlots<T[K]['parts']>) => void
+      ? (...args: MutableOrReadonly<InferredExpectSlots<T[K]['parts']>>) => void
       : never;
   }>
 >;
 
+/**
+ * Properties for `expect()`; part of {@link Expect}.
+ */
 export interface ExpectSyncProps<
   T extends AnySyncAssertions,
   U extends AnyAsyncAssertions,
 > extends BaseExpect {
+  /**
+   * Tuple of all assertions available in this `expect()`.
+   */
   assertions: T;
+
+  /**
+   * Function to add more assertions to this `expect()`, returning a new
+   * `expect()` and `expectAsync()` pair with the combined assertions.
+   */
   use: UseFn<T, U>;
 }
-
-/**
- * Infers the type arguments from each assertion in a tuple of assertions.
- *
- * Given `T extends AnyAssertions`, this type returns a tuple where each element
- * is a tuple of the three type arguments for the corresponding assertion:
- *
- * - For `AssertionFunctionSync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
- * - For `AssertionSchemaSync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
- * - For `AssertionFunctionAsync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
- * - For `AssertionSchemaAsync<Parts, Impl, Slots>`: `[Parts, Impl, Slots]`
- */
-export type InferAssertionTypeArgs<T extends AnyAssertions> =
-  T extends readonly [
-    infer First extends AnyAssertion,
-    ...infer Rest extends AnyAssertions,
-  ]
-    ? First extends AssertionFunctionSync<infer Parts, infer Impl, infer Slots>
-      ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
-      : First extends AssertionSchemaSync<infer Parts, infer Impl, infer Slots>
-        ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
-        : First extends AssertionFunctionAsync<
-              infer Parts,
-              infer Impl,
-              infer Slots
-            >
-          ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
-          : First extends AssertionSchemaAsync<
-                infer Parts,
-                infer Impl,
-                infer Slots
-              >
-            ? readonly [[Parts, Impl, Slots], ...InferAssertionTypeArgs<Rest>]
-            : InferAssertionTypeArgs<Rest>
-    : readonly [];
 
 /**
  * Prepares {@link MapExpectSlots} by injecting `unknown` if the `AssertionParts`
  * have no `z.ZodType` in the head position.
  *
  * Also filters out `never` from the resulting tuple to guarantee tupleness.
+ *
+ * @remarks
+ * This is a convenience and I hope it's not too confusing.
  */
 export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
   Parts extends readonly [infer First extends AssertionPart, ...infer _]
@@ -194,6 +204,7 @@ export type InferredExpectSlots<Parts extends AssertionParts> = NoNeverTuple<
       : MapExpectSlots<Parts>
     : never
 >;
+
 /**
  * Maps `AssertionParts` to the corresponding argument types for `expect` and
  * `expectAsync`, as provided by the user.
@@ -205,7 +216,7 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
     infer First extends AssertionPart,
     ...infer Rest extends readonly AssertionPart[],
   ]
-    ? [
+    ? readonly [
         AssertionSlot<First> extends PhraseLiteralSlot<infer StringLiteral>
           ? Negation<StringLiteral> | StringLiteral
           : AssertionSlot<First> extends PhraseLiteralChoiceSlot<
@@ -219,9 +230,18 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
               : never,
         ...MapExpectSlots<Rest>,
       ]
-    : [];
+    : readonly [];
 
 /**
- * The type of a phrase which is negated, e.g. "not to be"
+ * The type of a `PhraesLiteral` which is negated, e.g. "not to be"
  */
 export type Negation<T extends string> = `not ${T}`;
+
+/**
+ * Makes tuple types accept both mutable and readonly variants
+ */
+type MutableOrReadonly<T> = T extends readonly (infer U)[]
+  ? readonly U[] | U[]
+  : T extends readonly [infer First, ...infer Rest]
+    ? [First, ...Rest] | readonly [First, ...Rest]
+    : T;

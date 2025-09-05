@@ -305,7 +305,6 @@ export const TruthySchema = z
   .describe('Truthy value')
   .register(BupkisRegistry, {
     name: 'Truthy',
-    validInput: 'truthy',
   });
 
 /**
@@ -341,7 +340,7 @@ export const FalsySchema = z
   .nullable()
   .refine((value) => !value)
   .describe('Falsy value')
-  .register(BupkisRegistry, { name: 'Falsy', validInput: 'falsy' });
+  .register(BupkisRegistry, { name: 'Falsy' });
 
 /**
  * A Zod schema that validates primitive JavaScript values.
@@ -381,7 +380,7 @@ export const PrimitiveSchema = z
     z.undefined(),
   ])
   .describe('Primitive value')
-  .register(BupkisRegistry, { name: 'Primitive', validInput: 'primitive' });
+  .register(BupkisRegistry, { name: 'Primitive' });
 
 /**
  * A Zod schema that validates array-like structures including mutable and
@@ -414,8 +413,6 @@ export const ArrayLikeSchema = z
   .union([
     z.array(z.any()),
     z.tuple([z.any()], z.any()),
-    z.array(z.any()).readonly(),
-    z.tuple([z.any()], z.any()).readonly(),
     z.looseObject({ length: z.number().nonnegative().int() }),
   ])
   .describe('Array-like value')

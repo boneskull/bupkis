@@ -23,7 +23,7 @@ describe('Assertion creation functions', () => {
         const assertion = createAssertion(['to be a string'], z.string());
 
         expect(assertion, 'to be a', BupkisAssertionSchemaSync);
-        expect(assertion.parts, 'to satisfy', ['to be a string']);
+        expect(assertion.parts, 'to deep equal', ['to be a string']);
       });
 
       it('should handle parameterized assertions', () => {
@@ -33,7 +33,10 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionSchemaSync);
-        expect(assertion.parts, 'to satisfy', ['to be akin to', z.object({})]);
+        expect(assertion.parts, 'to deep equal', [
+          'to be akin to',
+          z.object({}),
+        ]);
       });
     });
 
@@ -45,7 +48,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionFunctionSync);
-        expect(assertion.parts, 'to satisfy', ['to be true']);
+        expect(assertion.parts, 'to deep equal', ['to be true']);
       });
 
       it('should create a parameterized function assertion', () => {
@@ -55,7 +58,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionFunctionSync);
-        expect(assertion.parts, 'to satisfy', [
+        expect(assertion.parts, 'to deep equal', [
           z.number(),
           'to be greater than',
           z.number(),
@@ -70,7 +73,7 @@ describe('Assertion creation functions', () => {
       );
 
       expect(assertion, 'to be a', BupkisAssertionFunctionSync);
-      expect(assertion.parts, 'to satisfy', [
+      expect(assertion.parts, 'to deep equal', [
         z.number(),
         'to be between',
         z.number(),
@@ -100,7 +103,7 @@ describe('Assertion creation functions', () => {
       );
 
       expect(assertion, 'to be a', BupkisAssertionFunctionSync);
-      expect(assertion.parts, 'to satisfy', [
+      expect(assertion.parts, 'to deep equal', [
         ['to be akin to'],
         z.object({ foo: 'bar' }),
       ]);
@@ -184,7 +187,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionSchemaAsync);
-        expect(assertion.parts, 'to satisfy', ['to resolve']);
+        expect(assertion.parts, 'to deep equal', ['to resolve']);
       });
 
       it('should create a parameterized async schema assertion', () => {
@@ -194,7 +197,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionSchemaAsync);
-        expect(assertion.parts, 'to satisfy', [
+        expect(assertion.parts, 'to deep equal', [
           z.promise(z.any()),
           'to resolve with',
           z.any(),
@@ -236,7 +239,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionFunctionAsync);
-        expect(assertion.parts, 'to satisfy', [
+        expect(assertion.parts, 'to deep equal', [
           z.function(),
           'to reject with message',
           z.string(),
@@ -276,7 +279,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionFunctionAsync);
-        expect(assertion.parts, 'to satisfy', [
+        expect(assertion.parts, 'to deep equal', [
           z.promise(z.number()),
           'to resolve to number greater than',
           z.number(),

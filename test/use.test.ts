@@ -38,13 +38,13 @@ describe('use()', () => {
     // Test failure case
     let error: Error | undefined;
     try {
-      // @ts-expect-error bad type
       myExpected('not a foo', 'to be a Foo');
     } catch (err) {
       error = err as Error;
     }
 
     expect(error, 'to be a', 'object');
+    expect(error, 'to be an Error');
     expect(error?.message, 'to be a', 'string');
     expect(error!.message, 'to include', 'Input not instance of Foo');
     console.log('✅ Custom assertion errors work correctly');

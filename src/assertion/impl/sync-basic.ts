@@ -83,7 +83,7 @@ export const BasicAssertions = [
       .describe(
         'Returns true for any non-null value where `typeof value` is `object`',
       )
-      .register(BupkisRegistry, { name: 'Object', validInput: 'object' }),
+      .register(BupkisRegistry, { name: 'Object' }),
   ),
   createAssertion(
     [['to be a record', 'to be a plain object']],

@@ -1,11 +1,10 @@
 import Debug from 'debug';
 import { inspect } from 'util';
-import { z } from 'zod/v4';
+import { type z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
 import {
-  isA,
   isAssertionFailure,
   isBoolean,
   isPromiseLike,
@@ -67,6 +66,21 @@ export abstract class BupkisAssertionSync<
     parseResult?: ParsedResult<Parts>,
   ): void;
 
+  /**
+   * Parses raw arguments against the slots of this assertion to determine if
+   * this assertion should be executed against those arguments.
+   *
+   * For example, if an assertion wants the subject to be a `z.string()`, then
+   * this will validate that the first raw arg parses as a string. It will also
+   * validate Phrase Literals as well, such as "to be a string". If all slots
+   * match and none of the slots are "unknown" or "any", then `exactMatch` will
+   * be true.
+   *
+   * If any slot does not match, this returns `success: false`.
+   *
+   * @param args
+   * @returns
+   */
   parseValues<Args extends readonly unknown[]>(
     args: Args,
   ): ParsedResult<Parts> {
@@ -93,7 +107,7 @@ export abstract class BupkisAssertionSync<
       // unknown/any accept anything
       // IMPORTANT: do not use a type guard here
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
-        debug('Skipping unknown/any slot validation for arg', arg);
+        // debug('Skipping unknown/any slot validation for arg', arg);
         parsedValues.push(arg);
         exactMatch = false;
         continue;
@@ -106,24 +120,14 @@ export abstract class BupkisAssertionSync<
       }
       const result = slot.safeParse(arg);
       if (!result.success) {
-        debug(
-          'Validation failed for slot',
-          i,
-          'with value',
-          arg,
-          'error:',
-          z.prettifyError(result.error),
-        );
         return {
-          assertion: `${this}`,
-          reason: `Validation failed for slot ${i}: ${z.prettifyError(result.error)}`,
           success: false,
         };
       }
-      parsedValues.push(result.data);
+
+      parsedValues.push(arg);
     }
     return {
-      assertion: `${this}`,
       exactMatch,
       parsedValues: parsedValues as unknown as ParsedValues<Parts>,
       success: true,
@@ -161,13 +165,13 @@ export class BupkisAssertionFunctionSync<
       );
     }
     if (isZodType(result)) {
-      try {
-        result.parse(parsedValues[0]);
-      } catch (error) {
-        if (isA(error, z.ZodError)) {
-          throw this.translateZodError(stackStartFn, error, ...parsedValues);
-        }
-        throw error;
+      const zodResult = result.safeParse(parsedValues[0]);
+      if (!zodResult.success) {
+        throw this.translateZodError(
+          stackStartFn,
+          zodResult.error,
+          ...parsedValues,
+        );
       }
     } else if (isBoolean(result)) {
       if (!result) {
@@ -240,13 +244,9 @@ export class BupkisAssertionSchemaSync<
 
     // Fall back to standard validation if no cached result
     const [subject] = parsedValues;
-    try {
-      this.impl.parse(subject);
-    } catch (error) {
-      if (isA(error, z.ZodError)) {
-        throw this.translateZodError(stackStartFn, error, ...parsedValues);
-      }
-      throw error;
+    const result = this.impl.safeParse(subject);
+    if (!result.success) {
+      throw this.translateZodError(stackStartFn, result.error, ...parsedValues);
     }
   }
 
@@ -255,7 +255,6 @@ export class BupkisAssertionSchemaSync<
   ): ParsedResult<Parts> {
     const { slots } = this;
     const parsedValues: any[] = [];
-
     const mismatch = this.maybeParseValuesArgMismatch(args);
     if (mismatch) {
       return mismatch;
@@ -270,7 +269,6 @@ export class BupkisAssertionSchemaSync<
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i]!;
       const arg = args[i];
-
       const parsedLiteralResult = this.parseSlotForLiteral(slot, i, arg);
       if (parsedLiteralResult === true) {
         continue;
@@ -284,12 +282,7 @@ export class BupkisAssertionSchemaSync<
         (slot.def.type === 'unknown' || slot.def.type === 'any') &&
         this.isSimpleSchemaAssertion()
       ) {
-        debug(
-          'Performing optimized subject validation during parseValues for %s',
-          this,
-        );
         const result = this.impl.safeParse(arg);
-
         if (result.success) {
           subjectValidationResult = { data: result.data, success: true };
           parsedValues.push(result.data); // Use validated data
@@ -314,28 +307,16 @@ export class BupkisAssertionSchemaSync<
           `${this} expects a Promise for slot ${i}; use expectAsync() instead of expect()`,
         );
       }
-
       const result = slot.safeParse(arg);
       if (!result.success) {
-        debug(
-          'Validation failed for slot',
-          i,
-          'with value',
-          arg,
-          'error:',
-          z.prettifyError(result.error),
-        );
         return {
-          assertion: `${this}`,
-          reason: `Validation failed for slot ${i}: ${z.prettifyError(result.error)}`,
           success: false,
         };
       }
-      parsedValues.push(result.data);
+      parsedValues.push(arg);
     }
 
     const result: ParsedResultSuccess<Parts> = {
-      assertion: `${this}`,
       exactMatch,
       parsedValues: parsedValues as unknown as ParsedValues<Parts>,
       success: true,

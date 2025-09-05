@@ -11,7 +11,7 @@ import {
 } from '../src/assertion/assertion-types.js';
 import { SyncAssertions } from '../src/assertion/index.js';
 import { expect, expectAsync } from '../src/bootstrap.js';
-import { type Concat } from '../src/util.js';
+import { type Concat } from '../src/types.js';
 describe('UseFn', () => {
   it('should produce an expect() with existing and new assertions', () => {
     const myAssertions = [

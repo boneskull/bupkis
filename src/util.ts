@@ -181,27 +181,31 @@ export const shallowSatisfiesShape = (param: object): z.ZodRawShape =>
       return [key, z.literal(value)];
     }),
   );
-// Helper type to concatenate two tuples
-export type Concat<
-  A extends readonly unknown[],
-  B extends readonly unknown[],
-> = readonly [...A, ...B]; /**
- * Creates an object composed of keys generated from the results of running
- * each element of collection through iteratee. The corresponding value of each
- * key is the last element responsible for generating the key.
+
+/**
+ * Creates an object composed of keys generated from the results of running each
+ * element of {@link collection} through {@link iteratee}.
+ *
+ * If `iteratee` is a function, it is invoked for each element in the
+ * {@link collection}. If `iteratee` is a {@link PropertyKey}, it is used as a key
+ * to retrieve the corresponding value from each element in the
+ * {@link collection}.
+ *
+ * The corresponding value of each key is the last element responsible for
+ * generating the key.
  */
-export function keyBy<T extends readonly unknown[]>(
+export function keyBy<const T extends readonly unknown[]>(
   collection: T,
-  iteratee: ((item: T[number]) => number | string) | keyof T[number],
-): Record<number | string, T[number]> {
-  const result: Record<number | string, T[number]> = {};
+  iteratee: ((item: T[number]) => PropertyKey) | keyof T[number],
+): Record<PropertyKey, T[number]> {
+  const result: Record<PropertyKey, T[number]> = {};
 
   for (const item of collection) {
     const key =
       typeof iteratee === 'function'
         ? iteratee(item)
         : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ((item as any)[iteratee] as number | string);
+          ((item as any)[iteratee] as PropertyKey);
     result[key] = item;
   }
 

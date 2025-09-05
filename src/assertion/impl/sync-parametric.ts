@@ -14,7 +14,14 @@ import {
 } from '../../schema.js';
 import { satisfies, shallowSatisfiesShape } from '../../util.js';
 import { createAssertion } from '../create.js';
-import { trapError } from './sync.js';
+
+const trapError = (fn: () => unknown): unknown => {
+  try {
+    fn();
+  } catch (err) {
+    return err;
+  }
+};
 
 const knownTypes = Object.freeze(
   new Set([

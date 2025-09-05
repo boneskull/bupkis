@@ -43,8 +43,6 @@ export abstract class BupkisAssertionAsync<
     const parsedValues: any[] = [];
     if (slots.length !== args.length) {
       return {
-        assertion: `${this}`,
-        reason: 'Argument count mismatch',
         success: false,
       };
     }
@@ -70,24 +68,13 @@ export abstract class BupkisAssertionAsync<
       }
       const result = await slot.safeParseAsync(arg);
       if (!result.success) {
-        debug(
-          'Validation failed for slot',
-          i,
-          'with value',
-          arg,
-          'error:',
-          z.prettifyError(result.error),
-        );
         return {
-          assertion: `${this}`,
-          reason: `Validation failed for slot ${i}: ${z.prettifyError(result.error)}`,
           success: false,
         };
       }
       parsedValues.push(result.data);
     }
     return {
-      assertion: `${this}`,
       exactMatch,
       parsedValues: parsedValues as unknown as ParsedValues<Parts>,
       success: true,

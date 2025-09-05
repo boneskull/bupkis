@@ -12,8 +12,7 @@ import {
   createExpectAsyncFunction,
   createExpectSyncFunction,
 } from './expect.js';
-import { type Expect, type ExpectAsync } from './types.js';
-import { type Concat } from './util.js';
+import { type Concat, type Expect, type ExpectAsync } from './types.js';
 
 export type FilterAsyncAssertions<T extends readonly AnyAssertion[]> =
   T extends readonly [

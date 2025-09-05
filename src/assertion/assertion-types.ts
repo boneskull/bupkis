@@ -290,12 +290,6 @@ export interface AssertionSync<
  */
 export interface BaseParsedResult<Parts extends AssertionParts> {
   /**
-   * The string representation of the `Assertion` instance that the args were
-   * parsed against.
-   */
-  assertion: string;
-
-  /**
    * If success is `true`, then this will be `true` if all args matched the
    * slots _and_ none of those args infer as `unknown` or `any`.
    */
@@ -306,11 +300,6 @@ export interface BaseParsedResult<Parts extends AssertionParts> {
    * of {@link assertion}.
    */
   parsedValues?: ParsedValues<Parts>;
-
-  /**
-   * Failure reason if `success` is `false`.
-   */
-  reason?: string;
 
   /**
    * Whether the args were successfully parsed against the slots of
@@ -363,7 +352,6 @@ export type ParsedResult<Parts extends AssertionParts = AssertionParts> =
 export interface ParsedResultFailure extends BaseParsedResult<never> {
   exactMatch?: never;
   parsedValues?: never;
-  reason: string;
   success: false;
 }
 
@@ -375,7 +363,6 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
   extends BaseParsedResult<Parts> {
   exactMatch: boolean;
   parsedValues: ParsedValues<Parts>;
-  reason?: never;
   /**
    * Optional cached subject validation result for optimized schema assertions.
    * When present, indicates that subject validation was already performed
