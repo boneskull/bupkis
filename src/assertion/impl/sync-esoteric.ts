@@ -22,7 +22,4 @@ export const EsotericAssertions = [
     ['to be extensible'],
     z.any().refine((obj) => Object.isExtensible(obj)),
   ),
-  createAssertion(['to be a String'], z.instanceof(String)),
-  createAssertion(['to be a Number'], z.instanceof(Number)),
-  createAssertion(['to be a Boolean'], z.instanceof(Boolean)),
 ] as const;
