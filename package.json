@@ -105,7 +105,7 @@
     "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
   },
   "peerDependencies": {
-    "zod": "^4.1.0"
+    "zod": "^4.1.5"
   },
   "dependencies": {
     "debug": "^4.4.1",
@@ -113,7 +113,7 @@
     "slug": "11.0.0"
   },
   "optionalDependencies": {
-    "zod": "^4.1.0"
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
