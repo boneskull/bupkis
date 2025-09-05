@@ -107,10 +107,20 @@ export default tseslint.config(
       ],
 
       'no-empty': ['error', { allowEmptyCatch: true }],
+
+      'no-restricted-syntax': [
+        'error',
+        {
+          message:
+            '.readonly() is banned on Zod schemas because safeParse() will freeze values that pass through ZodReadonly schemas, which could cause unexpected mutations in our assertion library.',
+          selector:
+            'CallExpression[callee.type="MemberExpression"][callee.property.name="readonly"]',
+        },
+      ],
     },
   },
   {
-    files: ['test/**/*.test.ts'],
+    files: ['test/**/*.test.ts', 'test/**/*.macro.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
