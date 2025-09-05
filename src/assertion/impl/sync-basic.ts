@@ -94,6 +94,7 @@ export const BasicAssertions = [
     [z.record(z.any(), z.unknown()), 'to be empty'],
     z.record(z.any(), z.never()),
   ),
+  createAssertion(['to be an Error'], z.instanceof(Error)),
   // Basic collection type assertions
   createAssertion(['to be a Set'], StrongSetSchema),
   createAssertion(['to be a WeakMap'], z.instanceof(WeakMap)),
