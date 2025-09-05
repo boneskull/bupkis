@@ -222,10 +222,11 @@ In no particular order, here are some things I want to implement:
 - [ ] Codemods for migration
 - [ ] Support other object validation libraries (or wasn't there one that provided a translation layer?)
 
-## Prior Art
+## Prior Art & Appreciation
 
 - [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
 - [Zod][] is a popular object validation library which does most of the heavy lifting for _BUPKIS_. It's not an assertion library, but there's enough overlap in its use case that it makes sense to leverage it.
+- [fast-check][]: A big thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, I mean. How about _in addition to_ itself? Yes. Thank you!
 
 ## A Note From The Author
 
@@ -239,3 +240,4 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 
 [zod]: https://zod.dev
 [unexpected]: https://unexpected.js.org
+[fast-check]: https://fast-check.dev
