@@ -33,7 +33,8 @@
       "label": "npm: dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "dev",
-      "type": "npm"
+      "type": "npm",
+      "isBackground": true
     },
     {
       "detail": "npm run lint:types -- --watch",
@@ -41,7 +42,25 @@
       "label": "npm: lint:types:dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "lint:types:dev",
-      "type": "npm"
+      "type": "npm",
+      "isBackground": true
+    },
+    {
+      "type": "npm",
+      "script": "test:property:dev",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "npm: test:property:dev",
+      "detail": "node --import tsx --test \"test/property/**/*.test.ts\" --watch",
+      "isBackground": true
+    },
+    {
+      "type": "npm",
+      "script": "test:property",
+      "problemMatcher": [],
+      "group": "test",
+      "label": "npm: test:property",
+      "detail": "node --import tsx --test \"test/property/**/*.test.ts\""
     }
   ],
   "version": "2.0.0"
