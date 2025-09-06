@@ -173,7 +173,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Additional tools: `mcp_wallaby_wallaby_allTestsForFile`, `mcp_wallaby_wallaby_testById`, `mcp_wallaby_wallaby_updateFileSnapshots`
 - Fallback: `npm test` for basic test execution when Wallaby MCP is unavailable
 
-**Property-Based Testing**: Property-based test suites must be executed from the command-line and cannot be executed nor queried through the Wallaby MCP server. Use the command `node --test --import tsx <filepath>` to run property-based test suites.
+**Property-Based Testing**: All tests in `test/property/` use [fast-check][] for property-based tests.
 
 **Test Structure**: Property tests are organized by assertion category (sync-basic, sync-collection, sync-esoteric, sync-parametric, async)
 
@@ -219,3 +219,5 @@ Choose only the tail end of the output to confirm success.
 - Assertion matching loops through all built-in assertions until exact match found
 - Complex tuple type operations may slow TypeScript compilation in large projects
 - Circular reference detection in `satisfies()` utility prevents infinite loops but adds overhead
+
+[fast-check]: https://fast-check.dev
