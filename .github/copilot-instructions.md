@@ -6,7 +6,45 @@
 
 ### Core Components
 
-**UPDATE ME**
+**Core Library Structure**:
+
+- **`src/`**: Main library source code
+  - **`assertion/`**: Core assertion implementation framework
+    - `assertion.ts` - Base `BupkisAssertion` class and factory methods
+    - `create.ts` - Assertion creation utilities (`createAssertion`, `createAsyncAssertion`)
+    - `slotify.ts` - Type system for converting assertion parts to typed slots
+    - `assertion-sync.ts` / `assertion-async.ts` - Separate sync/async execution engines
+    - `assertion-types.ts` - Core assertion typing system
+    - **`impl/`**: Built-in assertion implementations organized by category
+      - `sync-basic.ts` - Basic type assertions (string, number, boolean, etc.)
+      - `sync-collection.ts` - Array and object assertions (to contain, to have length, etc.)
+      - `sync-esoteric.ts` - Advanced assertions (instanceof, satisfies, etc.)
+      - `sync-parametric.ts` - Parameterized assertions (greater than, matches, etc.)
+      - `async.ts` - Promise-based assertions (to resolve, to reject, etc.)
+  - `expect.ts` - Main entry points (`expect`, `expectAsync`)
+  - `bootstrap.ts` - Factory functions for creating assertion engines
+  - `guards.ts` - Runtime type guards and validation utilities
+  - `schema.ts` - Reusable Zod schemas (`ClassSchema`, `FunctionSchema`, etc.)
+  - `types.ts` - Complex TypeScript type definitions and inference system
+  - `util.ts` - Object matching utilities (`satisfies`, `exhaustivelySatisfies`)
+  - `error.ts` - Custom error classes (`AssertionError`, `NegatedAssertionError`)
+  - `use.ts` - Plugin system for registering custom assertions
+
+**Test Structure**:
+
+- **`test/`**: Comprehensive test suite
+  - **`property/`**: Property-based testing with fast-check
+    - `async.test.ts` - Property tests for async assertions (8 assertions)
+    - `sync-*.test.ts` - Property tests for sync assertions by category
+    - `property-test.macro.ts` - Macros for running property tests (`runPropertyTests`, `runPropertyTestsAsync`)
+    - `config.ts` - Shared configuration and utilities
+  - **`assertion/`**: Unit tests for individual assertion implementations
+  - Individual test files for core functionality (`expect.test.ts`, `use.test.ts`, etc.)
+
+**Build & Distribution**:
+
+- **`tshy`**: Dual CJS/ESM TypeScript build system outputting to `dist/`
+- **TypeDoc**: API documentation generation to `docs/`
 
 ### Key Patterns
 
@@ -35,10 +73,27 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 ## Development Workflows
 
-**Build**: `npm run build` (uses `tshy` for dual CJS/ESM output)
-**Test**: `npm test` (Node.js built-in test runner with `tsx` loader)
-**Watch Tests**: `npm run test:watch`
-**Debug**: Set `DEBUG=bupkis*` environment variable
+**Build & Development**:
+
+- `npm run build` - Production build using `tshy` for dual CJS/ESM output
+- `npm run dev` - Watch mode build for development
+- `npm run build:docs` - Generate API documentation with TypeDoc
+
+**Testing**:
+
+- `npm test` - Run all tests (unit + property) using Node.js built-in test runner with `tsx` loader
+- `npm run test:watch` - Run all tests in watch mode
+- `npm run test:property` - Run only property-based tests with fast-check
+- `npm run test:property:dev` - Run property tests in watch mode
+
+**Linting & Type Checking**:
+
+- `npm run lint` - ESLint with TypeScript support
+- `npm run lint:fix` - Auto-fix ESLint issues
+- `npm run lint:types` - TypeScript type checking across project
+- `npm run lint:types:dev` - Type checking in watch mode
+
+**Debug**: Set `DEBUG=bupkis*` environment variable for detailed logging
 
 **Wallaby.js Integration**: Real-time testing with `.wallaby.js` config:
 
@@ -94,12 +149,15 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - **Zod v4** (peer/optional dependency) - core validation engine
 - **Debug** - structured logging with `bupkis:*` namespace
 - **tsx** - TypeScript execution for tests
+- **slug** - string normalization
+- **fast-check** - property-based testing framework
 
 **Module Boundaries**:
 
 - `guards.ts` - runtime type checking (used throughout)
 - `schema.ts` - reusable Zod schemas (`ClassSchema`, `FunctionSchema`, etc.)
 - `util.ts` - object matching utilities (`satisfies`, `exhaustivelySatisfies`)
+- `bootstrap.ts` - factory functions for creating assertion engines
 - Clear separation between sync/async assertion implementations
 
 **Type Safety**: The library uses branded Zod types (`PhraseLiteralSlot`) and complex type inference to ensure compile-time validation of assertion usage while maintaining runtime flexibility.
@@ -116,6 +174,16 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Fallback: `npm test` for basic test execution when Wallaby MCP is unavailable
 
 **Property-Based Testing**: Property-based test suites must be executed from the command-line and cannot be executed nor queried through the Wallaby MCP server. Use the command `node --test --import tsx <filepath>` to run property-based test suites.
+
+**Test Structure**: Property tests are organized by assertion category (sync-basic, sync-collection, sync-esoteric, sync-parametric, async)
+
+**Fast-Check Integration**: Uses `fc.property()` and `fc.asyncProperty()` for comprehensive input generation
+
+**Dynamic Function Generation**: Leverages `fc.func()` instead of `fc.constant()` for better test coverage where possible
+
+**Coordinated Generators**: Complex assertion tests use coordinated generators to ensure valid input combinations
+
+**Recent Optimizations**: Async property tests have been optimized to minimize `fc.constant()` usage by using dynamic generators like `fc.anything().map()`, `fc.string().map()`, and `fc.func().map()` for broader test coverage
 
 **Linting Errors**: If there are linting errors, always run the "ESLint: Fix all auto-fixable problems" command from the Command Palette first. If there are still errors, they must be fixed manually
 
