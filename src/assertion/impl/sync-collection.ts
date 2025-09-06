@@ -69,6 +69,17 @@ export const CollectionAssertions = [
     (subject, expectedLength) => subject.length === expectedLength,
   ),
 
+  // Array emptiness assertions
+  createAssertion([z.array(z.any()), 'to be non-empty'], (subject) => {
+    if (subject.length === 0) {
+      return {
+        actual: subject.length,
+        expected: 'non-empty array',
+        message: 'Expected array to be non-empty',
+      };
+    }
+  }),
+
   // Object assertions
   createAssertion(
     [

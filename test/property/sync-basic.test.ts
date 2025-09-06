@@ -66,6 +66,42 @@ const testConfigs = {
       ],
     },
   },
+  'string-to-be-empty-2s2p': {
+    invalid: {
+      generators: [
+        fc.string().filter((s) => s.length > 0),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-empty-2s2p']!),
+        ),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.constant(''),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-empty-2s2p']!),
+        ),
+      ],
+    },
+  },
+  'string-to-be-non_empty-2s2p': {
+    invalid: {
+      generators: [
+        fc.constant(''),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-non_empty-2s2p']!),
+        ),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.string().filter((s) => s.length > 0),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-non_empty-2s2p']!),
+        ),
+      ],
+    },
+  },
   'unknown-to-be-_infinity-2s1p': {
     invalid: {
       generators: [
@@ -646,6 +682,24 @@ const testConfigs = {
       ],
     },
   },
+  'unknown-to-be-defined-2s1p': {
+    invalid: {
+      generators: [
+        fc.constant(undefined),
+        fc.constantFrom(
+          ...extractPhrases(assertions['unknown-to-be-defined-2s1p']!),
+        ),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.anything().filter((v) => v !== undefined),
+        fc.constantFrom(
+          ...extractPhrases(assertions['unknown-to-be-defined-2s1p']!),
+        ),
+      ],
+    },
+  },
   'unknown-to-be-false-2s1p': {
     invalid: {
       generators: [
@@ -803,6 +857,37 @@ const testConfigs = {
         fc.constant(null),
         fc.constantFrom(
           ...extractPhrases(assertions['unknown-to-be-null-2s1p']!),
+        ),
+      ],
+    },
+  },
+  'unknown-to-be-ok-2s1p': {
+    invalid: {
+      generators: [
+        fc.oneof(
+          fc.constant(false),
+          fc.constant(''),
+          fc.constant(0),
+          fc.constant(null),
+          fc.constant(undefined),
+          fc.constant(Number.NaN),
+        ),
+        fc.constantFrom(
+          ...extractPhrases(assertions['unknown-to-be-ok-2s1p']!),
+        ),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.oneof(
+          fc.string().filter((s) => s.length > 0),
+          fc.integer().filter((n) => n !== 0),
+          fc.constant(true),
+          fc.array(fc.anything(), { minLength: 1 }),
+          fc.object(),
+        ),
+        fc.constantFrom(
+          ...extractPhrases(assertions['unknown-to-be-ok-2s1p']!),
         ),
       ],
     },

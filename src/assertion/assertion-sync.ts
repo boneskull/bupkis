@@ -1,3 +1,11 @@
+/**
+ * Synchronous assertion subclasses.
+ *
+ * @packageDocumentation
+ * @see {@link AssertionFunctionSync} for function-based assertions
+ * @see {@link AssertionSchemaSync} for schema-based assertions
+ */
+
 import Debug from 'debug';
 import { inspect } from 'util';
 import { type z } from 'zod/v4';
@@ -30,20 +38,10 @@ import { BupkisAssertion } from './assertion.js';
 const debug = Debug('bupkis:assertion:sync');
 
 /**
- * An assertion implemented as a Zod schema.
+ * Abstract class for synchronous assertions.
  *
- * Async schemas are supported via {@link expectAsync}.
+ * Child classes are expected to implement {@link execute}.
  */
-/**
- * Optimized schema assertion that performs subject validation during
- * parseValues() to eliminate double parsing for simple schema-based
- * assertions.
- *
- * This class implements Option 2 from the z.function() analysis - it caches the
- * subject validation result during argument parsing and reuses it during
- * execution, eliminating the double parsing overhead.
- */
-
 export abstract class BupkisAssertionSync<
     Parts extends AssertionParts,
     Impl extends AssertionImplSync<Parts>,
@@ -78,8 +76,8 @@ export abstract class BupkisAssertionSync<
    *
    * If any slot does not match, this returns `success: false`.
    *
-   * @param args
-   * @returns
+   * @param args Raw arguments
+   * @returns Result of parsing attempt
    */
   parseValues<Args extends readonly unknown[]>(
     args: Args,

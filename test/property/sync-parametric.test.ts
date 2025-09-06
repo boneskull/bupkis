@@ -69,11 +69,36 @@ const testConfigs = {
       },
     },
 
+  'any-to-be-one-of-array-3s3p': {
+    invalid: {
+      generators: [
+        fc.string(),
+        fc.constantFrom(
+          ...extractPhrases(assertions['any-to-be-one-of-array-3s3p']!),
+        ),
+        fc.array(fc.integer()), // Looking for string in integer array
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.oneof(
+          fc.constant('test'),
+          fc.constant('other1'),
+          fc.constant('other2'),
+        ),
+        fc.constantFrom(
+          ...extractPhrases(assertions['any-to-be-one-of-array-3s3p']!),
+        ),
+        fc.constant(['test', 'other1', 'other2']),
+      ] as const,
+    },
+  },
+
   // deep equality - arrays
   'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p': {
     invalid: {
       generators: [
-        fc.array(fc.string()),
+        fc.array(fc.string(), { minLength: 1 }),
         fc.constantFrom(
           ...extractPhrases(
             assertions[
@@ -81,15 +106,12 @@ const testConfigs = {
             ]!,
           ),
         ),
-        fc.array(fc.integer()), // Different element types
+        fc.array(fc.integer(), { minLength: 1 }), // Different element types
       ],
     },
     valid: {
       generators: [
-        fc
-          .array(fc.string())
-          .chain((arr) => fc.tuple(fc.constant(arr), fc.constant([...arr])))
-          .map(([arr]) => arr),
+        fc.array(fc.string()).chain((arr) => fc.constant(arr)),
         fc.constantFrom(
           ...extractPhrases(
             assertions[
@@ -97,10 +119,7 @@ const testConfigs = {
             ]!,
           ),
         ),
-        fc
-          .array(fc.string())
-          .chain((arr) => fc.tuple(fc.constant(arr), fc.constant([...arr])))
-          .map(([, arr]) => arr),
+        fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
       ],
       numRuns: 50,
     },
@@ -118,7 +137,7 @@ const testConfigs = {
             ]!,
           ),
         ),
-        fc.array(fc.string(), { maxLength: 3, minLength: 3 }), // Different length
+        fc.array(fc.integer(), { maxLength: 3, minLength: 3 }), // Different types, lengths
       ],
     },
     valid: {
@@ -133,6 +152,77 @@ const testConfigs = {
         ),
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }), // Subset array
       ],
+    },
+  },
+
+  'error-to-have-message-matching-regexp-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant(new Error('wrong message')),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['error-to-have-message-matching-regexp-3s3p']!,
+          ),
+        ),
+        fc.constant(/expected/),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(new Error('expected message')),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['error-to-have-message-matching-regexp-3s3p']!,
+          ),
+        ),
+        fc.constant(/expected/),
+      ] as const,
+    },
+  },
+
+  'error-to-have-message-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant(new Error('wrong message')),
+        fc.constantFrom(
+          ...extractPhrases(assertions['error-to-have-message-string-3s3p']!),
+        ),
+        fc.constant('expected message'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(new Error('expected message')),
+        fc.constantFrom(
+          ...extractPhrases(assertions['error-to-have-message-string-3s3p']!),
+        ),
+        fc.constant('expected message'),
+      ] as const,
+    },
+  },
+
+  'functionschema-to-have-arity-number-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant(() => {}), // Zero arity
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['functionschema-to-have-arity-number-3s3p']!,
+          ),
+        ),
+        fc.constant(2), // Expecting 2 arguments
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant((_a: any, _b: any) => {}), // Two arity
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['functionschema-to-have-arity-number-3s3p']!,
+          ),
+        ),
+        fc.constant(2), // Expecting 2 arguments
+      ] as const,
     },
   },
 
@@ -160,7 +250,7 @@ const testConfigs = {
   'functionschema-to-throw-a-to-thrown-an-classschema-3s3p': {
     invalid: {
       generators: [
-        helperGenerators.errorThrowingFunction, // Throws TypeError, not Error
+        helperGenerators.throwingFunction, // Throws Error, expecting TypeError (wrong type)
         fc.constantFrom(
           ...extractPhrases(
             assertions[
@@ -168,12 +258,12 @@ const testConfigs = {
             ]!,
           ),
         ),
-        fc.constant(Error),
+        fc.constant(TypeError),
       ],
     },
     valid: {
       generators: [
-        helperGenerators.errorThrowingFunction,
+        helperGenerators.errorThrowingFunction, // Throws TypeError, expecting TypeError (correct type)
         fc.constantFrom(
           ...extractPhrases(
             assertions[
@@ -192,18 +282,12 @@ const testConfigs = {
       invalid: {
         generators: [
           fc.constant(() => {
-            throw new TypeError('wrong message');
+            throw new TypeError('different message');
           }),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions[
-                'functionschema-to-throw-a-to-thrown-an-classschema-satisfying-string-regexp-object-5s5p'
-              ]!,
-            ),
-          ),
+          fc.constantFrom('to throw a', 'to thrown an'),
           fc.constant(TypeError),
           fc.constant('satisfying'),
-          fc.constant('specific'),
+          fc.constant('specific'), // Looking for 'specific' in 'different message' (should fail)
         ],
       },
       valid: {
@@ -211,16 +295,10 @@ const testConfigs = {
           fc.constant(() => {
             throw new TypeError('specific error');
           }),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions[
-                'functionschema-to-throw-a-to-thrown-an-classschema-satisfying-string-regexp-object-5s5p'
-              ]!,
-            ),
-          ),
+          fc.constantFrom('to throw a', 'to thrown an'),
           fc.constant(TypeError),
           fc.constant('satisfying'),
-          fc.constant('specific'),
+          fc.constant('specific'), // Looking for 'specific' in 'specific error' (should pass)
         ],
       },
     },
@@ -252,6 +330,33 @@ const testConfigs = {
         ),
         fc.constant('specific error'),
       ],
+    },
+  },
+
+  'number-to-be-close-to-number-number-4s4p': {
+    invalid: {
+      generators: [
+        fc.constant(5.0),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['number-to-be-close-to-number-number-4s4p']!,
+          ),
+        ),
+        fc.constant(10.0), // Target
+        fc.constant(2.0), // Delta
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(9.5),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['number-to-be-close-to-number-number-4s4p']!,
+          ),
+        ),
+        fc.constant(10.0), // Target
+        fc.constant(2.0), // Delta (9.5 is within 2 of 10)
+      ] as const,
     },
   },
 
@@ -363,6 +468,33 @@ const testConfigs = {
     },
   },
 
+  'number-to-be-within-number-number-4s4p': {
+    invalid: {
+      generators: [
+        fc.constant(0),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['number-to-be-within-number-number-4s4p']!,
+          ),
+        ),
+        fc.constant(5), // Min
+        fc.constant(10), // Max
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(7),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['number-to-be-within-number-number-4s4p']!,
+          ),
+        ),
+        fc.constant(5), // Min
+        fc.constant(10), // Max
+      ] as const,
+    },
+  },
+
   // deep equality - objects
   'object-to-deep-equal-to-deeply-equal-object-3s3p': {
     invalid: {
@@ -421,8 +553,6 @@ const testConfigs = {
       ],
     },
   },
-
-  // string includes/contains
   'string-includes-contains-to-include-to-contain-string-3s3p': {
     invalid: {
       generators: [
@@ -449,6 +579,150 @@ const testConfigs = {
         ),
         fc.constant('world'),
       ],
+    },
+  },
+
+  // string includes/contains
+
+  'string-to-be-greater-than-or-equal-to-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('apple'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-greater-than-or-equal-to-string-3s3p']!,
+          ),
+        ),
+        fc.constant('zebra'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('zebra'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-greater-than-or-equal-to-string-3s3p']!,
+          ),
+        ),
+        fc.constant('apple'),
+      ] as const,
+    },
+  },
+
+  'string-to-be-greater-than-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('apple'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-greater-than-string-3s3p']!,
+          ),
+        ),
+        fc.constant('zebra'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('zebra'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-greater-than-string-3s3p']!,
+          ),
+        ),
+        fc.constant('apple'),
+      ] as const,
+    },
+  },
+
+  'string-to-be-less-than-or-equal-to-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('zebra'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-less-than-or-equal-to-string-3s3p']!,
+          ),
+        ),
+        fc.constant('apple'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('apple'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-be-less-than-or-equal-to-string-3s3p']!,
+          ),
+        ),
+        fc.constant('zebra'),
+      ] as const,
+    },
+  },
+
+  'string-to-be-less-than-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('zebra'),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-less-than-string-3s3p']!),
+        ),
+        fc.constant('apple'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('apple'),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-be-less-than-string-3s3p']!),
+        ),
+        fc.constant('zebra'),
+      ] as const,
+    },
+  },
+
+  'string-to-begin-with-to-start-with-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('hello world'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-begin-with-to-start-with-string-3s3p']!,
+          ),
+        ),
+        fc.constant('goodbye'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('hello world'),
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions['string-to-begin-with-to-start-with-string-3s3p']!,
+          ),
+        ),
+        fc.constant('hello'),
+      ] as const,
+    },
+  },
+
+  'string-to-end-with-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant('hello world'),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-end-with-string-3s3p']!),
+        ),
+        fc.constant('goodbye'),
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant('hello world'),
+        fc.constantFrom(
+          ...extractPhrases(assertions['string-to-end-with-string-3s3p']!),
+        ),
+        fc.constant('world'),
+      ] as const,
     },
   },
 

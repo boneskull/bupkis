@@ -78,6 +78,24 @@ const helperGenerators = {
  * Test configurations for each collection assertion.
  */
 const testConfigs = {
+  'array-to-be-non_empty-2s2p': {
+    invalid: {
+      generators: [
+        fc.constant([]),
+        fc.constantFrom(
+          ...extractPhrases(assertions['array-to-be-non_empty-2s2p']!),
+        ),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.array(fc.anything(), { minLength: 1 }),
+        fc.constantFrom(
+          ...extractPhrases(assertions['array-to-be-non_empty-2s2p']!),
+        ),
+      ],
+    },
+  },
   // Array contains/includes value
   'array-to-contain-to-include-any-3s3p': {
     invalid: {

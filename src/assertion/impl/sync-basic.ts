@@ -13,9 +13,16 @@ import {
 } from '../../schema.js';
 import { createAssertion } from '../create.js';
 
+/**
+ * Basic synchronous assertions.
+ */
 export const BasicAssertions = [
   /**
+   * Foo
+   *
    * @assertion
+   * @phrase 'to be a string'
+   * @subject {unknown}
    * @value {string}
    */
   createAssertion(['to be a string'], z.string()),
@@ -97,6 +104,21 @@ export const BasicAssertions = [
       .refine((obj) => Reflect.ownKeys(obj).length === 0),
   ),
   createAssertion(['to be an Error'], z.instanceof(Error)),
+
+  // String emptiness assertions
+  createAssertion([z.string(), 'to be empty'], z.string().max(0)),
+  createAssertion([z.string(), 'to be non-empty'], z.string().min(1)),
+
+  // General existence/value checks
+  createAssertion(
+    ['to be defined'],
+    z.any().refine((val) => val !== undefined),
+  ),
+  createAssertion(
+    ['to be ok'],
+    z.any().refine((val) => !!val),
+  ),
+
   // Basic collection type assertions
   createAssertion(['to be a Set'], StrongSetSchema),
   createAssertion(['to be a WeakMap'], z.instanceof(WeakMap)),

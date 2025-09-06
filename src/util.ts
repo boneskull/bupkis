@@ -23,14 +23,16 @@ import {
 
 /**
  * Creates an object composed of keys generated from the results of running each
- * element of {@link collection} through {@link iteratee}.
+ * element of `collection` through `iteratee`.
  *
  * If `iteratee` is a function, it is invoked for each element in the
- * {@link collection}. If `iteratee` is a `PropertyKey`, it is used as a key to
- * retrieve the corresponding value from each element in the {@link collection}.
+ * `collection`. If `iteratee` is a `PropertyKey`, it is used as a key to
+ * retrieve the corresponding value from each element in `collection`.
  *
  * The corresponding value of each key is the last element responsible for
  * generating the key.
+ *
+ * @see {@link https://lodash.com/docs/4.17.15#keyBy | lodash.keyBy()}
  */
 export function keyBy<
   const T extends readonly unknown[],
@@ -99,6 +101,8 @@ export const valueToSchema = (
     _currentDepth?: number;
     /** Whether to allow mixed types in arrays (default: true) */
     allowMixedArrays?: boolean;
+    /** If `true`, use `z.literal()` for primitive values instead of type schemas */
+    literalPrimitives?: boolean;
     /**
      * If `true`, treat `RegExp` literals as `RegExp` literals; otherwise treat
      * as strings and attempt match
@@ -114,6 +118,7 @@ export const valueToSchema = (
   const {
     _currentDepth = 0,
     allowMixedArrays = true,
+    literalPrimitives = false,
     literalRegExp = false,
     maxDepth = 10,
     strict = false,
@@ -143,15 +148,15 @@ export const valueToSchema = (
 
   switch (valueType) {
     case 'bigint':
-      return z.bigint();
+      return literalPrimitives ? z.literal(value as bigint) : z.bigint();
     case 'boolean':
-      return z.boolean();
+      return literalPrimitives ? z.literal(value as boolean) : z.boolean();
     case 'function':
       return FunctionSchema;
     case 'number':
-      return z.number();
+      return literalPrimitives ? z.literal(value as number) : z.number();
     case 'string':
-      return z.string();
+      return literalPrimitives ? z.literal(value as string) : z.string();
     case 'symbol':
       return z.symbol();
   }

@@ -12,4 +12,4 @@ export type * as types from './assertion-types.js';
 export { BupkisAssertion } from './assertion.js';
 export { createAssertion, createAsyncAssertion } from './create.js';
 export { AsyncAssertions } from './impl/async.js';
-export { SyncAssertions } from './impl/sync.js';
+export type * from './impl/sync.js';

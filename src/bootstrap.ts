@@ -28,15 +28,11 @@ export const bootstrap = (): {
   expect: Expect<typeof SyncAssertions>;
   expectAsync: ExpectAsync<typeof AsyncAssertions>;
 } => {
-  /** {@inheritDoc Expect} */
-
   const expect: Expect<typeof SyncAssertions, typeof AsyncAssertions> =
     Object.assign(
       createExpectSyncFunction(SyncAssertions),
       createBaseExpect(SyncAssertions, AsyncAssertions, 'sync'),
     );
-
-  /** {@inheritDoc ExpectAsync} */
 
   const expectAsync: ExpectAsync<
     typeof AsyncAssertions,
@@ -49,7 +45,11 @@ export const bootstrap = (): {
   return { expect, expectAsync };
 };
 
-// Create and export the default instances
-const { expect, expectAsync } = bootstrap();
+const api = bootstrap();
+
+/** {@inheritDoc Expect} */
+const { expect } = api;
+/** {@inheritDoc ExpectAsync} */
+const { expectAsync } = api;
 
 export { expect, expectAsync };

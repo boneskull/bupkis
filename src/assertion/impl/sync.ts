@@ -20,3 +20,10 @@ export const SyncAssertions = [
   ...EsotericAssertions,
   ...ParametricAssertions,
 ] as const;
+
+export {
+  BasicAssertions,
+  CollectionAssertions,
+  EsotericAssertions,
+  ParametricAssertions,
+};

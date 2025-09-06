@@ -1,3 +1,9 @@
+/**
+ * Contains the main API types
+ *
+ * @packageDocumentation
+ */
+
 import type { TupleToUnion, UnionToIntersection } from 'type-fest';
 
 import type {
@@ -50,6 +56,7 @@ export interface BaseExpect {
  * @template T All synchronous assertions available
  * @template U All asynchronous assertions available; for use in
  *   {@link ExpectSyncProps.use}
+ * @useDeclaredType
  * @see {@link expect}
  */
 
@@ -63,6 +70,7 @@ export type Expect<
  *
  * Contains properties in {@link ExpectSyncProps}.
  *
+ * @useDeclaredType
  * @see {@link expectAsync}
  */
 
@@ -108,6 +116,8 @@ export interface ExpectAsyncProps<
 
 /**
  * All function overloads for `expect()`; part of {@link Expect}.
+ *
+ * @useDeclaredType
  */
 export type ExpectFunction<
   T extends AnySyncAssertions = BuiltinSyncAssertions,

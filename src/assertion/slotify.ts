@@ -1,16 +1,24 @@
 /**
- * Provides {@link slotify}, which converts {@link AssertionParts} into
- * {@link AssertionSlots}.
+ * Provides {@link slotify}, which converts {@link AssertionParts} (phrases, Zod
+ * schemas) into {@link AssertionSlots} (Zod schemas only).
+ *
+ * `AssertionSlots` are used to match assertions against arguments to
+ * `expect()`.
  *
  * @packageDocumentation
  */
 
+import { inspect } from 'util';
 import { z } from 'zod/v4';
 
 import type { AssertionParts, AssertionSlots } from './assertion-types.js';
 
 import { kStringLiteral } from '../constant.js';
-import { isPhraseLiteral, isPhraseLiteralChoice } from '../guards.js';
+import {
+  isPhraseLiteral,
+  isPhraseLiteralChoice,
+  isZodType,
+} from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
 
 /**
@@ -26,14 +34,21 @@ import { BupkisRegistry } from '../metadata.js';
  */
 export const slotify = <const Parts extends AssertionParts>(
   parts: Parts,
-): AssertionSlots<Parts> => {
-  return parts.flatMap((part, index) => {
+): AssertionSlots<Parts> =>
+  parts.flatMap((part, index) => {
     const result: z.ZodType[] = [];
     if (index === 0 && (isPhraseLiteralChoice(part) || isPhraseLiteral(part))) {
       result.push(z.unknown().describe('subject'));
     }
 
     if (isPhraseLiteralChoice(part)) {
+      if (part.some((p) => p.startsWith('not '))) {
+        throw new TypeError(
+          `PhraseLiteralChoice at parts[${index}] must not include phrases starting with "not ": ${inspect(
+            part,
+          )}`,
+        );
+      }
       result.push(
         z
           .literal(part)
@@ -44,6 +59,13 @@ export const slotify = <const Parts extends AssertionParts>(
           }),
       );
     } else if (isPhraseLiteral(part)) {
+      if (part.startsWith('not ')) {
+        throw new TypeError(
+          `PhraseLiteral at parts[${index}] must not start with "not ": ${inspect(
+            part,
+          )}`,
+        );
+      }
       result.push(
         z
           .literal(part)
@@ -54,8 +76,14 @@ export const slotify = <const Parts extends AssertionParts>(
           }),
       );
     } else {
+      if (!isZodType(part)) {
+        throw new TypeError(
+          `Expected Zod schema, phrase literal, or phrase literal choice at parts[${index}] but received ${inspect(
+            part,
+          )} (${typeof part})`,
+        );
+      }
       result.push(part);
     }
     return result;
   }) as unknown as AssertionSlots;
-};

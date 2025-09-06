@@ -17,7 +17,7 @@ import {
   type AnySyncAssertions,
   type AssertionSync,
 } from '../src/assertion/assertion-types.js';
-import { SyncAssertions } from '../src/assertion/index.js';
+import { SyncAssertions } from '../src/assertion/impl/sync.js';
 import { expect, expectAsync } from '../src/bootstrap.js';
 import { type Concat } from '../src/types.js';
 
