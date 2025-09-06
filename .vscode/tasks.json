@@ -61,6 +61,37 @@
       "group": "test",
       "label": "npm: test:property",
       "detail": "node --import tsx --test \"test/property/**/*.test.ts\""
+    },
+    {
+      "type": "npm",
+      "script": "build:docs",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: build:docs",
+      "detail": "typedoc"
+    },
+    {
+      "isBackground": true,
+      "type": "npm",
+      "script": "build:docs:watch",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: build:docs:watch",
+      "detail": "npm run --silent build:docs -- --watch"
+    },
+    {
+      "type": "npm",
+      "isBackground": true,
+      "script": "serve",
+      "problemMatcher": [],
+      "label": "npm: serve",
+      "detail": "serve docs"
+    },
+    {
+      "dependsOn": ["npm: build:docs", "npm: serve"],
+      "label": "docs: start",
+      "problemMatcher": [],
+      "isBackground": true
     }
   ],
   "version": "2.0.0"
