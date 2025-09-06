@@ -419,3 +419,8 @@ export const ArrayLikeSchema = z
   .register(BupkisRegistry, {
     name: 'ArrayLike',
   });
+
+export const RegExpSchema = z
+  .instanceof(RegExp)
+  .describe('A RegExp instance')
+  .register(BupkisRegistry, { name: 'RegExp' });

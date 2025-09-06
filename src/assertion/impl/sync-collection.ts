@@ -68,4 +68,30 @@ export const CollectionAssertions = [
     [z.array(z.any()), 'to have length', z.number()],
     (subject, expectedLength) => subject.length === expectedLength,
   ),
+
+  // Object assertions
+  createAssertion(
+    [
+      z.looseObject({}),
+      ['to have keys', 'to have properties', 'to have props'],
+      z.tuple([z.string()], z.string()),
+    ],
+    (_, keys) =>
+      z.looseObject(
+        Object.fromEntries(keys.map((k) => [k, z.unknown().nonoptional()])),
+      ),
+  ),
+  createAssertion(
+    [z.looseObject({}), 'to have size', z.number().int().nonnegative()],
+    (subject, expectedSize) => {
+      const actual = Object.keys(subject).length;
+      if (actual !== expectedSize) {
+        return {
+          actual: actual,
+          expected: expectedSize,
+          message: `Expected object to have ${expectedSize} keys, but it has ${actual} keys`,
+        };
+      }
+    },
+  ),
 ] as const;

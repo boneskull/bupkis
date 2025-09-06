@@ -1,5 +1,10 @@
 /**
- * Property test configuration and utilities.
+ * Contains types related to configuration of property-based tests; see
+ * {@link PropertyTestConfig}.
+ *
+ * Given that there are so many assertions and the strategies to test them are
+ * all very similar, it makes (at least some) sense to dynamically generate
+ * tests based on configuration.
  *
  * @packageDocumentation
  */
@@ -61,19 +66,17 @@ export type PropertyTestConfigParameters = Omit<Parameters<any>, 'examples'>;
  *
  * For basic assertions, the `generators` tuple contains:
  *
- * - First generator: Creates random values that should pass the assertion
- * - Second generator: Creates random phrase strings from the assertion's parts
+ * - `subject`: Creates random values that should pass the assertion
+ * - `phrase`: Creates phrase strings chosen from the assertion's phrase
+ *   literal(s)
  *
- * For parameterized assertions, the tuple contains:
- *
- * - First generator: Creates random subjects (values being tested)
- * - Second generator: Creates random phrase strings from the assertion's parts
- * - Additional generators: Create parameters for the assertion
+ * For parameterized assertions, the "rest" of the tuple contains generators for
+ * the parameter and extra phrase literals / parameters that may follow.
  */
 interface PropertyTestConfigVariantConfig extends PropertyTestConfigParameters {
   generators: readonly [
-    fc.Arbitrary<any>,
-    fc.Arbitrary<string>,
+    subject: fc.Arbitrary<any>,
+    phrase: fc.Arbitrary<string>,
     ...fc.Arbitrary<any>[],
   ];
 }

@@ -17,7 +17,7 @@ import {
 } from './assertion/assertion-types.js';
 import { createAssertion, createAsyncAssertion } from './assertion/create.js';
 import { AssertionError, NegatedAssertionError } from './error.js';
-import { isString } from './guards.js';
+import { isAssertionFailure, isString } from './guards.js';
 import {
   type Expect,
   type ExpectAsync,
@@ -174,7 +174,22 @@ const execute = <
 
   try {
     debug('Executing negated assertion: %s', assertion);
-    assertion.execute(parsedValues, args, stackStartFn, parseResult);
+    const result = assertion.execute(
+      parsedValues,
+      args,
+      stackStartFn,
+      parseResult,
+    );
+    if (isAssertionFailure(result)) {
+      throw new NegatedAssertionError({
+        actual: result.actual,
+        expected: result.expected,
+        message:
+          result.message ??
+          `Expected assertion ${assertion} to fail (due to negation), but it passed`,
+        stackStartFn,
+      });
+    }
     // If we reach here, the assertion passed but we expected it to fail
     throw new NegatedAssertionError({
       message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
@@ -191,6 +206,7 @@ const execute = <
       // The assertion failed as expected for negation - this is success
       return;
     }
+
     debug('Non-assertion error thrown during negated assertion: %O', error);
     // Re-throw non-assertion errors (like TypeErrors, etc.)
     throw error;

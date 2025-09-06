@@ -1,3 +1,9 @@
+/**
+ * Utilities for property-based tests.
+ *
+ * @packageDocumentation
+ */
+
 import type { z } from 'zod/v4';
 
 import type { AnyAssertion } from '../../src/assertion/assertion-types.js';

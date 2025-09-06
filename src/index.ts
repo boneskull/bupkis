@@ -3,7 +3,7 @@
  *
  * This module exports all public APIs including the main `expect` function,
  * asynchronous `expectAsync` function, assertion creation utilities, type
- * guards, schema definitions, and error types.
+ * guards, schema definitions, utility functions, and error types.
  *
  * @packageDocumentation
  */
@@ -14,3 +14,4 @@ export * as error from './error.js';
 export * as guards from './guards.js';
 export * as schema from './schema.js';
 export type * as types from './types.js';
+export * as util from './util.js';

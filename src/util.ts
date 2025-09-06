@@ -12,7 +12,20 @@
 
 import { z } from 'zod/v4';
 
-import { isA, isNonNullObject, isNullOrNonObject, isString } from './guards.js';
+import {
+  isA,
+  isNonNullObject,
+  isNullOrNonObject,
+  isPromiseLike,
+  isString,
+} from './guards.js';
+import {
+  FunctionSchema,
+  RegExpSchema,
+  StrongMapSchema,
+  StrongSetSchema,
+  WrappedPromiseLikeSchema,
+} from './schema.js';
 
 /**
  * Implementation of the "satisfies" semantic, which checks if `actual`
@@ -211,3 +224,221 @@ export function keyBy<const T extends readonly unknown[]>(
 
   return result;
 }
+
+/**
+ * Recursively converts an arbitrary value to a Zod v4 schema that would
+ * validate values with the same structure.
+ *
+ * This function analyzes the runtime value and generates a corresponding Zod
+ * schema that captures the value's structure and type information. It handles
+ * primitives, objects, arrays, functions, and various built-in types, with
+ * support for circular reference detection.
+ *
+ * @example
+ *
+ * ```typescript
+ * // Primitive types
+ * valueToSchema('hello'); // z.string()
+ * valueToSchema(42); // z.number()
+ * valueToSchema(true); // z.boolean()
+ *
+ * // Objects
+ * valueToSchema({ name: 'John', age: 30 });
+ * // z.object({ name: z.string(), age: z.number() })
+ *
+ * // Arrays
+ * valueToSchema(['a', 'b', 'c']); // z.array(z.string())
+ * valueToSchema([1, 'mixed']); // z.array(z.union([z.number(), z.string()]))
+ *
+ * // Nested structures
+ * valueToSchema({ users: [{ name: 'John' }] });
+ * // z.object({ users: z.array(z.object({ name: z.string() })) })
+ * ```
+ *
+ * @param value - The value to convert to a schema
+ * @param options - Configuration options for schema generation
+ * @param visited - Internal WeakSet for circular reference detection
+ * @returns A Zod schema that validates values matching the input's structure
+ */
+export const valueToSchema = (
+  value: unknown,
+  options: {
+    /** Current depth (internal) */
+    _currentDepth?: number;
+    /** Whether to allow mixed types in arrays (default: true) */
+    allowMixedArrays?: boolean;
+    /**
+     * If `true`, treat `RegExp` literals as `RegExp` literals; otherwise treat
+     * as strings and attempt match
+     */
+    literalRegExp?: boolean;
+    /** Maximum nesting depth to prevent stack overflow (default: 10) */
+    maxDepth?: number;
+    /** If `true`, will disallow unknown properties in objects */
+    strict?: boolean;
+  } = {},
+  visited = new WeakSet<object>(),
+): z.ZodType => {
+  const {
+    _currentDepth = 0,
+    allowMixedArrays = true,
+    literalRegExp = false,
+    maxDepth = 10,
+    strict = false,
+  } = options;
+
+  // Prevent infinite recursion
+  if (_currentDepth >= maxDepth) {
+    return z.unknown();
+  }
+
+  // Handle primitives
+  if (value === null) {
+    return z.null();
+  }
+
+  if (value === undefined) {
+    return z.undefined();
+  }
+  if (Number.isNaN(value as number)) {
+    return z.nan();
+  }
+  if (value === Infinity || value === -Infinity) {
+    return z.literal(value as any);
+  }
+
+  const valueType = typeof value;
+
+  switch (valueType) {
+    case 'bigint':
+      return z.bigint();
+    case 'boolean':
+      return z.boolean();
+    case 'function':
+      return FunctionSchema;
+    case 'number':
+      return z.number();
+    case 'string':
+      return z.string();
+    case 'symbol':
+      return z.symbol();
+  }
+
+  // Handle objects
+  if (typeof value === 'object' && value !== null) {
+    // Check for circular references
+    if (visited.has(value)) {
+      // Return a recursive schema reference or unknown for circular refs
+      return z.unknown();
+    }
+
+    visited.add(value);
+
+    try {
+      // Handle built-in object types
+      if (value instanceof Date) {
+        return z.date();
+      }
+
+      if (value instanceof RegExp) {
+        if (literalRegExp) {
+          return RegExpSchema;
+        }
+        return z.coerce.string().regex(value);
+      }
+
+      if (value instanceof Map) {
+        return StrongMapSchema;
+      }
+
+      if (value instanceof Set) {
+        return StrongSetSchema;
+      }
+
+      if (value instanceof WeakMap) {
+        return z.instanceof(WeakMap);
+      }
+
+      if (value instanceof WeakSet) {
+        return z.instanceof(WeakSet);
+      }
+
+      if (value instanceof Error) {
+        return z.instanceof(Error);
+      }
+
+      if (isPromiseLike(value)) {
+        return WrappedPromiseLikeSchema;
+      }
+
+      // Handle arrays
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          return z.array(z.unknown());
+        }
+
+        const elementSchemas = value.map((item) =>
+          valueToSchema(
+            item,
+            {
+              ...options,
+              _currentDepth: _currentDepth + 1,
+            },
+            visited,
+          ),
+        );
+
+        if (allowMixedArrays) {
+          // Create a union of all unique element types
+          const uniqueSchemas = Array.from(
+            new Set(elementSchemas.map((schema) => schema.constructor.name)),
+          ).map((_, index) => elementSchemas[index]);
+
+          if (uniqueSchemas.length === 1) {
+            return z.array(uniqueSchemas[0]!);
+          } else {
+            return z.array(
+              z.union(uniqueSchemas as [z.ZodType, z.ZodType, ...z.ZodType[]]),
+            );
+          }
+        } else {
+          // Use the first element's schema for all elements
+          return z.array(elementSchemas[0]!);
+        }
+      }
+
+      // Handle plain objects
+      if (isNonNullObject(value)) {
+        const schemaShape: Record<string, z.ZodType<any>> = {};
+
+        for (const [key, val] of Object.entries(value)) {
+          if (isString(key)) {
+            schemaShape[key] = valueToSchema(
+              val,
+              {
+                ...options,
+                _currentDepth: _currentDepth + 1,
+              },
+              visited,
+            );
+          }
+        }
+
+        return strict
+          ? z.strictObject(schemaShape)
+          : z.looseObject(schemaShape);
+      }
+
+      // Handle other object types (ArrayBuffer, etc.)
+      return z.custom<object>(
+        (val) => typeof val === 'object' && val !== null,
+        { message: 'Expected an object' },
+      );
+    } finally {
+      visited.delete(value);
+    }
+  }
+
+  // Fallback for unknown types
+  return z.unknown();
+};

@@ -100,8 +100,8 @@ export const isFunction = (value: unknown): value is (...args: any[]) => any =>
   typeof value === 'function';
 
 const AssertionFailureSchema = z.object({
-  actual: z.any().optional(),
-  expected: z.any().optional(),
+  actual: z.unknown().optional(),
+  expected: z.unknown().optional(),
   message: z.string().optional(),
 });
 

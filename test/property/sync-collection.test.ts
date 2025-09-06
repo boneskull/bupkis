@@ -181,6 +181,58 @@ const testConfigs = {
     },
   },
 
+  // Object has keys/properties/props (string keys only)
+  'object-to-have-keys-to-have-properties-to-have-props-string-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with known keys
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions[
+              'object-to-have-keys-to-have-properties-to-have-props-string-3s3p'
+            ]!,
+          ),
+        ),
+        fc.array(fc.constantFrom('x', 'y', 'z'), { minLength: 1 }), // Keys that don't exist
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with known keys
+        fc.constantFrom(
+          ...extractPhrases(
+            assertions[
+              'object-to-have-keys-to-have-properties-to-have-props-string-3s3p'
+            ]!,
+          ),
+        ),
+        fc.array(fc.constantFrom('a', 'b', 'c'), { minLength: 1 }), // Keys that exist in the object
+      ] as const,
+    },
+  },
+
+  // Object has size (number of properties)
+  'object-to-have-size-number-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with 3 properties
+        fc.constantFrom(
+          ...extractPhrases(assertions['object-to-have-size-number-3s3p']!),
+        ),
+        fc.integer({ min: 0 }).filter((n) => n !== 3), // Non-negative integers except 3
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with 3 properties
+        fc.constantFrom(
+          ...extractPhrases(assertions['object-to-have-size-number-3s3p']!),
+        ),
+        fc.constant(3), // Matching size
+      ] as const,
+    },
+  },
+
   // Set contains/includes value
   'setany-to-contain-to-include-any-3s3p': {
     invalid: {

@@ -54,7 +54,7 @@ const testConfigs = {
             ),
           ),
           fc.constant('number'), // String is not a number
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -67,7 +67,7 @@ const testConfigs = {
             ),
           ),
           fc.constant('string'),
-        ] as const,
+        ],
       },
     },
 
@@ -84,7 +84,7 @@ const testConfigs = {
           ),
         ),
         fc.array(fc.integer()), // Different element types
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -103,7 +103,7 @@ const testConfigs = {
           .array(fc.string())
           .chain((arr) => fc.tuple(fc.constant(arr), fc.constant([...arr])))
           .map(([, arr]) => arr),
-      ] as const,
+      ],
       numRuns: 50,
     },
   },
@@ -121,7 +121,7 @@ const testConfigs = {
           ),
         ),
         fc.array(fc.string(), { maxLength: 3, minLength: 3 }), // Different length
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -134,7 +134,7 @@ const testConfigs = {
           ),
         ),
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }), // Subset array
-      ] as const,
+      ],
     },
   },
 
@@ -146,7 +146,7 @@ const testConfigs = {
         fc.constantFrom(
           ...extractPhrases(assertions['functionschema-to-throw-2s2p']!),
         ),
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -154,7 +154,7 @@ const testConfigs = {
         fc.constantFrom(
           ...extractPhrases(assertions['functionschema-to-throw-2s2p']!),
         ),
-      ] as const,
+      ],
     },
   },
 
@@ -171,7 +171,7 @@ const testConfigs = {
           ),
         ),
         fc.constant(Error),
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -184,7 +184,7 @@ const testConfigs = {
           ),
         ),
         fc.constant(TypeError),
-      ] as const,
+      ],
     },
   },
 
@@ -206,7 +206,7 @@ const testConfigs = {
           fc.constant(TypeError),
           fc.constant('satisfying'),
           fc.constant('specific'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -223,7 +223,7 @@ const testConfigs = {
           fc.constant(TypeError),
           fc.constant('satisfying'),
           fc.constant('specific'),
-        ] as const,
+        ],
       },
     },
 
@@ -240,7 +240,7 @@ const testConfigs = {
           ),
         ),
         fc.constant('specific error'),
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -253,7 +253,7 @@ const testConfigs = {
           ),
         ),
         fc.constant('specific error'),
-      ] as const,
+      ],
     },
   },
 
@@ -268,7 +268,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ min: 10 }), // First number <= second number
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -279,7 +279,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ max: 10 }),
-      ] as const,
+      ],
     },
   },
 
@@ -296,7 +296,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ min: 10 }), // First number < second number
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -309,7 +309,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ max: 10 }),
-      ] as const,
+      ],
     },
   },
 
@@ -322,7 +322,7 @@ const testConfigs = {
           ...extractPhrases(assertions['number-to-be-less-than-number-3s3p']!),
         ),
         fc.integer({ max: 10 }), // First number >= second number
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -331,7 +331,7 @@ const testConfigs = {
           ...extractPhrases(assertions['number-to-be-less-than-number-3s3p']!),
         ),
         fc.integer({ min: 10 }),
-      ] as const,
+      ],
     },
   },
 
@@ -348,7 +348,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ max: 10 }), // First number > second number
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -361,7 +361,7 @@ const testConfigs = {
           ),
         ),
         fc.integer({ min: 10 }),
-      ] as const,
+      ],
     },
   },
 
@@ -376,7 +376,7 @@ const testConfigs = {
           ),
         ),
         fc.record({ b: fc.string() }), // Different structure
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -393,7 +393,7 @@ const testConfigs = {
           .record({ a: fc.string() })
           .chain((obj) => fc.tuple(fc.constant(obj), fc.constant({ ...obj })))
           .map(([, obj]) => obj),
-      ] as const,
+      ],
       numRuns: 50,
     },
   },
@@ -409,7 +409,7 @@ const testConfigs = {
           ),
         ),
         fc.record({ c: fc.constant(3) }), // Missing properties
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -420,7 +420,7 @@ const testConfigs = {
           ),
         ),
         fc.record({ a: fc.constant(1) }), // Subset properties
-      ] as const,
+      ],
     },
   },
 
@@ -437,7 +437,7 @@ const testConfigs = {
           ),
         ),
         fc.constant('xyz'), // Not contained in "hello world"
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -450,7 +450,7 @@ const testConfigs = {
           ),
         ),
         fc.constant('world'),
-      ] as const,
+      ],
     },
   },
 
@@ -463,7 +463,7 @@ const testConfigs = {
           ...extractPhrases(assertions['string-to-match-regexp-3s3p']!),
         ),
         fc.constant(/\d+/), // "hello" doesn't match digits
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -472,7 +472,7 @@ const testConfigs = {
           ...extractPhrases(assertions['string-to-match-regexp-3s3p']!),
         ),
         fc.constant(/\d+/),
-      ] as const,
+      ],
     },
   },
 
@@ -489,7 +489,7 @@ const testConfigs = {
           ),
         ),
         fc.constant(Array), // String is not instance of Array
-      ] as const,
+      ],
     },
     valid: {
       generators: [
@@ -502,46 +502,41 @@ const testConfigs = {
           ),
         ),
         fc.constant(Array),
-      ] as const,
+      ],
     },
   },
 
   // strict equality
-  'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-any-3s2p': {
-    invalid: {
-      generators: [
-        fc.string(),
-        fc.constantFrom(
-          ...extractPhrases(
-            assertions[
-              'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-any-3s2p'
-            ]!,
+  'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-unknown-3s2p':
+    {
+      invalid: {
+        generators: [
+          fc.object(),
+          fc.constantFrom(
+            ...extractPhrases(
+              assertions[
+                'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-unknown-3s2p'
+              ]!,
+            ),
           ),
-        ),
-        fc.integer(), // Different types should fail
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc
-          .string()
-          .chain((str) => fc.tuple(fc.constant(str), fc.constant(str)))
-          .map(([str]) => str),
-        fc.constantFrom(
-          ...extractPhrases(
-            assertions[
-              'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-any-3s2p'
-            ]!,
+          fc.object(), // Different types should fail
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant('test'),
+          fc.constantFrom(
+            ...extractPhrases(
+              assertions[
+                'unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-unknown-3s2p'
+              ]!,
+            ),
           ),
-        ),
-        fc
-          .string()
-          .chain((str) => fc.tuple(fc.constant(str), fc.constant(str)))
-          .map(([, str]) => str),
-      ] as const,
-      numRuns: 50, // Reduce runs since equality requires exact matching
+          fc.constant('test'),
+        ],
+        numRuns: 50, // Reduce runs since equality requires exact matching
+      },
     },
-  },
 } satisfies Record<string, PropertyTestConfig>;
 
 describe('Property-Based Tests for Sync Parametric Assertions', () => {

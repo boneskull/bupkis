@@ -8,17 +8,21 @@ import {
   ArrayLikeSchema,
   ClassSchema,
   FunctionSchema,
+  RegExpSchema,
   StrongMapSchema,
   StrongSetSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { satisfies, shallowSatisfiesShape } from '../../util.js';
+import { shallowSatisfiesShape, valueToSchema } from '../../util.js';
 import { createAssertion } from '../create.js';
 
 const trapError = (fn: () => unknown): unknown => {
   try {
     fn();
   } catch (err) {
+    if (err === undefined) {
+      return new Error('Function threw undefined');
+    }
     return err;
   }
 };
@@ -133,7 +137,7 @@ export const ParametricAssertions = [
   createAssertion(
     [
       ['to be', 'to equal', 'equals', 'is', 'is equal to', 'to strictly equal'],
-      z.any(),
+      z.unknown(),
     ],
     (subject, value) => {
       if (subject !== value) {
@@ -176,13 +180,13 @@ export const ParametricAssertions = [
     },
   ),
   createAssertion([FunctionSchema, 'to throw'], (subject) => {
-    let threw = false;
-    try {
-      subject();
-    } catch {
-      threw = true;
+    const error = trapError(subject);
+    if (!error) {
+      return {
+        actual: error,
+        message: `Expected function to throw, but it did not`,
+      };
     }
-    return threw;
   }),
   createAssertion(
     [FunctionSchema, ['to throw a', 'to thrown an'], ClassSchema],
@@ -247,10 +251,17 @@ export const ParametricAssertions = [
       'satisfying',
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
+    // @ts-expect-error sort this out later
     (subject, ctor, param) => {
       const error = trapError(subject);
       if (!isA(error, ctor)) {
-        return false;
+        return {
+          actual: error,
+          expected: `instance of ${ctor.name}`,
+          message: isError(error)
+            ? `Expected function to throw an instance of ${ctor.name}, but it threw ${(error as Error).constructor.name}`
+            : `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${error as unknown}`,
+        };
       }
 
       if (isString(param)) {
@@ -268,9 +279,9 @@ export const ParametricAssertions = [
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
       } else if (isNonNullObject(param)) {
-        return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
+        return valueToSchema(param);
       } else {
-        return false;
+        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
       }
     },
   ),
@@ -283,9 +294,8 @@ export const ParametricAssertions = [
     (subject, expected) => subject.includes(expected),
   ),
 
-  createAssertion(
-    [z.string(), 'to match', z.instanceof(RegExp)],
-    (subject, regex) => regex.test(subject),
+  createAssertion([z.string(), 'to match', RegExpSchema], (subject, regex) =>
+    regex.test(subject),
   ),
   createAssertion(
     [
@@ -293,20 +303,10 @@ export const ParametricAssertions = [
       ['to satisfy', 'to be like'],
       z.looseObject({}),
     ],
-    (subject, shape) => {
-      return z.looseObject(shape);
-    },
+    (_subject, shape) => valueToSchema(shape) as z.ZodType<typeof _subject>,
   ),
   createAssertion(
     [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
-    (subject, expected) => {
-      if (!satisfies(subject, expected)) {
-        return {
-          actual: subject,
-          expected,
-          message: `Expected array-like ${inspect(subject)} to satisfy ${inspect(expected)}`,
-        };
-      }
-    },
+    (_subject, shape) => valueToSchema(shape) as z.ZodType<typeof _subject>,
   ),
 ] as const; // Shared validation/match helper
