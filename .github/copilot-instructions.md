@@ -2,23 +2,11 @@
 
 ## Architecture Overview
 
-**Bupkis** is a TypeScript assertion library built arou**Test Results & Coverage**: Use Wallaby MCP tools for real-time insights when Wallaby is installed:
-
-- `mcp_wallaby_wallaby_allTests` - Get all test results with execution times and errors
-- `mcp_wallaby_wallaby_failingTests` - Focus on failing tests only
-- `mcp_wallaby_wallaby_coveredLinesForFile` - Check code coverage for specific files
-- `mcp_wallaby_wallaby_runtimeValues` - Inspect variable values at specific code locations
-- Additional tools: `mcp_wallaby_wallaby_allTestsForFile`, `mcp_wallaby_wallaby_testById`, `mcp_wallaby_wallaby_updateFileSnapshots`
-- Fallback: `npm test` for basic test execution when Wallaby MCP is not installedal language assertions using Zod v4 for validation. Unlike chainable APIs, it uses function calls with phrase arguments: `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.
+**Bupkis** is a TypeScript assertion library built around natural language assertions using Zod v4 for validation. Unlike chainable APIs, it uses function calls with phrase arguments: `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.
 
 ### Core Components
 
-- **`src/expect.ts`** - Main synchronous assertion engine with argument parsing and assertion matching
-- **`src/expect-async.ts`** - Asynchronous assertion engine for Promise-based operations
-- **`src/assertion/assertion.ts`** - Core `Assertion` class with parsing/execution logic
-- **`src/assertion/implementations.ts`** - All built-in synchronous assertions (type checks, comparisons, etc.)
-- **`src/assertion/async-implementations.ts`** - Built-in async assertions (Promise resolution/rejection)
-- **`src/assertion/types.ts`** - Complex TypeScript types for assertion system (recursive tuple operations)
+**UPDATE ME**
 
 ### Key Patterns
 
@@ -128,6 +116,8 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Fallback: `npm test` for basic test execution when Wallaby MCP is unavailable
 
 **Property-Based Testing**: Property-based test suites must be executed from the command-line and cannot be executed nor queried through the Wallaby MCP server. Use the command `node --test --import tsx <filepath>` to run property-based test suites.
+
+**Linting Errors**: If there are linting errors, always run the "ESLint: Fix all auto-fixable problems" command from the Command Palette first. If there are still errors, they must be fixed manually
 
 **Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
 
