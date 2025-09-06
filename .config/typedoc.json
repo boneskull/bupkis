@@ -5,6 +5,21 @@
   "entryPoints": ["../src/index.ts"],
   "excludeInternal": true,
   "excludePrivate": true,
+  "externalSymbolLinkMappings": {
+    "@types/node": {
+      "assert.AssertionError": "https://nodejs.org/api/errors.html#class-assertionerror",
+      "assert.strictEqual": "https://nodejs.org/api/assert.html#assertstrictequalactual-expected-message"
+    },
+    "zod": {
+      "ZodError": "https://zod.dev/packages/core#errors",
+      "ZodType": "https://zod.dev/packages/core#schemas",
+      "ZodPromise": "https://zod.dev/packages/core#schemas"
+    },
+    "type-fest": {
+      "Constructor": "https://github.com/sindresorhus/type-fest/blob/main/source/basic.d.ts"
+    }
+  },
+
   "hostedBaseUrl": "https://boneskull.github.io/bupkis",
   "kindSortOrder": [
     "Reference",
@@ -19,7 +34,8 @@
     "@assertion",
     "@subject",
     "@value",
-    "@phrase"
+    "@phrase",
+    "@slots"
   ],
   "navigationLinks": {
     "GitHub": "https://github.com/boneskull/bupkis"
@@ -31,6 +47,5 @@
     "typedoc-plugin-zod"
   ],
   "sort": ["kind"],
-  "tsconfig": "./tsconfig.typedoc.json",
-  "useTsLinkResolution": false
+  "tsconfig": "./tsconfig.typedoc.json"
 }
