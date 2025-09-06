@@ -28,8 +28,7 @@ export default {
     '!.tshy-build/**',
     '!node_modules/**',
     '!dist/**',
+    // tshy-ism
     '!src/node_modules/bupkis/**',
-    '!test/property/**/*', // fails; why?
-    '!test/assertion/create.test.ts',
   ],
 };
