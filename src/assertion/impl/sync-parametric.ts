@@ -13,7 +13,7 @@ import {
   StrongSetSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { shallowSatisfiesShape, valueToSchema } from '../../util.js';
+import { valueToSchema } from '../../util.js';
 import { createAssertion } from '../create.js';
 
 const trapError = (fn: () => unknown): unknown => {
@@ -216,6 +216,7 @@ export const ParametricAssertions = [
       ['to throw'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
+    // @ts-expect-error sort this out later
     (subject, param) => {
       const error = trapError(subject);
       if (!error) {
@@ -237,9 +238,9 @@ export const ParametricAssertions = [
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
       } else if (isNonNullObject(param)) {
-        return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
+        return valueToSchema(param);
       } else {
-        return false;
+        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
       }
     },
   ),

@@ -8,10 +8,12 @@
  * @packageDocumentation
  */
 
+export type * from './api.js';
 export * as assertion from './assertion/index.js';
 export { expect, expectAsync } from './bootstrap.js';
 export * as error from './error.js';
 export * as guards from './guards.js';
+export type * as metadata from './metadata.js';
 export * as schema from './schema.js';
 export type * as types from './types.js';
 export * as util from './util.js';

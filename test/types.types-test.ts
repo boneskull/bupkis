@@ -1,3 +1,11 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/**
+ * A scattering of type-level tests. Not executed; just checked by `npm run
+ * lint:types`.
+ *
+ * @packageDocumentation
+ */
+
 import { expectTypeOf } from 'expect-type';
 import { describe, it } from 'node:test';
 import { type NonEmptyTuple } from 'type-fest';
@@ -12,6 +20,7 @@ import {
 import { SyncAssertions } from '../src/assertion/index.js';
 import { expect, expectAsync } from '../src/bootstrap.js';
 import { type Concat } from '../src/types.js';
+
 describe('UseFn', () => {
   it('should produce an expect() with existing and new assertions', () => {
     const myAssertions = [

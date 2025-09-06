@@ -39,7 +39,7 @@ export const isZodType = (value: unknown): value is z.ZodType =>
   );
 
 /**
- * Returns true if the given value is a {@link ZodPromise} schema.
+ * Returns true if the given value is a {@link z.ZodPromise} schema.
  *
  * @param value - Value to test
  * @returns `true` if the value is a `ZodPromise` schema; `false` otherwise

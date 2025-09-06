@@ -8,6 +8,7 @@
  * @packageDocumentation
  */
 
+import { type Expect, type ExpectAsync } from './api.js';
 import { SyncAssertions } from './assertion/impl/sync.js';
 import { AsyncAssertions } from './assertion/index.js';
 import {
@@ -15,13 +16,13 @@ import {
   createExpectAsyncFunction,
   createExpectSyncFunction,
 } from './expect.js';
-import { type Expect, type ExpectAsync } from './types.js';
 
 /**
  * Factory function that creates both synchronous and asynchronous assertion
  * engines.
  *
  * @returns Object containing `expect` and `expectAsync` functions
+ * @internal
  */
 export const bootstrap = (): {
   expect: Expect<typeof SyncAssertions>;

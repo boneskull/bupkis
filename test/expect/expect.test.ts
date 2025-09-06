@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 
-import { expect } from '../src/index.js';
+import { expect } from '../../src/index.js';
 
 describe('expect() API', () => {
   it('should have property "fail" of type function', () => {

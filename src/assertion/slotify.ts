@@ -23,7 +23,6 @@ import { BupkisRegistry } from '../metadata.js';
  * prefixes in string literal parts.
  * @param parts Assertion parts
  * @returns Slots
- * @internal
  */
 export const slotify = <const Parts extends AssertionParts>(
   parts: Parts,

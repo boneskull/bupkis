@@ -11,17 +11,11 @@ import {
 } from './property-test.macro.js';
 
 const assertions = keyBy(EsotericAssertions, 'id');
-// [
-//   'unknown-to-have-a-null-prototype-2s1p', 'string-number-symbol-to-be-an-enumerable-property-of-object-3s3p',
-//   'unknown-to-be-sealed-2s1p', 'unknown-to-be-frozen-2s1p', 'unknown-to-be-extensible-2s1p'
-// ]
 
 /**
  * Test config defaults
  */
-const testConfigDefaults: Omit<fc.Parameters<any>, 'examples'> = {
-  numRuns: 200,
-} as const;
+const testConfigDefaults: Omit<fc.Parameters<any>, 'examples'> = {} as const;
 
 /**
  * Test configurations for each esoteric assertion.

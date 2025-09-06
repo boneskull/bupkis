@@ -36,6 +36,10 @@ export const assertExhaustiveTestConfig = (
   });
 };
 
+const globalTestConfigDefaults = {
+  numRuns: 100,
+} as const satisfies PropertyTestConfigParameters;
+
 /**
  * Runs property tests across four (4) sets of inputs for some subset of
  * assertions.
@@ -69,6 +73,7 @@ export const runPropertyTests = <
       it(`should pass for all valid inputs [${id}]`, () => {
         const { generators, ...propFcParams } = valid;
         const finalParams = {
+          ...globalTestConfigDefaults,
           ...testConfigDefaults,
           ...fcParams,
           ...propFcParams,
@@ -86,6 +91,7 @@ export const runPropertyTests = <
         it(`should fail for all invalid inputs [${id}]`, () => {
           const { generators, ...propFcParams } = invalid;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
@@ -115,6 +121,7 @@ export const runPropertyTests = <
         it(`should pass for all valid inputs (negated) [${id}]`, () => {
           const { generators, ...propFcParams } = validNegated;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
@@ -134,6 +141,7 @@ export const runPropertyTests = <
         it(`should fail for all invalid inputs (negated) [${id}]`, () => {
           const { generators, ...propFcParams } = invalidNegated;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
@@ -195,14 +203,15 @@ export const runPropertyTestsAsync = <
     } = config;
 
     describe(`Assertion: ${assertions[id]}`, () => {
-      it(`should pass for all valid inputs [${id}]`, () => {
+      it(`should pass for all valid inputs [${id}]`, async () => {
         const { generators, ...propFcParams } = valid;
         const finalParams = {
+          ...globalTestConfigDefaults,
           ...testConfigDefaults,
           ...fcParams,
           ...propFcParams,
         };
-        fc.assert(
+        await fc.assert(
           fc.asyncProperty(...generators, async (value, ...part) => {
             await expectAsync(value, ...part);
             return true;
@@ -212,14 +221,15 @@ export const runPropertyTestsAsync = <
       });
 
       if (invalid) {
-        it(`should fail for all invalid inputs [${id}]`, () => {
+        it(`should fail for all invalid inputs [${id}]`, async () => {
           const { generators, ...propFcParams } = invalid;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
           };
-          fc.assert(
+          await fc.assert(
             fc.asyncProperty(...generators, async (value, ...part) => {
               let error: unknown;
               try {
@@ -241,14 +251,15 @@ export const runPropertyTestsAsync = <
       }
 
       if (validNegated) {
-        it(`should pass for all valid inputs (negated) [${id}]`, () => {
+        it(`should pass for all valid inputs (negated) [${id}]`, async () => {
           const { generators, ...propFcParams } = validNegated;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
           };
-          fc.assert(
+          await fc.assert(
             fc.asyncProperty(...generators, async (value, ...part) => {
               return await expectAsync(
                 value,
@@ -264,14 +275,15 @@ export const runPropertyTestsAsync = <
       }
 
       if (invalidNegated) {
-        it(`should fail for all invalid inputs (negated) [${id}]`, () => {
+        it(`should fail for all invalid inputs (negated) [${id}]`, async () => {
           const { generators, ...propFcParams } = invalidNegated;
           const finalParams = {
+            ...globalTestConfigDefaults,
             ...testConfigDefaults,
             ...fcParams,
             ...propFcParams,
           };
-          fc.assert(
+          await fc.assert(
             fc.asyncProperty(...generators, async (value, ...part) => {
               let error: unknown;
               try {

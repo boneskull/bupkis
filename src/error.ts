@@ -1,28 +1,25 @@
 /**
- * Error handling and assertion error types.
+ * Error types thrown by _BUPKIS_, including {@link AssertionError}.
  *
- * This module re-exports Node.js AssertionError for consistent error handling
- * across the assertion library.
- *
+ * @privateRemarks
+ * Other custom errors should go here.
  * @packageDocumentation
  */
 
 import { AssertionError as NodeAssertionError } from 'node:assert';
 
+import {
+  kBupkisAssertionError,
+  kBupkisNegatedAssertionError,
+} from './constant.js';
 import { isA } from './guards.js';
 
 /**
- * @internal
+ * _BUPKIS_' s custom `AssertionError` class, which is just a thin wrapper
+ * around Node.js' {@link NodeAssertionError AssertionError}.
+ *
+ * @public
  */
-export const kBupkisNegatedAssertionError: unique symbol = Symbol(
-  'bupkis-negated-error',
-);
-
-/**
- * @internal
- */
-export const kBupkisAssertionError: unique symbol = Symbol('bupkis-error');
-
 export class AssertionError extends NodeAssertionError {
   [kBupkisAssertionError] = true;
 
@@ -33,6 +30,11 @@ export class AssertionError extends NodeAssertionError {
   }
 }
 
+/**
+ * Error type used internally to catch failed negated assertions.
+ *
+ * @internal
+ */
 export class NegatedAssertionError extends AssertionError {
   [kBupkisNegatedAssertionError] = true;
 

@@ -1,11 +1,12 @@
 import { describe, it } from 'node:test';
 import { z } from 'zod/v4';
 
-import { type AnySyncAssertions } from '../src/assertion/assertion-types.js';
-import { expect } from '../src/bootstrap.js';
+import { type Expect } from '../../src/api.js';
+import { type AnySyncAssertions } from '../../src/assertion/assertion-types.js';
+import { expect, expectAsync } from '../../src/bootstrap.js';
 
-describe('use()', () => {
-  it('should work exactly like the design document example', () => {
+describe('expect.use()', () => {
+  it('should create a new API with custom assertions', () => {
     class Foo {
       bar = 'bar';
     }
@@ -47,34 +48,40 @@ describe('use()', () => {
     expect(error, 'to be an Error');
     expect(error?.message, 'to be a', 'string');
     expect(error!.message, 'to include', 'Input not instance of Foo');
-    console.log('✅ Custom assertion errors work correctly');
   });
 
-  it('should validate all required properties exist', () => {
+  it('should contain the entire API', () => {
     // Check original expect has all required properties
-    expect(typeof expect.fail, 'to be', 'function');
-    expect(typeof expect.createAssertion, 'to be', 'function');
-    expect(typeof expect.createAsyncAssertion, 'to be', 'function');
-    expect(typeof expect.use, 'to be', 'function');
-    console.log('✅ Original expect has all required properties');
+
+    const fnProps = [
+      'fail',
+      'createAssertion',
+      'createAsyncAssertion',
+      'use',
+    ] as const satisfies (keyof Expect)[];
+
+    fnProps.forEach((prop) => {
+      expect(expect[prop], 'to be a function');
+    });
+
+    fnProps.forEach((prop) => {
+      expect(expectAsync[prop], 'to be a function');
+    });
 
     // Check extended expect retains all properties
     const customAssertion = expect.createAssertion(
       ['to be custom'],
       z.string(),
     );
-    const { expect: extended, expectAsync } = expect.use([customAssertion]);
+    const { expect: expect2, expectAsync: expectAsync2 } = expect.use([
+      customAssertion,
+    ]);
 
-    expect(typeof extended.fail, 'to be', 'function');
-    expect(typeof extended.createAssertion, 'to be', 'function');
-    expect(typeof extended.createAsyncAssertion, 'to be', 'function');
-    expect(typeof extended.use, 'to be', 'function');
-    console.log('✅ Extended expect has all required properties');
-
-    expect(typeof expectAsync.fail, 'to be', 'function');
-    expect(typeof expectAsync.createAssertion, 'to be', 'function');
-    expect(typeof expectAsync.createAsyncAssertion, 'to be', 'function');
-    expect(typeof expectAsync.use, 'to be', 'function');
-    console.log('✅ Extended expectAsync has all required properties');
+    fnProps.forEach((prop) => {
+      expect(expect2[prop], 'to be a function');
+    });
+    fnProps.forEach((prop) => {
+      expect(expectAsync2[prop], 'to be a function');
+    });
   });
 });

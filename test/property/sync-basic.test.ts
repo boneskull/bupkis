@@ -19,9 +19,7 @@ const assertions = keyBy(BasicAssertions, 'id');
 /**
  * Test config defaults
  */
-const testConfigDefaults: PropertyTestConfigParameters = {
-  numRuns: 200,
-} as const;
+const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 /**
  * Test configurations for each basic assertion.

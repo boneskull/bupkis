@@ -8,13 +8,12 @@
 import type {
   ArrayValues,
   NonEmptyTuple,
-  TupleToUnion,
   Constructor as TypeFestConstructor,
-  UnionToIntersection,
 } from 'type-fest';
 import type { z } from 'zod/v4';
 
 import type {
+  AnyAssertion,
   AnyAsyncAssertion,
   AnyAsyncAssertions,
   AnySyncAssertion,
@@ -22,20 +21,14 @@ import type {
   AssertionPart,
   AssertionParts,
   AssertionSlot,
-  BuiltinAsyncAssertions,
-  BuiltinSyncAssertions,
+  NoNeverTuple,
   PhraseLiteral,
   PhraseLiteralChoice,
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
 
-import { type NoNeverTuple } from './assertion/assertion-types.js';
-import {
-  type createAssertion,
-  type createAsyncAssertion,
-} from './assertion/create.js';
-import { type UseFn } from './use.js';
+import { type Expect, type ExpectAsync } from './api.js';
 
 /**
  * Helper type to create negated version of assertion parts. For phrase
@@ -62,27 +55,6 @@ export type AddNegation<T extends readonly AssertionPart[]> =
     : readonly [];
 
 /**
- * Base set of properties included in both {@link Expect} and {@link ExpectAsync}.
- */
-export interface BaseExpect {
-  /**
-   * Creates a new synchronous assertion.
-   */
-  createAssertion: typeof createAssertion;
-  /**
-   * Creates a new asynchronous assertion.
-   */
-  createAsyncAssertion: typeof createAsyncAssertion;
-  /**
-   * Fails immediately with optional `reason`.
-   *
-   * @param reason Reason for failure
-   * @throws {AssertionError}
-   */
-  fail(reason?: string): never;
-}
-
-/**
  * Helper type to concatenate two tuples
  */
 export type Concat<
@@ -99,94 +71,25 @@ export type Constructor<
   Arguments extends unknown[] = any[],
 > = TypeFestConstructor<T, Arguments>;
 
-/**
- * The main synchronous assertion function.
- *
- * Contains properties in {@link ExpectSyncProps}.
- *
- * @template T All synchronous assertions available
- * @template U All asynchronous assertions available; for use in
- *   {@link ExpectSyncProps.use}
- */
-export type Expect<
-  T extends AnySyncAssertions = BuiltinSyncAssertions,
-  U extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-> = ExpectFunction<T> & ExpectSyncProps<T, U>;
+export type FilterAsyncAssertions<T extends readonly AnyAssertion[]> =
+  T extends readonly [
+    infer S extends AnyAssertion,
+    ...infer Rest extends readonly AnyAssertion[],
+  ]
+    ? S extends AnyAsyncAssertion
+      ? readonly [S, ...FilterAsyncAssertions<Rest>]
+      : FilterAsyncAssertions<Rest>
+    : readonly [];
 
-/**
- * The main asynchronous assertion function.
- *
- * Contains properties in {@link ExpectSyncProps}.
- */
-export type ExpectAsync<
-  T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-  U extends AnySyncAssertions = BuiltinSyncAssertions,
-> = ExpectAsyncFunction<T> & ExpectAsyncProps<T, U>;
-
-/**
- * All function overloads for `expectAsync()`; part of {@link ExpectAsync}.
- */
-export type ExpectAsyncFunction<
-  T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-> = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof T]: T[K] extends AnyAsyncAssertion
-      ? (
-          ...args: MutableOrReadonly<InferredExpectSlots<T[K]['parts']>>
-        ) => Promise<void>
-      : never;
-  }>
->;
-
-/**
- * Properties available on `expectAsync()`; part of {@link ExpectAsync}.
- */
-export interface ExpectAsyncProps<
-  T extends AnyAsyncAssertions,
-  U extends AnySyncAssertions,
-> extends BaseExpect {
-  /**
-   * Tuple of all assertions available in this `expect()`.
-   */
-  assertions: T;
-  /**
-   * Function to add more assertions to this `expect()`, returning a new
-   * `expect()` and `expectAsync()` pair with the combined assertions.
-   */
-  use: UseFn<U, T>;
-}
-
-/**
- * All function overloads for `expect()`; part of {@link Expect}.
- */
-export type ExpectFunction<
-  T extends AnySyncAssertions = BuiltinSyncAssertions,
-> = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof T]: T[K] extends AnySyncAssertion
-      ? (...args: MutableOrReadonly<InferredExpectSlots<T[K]['parts']>>) => void
-      : never;
-  }>
->;
-
-/**
- * Properties for `expect()`; part of {@link Expect}.
- */
-export interface ExpectSyncProps<
-  T extends AnySyncAssertions,
-  U extends AnyAsyncAssertions,
-> extends BaseExpect {
-  /**
-   * Tuple of all assertions available in this `expect()`.
-   */
-  assertions: T;
-
-  /**
-   * Function to add more assertions to this `expect()`, returning a new
-   * `expect()` and `expectAsync()` pair with the combined assertions.
-   */
-  use: UseFn<T, U>;
-}
+export type FilterSyncAssertions<T extends readonly AnyAssertion[]> =
+  T extends readonly [
+    infer S extends AnyAssertion,
+    ...infer Rest extends readonly AnyAssertion[],
+  ]
+    ? S extends AnySyncAssertion
+      ? readonly [S, ...FilterSyncAssertions<Rest>]
+      : FilterSyncAssertions<Rest>
+    : readonly [];
 
 /**
  * Prepares {@link MapExpectSlots} by injecting `unknown` if the `AssertionParts`
@@ -230,18 +133,27 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
               : never,
         ...MapExpectSlots<Rest>,
       ]
-    : readonly [];
+    : readonly []; /**
+ * Makes tuple types accept both mutable and readonly variants
+ */
+export type MutableOrReadonly<T> = T extends readonly (infer U)[]
+  ? readonly U[] | U[]
+  : T extends readonly [infer First, ...infer Rest]
+    ? [First, ...Rest] | readonly [First, ...Rest]
+    : T;
 
 /**
  * The type of a `PhraesLiteral` which is negated, e.g. "not to be"
  */
 export type Negation<T extends string> = `not ${T}`;
 
-/**
- * Makes tuple types accept both mutable and readonly variants
- */
-type MutableOrReadonly<T> = T extends readonly (infer U)[]
-  ? readonly U[] | U[]
-  : T extends readonly [infer First, ...infer Rest]
-    ? [First, ...Rest] | readonly [First, ...Rest]
-    : T;
+export type UseFn<T extends AnySyncAssertions, U extends AnyAsyncAssertions> = <
+  V extends readonly AnyAssertion[],
+  W extends FilterSyncAssertions<V>,
+  X extends FilterAsyncAssertions<V>,
+>(
+  assertions: V,
+) => {
+  expect: Expect<Concat<T, W>, Concat<U, X>>;
+  expectAsync: ExpectAsync<Concat<U, X>, Concat<T, W>>;
+};

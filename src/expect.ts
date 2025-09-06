@@ -2,6 +2,14 @@ import Debug from 'debug';
 import { inspect } from 'util';
 
 import {
+  type Expect,
+  type ExpectAsync,
+  type ExpectAsyncFunction,
+  type ExpectAsyncProps,
+  type ExpectFunction,
+  type ExpectSyncProps,
+} from './api.js';
+import {
   type AnyAsyncAssertion,
   type AnyAsyncAssertions,
   type AnySyncAssertion,
@@ -18,17 +26,9 @@ import {
 import { createAssertion, createAsyncAssertion } from './assertion/create.js';
 import { AssertionError, NegatedAssertionError } from './error.js';
 import { isAssertionFailure, isString } from './guards.js';
-import {
-  type Expect,
-  type ExpectAsync,
-  type ExpectAsyncFunction,
-  type ExpectAsyncProps,
-  type ExpectFunction,
-  type ExpectSyncProps,
-} from './types.js';
 import { createUse } from './use.js';
 
-export const debug = Debug('bupkis:expect');
+const debug = Debug('bupkis:expect');
 
 export function createExpectAsyncFunction<
   T extends AnyAsyncAssertions,
@@ -277,7 +277,7 @@ export const executeAsync = async <
 /**
  * @internal
  */
-export const maybeProcessNegation = (
+const maybeProcessNegation = (
   args: readonly unknown[],
 ): [isNegated: boolean, processedArgs: readonly unknown[]] => {
   let isNegated = false;
@@ -296,9 +296,7 @@ export const maybeProcessNegation = (
 /**
  * @internal
  */
-export const throwInvalidParametersError = (
-  args: readonly unknown[],
-): never => {
+const throwInvalidParametersError = (args: readonly unknown[]): never => {
   const inspectedArgs = inspect(args, { depth: 1 });
   debug(`Invalid arguments. No assertion matched: ${inspectedArgs}`);
   throw new TypeError(
@@ -314,7 +312,7 @@ export const throwInvalidParametersError = (
  * @returns Object with `isNegated` flag and `cleanedPhrase`
  */
 
-export const detectNegation = (
+const detectNegation = (
   phrase: string,
 ): {
   cleanedPhrase: string;

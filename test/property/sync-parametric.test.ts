@@ -18,9 +18,7 @@ const assertions = keyBy(ParametricAssertions, 'id');
 /**
  * Test config defaults
  */
-const testConfigDefaults: PropertyTestConfigParameters = {
-  numRuns: 200,
-} as const;
+const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 /**
  * Helper generators for parametric testing

@@ -8,24 +8,7 @@
  * @packageDocumentation
  */
 
-export type {
-  AssertionImpl,
-  AssertionPart,
-  AssertionParts,
-  AssertionPartsToSlots,
-  AssertionSlot,
-  AssertionSlots,
-  ParsedResult,
-  ParsedResultFailure,
-  ParsedResultSuccess,
-  ParsedSubject,
-  ParsedValues,
-  Phrase,
-  PhraseLiteral,
-  PhraseLiteralChoice,
-  PhraseLiteralChoiceSlot,
-  PhraseLiteralSlot,
-} from './assertion-types.js';
+export type * as types from './assertion-types.js';
 export { BupkisAssertion } from './assertion.js';
 export { createAssertion, createAsyncAssertion } from './create.js';
 export { AsyncAssertions } from './impl/async.js';

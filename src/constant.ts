@@ -6,6 +6,7 @@
  * system.
  *
  * @packageDocumentation
+ * @internal
  */
 
 /**
@@ -16,3 +17,21 @@
  */
 
 export const kStringLiteral: unique symbol = Symbol('bupkis:string-literal');
+
+/**
+ * Symbol used to flag an `AssertionError` as our own.
+ *
+ * @internal
+ */
+
+export const kBupkisAssertionError: unique symbol = Symbol('bupkis-error');
+
+/**
+ * Symbol used to flag a `NegatedAssertionError`
+ *
+ * @internal
+ */
+
+export const kBupkisNegatedAssertionError: unique symbol = Symbol(
+  'bupkis-negated-error',
+);

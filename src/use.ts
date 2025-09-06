@@ -2,9 +2,7 @@ import { BupkisAssertionAsync } from './assertion/assertion-async.js';
 import { BupkisAssertionSync } from './assertion/assertion-sync.js';
 import {
   type AnyAssertion,
-  type AnyAsyncAssertion,
   type AnyAsyncAssertions,
-  type AnySyncAssertion,
   type AnySyncAssertions,
 } from './assertion/assertion-types.js';
 import {
@@ -12,38 +10,12 @@ import {
   createExpectAsyncFunction,
   createExpectSyncFunction,
 } from './expect.js';
-import { type Concat, type Expect, type ExpectAsync } from './types.js';
-
-export type FilterAsyncAssertions<T extends readonly AnyAssertion[]> =
-  T extends readonly [
-    infer S extends AnyAssertion,
-    ...infer Rest extends readonly AnyAssertion[],
-  ]
-    ? S extends AnyAsyncAssertion
-      ? readonly [S, ...FilterAsyncAssertions<Rest>]
-      : FilterAsyncAssertions<Rest>
-    : readonly [];
-
-export type FilterSyncAssertions<T extends readonly AnyAssertion[]> =
-  T extends readonly [
-    infer S extends AnyAssertion,
-    ...infer Rest extends readonly AnyAssertion[],
-  ]
-    ? S extends AnySyncAssertion
-      ? readonly [S, ...FilterSyncAssertions<Rest>]
-      : FilterSyncAssertions<Rest>
-    : readonly [];
-
-export type UseFn<T extends AnySyncAssertions, U extends AnyAsyncAssertions> = <
-  V extends readonly AnyAssertion[],
-  W extends FilterSyncAssertions<V>,
-  X extends FilterAsyncAssertions<V>,
->(
-  assertions: V,
-) => {
-  expect: Expect<Concat<T, W>, Concat<U, X>>;
-  expectAsync: ExpectAsync<Concat<U, X>, Concat<T, W>>;
-};
+import {
+  type Concat,
+  type FilterAsyncAssertions,
+  type FilterSyncAssertions,
+  type UseFn,
+} from './types.js';
 
 export function createUse<
   const T extends AnySyncAssertions,
@@ -84,7 +56,7 @@ export function createUse<
 
     return {
       expect,
-      expectAsync,
+      expectAsync: expectAsync,
     };
   };
   return use;

@@ -27,13 +27,12 @@ import {
   type ParsedValues,
 } from './assertion-types.js';
 
-export const debug = Debug('bupkis:assertion');
+const debug = Debug('bupkis:assertion');
 
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (and
  * for hyphens to replace everything else that needs replacing).
  *
- * @internal
  * @see {@link BupkisAssertion.generateUniqueId} for usage
  */
 const SLUG_CHARMAP = { ...slug.charmap, '-': '_' };

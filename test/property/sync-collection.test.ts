@@ -57,15 +57,13 @@ class SharedWeakSetState {
 /**
  * Test config defaults
  */
-const testConfigDefaults = {
-  numRuns: 200,
-} as const satisfies PropertyTestConfigParameters;
+const testConfigDefaults = {} as const satisfies PropertyTestConfigParameters;
 
 /**
  * Helper generators for collection testing
  */
 const helperGenerators = {
-  nonObjectValue: fc.oneof(
+  primitive: fc.oneof(
     fc.string(),
     fc.integer(),
     fc.boolean(),
@@ -380,7 +378,7 @@ const testConfigs = {
             assertions['weakmap-to-contain-to-include-any-3s3p']!,
           ),
         ),
-        helperGenerators.nonObjectValue, // WeakMap only accepts objects as keys
+        helperGenerators.primitive, // WeakMap only accepts objects as keys
       ] as const,
     },
     valid: {
@@ -406,7 +404,7 @@ const testConfigs = {
             assertions['weakset-to-contain-to-include-any-3s3p']!,
           ),
         ),
-        helperGenerators.nonObjectValue, // WeakSet only accepts objects as values
+        helperGenerators.primitive, // WeakSet only accepts objects as values
       ] as const,
     },
     valid: {

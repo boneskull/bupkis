@@ -84,7 +84,7 @@ import type {
   RawAssertionImplSchemaSync,
 } from './assertion-types.js';
 
-import { isFunction, isZodType } from '../guards.js';
+import { isFunction, isString, isZodType } from '../guards.js';
 import {
   BupkisAssertionFunctionAsync,
   BupkisAssertionSchemaAsync,
@@ -130,8 +130,21 @@ export function createAssertion<
   Impl extends AssertionImplSync<Parts>,
   const Parts extends AssertionParts,
 >(parts: Parts, impl: Impl) {
-  if (!parts || parts.length === 0) {
+  if (!Array.isArray(parts)) {
+    throw new TypeError('First parameter must be an array');
+  }
+  if (parts.length === 0) {
     throw new TypeError('At least one value is required for an assertion');
+  }
+  if (
+    !parts.every(
+      (part) => isString(part) || Array.isArray(part) || isZodType(part),
+    )
+  ) {
+    throw new TypeError('All assertion parts must be strings or Zod schemas');
+  }
+  if (!impl) {
+    throw new TypeError('An assertion implementation is required');
   }
   try {
     const slots = slotify<Parts>(parts);
@@ -157,7 +170,6 @@ export function createAssertion<
  *
  * @param parts Assertion parts defining the shape of the assertion
  * @param impl Implementation as a Zod schema (potentially async)
- * @param slots Slots type parameter to help with inference
  * @returns New `BupkisAssertionSchemaAsync` instance
  * @throws {TypeError} Invalid assertion implementation type
  */
@@ -185,8 +197,21 @@ export function createAsyncAssertion<
   const Parts extends AssertionParts,
   Impl extends AssertionImplAsync<Parts>,
 >(parts: Parts, impl: Impl) {
-  if (!parts || parts.length === 0) {
+  if (!Array.isArray(parts)) {
+    throw new TypeError('First parameter must be an array');
+  }
+  if (parts.length === 0) {
     throw new TypeError('At least one value is required for an assertion');
+  }
+  if (
+    !parts.every(
+      (part) => isString(part) || Array.isArray(part) || isZodType(part),
+    )
+  ) {
+    throw new TypeError('All assertion parts must be strings or Zod schemas');
+  }
+  if (!impl) {
+    throw new TypeError('An assertion implementation is required');
   }
   const slots = slotify<Parts>(parts);
 
@@ -199,8 +224,3 @@ export function createAsyncAssertion<
     'Assertion implementation must be a function, Zod schema or Zod schema factory',
   );
 }
-
-/**
- * {@inheritDoc createAssertion}
- */
-export const createSyncAssertion = createAssertion;

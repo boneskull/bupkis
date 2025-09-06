@@ -9,6 +9,7 @@
  * @packageDocumentation
  */
 
+import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
 import { isA, isNonNullObject, isString } from '../../guards.js';
@@ -17,7 +18,7 @@ import {
   FunctionSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { shallowSatisfiesShape } from '../../util.js';
+import { valueToSchema } from '../../util.js';
 import { createAsyncAssertion } from '../create.js';
 
 const trapAsyncFnError = async (fn: () => unknown) => {
@@ -115,6 +116,7 @@ export const AsyncAssertions = [
       ['to reject'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
+    // @ts-expect-error sort this out later
     async (subject, param) => {
       const error = await trapAsyncFnError(subject);
       if (!error) {
@@ -136,9 +138,9 @@ export const AsyncAssertions = [
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
       } else if (isNonNullObject(param)) {
-        return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
+        return valueToSchema(param);
       } else {
-        return false;
+        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
       }
     },
   ),
@@ -148,6 +150,7 @@ export const AsyncAssertions = [
       ['to reject'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
+    // @ts-expect-error sort this out later
     async (subject, param) => {
       const error = await trapPromiseError(subject);
       if (!error) {
@@ -169,9 +172,9 @@ export const AsyncAssertions = [
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
       } else if (isNonNullObject(param)) {
-        return z.object(shallowSatisfiesShape(param)).safeParse(error).success;
+        return valueToSchema(param);
       } else {
-        return false;
+        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
       }
     },
   ),
