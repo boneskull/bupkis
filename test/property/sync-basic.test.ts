@@ -37,7 +37,6 @@ const testConfigs = {
         fc.constantFrom(...extractPhrases('array-to-be-empty-2s2p')),
       ],
     },
-    numRuns: 10,
     valid: {
       generators: [
         fc.constant([]),
@@ -48,7 +47,11 @@ const testConfigs = {
   'recordany-unknown-to-be-empty-2s2p': {
     invalid: {
       generators: [
-        fc.dictionary(fc.string(), fc.anything(), { minKeys: 1 }),
+        fc.dictionary(
+          fc.string().filter((k) => k !== '__proto__'),
+          fc.anything(),
+          { minKeys: 1 },
+        ),
         fc.constantFrom(
           ...extractPhrases('recordany-unknown-to-be-empty-2s2p'),
         ),

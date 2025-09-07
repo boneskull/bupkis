@@ -268,7 +268,13 @@ const testConfigs = {
         fc
           .string()
           .filter((s) => s !== 'expected message')
-          .map((msg) => Promise.reject(new Error(msg))),
+          .map((msg) => {
+            // Create a thenable that defers promise creation to avoid unhandled rejections
+            return {
+              then: (onfulfilled?: () => void, onrejected?: () => void) =>
+                Promise.reject(new Error(msg)).then(onfulfilled, onrejected),
+            };
+          }),
         fc.constantFrom(
           ...extractPhrases(
             'wrappedpromiselikeschema-to-reject-with-string-regexp-object-3s3p',
@@ -279,7 +285,14 @@ const testConfigs = {
     },
     valid: {
       generators: [
-        fc.constant(Promise.reject(new Error('expected message'))),
+        // Create a thenable that defers promise creation to avoid unhandled rejections
+        fc.constant({
+          then: (onfulfilled?: () => void, onrejected?: () => void) =>
+            Promise.reject(new Error('expected message')).then(
+              onfulfilled,
+              onrejected,
+            ),
+        }),
         fc.constantFrom(
           ...extractPhrases(
             'wrappedpromiselikeschema-to-reject-with-string-regexp-object-3s3p',
