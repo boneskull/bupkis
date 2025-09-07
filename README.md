@@ -1,14 +1,25 @@
 <p align="center">
-  <img src="https://bupkis.zip/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo"/>
-  <h1 align="center"><em><span class="federo-caps">BUPKIS<span></em></h1>
+  <img src="./assets/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS logo"/>
+  <h1 align="center"><span class="twentieth-century-caps">⁓ BUPKIS ⁓<span></h1>
   <p align="center">
-    A well-typed and easily exensible <em>BDD-style</em> assertion library.
+    A well-typed and easily exensible <em>BDD-style</em> assertion library
     <br/>
-    by <a href="https://github.com/boneskull">@boneskull</a>
+    <small>by <a href="https://github.com/boneskull">@boneskull</a></small>
   </p>
 </p>
 
+## Quick Links
+
+- [BUPKIS' Homepage][docs] (<https://bupkis.zip>)
+- [Assertion Reference][assertion-reference]
+- [Guide: Basic Usage][basic-usage]
+- [Guide: How to Create a Custom Assertion][create-a-custom-assertion]
+
 ## Motivation
+
+> "_Another_ assertion library? Are you daft? My test framework has its own assertions!"
+>
+> ‒sickos, probably
 
 Look, I'm ~~old~~ ~~wizened~~ ~~experienced~~ knowledegable and I've written a lot of tests. I've used a lot of assertion libraries. There are ones I prefer and ones I don't.
 
@@ -20,15 +31,15 @@ But none of them do quite what _this_ does. The main goals of this library are:
 
 A chainable API may provide type safety. But it seems to _guarantee_ implementing a custom assertion will be complicated. The API surface is necessarily a combinatoric explosion of methods.
 
-> [!WARNING]
+> ⚠️ **Caution!**
 >
-> Because chainable APIs are familiar, you may hate _BUPKIS_ once you see some examples. You don't have to use it, but please: _don't confuse familiarity with usability_.
+> Because chainable APIs are familiar, you may hate _BUPKIS_ once you see some examples. Nobody's making you use it. But please, keep an open mind & give me this grace: _don't confuse familiarity with usability_.
 
-To achieve these goals, I've adopted the following design principles:
+To achieve these goals, _BUPKIS_ makes the following design choices.
 
-### Natural-Language Assertions
+### Assertions are Natural Language
 
-In `bupkis` (stylized as "_BUPKIS_"), you **don't** write this:
+When you're using _BUPKIS_, you **don't** write this:
 
 ```js
 expect(actual).toEqual(expected);
@@ -60,41 +71,90 @@ Then _BUPKIS_ wants you to write:
 
 ```js
 expect(actual, 'to be a string');
-// it is tolerant of poor/ironic grammar
+// it is tolerant of poor/ironic grammar, sometimes
 expect(actual, 'to be an string');
 ```
 
-Can't remember the string? Did you forget a word or make a typo? Maybe you also forgot _BUPKIS_ is type-safe? You'll get a nice squiggly for your trouble.
+Can't remember the string? Did you forget a word or make a typo? Maybe you also forgot **_BUPKIS_ is type-safe?** You'll get a nice squiggly for your trouble. This isn't black magic. It ain't a _cauldron_. We're not just _throwing rat tails and `string`s in there._
 
-The "string" part of an expectation is known as a _phrase_. Every expectation will contain, at minimum, one phrase. As you can see from the above example, phrases often have aliases.
+> "Preposterous! Codswallop!"
+>
+> ‒the reader and/or more sickos
 
-You can negate just about any phrase:
+Right—how could this be anything by loosey-goosey _senselessness_? I beg to differ; _BUPKIS_ is nothing if not _intentional_.
+
+The first parameter to a _BUPKIS_ assertion is always the _subject_ ([def.](https://bupkis.zip/documents/Reference.Glossary_of_Terms#subject)).
+
+The "string" part of a _BUPKIS_ assertion is known as a _phrase_. Every expectation will contain _at minimum_ one (1) phrase. As you can see from the above "to be a string" example, phrases often have aliases.
+
+Assertions may have multiple phrases or parameters, but the simplest assertions always look like this:
+
+```ts
+expect(subject, 'phrase');
+```
+
+...and more complex assertions look like this:
+
+```ts
+expect(subject, 'phrase', [parameter?, phrase?, parameter?, ...]);
+```
+
+One more convention worth mentioning is _negation_.
+
+You can _negate_ just about any phrase by prepending it with `not` and a space. For example:
 
 ```js
 expect(actual, 'to be', expected);
-// did they not teach grammar in nerd school??
-expect(actual, 'not is', expected);
+expect(actual, 'not to be', expected);
 
 expect(
   () => throw new TypeError('aww, shucks'),
-  'to throw a',
+  'not to throw a',
   TypeError,
-  'not satisfying',
+  'satisfying',
   /gol durn/,
 );
 ```
 
-### Custom Assertions
+### Custom Assertions by Zod
 
-In _BUPKIS_, custom assertions are _first-class citizens_. You can create your own assertions with minimal boilerplate. You don't have to learn a new API or a new DSL (maybe); you just use [Zod][]. _It's so easy, even a **archaic human** could do it!_
+[Zod][] is a popular object validation library which does some heavy lifting for _BUPKIS_. In fact, its fundamentals get us _most_ of the way to a type-safe assertion library!
 
-Read [Guide: How to Create a Custom Assertion](https://boneskull.github.io/bupkis/documents/Guides.How_to_Create_a_Custom_Assertion) to learn more.
+So We recognized that many (most?) custom assertions can be _implemented as Zod schemas._
+
+Here's a ~~stupid~~ ~~quick~~ _stupid_ example of a creating and "registering" a basic assertion _which can be invoked using two different phrases_:
+
+```ts
+import { z, use, createAssertion } from 'bupkis';
+
+const stringAssertion = createAssertion(
+  z.string(),
+  [['to be based', 'to be bussin']],
+  z.string(),
+);
+
+const { expect } = use([stringAssertion]);
+
+expect('chat', 'to be based');
+expect('fam', 'to be bussin');
+
+// did you know? includes all builtin assertions!
+expect('skiball lavatory', 'to be a string');
+```
+
+**If you can express it in Zod, you can make it an assertion.** There's also a [function-based API][custom-assertion-function] for use with [parametric][] and behavioral assertions.
+
+👉 For a thorough guide on creating assertions, read [Guide: How to Create a Custom Assertion][create-a-custom-assertion].
 
 ## Prerequisites
 
-_BUPKIS_ requires **Node.js ^20.19.0 || ^22.12.0 || >=23** and ships as a dual CJS/ESM package.
+**Node.js**: ^20.19.0, ^22.12.0, >=23
 
-The library has been designed for Node.js environments and testing frameworks.
+_BUPKIS_ has a peer dependency on [Zod][] v4+, but will install it as an optional dependency if you are not already using it.
+
+_BUPKIS_ ships as a dual CJS/ESM package.
+
+> Disclaimer: _BUPKIS_ has been designed to run on Node.js in a development environment. Anyone attempting to deploy _BUPKIS_ to some server somewhere will get what is coming to them.
 
 ## Installation
 
@@ -104,54 +164,22 @@ npm install bupkis -D
 
 ## Usage
 
-Here:
+👉 See the [Basic Usage Guide](https://bupkis.zip/documents/guides.basic_usage) for a quick introduction.
 
-```ts
-import { expect } from 'bupkis';
+📖 Visit [https://bupkis.zip](https://bupkis.zip) for comprehensive guides and reference.
 
-// Basic type assertions
-expect('hello', 'to be a string');
-expect(42, 'to be a number');
-expect(true, 'to be a boolean');
-
-// Value comparisons
-expect(10, 'to equal', 10);
-expect('hello world', 'to contain', 'world');
-expect([1, 2, 3], 'to have length', 3);
-
-// Negation
-expect(42, 'not to be a string');
-expect('hello', 'not to equal', 'goodbye');
-
-// Object assertions
-const user = { name: 'Alice', age: 30 };
-expect(user, 'to be an object');
-expect(user, 'to have property', 'name');
-expect(user, 'to satisfy', { name: 'Alice' });
-```
-
-For comprehensive documentation and guides, visit the [project documentation](https://boneskull.github.io/bupkis/).
-
-### Worth Mentioning Right Now
-
-_BUPKIS_ has two main exports:
-
-- `expect()`: the main entrypoint for synchronous assertions
-- `expectAsync()`: the main entrypoint for asynchronous assertions
-
-> [!IMPORTANT]
->
-> As of this writing, the assertions available in `expectAsync()` are all `Promise`-related (and custom assertions can even use an async schema for the subject); they are completely disjoint from the assertions available in `expect()`. **This will likely change in the future.**
-
-## Project Scope
-
-1. It's an assertion library
-
-## Prior Art & Appreciation
+## Acknowledgements
 
 - [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
-- [Zod][] is a popular object validation library which does most of the heavy lifting for _BUPKIS_. It's not an assertion library, but there's enough overlap in its use case that it makes sense to leverage it.
-- [fast-check][]: A big thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, I mean. How about _in addition to_ itself? Yes. Thank you!
+- [Zod][] is a popular object validation library upon which _BUPKIS_ builds many of its own assertions.
+- [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, I mean. How about _in addition to_ itself? Yes. Thank you!
+- [tshy][] from Isaac Schlueter. Thanks for making dual ESM/CJS packages easy and not too fancy.
+- [TypeDoc][] it really documents the hell out of TypeScript projects.
+- [@cjihrig](https://github.com/cjihrig) and other Node.js contributors for the thoughtfulness put into [`node:test`](https://nodejs.org/api/test.html) that make it my current test-runner-of-choice.
+
+## Why is it called _BUPKIS_?
+
+TODO: think of good reason and fill in later
 
 ## A Note From The Author
 
@@ -164,5 +192,13 @@ _BUPKIS_ has two main exports:
 Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
 [zod]: https://zod.dev
+[docs]: https://bupkis.zip
+[basic-usage]: https://bupkis.zip/documents/guides.basic_usage
 [unexpected]: https://unexpected.js.org
 [fast-check]: https://fast-check.dev
+[parametric]: https://bupkis.zip/documents/Reference.Glossary_of_Terms#parametric-assertion
+[custom-assertion-function]: https://bupkis.zip/documents/guides.how_to_create_a_custom_assertion#using-a-function
+[create-a-custom-assertion]: https://bupkis.zip/documents/Guides.How_to_Create_a_Custom_Assertion
+[assertion-reference]: https://bupkis.zip/documents/reference.assertions
+[tshy]: https://github.com/isaacs/tshy
+[typedoc]: https://typedoc.org
