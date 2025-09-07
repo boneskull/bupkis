@@ -86,4 +86,4 @@ export const slotify = <const Parts extends AssertionParts>(
       result.push(part);
     }
     return result;
-  }) as unknown as AssertionSlots;
+  }) as unknown as AssertionSlots<Parts>;
