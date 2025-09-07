@@ -11,6 +11,7 @@
     "../.wallaby.js",
     "../eslint.config.js",
     "../.commitlintrc.js",
-    "./typedoc.js"
+    "./typedoc.js",
+    "../assets/font-loader.js"
   ]
 }

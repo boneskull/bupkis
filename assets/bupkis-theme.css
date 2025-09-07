@@ -1,19 +1,6 @@
 /*
- * Font definitions - following 2025 best practices
+ * See ../assets/font-loader.js
  */
-
-@font-face {
-  font-family: 'Federo';
-  src: url('./media/Federo-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap; /* Show fallback immediately, swap when ready */
-  /* Metrics tuning to match system font fallbacks and prevent layout shift */
-  size-adjust: 100%;
-  ascent-override: normal;
-  descent-override: normal;
-  line-gap-override: normal;
-}
 
 /*
  * Define colors
@@ -121,14 +108,13 @@
     ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono,
     monospace;
 
-  /* Federo font stack and common properties */
-  --font-family-federo:
-    'Federo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  /* Twentieth Century font stack and common properties */
+  --twentieth-century-font-family:
+    'Twentieth Century', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif;
-  --federo-caps-transform: uppercase;
-  --federo-caps-spacing: 0.05em;
-  --federo-font-weight: 400;
-  --federo-font-style: normal;
+  --twentieth-century-font-weight: bold;
+  --twentieth-century-caps-transform: uppercase;
+  --twentieth-century-caps-spacing: 0.05em;
 }
 
 body {
@@ -497,45 +483,43 @@ footer p {
 }
 
 /*
- * Federo font utilities
- * Reusable classes and mixins for Federo typography
+ * Twentieth Century font utilities
+ * Reusable classes and mixins for Twentieth Century typography
  */
 
-/* Base Federo class */
-.federo {
-  font-family: var(--font-family-federo);
-  font-weight: var(--federo-font-weight);
-  font-style: var(--federo-font-style);
+/* Base Twentieth Century class */
+.twentieth-century {
+  font-family: var(--twentieth-century-font-family);
+  font-weight: var(--twentieth-century-font-weight);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Federo with uppercase transformation */
-.federo-caps {
-  font-family: var(--font-family-federo);
-  font-weight: var(--federo-font-weight);
-  font-style: var(--federo-font-style);
-  text-transform: var(--federo-caps-transform);
-  letter-spacing: var(--federo-caps-spacing);
+/* Twentieth Century with uppercase transformation */
+.twentieth-century-caps {
+  font-family: var(--twentieth-century-font-family);
+  font-weight: var(--twentieth-century-font-weight);
+  text-transform: var(--twentieth-century-caps-transform);
+  letter-spacing: var(--twentieth-century-caps-spacing);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /*
- * Main title typography - uses Federo caps
+ * Main title typography - uses Twentieth Century Bold caps
  */
 
 body > header > div > a.title {
-  font-family: var(--font-family-federo);
-  font-weight: var(--federo-font-weight);
-  font-style: var(--federo-font-style);
-  text-transform: var(--federo-caps-transform);
-  letter-spacing: var(--federo-caps-spacing);
+  font-family: var(--twentieth-century-font-family);
+  font-weight: var(--twentieth-century-font-weight);
+  text-transform: var(--twentieth-century-caps-transform);
+  letter-spacing: var(--twentieth-century-caps-spacing);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 1.875rem;
 }
 
 /*
@@ -566,12 +550,12 @@ a:has(svg[aria-label='Variable']) span {
 }
 
 nav:nth-child(2) > a {
-  font-family: var(--font-family-federo);
-  font-weight: var(--federo-font-weight);
-  font-style: italic;
-  text-transform: var(--federo-caps-transform);
-  letter-spacing: var(--federo-caps-spacing);
+  font-family: var(--twentieth-century-font-family);
+  font-weight: var(--twentieth-century-font-weight);
+  text-transform: var(--twentieth-century-caps-transform);
+  letter-spacing: var(--twentieth-century-caps-spacing);
   text-rendering: var(--federo-text-rendering);
   -webkit-font-smoothing: var(--federo-font-smoothing);
   -moz-osx-font-smoothing: var(--federo-osx-font-smoothing);
+  font-size: 1.2em;
 }
