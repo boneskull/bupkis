@@ -4,6 +4,7 @@ import { OptionDefaults } from 'typedoc';
 export default {
   blockTags: [...OptionDefaults.blockTags, '@knipignore', '@assertion'],
   cleanOutputDir: true,
+  cname: 'bupkis.zip',
   customCss: './bupkis-theme.css',
   darkHighlightTheme: 'red',
   entryPoints: ['../src/index.ts'],
