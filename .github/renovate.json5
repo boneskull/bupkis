@@ -3,7 +3,7 @@
   extends: [
     // only pin dev deps
     // https://docs.renovatebot.com/presets-config/#configjs-lib
-    'config:js-library',
+    'config:js-lib',
 
     // send PRs to resolve dependabot alerts
     // https://docs.renovatebot.com/configuration-options/#vulnerabilityalerts
