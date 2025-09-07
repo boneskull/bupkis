@@ -60,11 +60,7 @@ export default {
     GitHub: 'https://github.com/boneskull/bupkis',
   },
   out: '../docs',
-  plugin: [
-    // 'typedoc-github-theme',
-    'typedoc-plugin-mdn-links',
-    'typedoc-plugin-zod',
-  ],
+  plugin: ['typedoc-plugin-mdn-links', 'typedoc-plugin-zod'],
   projectDocuments: [
     '../site/*.md',
     '../ROADMAP.md',

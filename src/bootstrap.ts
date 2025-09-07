@@ -24,7 +24,7 @@ import {
  * @returns Object containing `expect` and `expectAsync` functions
  * @internal
  */
-export const bootstrap = (): {
+const bootstrap = (): {
   expect: Expect<typeof SyncAssertions>;
   expectAsync: ExpectAsync<typeof AsyncAssertions>;
 } => {

@@ -225,7 +225,7 @@ const execute = <
  * @param stackStartFn - Function for stack trace management
  * @param isNegated - Whether the assertion should be negated
  */
-export const executeAsync = async <
+const executeAsync = async <
   T extends AssertionAsync<Parts, AssertionImplAsync<Parts>, Slots>,
   Parts extends AssertionParts,
   Slots extends AssertionSlots<Parts>,

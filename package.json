@@ -60,9 +60,11 @@
     "build:docs:watch": "npm run --silent build:docs -- --watch",
     "dev": "tshy --watch",
     "dev:docs": "run-p build:docs:watch serve",
-    "lint": "eslint .",
+    "lint": "run-p lint:eslint lint:types lint:knip",
     "lint:commit": "commitlint",
-    "lint:fix": "eslint . --fix",
+    "lint:eslint": "eslint .",
+    "lint:fix": "run-s \"lint:eslint -- --fix\"",
+    "lint:knip": "knip",
     "lint:staged": "lint-staged",
     "lint:types": "tsc -b .config/tsconfig.eslint.json",
     "lint:types:dev": "npm run --silent lint:types -- --watch",
@@ -109,7 +111,6 @@
     "tsx": "4.20.5",
     "type-fest": "4.41.0",
     "typedoc": "0.28.12",
-    "typedoc-github-theme": "0.3.1",
     "typedoc-plugin-mdn-links": "5.0.9",
     "typedoc-plugin-zod": "1.4.2",
     "typescript": "5.9.2",
@@ -121,13 +122,13 @@
   },
   "knip": {
     "ignoreDependencies": [
-      "@types/wallabyjs",
-      "serve"
+      "@types/wallabyjs"
     ],
     "ignore": [
       ".wallaby.js",
       "**/*.cts",
-      "**/*.d.ts"
+      "**/*.d.ts",
+      "assets/**/*"
     ],
     "tags": [
       "-knipignore"
