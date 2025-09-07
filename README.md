@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/boneskull/bupkis/blob/main/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo"/>
+  <img src="https://bupkis.zip/assets/bupkis-logo-256.png" width="256px" align="center" alt="BUPKIS logo"/>
   <h1 align="center"><em><span class="federo-caps">BUPKIS<span></em></h1>
   <p align="center">
     A well-typed and easily exensible <em>BDD-style</em> assertion library.
@@ -146,8 +146,6 @@ _BUPKIS_ has two main exports:
 ## Project Scope
 
 1. It's an assertion library
-
-### TODO
 
 ## Prior Art & Appreciation
 
