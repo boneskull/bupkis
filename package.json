@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "description": "",
+  "repository": {
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
   "author": {
     "name": "Christopher Hiller",
     "email": "boneskull@boneskull.com"
