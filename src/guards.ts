@@ -15,10 +15,9 @@ import { z } from 'zod';
 import type {
   AssertionFailure,
   AssertionPart,
+  PhraseLiteralChoice,
 } from './assertion/assertion-types.js';
 import type { Constructor } from './types.js';
-
-import { type PhraseLiteralChoice } from '../dist/commonjs/assertion/assertion-types.js';
 
 /**
  * Returns true if the given value looks like a Zod schema (v4), determined by
