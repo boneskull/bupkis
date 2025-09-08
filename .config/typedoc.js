@@ -40,7 +40,7 @@ export default {
     },
   },
   favicon: '../assets/favicon.svg',
-  hostedBaseUrl: 'https://boneskull.github.io/bupkis',
+  hostedBaseUrl: 'https://bupkis.zip/',
   kindSortOrder: [
     'Reference',
     'Project',
