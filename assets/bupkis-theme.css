@@ -420,7 +420,11 @@ h6,
 .tsd-panel > h2,
 .tsd-panel > h3,
 .tsd-accordion-summary > h3 {
-  font-weight: 400; /* Use normal weight instead of default bold */
+  font-weight: 500;
+}
+
+.tsd-typography h4 {
+  font-size: 1.1em;
 }
 
 .tsd-panel-group.tsd-index-group details {
