@@ -147,13 +147,19 @@ export type MutableOrReadonly<T> = T extends readonly (infer U)[]
  */
 export type Negation<T extends string> = `not ${T}`;
 
-export type UseFn<T extends AnySyncAssertions, U extends AnyAsyncAssertions> = <
-  V extends readonly AnyAssertion[],
-  W extends FilterSyncAssertions<V>,
-  X extends FilterAsyncAssertions<V>,
->(
-  assertions: V,
-) => {
-  expect: Expect<Concat<T, W>, Concat<U, X>>;
-  expectAsync: ExpectAsync<Concat<U, X>, Concat<T, W>>;
-};
+export interface UseFn<
+  T extends AnySyncAssertions,
+  U extends AnyAsyncAssertions,
+> {
+  <
+    V extends readonly AnyAssertion[],
+    W extends FilterSyncAssertions<V>,
+    X extends FilterAsyncAssertions<V>,
+  >(
+    assertions: V,
+  ): {
+    expect: Expect<Concat<T, W>, Concat<U, X>>;
+    expectAsync: ExpectAsync<Concat<U, X>, Concat<T, W>>;
+    use: UseFn<Concat<T, W>, Concat<U, X>>;
+  };
+}

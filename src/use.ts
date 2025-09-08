@@ -56,7 +56,10 @@ export function createUse<
 
     return {
       expect,
-      expectAsync: expectAsync,
+      expectAsync,
+      get use() {
+        return createUse(allSyncAssertions, allAsyncAssertions);
+      },
     };
   };
   return use;

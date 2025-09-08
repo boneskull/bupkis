@@ -17,13 +17,19 @@ describe('expect.use()', () => {
 
     const assertions = [myAssertion] as const satisfies AnySyncAssertions;
 
-    const { expect: myExpected, expectAsync: _ } = expect.use(assertions);
+    const {
+      expect: myExpected,
+      expectAsync: _,
+      use: myUse,
+    } = expect.use(assertions);
 
     const foo = new Foo();
 
     expect(() => myExpected(foo, 'to be a Foo'), 'not to throw');
 
     expect(() => myExpected(foo.bar, 'to be a string'), 'not to throw');
+
+    expect(myUse, 'to be a function');
   });
 
   it('should validate type safety and proper error messages', () => {
