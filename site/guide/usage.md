@@ -165,6 +165,6 @@ The error messages are powered by Zod's validation system, providing detailed co
 ## Next Steps
 
 - **[Custom Assertions](./custom-assertion.md)** - Learn how to create your own assertion types
-- **[Reference](../reference/)** - Complete API documentation and glossary
+- **[Reference](../reference.md)** - Complete API documentation and glossary
 
 The natural language approach makes tests more readable and self-documenting. Instead of remembering method names like `toBeInstanceOf()` or `toHaveProperty()`, you write what you mean: `'to be an instance of'` or `'to have property'`.
