@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.0.2...bupkis-v0.1.0) (2025-09-08)
+
+
+### Features
+
+* **use:** use() returns an object with a use() in it ([fb383d6](https://github.com/boneskull/bupkis/commit/fb383d6fb2f541085d2300664fe73b25c6249e42))
+
+
+### Bug Fixes
+
+* **package:** add description and homepage ([2ff82ea](https://github.com/boneskull/bupkis/commit/2ff82ea715280098f59612ba32da808308aced0e))
+
 ## [0.0.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.0.1...bupkis-v0.0.2) (2025-09-07)
 
 
