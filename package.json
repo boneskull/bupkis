@@ -2,10 +2,11 @@
   "name": "bupkis",
   "version": "0.0.2",
   "type": "module",
-  "description": "",
+  "description": "Uncommonly extensible assertions for the beautiful people",
   "repository": {
     "url": "git+https://github.com/boneskull/bupkis.git"
   },
+  "homepage": "https://bupkis.zip",
   "author": {
     "name": "Christopher Hiller",
     "email": "boneskull@boneskull.com"
