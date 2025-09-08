@@ -99,7 +99,7 @@
     "expect-type": "1.2.2",
     "fast-check": "4.3.0",
     "husky": "9.1.7",
-    "knip": "5.62.0",
+    "knip": "5.63.1",
     "lint-staged": "16.1.6",
     "npm-run-all2": "8.0.4",
     "prettier": "3.6.2",
