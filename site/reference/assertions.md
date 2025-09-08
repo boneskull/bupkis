@@ -65,7 +65,7 @@ Assertions _without_ parameters are often called _non-parametric assertions_ or 
 > expect('bruh', 'to be a', 'string');
 > ```
 >
-> ...the phrase is `'to be a'` and the parameter is `'string'`.
+> …the phrase is `'to be a'` and the parameter is `'string'`.
 
 ### Negation
 

@@ -30,18 +30,20 @@ But if that ever changes, we'll jump on it!
 
 ## Zod Isn't an Assertion Library
 
-...which means using it as a core building block of an assertion library has a few trade-offs.
+…which means using it as a core building block of an assertion library has a few trade-offs.
 
-Zod is meant for _parsing_ and _validating_ data, which means there may be some circumstances where Zod will attempt to _mutate the data you give it_ which is generally bad.
+Zod is meant for _parsing_ and _validating_ data, which means there may be some circumstances where Zod will attempt to _mutate the data you give it_ …which is generally Bad.
 
 For that reason, _BUPKIS_ recommends avoiding any Zod schema that mutates data. One example would be the `.readonly()` schema, which necessarily calls `Object.freeze()` on the input value (the _output_ is read-only; not the input!). If you need to check that a value is read-only, you can work around this via `.refine()`, `.preprocess()`, etc.
 
 ## There's a TODO List
 
-_BUPKIS_ is not yet complete (see [ROADMAP][]). There are things that I want to implement that I just haven't gotten to yet, including (but not limited to):
+_BUPKIS_ is not yet complete (see [ROADMAP][]). There are features that We want to implement that We just haven't gotten to yet, including (but not limited to):
 
 - Custom diffs
 - Property drilling via keypaths (to make assertions about deeply-nested props)
 - Integration of async assertions into sync assertions (so that you can make any extant sync assertion against a `Promise` or async function)
 - Chaining assertions via boolean logic (`and`, `or`, etc.); we already have `not`
 - Unwinding assertions created via composition (i.e. containing calls to `expect()`) for better error messages & stack traces
+
+[ROADMAP]: ../../ROADMAP.md

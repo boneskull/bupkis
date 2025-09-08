@@ -9,7 +9,7 @@ This guide shows you how to create and register custom assertions in _BUPKIS_. Y
 
 > Before you proceed, you should be familiar with the [basic usage](./usage.md) of _BUPKIS_ and [Zod][].
 
-## Wait... do I need a custom assertion?
+## Wait… do I need a custom assertion?
 
 Generally speaking: yes.
 
@@ -283,7 +283,7 @@ const { expect } = use([betweenAssertion]);
 expect(5, 'to be between', 1, 'and', 10);
 ```
 
-Add as many as you want. Yes... yes. Keep adding them.
+Add as many as you want. Yes… yes. Keep adding them.
 
 ## Asynchronous Assertions
 
@@ -485,7 +485,7 @@ expect(42, 'to be a number');
 
 You could even do something _wild_ like publish your assertions as package for others to use.
 
-> Someone should probably go in and create assertions for all of the fancy string validation in Zod...
+> Someone should probably go in and create assertions for all of the fancy string validation in Zod…
 
 ## Troubleshooting
 
