@@ -49,7 +49,8 @@ export default {
     'Function',
     'TypeAlias',
   ],
-  lightHighlightTheme: 'github-light-default',
+  lightHighlightTheme: 'rose-pine-dawn',
+  markdownLinkExternal: true,
   modifierTags: [
     ...OptionDefaults.modifierTags,
     '@subject',
