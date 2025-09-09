@@ -144,8 +144,11 @@
     }
   },
   "lint-staged": {
-    "*.{ts,cts,js,json,md,yml,json5}": [
+    "*.{ts,cts,js,json,yml,json5}": [
       "eslint --fix",
+      "prettier --write"
+    ],
+    "**/!(.github/prompts)/*.md": [
       "prettier --write"
     ]
   },

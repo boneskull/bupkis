@@ -1,8 +1,8 @@
 ---
 mode: 'agent'
 model: Claude Sonnet 4
-tools: ['codebase', 'usages', 'think', 'editFiles']
-description: 'Generate a docstring for the selected code
+tools: ['codebase', 'usages', 'think', 'problems', 'testFailure', 'openSimpleBrowser', 'findTestFiles', 'searchResults', 'githubRepo', 'runTests', 'editFiles', 'search', 'runTasks']
+description: 'Generate a docstring for the selected code'
 ---
 
 Your goal is to generate a comprehensive docstring for the selected code.
