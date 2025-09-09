@@ -467,11 +467,14 @@ export const ParametricAssertions = [
       ['to satisfy', 'to be like'],
       z.looseObject({}),
     ],
-    (_subject, shape) => valueToSchema(shape) as z.ZodType<typeof _subject>,
+    (_subject, shape) =>
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+      valueToSchema(shape) as unknown as z.ZodType<{}, z.core.$loose>,
   ),
   createAssertion(
     [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
-    (_subject, shape) => valueToSchema(shape) as z.ZodType<typeof _subject>,
+    (_subject, shape) =>
+      valueToSchema(shape) as unknown as typeof ArrayLikeSchema,
   ),
   createAssertion(
     [FunctionSchema, 'to have arity', z.number().int().nonnegative()],
