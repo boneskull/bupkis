@@ -147,3 +147,5 @@ docs
 .tmp
 
 .tshy-build
+
+.profiles

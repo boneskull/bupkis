@@ -74,6 +74,7 @@
     "prepublishOnly": "run-s build",
     "serve": "serve docs",
     "test": "node --import tsx --test \"test/**/*.ts\"",
+    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles --test --import tsx \"test/**/*.ts\"",
     "test:property": "node --import tsx --test \"test/property/**/*.test.ts\"",
     "test:property:dev": "node --import tsx --test --watch \"test/property/**/*.test.ts\"",
     "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
