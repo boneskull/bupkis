@@ -14,6 +14,7 @@ import {
 } from './property-test.macro.js';
 
 const assertions = keyBy(ParametricAssertions, 'id');
+Object.keys(assertions); //?
 const extractPhrases = createPhraseExtractor(assertions);
 
 /**
@@ -88,40 +89,41 @@ const testConfigs = {
   },
 
   // deep equality - arrays
-  'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p': {
-    invalid: {
-      generators: [
-        fc.array(fc.string(), { minLength: 1 }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p',
+  'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p':
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.string(), { minLength: 1 }),
+          fc.constantFrom(
+            ...extractPhrases(
+              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+            ),
           ),
-        ),
-        fc.array(fc.integer(), { minLength: 1 }), // Different element types
-      ],
-    },
-    valid: {
-      generators: [
-        fc.array(fc.string()).chain((arr) => fc.constant(arr)),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p',
+          fc.array(fc.integer(), { minLength: 1 }), // Different element types
+        ],
+      },
+      valid: {
+        generators: [
+          fc.array(fc.string()).chain((arr) => fc.constant(arr)),
+          fc.constantFrom(
+            ...extractPhrases(
+              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+            ),
           ),
-        ),
-        fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
-      ],
-      numRuns: 50,
+          fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
+        ],
+        numRuns: 50,
+      },
     },
-  },
 
   // array satisfies/is like
-  'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p': {
+  'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p': {
     invalid: {
       generators: [
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }),
         fc.constantFrom(
           ...extractPhrases(
-            'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p',
+            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
           ),
         ),
         fc.array(fc.integer(), { maxLength: 3, minLength: 3 }), // Different types, lengths
@@ -132,7 +134,7 @@ const testConfigs = {
         fc.array(fc.string(), { maxLength: 3, minLength: 3 }),
         fc.constantFrom(
           ...extractPhrases(
-            'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p',
+            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
           ),
         ),
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }), // Subset array
