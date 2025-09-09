@@ -6,6 +6,7 @@ import jsPlugin from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import eslintPluginJsonc from 'eslint-plugin-jsonc';
 import perfectionist from 'eslint-plugin-perfectionist';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 // TODO: setup eslint-plugin-n
@@ -126,6 +127,12 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/unbound-method': 'off',
+    },
+  },
+  {
+    files: ['.config/*.js', '/*.js', '/.*.js', 'scripts/*.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
   /** @type {InfiniteDepthConfigWithExtends} */ (
