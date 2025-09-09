@@ -72,11 +72,14 @@ export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
  * @param fn - Function to test
  * @returns Whether the function is constructable
  */
-export const isConstructable = (fn: any): fn is Constructor => {
+export const isConstructable = (fn: unknown): fn is Constructor => {
+  if (fn === Symbol || fn === BigInt) {
+    return false;
+  }
   try {
     // this will throw if there is no `[[construct]]` slot.. or so I've heard.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    new new Proxy(fn, { construct: () => ({}) })();
+    new new Proxy(fn as any, { construct: () => ({}) })();
     return true;
   } catch {
     return false;
