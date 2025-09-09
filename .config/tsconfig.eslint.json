@@ -12,6 +12,7 @@
     "../eslint.config.js",
     "../.commitlintrc.js",
     "./typedoc.js",
-    "../assets/font-loader.js"
+    "../assets/font-loader.js",
+    "../scripts/*.js"
   ]
 }
