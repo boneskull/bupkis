@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.0...bupkis-v0.1.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* actually build before publish ([996c28e](https://github.com/boneskull/bupkis/commit/996c28e223ce488d07ea0b7633829ff25d510be3))
+
 ## [0.1.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.0.2...bupkis-v0.1.0) (2025-09-08)
 
 
