@@ -11,7 +11,8 @@ config:
   header-increment: false
   no-blanks-blockquote: false
   no-inline-html: false
-
+  first-line-heading: false
+  first-line-h1: false
 ignores:
   - '**/node_modules/**'
   - 'CHANGELOG.md' # generated
