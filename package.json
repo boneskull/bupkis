@@ -71,6 +71,7 @@
     "lint:types": "tsc -b .config/tsconfig.eslint.json",
     "lint:types:dev": "npm run --silent lint:types -- --watch",
     "prepare": "husky",
+    "prepublishOnly": "npm run build",
     "serve": "serve docs",
     "test": "node --import tsx --test \"test/**/*.ts\"",
     "test:property": "node --import tsx --test \"test/property/**/*.test.ts\"",
