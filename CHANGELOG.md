@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.1...bupkis-v0.1.2) (2025-09-09)
+
+
+### Bug Fixes
+
+* **util:** isConstructable handles Symbol and BigInt properly ([c13747a](https://github.com/boneskull/bupkis/commit/c13747aa57b5806c38389c1d8347a2966cb17f22))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.0...bupkis-v0.1.1) (2025-09-09)
 
 
