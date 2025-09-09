@@ -21,6 +21,8 @@ export function createUse<
   const T extends AnySyncAssertions,
   const U extends AnyAsyncAssertions,
 >(syncAssertions: T, asyncAssertions: U): UseFn<T, U> {
+  const syncAssertionsIn = syncAssertions ?? [];
+  const asyncAssertionsIn = asyncAssertions ?? [];
   const use: UseFn<T, U> = <
     V extends readonly AnyAssertion[],
     W extends FilterSyncAssertions<V>,
@@ -35,13 +37,13 @@ export function createUse<
       (a) => a instanceof BupkisAssertionAsync,
     ) as unknown as X;
     const allSyncAssertions = [
-      ...syncAssertions,
+      ...syncAssertionsIn,
       ...newSyncAssertions,
-    ] as unknown as Concat<typeof syncAssertions, typeof newSyncAssertions>;
+    ] as unknown as Concat<typeof syncAssertionsIn, typeof newSyncAssertions>;
     const allAsyncAssertions = [
-      ...asyncAssertions,
+      ...asyncAssertionsIn,
       ...newAsyncAssertions,
-    ] as unknown as Concat<typeof asyncAssertions, typeof newAsyncAssertions>;
+    ] as unknown as Concat<typeof asyncAssertionsIn, typeof newAsyncAssertions>;
     const expectFunction = createExpectSyncFunction(allSyncAssertions);
     const expectAsyncFunction = createExpectAsyncFunction(allAsyncAssertions);
 
