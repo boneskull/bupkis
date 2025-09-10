@@ -111,7 +111,7 @@
     "build:docs:watch": "run-s \"build:docs -- --watch\"",
     "dev": "tshy --watch",
     "dev:docs": "run-p build:docs:watch serve",
-    "lint": "run-p lint:eslint lint:types lint:knip",
+    "lint": "run-p lint:eslint lint:types lint:knip lint:markdown",
     "lint:commit": "commitlint",
     "lint:eslint": "eslint .",
     "lint:fix": "run-s \"lint:eslint -- --fix\"",
