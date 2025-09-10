@@ -135,7 +135,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Detailed validation failures with slot information
 - Stack trace management via `stackStartFn` parameter
 
-**Testing**
+**Testing**:
 
 - Comprehensive unit tests for all built-in assertions
 - Edge cases for argument parsing and type inference
@@ -189,7 +189,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 **Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
 
-```
+```text
  *  Executing task: npm run --silent lint:types
 
  *  Terminal will be reused by tasks, press any key to close it.
