@@ -1,6 +1,6 @@
 {
   "name": "bupkis",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "description": "Uncommonly extensible assertions for the beautiful people",
   "repository": {
