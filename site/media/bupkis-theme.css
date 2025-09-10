@@ -79,6 +79,11 @@
   --color-contrast-text: var(--color-text);
   --color-icon-background: var(--color-background);
   --color-focus-outline: var(--bupkis-red);
+
+  --light-icon-npm: url('/media/mark-npm-24.svg');
+  --dark-icon-npm: url('/media/mark-npm-inverse-24.svg');
+  --light-icon-github: url('/media/mark-github-24.svg');
+  --dark-icon-github: url('/media/mark-github-inverse-24.svg');
 }
 
 @media (prefers-color-scheme: light) {
@@ -86,6 +91,8 @@
     --color-background-navbar: var(--light-color-background-navbar);
     --color-background-overlay: var(--light-color-background-overlay);
     --color-warning-border: var(--light-color-warning-border);
+    --icon-github: var(--light-icon-github);
+    --icon-npm: var(--light-icon-npm);
   }
 }
 
@@ -94,6 +101,8 @@
     --color-background-navbar: var(--dark-color-background-navbar);
     --color-background-overlay: var(--dark-color-background-overlay);
     --color-warning-border: var(--dark-color-warning-border);
+    --icon-github: var(--dark-icon-github);
+    --icon-npm: var(--dark-icon-npm);
   }
 }
 
@@ -101,12 +110,16 @@
   --color-background-navbar: var(--light-color-background-navbar);
   --color-background-overlay: var(--light-color-background-overlay);
   --color-warning-border: var(--light-color-warning-border);
+  --icon-github: var(--light-icon-github);
+  --icon-npm: var(--light-icon-npm);
 }
 
 :root[data-theme='dark'] {
   --color-background-navbar: var(--dark-color-background-navbar);
   --color-background-overlay: var(--dark-color-background-overlay);
   --color-warning-border: var(--dark-color-warning-border);
+  --icon-github: var(--dark-icon-github);
+  --icon-npm: var(--dark-icon-npm);
 }
 
 /*
@@ -695,4 +708,26 @@ code.tsd-tag {
 :root[data-theme='dark'] .bupkis-red-border {
   background-color: var(--bupkis-black);
   color: var(--bupkis-white);
+}
+
+/*
+ * Theme-aware icons
+ */
+
+.icon-github {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: var(--icon-github);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.icon-npm {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: var(--icon-npm);
+  background-size: contain;
+  background-repeat: no-repeat;
 }
