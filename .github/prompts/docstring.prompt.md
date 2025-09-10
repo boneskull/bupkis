@@ -44,3 +44,5 @@ The rest of these instructions will assume TypeScript or JavaScript sources and 
 - Any text outside of the example code which refers to a filename or path should be contained within backticks (`` ` ``).
 
 - Text referring to a linkable symbol should wrap the text using inline `{@link ...}` tag the _first_ time only; wrap in backticks thereafter.
+
+- If a function has overloads, each overload _and_ the implementation should have its own docstring. Each docstring should be specific to the overload or implementation it describes.
