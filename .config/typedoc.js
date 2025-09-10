@@ -69,6 +69,7 @@ export default {
     API: '/api',
     Assertions: '/assertions',
     GitHub: 'https://github.com/boneskull/bupkis',
+    npm: 'https://www.npmjs.com/package/bupkis',
   },
   out: '../docs',
   plugin: [
