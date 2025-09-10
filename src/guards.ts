@@ -134,13 +134,15 @@ const AssertionFailureSchema: z.ZodType<AssertionFailure> = z.object({
     .describe('A human-readable message describing the failure'),
 });
 
+/**
+ * Type guard for a {@link AssertionFailure} object
+ *
+ * @param value Value to check
+ * @returns `true` if the value is an `AssertionFailure`, `false` otherwise
+ * @internal
+ */
 export const isAssertionFailure = (value: unknown): value is AssertionFailure =>
   AssertionFailureSchema.safeParse(value).success;
-
-export const isAsyncFunction = (
-  value: unknown,
-): value is (...args: any[]) => Promise<any> =>
-  isFunction(value) && value.constructor.name === 'AsyncFunction';
 
 /**
  * Type guard for a string value
