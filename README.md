@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS logo"/>
+  <img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/>
   <h1 align="center"><span class="bupkis">⁓ BUPKIS ⁓<span></h1>
   <p align="center">
     Uncommonly extensible assertions for the beautiful people
     <br/>
-    <small>by <a href="https://github.com/boneskull">@boneskull</a></small>
+    <small>by <a href="https://github.com/boneskull" title="@boneskull on GitHub">@boneskull</a></small>
   </p>
 </p>
 
