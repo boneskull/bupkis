@@ -1,13 +1,13 @@
 ---
 title: Date & Time Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Date & Time Assertions
+## Date & Time Assertions
 
 These assertions test Date objects and time-related values.
 
-## to be a date
+### to be a date
 
 > _Aliases: `to be a date`, `to be a Date`_
 

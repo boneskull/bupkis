@@ -1,13 +1,13 @@
 ---
 title: Async Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Async Assertions
+## Async Assertions
 
 These assertions test Promises and asynchronous operations. Use `expectAsync()` for these assertions.
 
-## to resolve
+### to resolve
 
 > _Aliases: `to resolve`, `to fulfill`_
 
@@ -34,7 +34,7 @@ await expectAsync(Promise.reject('error'), 'to resolve');
 await expectAsync(Promise.reject('error'), 'not to resolve');
 ```
 
-## to reject
+### to reject
 
 **Success**:
 
@@ -61,9 +61,9 @@ await expectAsync(Promise.resolve(42), 'to reject');
 await expectAsync(Promise.resolve(42), 'not to reject');
 ```
 
-## to reject with a / to reject with an
+### to reject with a &lt;constructor&gt; / to reject with an &lt;constructor&gt;
 
-> _Aliases: `to reject with a`, `to reject with an`_
+> _Aliases: `to reject with a <constructor>`, `to reject with an <constructor>`_
 
 **Success**:
 
@@ -102,7 +102,7 @@ await expectAsync(
 );
 ```
 
-## to reject with (parameter)
+### to reject with &lt;string | RegExp | object&gt;
 
 **Success**:
 
@@ -150,9 +150,9 @@ await expectAsync(
 );
 ```
 
-## to fulfill with value satisfying
+### to fulfill with value satisfying &lt;string | RegExp | object&gt;
 
-> _Aliases: `to fulfill with value satisfying`, `to resolve to value satisfying`_
+> _Aliases: `to fulfill with value satisfying <string | RegExp | object>`, `to resolve to value satisfying <string | RegExp | object>`_
 
 **Success**:
 

@@ -1,13 +1,13 @@
 ---
 title: Function Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Function Assertions
+## Function Assertions
 
 These assertions test functions, their behavior, and properties.
 
-## to be a function
+### to be a function
 
 **Success**:
 
@@ -30,7 +30,7 @@ expect('hello', 'to be a function');
 expect('hello', 'not to be a function');
 ```
 
-## to be an async function
+### to be an async function
 
 **Success**:
 
@@ -52,9 +52,15 @@ expect(function () {}, 'to be an async function');
 expect(function () {}, 'not to be an async function');
 ```
 
-## to be a class
+### to be a class
 
 > _Aliases: `to be a class`, `to be a constructor`_
+
+> ⚠️ Warning!
+>
+> It is currently (as of September 2025) _not possible_ to reliably distinguish between classes and regular functions in JavaScript. We can only tell if a function is _constructable_ (i.e., can be called with `new`); we cannot determine if it is specifically a _class constructor_.
+>
+> Use with caution.
 
 **Success**:
 
@@ -78,7 +84,7 @@ expect(fn, 'to be a class');
 expect(fn, 'not to be a class');
 ```
 
-## to have arity
+### to have arity &lt;nonnegative-integer&gt;
 
 **Success**:
 
@@ -108,7 +114,14 @@ expect(greet, 'to have arity', 2);
 expect(greet, 'not to have arity', 2);
 ```
 
-## to throw
+### to throw &lt;string | RegExp | object&gt;
+
+This assertion _optionally_ accepts a parameter which must be a `string`, `RegExp` or `object`:
+
+- If omitted, the assertion checks that the function throws _anything_.
+- If a `string`, matches the `message` prop of the thrown Error exactly; if a non-error was thrown, the value is coerced to a string and matched directly.
+- If a `RegExp`, tests the `message` prop of the thrown Error; if a non-error was thrown, the value is coerced to a string and tested directly.
+- If an `object`, ["to satisfy"](./objects.md#to-satisfy-) semantics are used.
 
 **Success**:
 
@@ -120,6 +133,33 @@ expect(() => {
 expect(() => {
   JSON.parse('invalid json');
 }, 'to throw');
+
+// String matching
+expect(
+  () => {
+    throw new Error('Specific error message');
+  },
+  'to throw',
+  'Specific error message',
+);
+
+// RegExp matching
+expect(
+  () => {
+    throw new Error('Error: Something failed');
+  },
+  'to throw',
+  /Something failed/,
+);
+
+// Object matching
+expect(
+  () => {
+    throw new Error('Custom error');
+  },
+  'to throw',
+  { message: 'Custom error' },
+);
 ```
 
 **Failure**:
@@ -129,6 +169,15 @@ expect(() => {
   return 'all good';
 }, 'to throw');
 // AssertionError: Expected function to throw
+
+expect(
+  () => {
+    throw new Error('Different message');
+  },
+  'to throw',
+  'Specific error message',
+);
+// AssertionError: Expected function to throw 'Specific error message'
 ```
 
 **Negation**:
@@ -137,11 +186,19 @@ expect(() => {
 expect(() => {
   return 'all good';
 }, 'not to throw');
+
+expect(
+  () => {
+    throw new Error('Different message');
+  },
+  'not to throw',
+  'Specific error message',
+);
 ```
 
-## to throw a / to throw an
+### to throw a &lt;constructor&gt;
 
-> _Aliases: `to throw a`, `to throw an`_
+> _Aliases: `to throw a <constructor>`, `to throw an <constructor>`_
 
 **Success**:
 
@@ -188,67 +245,11 @@ expect(
 );
 ```
 
-## to throw (with parameter)
+### to throw an &lt;error&gt; satisfying &lt;object&gt;
 
-**Success**:
+> _Aliases: `to throw a <error> satisfying <object>`, `to throw an <error> satisfying <object>`_
 
-```js
-// String matching
-expect(
-  () => {
-    throw new Error('Specific error message');
-  },
-  'to throw',
-  'Specific error message',
-);
-
-// RegExp matching
-expect(
-  () => {
-    throw new Error('Error: Something failed');
-  },
-  'to throw',
-  /Something failed/,
-);
-
-// Object matching
-expect(
-  () => {
-    throw new Error('Custom error');
-  },
-  'to throw',
-  { message: 'Custom error' },
-);
-```
-
-**Failure**:
-
-```js
-expect(
-  () => {
-    throw new Error('Different message');
-  },
-  'to throw',
-  'Specific error message',
-);
-// AssertionError: Expected function to throw 'Specific error message'
-```
-
-**Negation**:
-
-```js
-expect(
-  () => {
-    throw new Error('Different message');
-  },
-  'not to throw',
-  'Specific error message',
-);
-```
-
-## to throw satisfying
-
-> _Aliases: `to throw a`, `to throw an satisfying`_
+This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-string--regexp--object) (with an object parameter).
 
 **Success**:
 

@@ -1,6 +1,19 @@
 /*
- * See ../assets/font-loader.js
+ * Font definitions - following 2025 best practices
  */
+
+@font-face {
+  font-family: 'Twentieth Century';
+  src: url('/media/Twentieth-Century-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap; /* Show fallback immediately, swap when ready */
+  /* Metrics tuning to match system font fallbacks and prevent layout shift */
+  size-adjust: 100%;
+  ascent-override: normal;
+  descent-override: normal;
+  line-gap-override: normal;
+}
 
 /*
  * Define colors
@@ -12,10 +25,10 @@
   --bupkis-red-muted: #e60000;
   --bupkis-red-light: #ff6b6b;
   --bupkis-black: #020202;
-  --bupkis-white: #fefefe;
+  --bupkis-white: #f6f6f6;
   --bupkis-gray-dark: #515151;
-  --bupkis-gray-medium: #80807f;
-  --bupkis-gray-warm: #b3a1a0;
+  --bupkis-gray-medium: #808080;
+  --bupkis-gray-warm: #b3b3b3;
 
   /* Light theme - BUPKIS colors */
   --light-color-background: var(--bupkis-white);
@@ -109,12 +122,12 @@
     monospace;
 
   /* Twentieth Century font stack and common properties */
-  --twentieth-century-font-family:
+  --bupkis-font-family:
     'Twentieth Century', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif;
-  --twentieth-century-font-weight: bold;
-  --twentieth-century-caps-transform: uppercase;
-  --twentieth-century-caps-spacing: 0.05em;
+  --bupkis-font-weight: bold;
+  --bupkis-caps-transform: uppercase;
+  --bupkis-caps-spacing: 0.05em;
 }
 
 body {
@@ -289,6 +302,11 @@ pre {
 code.tsd-tag {
   background-color: var(--color-accent);
   border: unset;
+  margin: 0 0.25em;
+  font-weight: 500;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /*
@@ -493,22 +511,29 @@ footer p {
 
 /* Base Twentieth Century class */
 .twentieth-century {
-  font-family: var(--twentieth-century-font-family);
-  font-weight: var(--twentieth-century-font-weight);
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Twentieth Century with uppercase transformation */
-.twentieth-century-caps {
-  font-family: var(--twentieth-century-font-family);
-  font-weight: var(--twentieth-century-font-weight);
-  text-transform: var(--twentieth-century-caps-transform);
-  letter-spacing: var(--twentieth-century-caps-spacing);
+span.bupkis {
+  text-transform: var(--bupkis-caps-transform);
+  letter-spacing: var(--bupkis-caps-spacing);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h2 span.bupkis {
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  font-size: 1.1em;
+}
+
+p span.bupkis {
+  font-weight: bold;
 }
 
 /*
@@ -516,10 +541,10 @@ footer p {
  */
 
 body > header > div > a.title {
-  font-family: var(--twentieth-century-font-family);
-  font-weight: var(--twentieth-century-font-weight);
-  text-transform: var(--twentieth-century-caps-transform);
-  letter-spacing: var(--twentieth-century-caps-spacing);
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  text-transform: var(--bupkis-caps-transform);
+  letter-spacing: var(--bupkis-caps-spacing);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -545,21 +570,129 @@ body
  */
 
 a:has(svg[aria-label='Module']) span,
+a:has(svg[aria-label='Reference']) span,
 a:has(svg[aria-label='Function']) span,
 a:has(svg[aria-label='Type Alias']) span,
 a:has(svg[aria-label='Interface']) span,
 a:has(svg[aria-label='Namespace']) span,
+a:has(svg[aria-label='Class']) span,
 a:has(svg[aria-label='Variable']) span {
   font-family: var(--font-family-code);
 }
 
 nav:nth-child(2) > a {
-  font-family: var(--twentieth-century-font-family);
-  font-weight: var(--twentieth-century-font-weight);
-  text-transform: var(--twentieth-century-caps-transform);
-  letter-spacing: var(--twentieth-century-caps-spacing);
-  text-rendering: var(--federo-text-rendering);
-  -webkit-font-smoothing: var(--federo-font-smoothing);
-  -moz-osx-font-smoothing: var(--federo-osx-font-smoothing);
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  text-transform: var(--bupkis-caps-transform);
+  letter-spacing: var(--bupkis-caps-spacing);
+  text-rendering: var(--bupkis-text-rendering);
+  -webkit-font-smoothing: var(--bupkis-font-smoothing);
+  -moz-osx-font-smoothing: var(--bupkis-osx-font-smoothing);
   font-size: 1.2em;
+}
+
+.tsd-kind-class,
+.tsd-kind-function,
+.tsd-kind-interface,
+.tsd-kind-namespace,
+.tsd-kind-parameter,
+.tsd-kind-property,
+.tsd-kind-type-alias,
+.tsd-kind-type-parameter,
+.tsd-kind-variable,
+.tsd-member-summary-name,
+.tsd-signature-keyword,
+.tsd-signature-symbol,
+.tsd-signature-type,
+.tsd-type-kind-parameter,
+span:has(.tsd-kind-parameter) {
+  font-family: var(--font-family-code) !important;
+}
+
+:is(p, li)
+  > a:is(
+    .tsd-parameters,
+    .tsd-kind-class,
+    .tsd-kind-function,
+    .tsd-kind-interface,
+    .tsd-kind-namespace,
+    .tsd-kind-parameter,
+    .tsd-kind-property,
+    .tsd-kind-type-alias,
+    .tsd-kind-type-parameter,
+    .tsd-kind-variable,
+    .tsd-signature-keyword,
+    .tsd-signature-symbol,
+    .tsd-signature-type,
+    .tsd-type-kind-parameter
+  ) {
+  font-size: 0.875em;
+}
+
+code.tsd-tag {
+  border: 1px solid var(--bupkis-red);
+  border-radius: 6px;
+}
+
+/* Light mode - white background for tsd-tag */
+@media (prefers-color-scheme: light) {
+  code.tsd-tag {
+    background-color: var(--bupkis-white);
+    color: var(--bupkis-black);
+  }
+}
+
+/* Dark mode - black background for tsd-tag */
+@media (prefers-color-scheme: dark) {
+  code.tsd-tag {
+    background-color: var(--bupkis-black);
+    color: var(--bupkis-white);
+  }
+}
+
+/* Explicit theme overrides for tsd-tag */
+:root[data-theme='light'] code.tsd-tag {
+  background-color: var(--bupkis-white);
+  color: var(--bupkis-black);
+}
+
+:root[data-theme='dark'] code.tsd-tag {
+  background-color: var(--bupkis-black);
+  color: var(--bupkis-white);
+}
+
+/*
+ * Red border utility classes
+ */
+
+.bupkis-red-border {
+  border: 1px solid var(--bupkis-red);
+  border-radius: 6px;
+}
+
+/* Light mode - white background */
+@media (prefers-color-scheme: light) {
+  .bupkis-red-border {
+    background-color: var(--bupkis-white);
+    color: var(--bupkis-black);
+  }
+}
+
+/* Dark mode - black background */
+@media (prefers-color-scheme: dark) {
+  .bupkis-red-border {
+    background-color: var(--bupkis-black);
+    color: var(--bupkis-white);
+  }
+}
+
+/* Explicit theme overrides */
+:root[data-theme='light'] .bupkis-red-border {
+  background-color: var(--bupkis-white);
+  color: var(--bupkis-black);
+}
+
+:root[data-theme='dark'] .bupkis-red-border {
+  background-color: var(--bupkis-black);
+  color: var(--bupkis-white);
 }

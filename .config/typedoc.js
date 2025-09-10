@@ -6,41 +6,52 @@ import { OptionDefaults } from 'typedoc';
  */
 
 const customFooterHtml = readFileSync(
-  new URL('../assets/footer.html', import.meta.url),
+  new URL('../site/media/footer.html', import.meta.url),
   'utf8',
 );
 
 /** @type {Partial<TypeDocOptions>} */
 export default {
   blockTags: [...OptionDefaults.blockTags, '@knipignore', '@assertion'],
-  cleanOutputDir: true,
+  categoryOrder: ['Assertions', 'Guides', 'Reference', 'API', 'About'],
   cname: 'bupkis.zip',
-  customCss: '../assets/bupkis-theme.css',
+  customCss: '../site/media/bupkis-theme.css',
   customFooterHtml,
-  customJs: '../assets/font-loader.js',
   darkHighlightTheme: 'red',
-  entryPoints: ['../src/index.ts'],
+  entryPoints: [
+    '../src/index.ts',
+    '../src/schema.ts',
+    '../src/util.ts',
+    '../src/guards.ts',
+  ],
   excludeInternal: true,
   excludePrivate: true,
   externalSymbolLinkMappings: {
     '@types/node': {
       'assert.AssertionError':
-        'https://nodejs.org/api/errors.html#class-assertionerror',
+        'https://nodejs.org/api/assert.html#class-assertassertionerror',
       'assert.strictEqual':
         'https://nodejs.org/api/assert.html#assertstrictequalactual-expected-message',
     },
     'type-fest': {
-      Constructor:
-        'https://github.com/sindresorhus/type-fest/blob/main/source/basic.d.ts',
+      '*': 'https://github.com/sindresorhus/type-fest',
+    },
+    typescript: {
+      PromiseLike:
+        'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es5.d.ts', // current of Sep 9 2025
+      'ProxyHandler.construct':
+        'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es2015.proxy.d.ts', // current of Sep 9 2025
     },
     zod: {
-      ZodError: 'https://zod.dev/packages/core#errors',
-      ZodPromise: 'https://zod.dev/packages/core#schemas',
-      ZodType: 'https://zod.dev/packages/core#schemas',
+      '*': 'https://zod.dev/',
+    },
+    'zod/v4': {
+      '*': 'https://zod.dev/',
     },
   },
-  favicon: '../assets/favicon.svg',
-  hostedBaseUrl: 'https://bupkis.zip/',
+  favicon: '../site/media/favicon.svg',
+  // @ts-expect-error for typedoc-plugin-extras
+  footerLastModified: true,
   kindSortOrder: [
     'Reference',
     'Project',
@@ -51,23 +62,34 @@ export default {
   ],
   lightHighlightTheme: 'rose-pine-dawn',
   markdownLinkExternal: true,
-  modifierTags: [
-    ...OptionDefaults.modifierTags,
-    '@subject',
-    '@value',
-    '@phrase',
-  ],
+  navigation: {
+    includeCategories: true,
+  },
   navigationLinks: {
+    API: '/api',
+    Assertions: '/assertions',
     GitHub: 'https://github.com/boneskull/bupkis',
   },
   out: '../docs',
-  plugin: ['typedoc-plugin-mdn-links', 'typedoc-plugin-zod'],
-  projectDocuments: [
-    '../site/*.md',
-    '../ROADMAP.md',
-    '../CHANGELOG.md',
-    '../assets/Twentieth-Century-Bold.woff2',
+  plugin: [
+    'typedoc-plugin-mdn-links',
+    'typedoc-plugin-zod',
+    'typedoc-plugin-dt-links',
+    'typedoc-plugin-extras',
+    'typedoc-plugin-redirect',
+    './typedoc-plugin-bupkis.js',
   ],
+  preserveWatchOutput: true,
+  projectDocuments: ['../site/**/*.md'],
+  redirects: {
+    'api/': 'modules/bupkis.html',
+    'assertions/': 'documents/All_Assertions.html',
+    'changelog/': 'documents/Release_Notes.html',
+    'custom-assertions/': 'documents/Creating_a_Custom_Assertion.html',
+    'glossary/': 'documents/Glossary_of_Terms.html',
+    'usage/': 'documents/Basic_Usage.html',
+  },
+  searchInComments: true,
   searchInDocuments: true,
   sort: ['kind'],
   tsconfig: './tsconfig.typedoc.json',

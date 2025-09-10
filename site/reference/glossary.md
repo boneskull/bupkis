@@ -1,16 +1,13 @@
 ---
 title: Glossary of Terms
+category: Reference
 ---
-
-# Glossary
 
 ## A
 
 ### Alias
 
-An alternative [phrase](#### Parameter
-
-Additional values passed to [parametric assertions](#parametric-assertion). In `expect(10, 'to be greater than', 5)`, the value `5` is a parameter. Parameters are validated against [Zod schemas](#zod-schema) defined in the [assertion parts](#assertion-parts).ase) that can be used to express the same [assertion](#assertion). For example, `'to be truthy'`, `'to exist'`, and `'to be ok'` are aliases for the same assertion. Defined using nested arrays in [assertion parts](#assertion-parts): `[['to be truthy', 'to exist', 'to be ok']]`.
+An alternative [phrase].
 
 ### Assertion
 

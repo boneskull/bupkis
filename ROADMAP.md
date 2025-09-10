@@ -1,12 +1,8 @@
----
-title: Roadmap
----
+# Roadmap
 
-## BUPKIS: The Roadmap
+In no particular order, here are some things We want to implement:
 
-In no particular order, here are some things I want to implement:
-
-### High Priority
+## High Priority
 
 - ✅ More assertions
   - ✅ Better / more async support
@@ -16,6 +12,7 @@ In no particular order, here are some things I want to implement:
   - ✅ Support for more intrinsics; `Set`, `Map`, `WeakSet`, `WeakMap`, `WeakRef`
   - ✅ Random convenience like `is frozen`, `is sealed`, `is extensible`
   - ✅ Deep equality / partial equality, strict and loose
+  - Callbacks & async callbacks
   - Whatever else. There's always room for more, within reason!
 - Custom assertion improvements
   - Custom diffs
@@ -26,7 +23,7 @@ In no particular order, here are some things I want to implement:
 - Keypaths / property drilling
 - Boolean logic syntax (`and`, `or`, `not`) while still avoiding chainable APIs. Though I might convince myself that chainable APIs are OK for this and this only.
 
-### Maybe Later
+## Maybe Later
 
 - Assertions for all Zod v4 builtins, essentially (which suggests some dynamic generation of assertions)
 - Lower-level plugin API for those things which are more involved than custom assertions

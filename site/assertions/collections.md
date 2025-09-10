@@ -1,13 +1,11 @@
 ---
 title: Collections Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Collections Assertions
+## Collection Assertions
 
 These assertions test collections like arrays, Maps, Sets, and their properties.
-
-## Array Assertions
 
 ### to be an array
 
@@ -55,7 +53,7 @@ expect([1, 2, 3], 'to be empty');
 expect([1, 2, 3], 'not to be empty');
 ```
 
-### to have length
+### to have length &lt;nonnegative-integer&gt;
 
 **Success**:
 
@@ -99,9 +97,9 @@ expect([], 'to be non-empty');
 expect([], 'not to be non-empty');
 ```
 
-### to contain / to include (array)
+### to contain &lt;any&gt; / to include &lt;any&gt; (array)
 
-> _Aliases: `to contain`, `to include`_
+> _Aliases: `to contain <any>`, `to include <any>`_
 
 **Success**:
 
@@ -123,11 +121,9 @@ expect([1, 2, 3], 'to contain', 5);
 expect([1, 2, 3], 'not to contain', 5);
 ```
 
-## Map Assertions
+### to contain &lt;any&gt; / to include &lt;any&gt; (Map)
 
-### to contain / to include (Map)
-
-> _Aliases: `to contain`, `to include`_
+> _Aliases: `to contain <any>`, `to include <any>`_
 
 **Success**:
 
@@ -154,7 +150,7 @@ expect(map, 'to contain', 'key3');
 expect(map, 'not to contain', 'key3');
 ```
 
-### to have size (Map)
+### to have size &lt;nonnegative-integer&gt; (Map)
 
 **Success**:
 
@@ -202,11 +198,9 @@ expect(map, 'to be empty');
 expect(map, 'not to be empty');
 ```
 
-## Set Assertions
+### to contain &lt;any&gt; / to include &lt;any&gt; (Set)
 
-### to contain / to include (Set)
-
-> _Aliases: `to contain`, `to include`_
+> _Aliases: `to contain <any>`, `to include <any>`_
 
 **Success**:
 
@@ -230,7 +224,7 @@ expect(set, 'to contain', 5);
 expect(set, 'not to contain', 5);
 ```
 
-### to have size (Set)
+### to have size &lt;nonnegative-integer&gt; (Set)
 
 **Success**:
 
@@ -297,11 +291,9 @@ expect([1, 2, 3], 'to be a Set');
 expect([1, 2, 3], 'not to be a Set');
 ```
 
-## WeakMap Assertions
+### to contain &lt;any&gt; / to include &lt;any&gt; (WeakMap)
 
-### to contain / to include (WeakMap)
-
-> _Aliases: `to contain`, `to include`_
+> _Aliases: `to contain <any>`, `to include <any>`_
 
 **Success**:
 
@@ -348,11 +340,9 @@ expect(new Map(), 'to be a WeakMap');
 expect(new Map(), 'not to be a WeakMap');
 ```
 
-## WeakSet Assertions
+### to contain &lt;any&gt; / to include &lt;any&gt; (WeakSet)
 
-### to contain / to include (WeakSet)
-
-> _Aliases: `to contain`, `to include`_
+> _Aliases: `to contain <any>`, `to include <any>`_
 
 **Success**:
 

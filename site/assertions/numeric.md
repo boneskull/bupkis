@@ -1,44 +1,17 @@
 ---
 title: Numeric Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Numeric Assertions
+## Numeric Assertions
 
 These assertions test numeric values, ranges, and mathematical relationships.
 
-## to be a number
+### to be a number
 
-<!-- this is duplicated in `primitives.md`, and that is OK -->
+> 👉 See [to be a number](primitives.md#to-be-a-number)
 
-> _Aliases: `to be a number`, `to be finite`_
-
-The definition of "number" is that of Zod v4's; only _finite_ numbers are considered valid.
-
-**Success**:
-
-```js
-expect(3.14, 'to be a number');
-expect(-42, 'to be a number');
-expect(0, 'to be a number');
-```
-
-**Failure**:
-
-```js
-expect(NaN, 'to be a number');
-// AssertionError: Expected NaN to be a number
-expect(Infinity, 'to be a number');
-```
-
-**Negation**:
-
-```js
-expect(NaN, 'not to be a number');
-expect(Infinity, 'not to be a number');
-```
-
-## to be infinite
+### to be infinite
 
 **Success**:
 
@@ -60,7 +33,7 @@ expect(42, 'to be infinite');
 expect(42, 'not to be infinite');
 ```
 
-## to be Infinity
+### to be Infinity
 
 **Success**:
 
@@ -81,7 +54,7 @@ expect(-Infinity, 'to be Infinity');
 expect(-Infinity, 'not to be Infinity');
 ```
 
-## to be -Infinity
+### to be -Infinity
 
 **Success**:
 
@@ -102,7 +75,7 @@ expect(Infinity, 'to be -Infinity');
 expect(Infinity, 'not to be -Infinity');
 ```
 
-## to be positive
+### to be positive
 
 > _Aliases: `to be positive`, `to be a positive number`_
 
@@ -128,7 +101,7 @@ expect(-5, 'not to be positive');
 expect(0, 'not to be positive');
 ```
 
-## to be a positive integer
+### to be a positive integer
 
 > _Aliases: `to be a positive integer`, `to be a positive int`_
 
@@ -153,7 +126,7 @@ expect(-5, 'to be a positive integer');
 expect(3.14, 'not to be a positive integer');
 ```
 
-## to be negative
+### to be negative
 
 > _Aliases: `to be negative`, `to be a negative number`_
 
@@ -179,7 +152,7 @@ expect(5, 'not to be negative');
 expect(0, 'not to be negative');
 ```
 
-## to be a negative integer
+### to be a negative integer
 
 > _Aliases: `to be a negative integer`, `to be a negative int`_
 
@@ -204,7 +177,7 @@ expect(5, 'to be a negative integer');
 expect(-3.14, 'not to be a negative integer');
 ```
 
-## to be NaN
+### to be NaN
 
 **Success**:
 
@@ -226,7 +199,7 @@ expect(42, 'to be NaN');
 expect(42, 'not to be NaN');
 ```
 
-## to be an integer
+### to be an integer
 
 > _Aliases: `to be an integer`, `to be a safe integer`, `to be an int`, `to be a safe int`_
 
@@ -251,7 +224,7 @@ expect(3.14, 'to be an integer');
 expect(3.14, 'not to be an integer');
 ```
 
-## to be greater than
+### to be greater than &lt;number&gt;
 
 **Success**:
 
@@ -273,7 +246,7 @@ expect(5, 'to be greater than', 10);
 expect(5, 'not to be greater than', 10);
 ```
 
-## to be less than
+### to be less than &lt;number&gt;
 
 **Success**:
 
@@ -295,9 +268,9 @@ expect(10, 'to be less than', 5);
 expect(10, 'not to be less than', 5);
 ```
 
-## to be greater than or equal to
+### to be greater than or equal to &lt;number&gt;
 
-> _Aliases: `to be greater than or equal to`, `to be at least`_
+> _Aliases: `to be greater than or equal to <number>`, `to be at least <number>`_
 
 **Success**:
 
@@ -319,9 +292,9 @@ expect(5, 'to be greater than or equal to', 10);
 expect(5, 'not to be greater than or equal to', 10);
 ```
 
-## to be less than or equal to
+### to be less than or equal to &lt;number&gt;
 
-> _Aliases: `to be less than or equal to`, `to be at most`_
+> _Aliases: `to be less than or equal to <number>`, `to be at most <number>`_
 
 **Success**:
 
@@ -343,13 +316,15 @@ expect(15, 'to be less than or equal to', 10);
 expect(15, 'not to be less than or equal to', 10);
 ```
 
-## to be within
+### to be within &lt;number&gt; and &lt;number&gt;
+
+> _Aliases: `to be within <number> and <number>`, `to be between <number> and <number>`_
 
 **Success**:
 
 ```js
 expect(5, 'to be within', 1, 10);
-expect(7.5, 'to be within', 7, 8);
+expect(7.5, 'to be between', 7, 8);
 ```
 
 **Failure**:
@@ -365,7 +340,7 @@ expect(15, 'to be within', 1, 10);
 expect(15, 'not to be within', 1, 10);
 ```
 
-## to be close to
+### to be close to &lt;number&gt; within &lt;number&gt;
 
 **Success**:
 

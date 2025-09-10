@@ -1,13 +1,13 @@
 ---
-title: Other Type Assertions
-group: Assertions
+title: Other Assertions
+category: Assertions
 ---
 
-# Other Type Assertions
+## Other Assertions
 
-These assertions test various other types and values that don't fit into the primitive categories.
+These assertions are the odd ducks. We don't have the mental stamina to categorize them properly.
 
-## to be truthy
+### to be truthy
 
 > _Aliases: `to be truthy`, `to exist`, `to be ok`_
 
@@ -40,7 +40,7 @@ expect('', 'not to exist');
 expect(false, 'not to be ok');
 ```
 
-## to be falsy
+### to be falsy
 
 **Success**:
 
@@ -70,7 +70,7 @@ expect('hello', 'not to be falsy');
 expect(true, 'not to be falsy');
 ```
 
-## to be defined
+### to be defined
 
 **Success**:
 
