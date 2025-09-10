@@ -190,13 +190,15 @@
   "knip": {
     "ignoreDependencies": [
       "@types/wallabyjs",
-      "markdownlint-cli2-formatter-pretty"
+      "markdownlint-cli2-formatter-pretty",
+      "expect-type",
+      "tsx"
     ],
     "ignore": [
       ".wallaby.js",
       "**/*.cts",
       "**/*.d.ts",
-      "assets/**/*"
+      "site/media/**/*"
     ],
     "tags": [
       "-knipignore"
@@ -205,6 +207,7 @@
       "entry": [
         "scripts/*.js",
         "test/**/*.test.ts",
+        "test/types.types-test.ts",
         "src/assertion/index.ts",
         "src/index.ts",
         "src/types.ts",
