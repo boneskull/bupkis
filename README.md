@@ -21,25 +21,25 @@
 >
 > ‒sickos, probably
 
-Look, I'm ~~old~~ ~~wizened~~ ~~experienced~~ knowledegable and I've written a lot of tests. I've used a lot of assertion libraries. There are ones I prefer and ones I don't.
+Look, we're ~~old~~ ~~wizened~~ ~~experienced~~ knowledegable and we've written a lot of tests. We've used a lot of assertion libraries. There are ones we prefer and ones we don't.
 
-But none of them do quite what _BUPKIS_ does. I want an assertion library that prioritizes:
+But none of them do quite what _BUPKIS_ does. We want an assertion library that prioritizes:
 
 - Type safety
 - Uncompromisable extensibility
 - A small API surface
 
-I can think of several that tick two-thirds of those boxes! But _I demand the total package_ (And You Should Too).
+We can think of several that tick two-thirds of those boxes! But _we demand the total package_ (And You Should Too).
 
 > ⚠️ **Caution!**
 >
 > Assertion libraries tend come in two flavors: chainable or stiff & traditional. But because these styles are likely _familiar_ to you, you may hate _BUPKIS_.
 >
-> I _want_ you to like it, yes. But if you don't, I'm content with just making my point and asking the following favor of the reader:
+> We _want_ you to like it, yes. But if you don't, we're content with just making our point and asking the following favor of the reader:
 >
 > **Do not confuse _familiarity_ with _usability_.**
 
-The following is a brief overview of the design choices We made to serve these goals.
+The following is a brief overview of the design choices we made to serve these goals.
 
 ### Natural Language Assertions
 
@@ -198,9 +198,9 @@ npm install bupkis -D
 
 ## Acknowledgements
 
-- [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library is exceedingly difficult (and was in fact the first thing I tried). Despite that drawback, I find it more usable than any other assertion library I've tried.
+- [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library was exceedingly difficult (and was in fact the first thing we tried). Despite that drawback, we found it exquisitely usable.
 - [Zod][] is a popular object validation library upon which _BUPKIS_ builds many of its own assertions.
-- [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, I mean. How about _in addition to_ itself? Yes. Thank you!
+- [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, we mean. How about _in addition to_ itself? Yes. Thank you!
 - [tshy][] from Isaac Schlueter. Thanks for making dual ESM/CJS packages easy and not too fancy.
 - [TypeDoc][] it really documents the hell out of TypeScript projects.
 - [@cjihrig](https://github.com/cjihrig) and other Node.js contributors for the thoughtfulness put into [`node:test`](https://nodejs.org/api/test.html) that make it my current test-runner-of-choice.
