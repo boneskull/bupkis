@@ -180,7 +180,7 @@ export const AsyncAssertions = [
   createAsyncAssertion(
     [
       WrappedPromiseLikeSchema,
-      ['to fulfill with value satisfying', 'to resolve to value satisfying'],
+      ['to fulfill with value satisfying', 'to resolve with value satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (promise, param) => {
@@ -232,7 +232,7 @@ export const AsyncAssertions = [
   createAsyncAssertion(
     [
       FunctionSchema,
-      ['to fulfill with value satisfying', 'to resolve to value satisfying'],
+      ['to fulfill with value satisfying', 'to resolve with value satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (subject, param) => {

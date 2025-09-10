@@ -23,7 +23,7 @@ const extractPhrases = createPhraseExtractor(assertions);
 const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 const testConfigs = {
-  'functionschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p':
+  'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
     {
       invalid: {
         generators: [
@@ -34,7 +34,7 @@ const testConfigs = {
           }),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p',
+              'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.constant('expected value'), // Expected value doesn't match actual
@@ -50,7 +50,7 @@ const testConfigs = {
           ),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p',
+              'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.constant('expected value'), // Expected value matches actual exactly
@@ -181,7 +181,7 @@ const testConfigs = {
     },
   },
 
-  'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p':
+  'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
     {
       invalid: {
         generators: [
@@ -192,7 +192,7 @@ const testConfigs = {
             .map((val) => Promise.resolve(val)),
           fc.constantFrom(
             ...extractPhrases(
-              'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p',
+              'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.constant({ baz: 'quux' }), // Expected value matches actual exactly
@@ -204,7 +204,7 @@ const testConfigs = {
           fc.constant(Promise.resolve({ baz: 'quux', foo: 'bar' })),
           fc.constantFrom(
             ...extractPhrases(
-              'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-to-value-satisfying-string-regexp-object-3s3p',
+              'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.constant({ baz: 'quux' }), // Expected value matches actual exactly
