@@ -9,8 +9,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: 22.15.0
-          - node-version: 24.0.1
+          - node-version: '^22.12.0'
+          - node-version: '^24.0.0'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -24,5 +24,14 @@ jobs:
           install-command: npm ci --foreground-scripts
       - name: Lint
         run: npm run lint
+      - name: Test w/ Coverage
+        if: matrix.node-version == '^24.0.0'
+        run: npm run test:coverage
       - name: Test
+        if: matrix.node-version != '^24.0.0'
         run: npm test
+      - name: Upload Coverage
+        if: matrix.node-version == '^24.0.0'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
