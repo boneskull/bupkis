@@ -60,6 +60,16 @@
         "default": "./dist/commonjs/guards.js"
       }
     },
+    "./assertions": {
+      "import": {
+        "types": "./dist/esm/assertion/index.d.ts",
+        "default": "./dist/esm/assertion/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/assertion/index.d.ts",
+        "default": "./dist/commonjs/assertion/index.js"
+      }
+    },
     ".": {
       "import": {
         "types": "./dist/esm/index.d.ts",
@@ -187,7 +197,13 @@
     "node": {
       "entry": [
         "scripts/*.js",
-        "test/**/*.test.ts"
+        "test/**/*.test.ts",
+        "src/assertion/index.ts",
+        "src/index.ts",
+        "src/types.ts",
+        "src/util.ts",
+        "src/schema.ts",
+        "src/guards.ts"
       ]
     }
   },
@@ -218,6 +234,7 @@
       "./util": "./src/util.ts",
       "./schema": "./src/schema.ts",
       "./guards": "./src/guards.ts",
+      "./assertions": "./src/assertion/index.ts",
       ".": "./src/index.ts"
     }
   }
