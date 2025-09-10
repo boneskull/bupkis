@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.2...bupkis-v0.2.0) (2025-09-10)
+
+
+### Features
+
+* add "assertions" subpath export ([692421b](https://github.com/boneskull/bupkis/commit/692421b5831a440fce0d0e9fe191a4aeba61a808))
+* **assertion:** add alias "to be between" for "to be within" ([6e20646](https://github.com/boneskull/bupkis/commit/6e2064671b0b8e4ca35db55fd8ec90211956f303))
+
+
+### Bug Fixes
+
+* rename "to resolve to value satisfying" async assertions to "resolve with value satisfying" ([3a39a3e](https://github.com/boneskull/bupkis/commit/3a39a3e18ea2899f8c8ec8cbabdff9475dfbe41d))
+
 ## [0.1.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.1...bupkis-v0.1.2) (2025-09-09)
 
 
