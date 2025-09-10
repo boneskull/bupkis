@@ -135,7 +135,7 @@ export const ParametricAssertions = [
 
   // Number range and approximation assertions
   createAssertion(
-    [z.number(), 'to be within', z.number(), z.number()],
+    [z.number(), ['to be within', 'to be between'], z.number(), z.number()],
     (subject, min, max) => {
       if (subject < min || subject > max) {
         return {
@@ -467,13 +467,13 @@ export const ParametricAssertions = [
       ['to satisfy', 'to be like'],
       z.looseObject({}),
     ],
-    (_subject, shape) =>
+    (subject, shape) =>
       // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       valueToSchema(shape) as unknown as z.ZodType<{}, z.core.$loose>,
   ),
   createAssertion(
     [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
-    (_subject, shape) =>
+    (subject, shape) =>
       valueToSchema(shape) as unknown as typeof ArrayLikeSchema,
   ),
   createAssertion(

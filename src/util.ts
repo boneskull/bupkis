@@ -7,6 +7,13 @@
  * converting shapes to Zod schemas. All functions handle circular references
  * safely.
  *
+ * @category API
+ * @example
+ *
+ * ```ts
+ * import * as util from 'bupkis/util';
+ * ```
+ *
  * @packageDocumentation
  */
 

@@ -2,18 +2,17 @@
  * Defines Bupkis' Zod metadata registry
  *
  * @packageDocumentation
+ * @internal
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { kStringLiteral } from './constant.js';
 
 /**
  * Metadata stored in Zod registry
- *
- * @knipignore
  */
-export type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
+type BupkisMeta = z.infer<typeof BupkisRegistrySchema>;
 
 /**
  * Zod metadata registry for Bupkis

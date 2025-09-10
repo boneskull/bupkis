@@ -2,15 +2,22 @@
  * Type guard functions and runtime type checking utilities.
  *
  * This module provides various type guard functions for runtime type checking,
- * including guards for Zod schemas, constructors, Promise-like objects, and
- * assertion parts. These are used throughout the library for safe type
+ * including guards for Zod schemas, constructors, {@link PromiseLike} objects,
+ * and assertion parts. These are used throughout the library for safe type
  * narrowing and validation.
+ *
+ * @category API
+ * @example
+ *
+ * ```ts
+ * import * as guards from 'bupkis/guards';
+ * ```
  *
  * @packageDocumentation
  */
 
 import { type Primitive } from 'type-fest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import type {
   AssertionFailure,
@@ -20,15 +27,15 @@ import type {
 import type { Constructor } from './types.js';
 
 /**
- * Returns true if the given value looks like a Zod schema (v4), determined by
- * the presence of an internal `def.type` field.
+ * Returns `true` if the given value looks like a Zod v4 schema, determined by
+ * the presence of an internal {@link z.core.$ZodTypeDef} field.
  *
  * Note: This relies on Zod's internal shape and is intended for runtime
  * discrimination within this library.
  *
  * @template T
  * @param value - Value to test
- * @returns Whether the value is Zod-like
+ * @returns Whether the value is `ZodType`-like
  */
 export const isZodType = (value: unknown): value is z.ZodType =>
   !!(
@@ -64,11 +71,17 @@ export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
   );
 
 /**
- * Returns true if the given value is a constructable function (i.e., a class).
+ * Returns `true` if the given value is a constructable function (i.e., a
+ * class).
  *
+ * This works by wrapping `fn` in a {@link Proxy}, attaching a no-op
+ * {@link ProxyHandler.construct} trap to it, then attempting to construct the
+ * proxy via `new`.
+ *
+ * @privateRemarks
  * This may be the only way we can determine, at runtime, if a function is a
- * constructor without actually calling it.
- *
+ * constructor without actually calling it. I am unsure if this only works for
+ * classes.
  * @param fn - Function to test
  * @returns Whether the function is constructable
  */
@@ -178,43 +191,6 @@ export const isPhraseLiteralChoice = (
  */
 export const isPhraseLiteral = (value: AssertionPart): value is string =>
   isString(value) && !value.startsWith('not ');
-
-export type PrimitiveTypeName =
-  | 'bigint'
-  | 'boolean'
-  | 'function'
-  | 'null'
-  | 'number'
-  | 'object'
-  | 'string'
-  | 'symbol'
-  | 'undefined';
-
-export type PrimitiveTypeNameToType<T extends PrimitiveTypeName> =
-  T extends 'undefined'
-    ? undefined
-    : T extends 'object'
-      ? null | object
-      : T extends 'function'
-        ? (...args: any[]) => any
-        : T extends 'string'
-          ? string
-          : T extends 'number'
-            ? number
-            : T extends 'boolean'
-              ? boolean
-              : T extends 'bigint'
-                ? bigint
-                : T extends 'symbol'
-                  ? symbol
-                  : never;
-
-export const isType = <T extends PrimitiveTypeName>(
-  a: unknown,
-  b: T,
-): a is PrimitiveTypeNameToType<T> => {
-  return typeof a === b;
-};
 
 export const isA = <T extends Constructor>(
   value: unknown,

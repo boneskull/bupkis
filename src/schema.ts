@@ -1,14 +1,34 @@
 /**
- * Zod schema definitions for common types and validation patterns.
+ * Arguably-useful Zod schemas for common types and validation patterns.
  *
  * This module provides reusable Zod schemas for validating constructors,
  * functions, property keys, promises, and other common JavaScript types used
- * throughout the assertion system. These tend to work around Zod's
- * limitations.
+ * throughout the assertion system. These tend to work around the impedence
+ * mismatch between **BUPKIS** and Zod.
  *
  * These are used internally, but consumers may also find them useful.
  *
- * @document schema.md
+ * For example, we have {@link FunctionSchema} which accepts any
+ * function—regardless of its signature. We need this because Zod v4's
+ * `z.function()` no longer returns a `ZodType` (ref:
+ * {@link https://zod.dev/v4/changelog | Zod v4 Migration Guide}) and so behaves
+ * differently. `FunctionSchema` allows us to work with functions as _values_
+ * instead of something to be implemented.
+ *
+ * Similarly—but not a new development—`z.promise()` does not parse a
+ * {@link Promise} object; it parses the _fulfilled value_. This is not what we
+ * want for "is a Promise" assertions, but it _can_ be useful for making sense
+ * of the fulfilled value. To solve this, we have
+ * {@link WrappedPromiseLikeSchema} (which explicitly supports
+ * {@link PromiseLike}/"thenable" objects).
+ *
+ * @category API
+ * @example
+ *
+ * ```ts
+ * import * as schema from 'bupkis/schema';
+ * ```
+ *
  * @packageDocumentation
  */
 
@@ -22,7 +42,7 @@ import {
   isPromiseLike,
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
-import { type Constructor } from './types.js';
+import { type Constructor, type MutableOrReadonly } from './types.js';
 
 /**
  * A Zod schema that validates JavaScript classes or constructor functions.
@@ -32,10 +52,9 @@ import { type Constructor } from './types.js';
  * uses the {@link isConstructable} guard function to determine if a value can be
  * invoked with the `new` operator to create object instances.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
  * `ClassSchema` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -49,6 +68,8 @@ import { type Constructor } from './types.js';
  * ClassSchema.parse(() => {}); // ✗ Throws validation error
  * ClassSchema.parse({}); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 
 export const ClassSchema = z
@@ -65,10 +86,9 @@ export const ClassSchema = z
  * including regular functions, arrow functions, async functions, generator
  * functions, and methods.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
  * `FunctionSchema` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -80,9 +100,11 @@ export const ClassSchema = z
  * FunctionSchema.parse('not a function'); // ✗ Throws validation error
  * FunctionSchema.parse({}); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const FunctionSchema = z
-  .custom<(...args: any[]) => any>(isFunction)
+  .custom<(...args: MutableOrReadonly<unknown[]>) => unknown>(isFunction)
   .register(BupkisRegistry, {
     name: 'FunctionSchema',
   })
@@ -98,10 +120,9 @@ export const FunctionSchema = z
  * types that JavaScript automatically converts to property keys when used in
  * object access or assignment operations.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `PropertyKeySchema` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -111,6 +132,8 @@ export const FunctionSchema = z
  * PropertyKeySchema.parse({}); // ✗ Throws validation error
  * PropertyKeySchema.parse(null); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
@@ -126,12 +149,11 @@ export const PropertyKeySchema = z
  * resolved value, meaning the result of parsing remains a Promise or thenable
  * object.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `WrappedPromiseLikeSchema` for later reference and type checking purposes.
  * This is useful when you need to validate that something is thenable without
  * automatically resolving it.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -140,6 +162,8 @@ export const PropertyKeySchema = z
  * WrappedPromiseLikeSchema.parse(42); // ✗ Throws validation error
  * WrappedPromiseLikeSchema.parse({}); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const WrappedPromiseLikeSchema = z
   .custom<PromiseLike<unknown>>((value) => isPromiseLike(value))
@@ -159,7 +183,6 @@ export const WrappedPromiseLikeSchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `StrongMapSchema` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -172,6 +195,8 @@ export const WrappedPromiseLikeSchema = z
  * const weakMap = new WeakMap();
  * StrongMapSchema.parse(weakMap); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const StrongMapSchema = z
   .instanceof(Map)
@@ -190,7 +215,6 @@ export const StrongMapSchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `StrongSetSchema` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -200,6 +224,8 @@ export const StrongMapSchema = z
  * const weakSet = new WeakSet();
  * StrongSetSchema.parse(weakSet); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const StrongSetSchema = z
   .instanceof(Set)
@@ -219,7 +245,6 @@ export const StrongSetSchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `ObjectWithNullPrototype` for later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -233,6 +258,8 @@ export const StrongSetSchema = z
  * const emptyObj = {};
  * NullProtoObjectSchema.parse(emptyObj); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const NullProtoObjectSchema = z
   .custom<Record<PropertyKey, unknown>>(
@@ -255,7 +282,6 @@ export const NullProtoObjectSchema = z
  * schema cannot reliably detect functions that return Promises but are not
  * declared with `async`, as this determination requires static analysis that is
  * not available at runtime.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -275,6 +301,8 @@ export const NullProtoObjectSchema = z
  * const regularFn = () => 42;
  * AsyncFunctionSchema.parse(regularFn); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const AsyncFunctionSchema = FunctionSchema.refine(
   (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
@@ -293,7 +321,6 @@ export const AsyncFunctionSchema = FunctionSchema.refine(
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name `Truthy` and
  * indicates that it accepts anything as valid input for evaluation.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -307,6 +334,8 @@ export const AsyncFunctionSchema = FunctionSchema.refine(
  * TruthySchema.parse(''); // ✗ Throws validation error
  * TruthySchema.parse(null); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const TruthySchema = z
   .any()
@@ -328,7 +357,6 @@ export const TruthySchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name `Falsy` and
  * indicates that it accepts anything as valid input for evaluation.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -345,6 +373,8 @@ export const TruthySchema = z
  * FalsySchema.parse('hello'); // ✗ Throws validation error
  * FalsySchema.parse({}); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const FalsySchema = z
   .any()
@@ -365,7 +395,6 @@ export const FalsySchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name `Primitive`
  * and indicates that it accepts primitive values as valid input.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -380,6 +409,8 @@ export const FalsySchema = z
  * PrimitiveSchema.parse([]); // ✗ Throws validation error (array)
  * PrimitiveSchema.parse(() => {}); // ✗ Throws validation error (function)
  * ```
+ *
+ * @group Schema
  */
 export const PrimitiveSchema = z
   .union([
@@ -404,12 +435,11 @@ export const PrimitiveSchema = z
  * it useful for validating collections where the specific array mutability or
  * tuple structure is not critical.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
  * `ArrayLike` for later reference and type checking purposes. This schema is
  * particularly useful when you need to accept various forms of array-like data
  * without being restrictive about mutability or exact tuple structure.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -421,11 +451,13 @@ export const PrimitiveSchema = z
  * ArrayLikeSchema.parse({}); // ✗ Throws validation error
  * ArrayLikeSchema.parse(null); // ✗ Throws validation error
  * ```
+ *
+ * @group Schema
  */
 export const ArrayLikeSchema = z
   .union([
-    z.array(z.any()),
-    z.tuple([z.any()], z.any()),
+    z.array(z.unknown()),
+    z.tuple([z.unknown()], z.unknown()),
     z.looseObject({ length: z.number().nonnegative().int() }),
   ])
   .describe('Array-like value')
@@ -445,7 +477,6 @@ export const ArrayLikeSchema = z
  * @remarks
  * The schema is registered in the `BupkisRegistry` with the name `RegExp` for
  * later reference and type checking purposes.
- * @category Schema
  * @example
  *
  * ```typescript
@@ -457,6 +488,8 @@ export const ArrayLikeSchema = z
  * RegExpSchema.parse(/abc/.source); // ✗ Throws validation error (string pattern)
  * RegExpSchema.parse({}); // ✗ Throws validation error (object)
  * ```
+ *
+ * @group Schema
  */
 export const RegExpSchema = z
   .instanceof(RegExp)
