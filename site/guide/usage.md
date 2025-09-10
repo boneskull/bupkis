@@ -1,12 +1,13 @@
 ---
 title: Basic Usage
+category: Guides
 ---
 
-# _BUPKIS_: Basic Usage
+<h2><span class="bupkis">Bupkis</span>: Basic Usage</h2>
 
 This guide covers the fundamentals of using _BUPKIS_ for assertions in your tests.
 
-## Installation
+### Installation
 
 Install _BUPKIS_ as a development dependency:
 
@@ -14,17 +15,17 @@ Install _BUPKIS_ as a development dependency:
 npm install bupkis -D
 ```
 
-## Prerequisites
+### Prerequisites
 
 _BUPKIS_ requires Node.js version **^20.19.0 || ^22.12.0 || >=23**.
 
 The library supports both **ESM** and **CommonJS** module systems, so you can use it with any modern Node.js project setup.
 
-## Importing
+### Importing
 
 _BUPKIS_ provides different import strategies depending on your needs:
 
-### Quick Start: Just Expect
+#### Quick Start: Just Expect
 
 If you want to start using assertions immediately with the built-in library:
 
@@ -32,7 +33,7 @@ If you want to start using assertions immediately with the built-in library:
 import { expect } from 'bupkis';
 ```
 
-### Full Import: Building Custom Assertions
+#### Full Import: Building Custom Assertions
 
 For creating custom assertions and accessing all utilities:
 
@@ -47,7 +48,7 @@ import {
 } from 'bupkis';
 ```
 
-### Namespace Imports
+#### Namespace Imports
 
 You can also import organized namespaces:
 
@@ -98,11 +99,11 @@ describe('Basic assertions', () => {
 });
 ```
 
-## Assertion Errors
+### Assertion Errors
 
 When an assertion fails, _BUPKIS_ throws a standard `AssertionError` that's compatible with all major testing frameworks. Here are real examples of what these errors look like:
 
-### Simple Type Mismatch
+#### Simple Type Mismatch
 
 ```ts
 expect(42, 'to be a string');
@@ -111,7 +112,7 @@ expect(42, 'to be a string');
 // expected: []
 ```
 
-### Value Comparison
+#### Value Comparison
 
 ```ts
 expect('hello', 'to equal', 'goodbye');
@@ -120,14 +121,14 @@ expect('hello', 'to equal', 'goodbye');
 // expected: goodbye
 ```
 
-### Array Length Mismatch
+#### Array Length Mismatch
 
 ```ts
 expect([1, 2, 3], 'to have length', 5);
 // AssertionError: Assertion "{array} 'to have length' {number}" failed for arguments: [ [ 1, 2, 3 ], 'to have length', 5 ]
 ```
 
-### Complex Object Validation
+#### Complex Object Validation
 
 ```ts
 const user = { name: 'Alice', age: 30, role: 'user' };
@@ -151,7 +152,7 @@ expect(user, 'to satisfy', {
 // }
 ```
 
-### Error Properties
+#### Error Properties
 
 All _BUPKIS_ assertion errors include these standard properties:
 
@@ -162,9 +163,9 @@ All _BUPKIS_ assertion errors include these standard properties:
 
 The error messages are powered by Zod's validation system, providing detailed context about exactly why an assertion failed.
 
-## Next Steps
+### Next Steps
 
+- **[About Assertions](../reference/assertions.md)** - Learn more about Assertions
 - **[Custom Assertions](./custom-assertion.md)** - Learn how to create your own assertion types
-- **[Reference](../reference.md)** - Complete API documentation and glossary
 
 The natural language approach makes tests more readable and self-documenting. Instead of remembering method names like `toBeInstanceOf()` or `toHaveProperty()`, you write what you mean: `'to be an instance of'` or `'to have property'`.

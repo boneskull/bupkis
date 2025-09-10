@@ -1,13 +1,17 @@
 ---
 title: String & Pattern Assertions
-group: Assertions
+category: Assertions
 ---
 
-# String & Pattern Assertions
+## String & Pattern Assertions
 
 These assertions test strings, regular expressions, and pattern matching.
 
-## to be a RegExp
+### to be a string
+
+> 👉 See [to be a string](primitives.md#to-be-a-string)
+
+### to be a RegExp
 
 > _Aliases: `to be a RegExp`, `to be a regex`, `to be a regexp`_
 
@@ -32,9 +36,9 @@ expect('hello', 'to be a RegExp');
 expect('hello', 'not to be a RegExp');
 ```
 
-## to begin with
+### to begin with &lt;string&gt;
 
-> _Aliases: `to begin with`, `to start with`_
+> _Aliases: `to begin with <string>`, `to start with <string>`_
 
 **Success**:
 
@@ -56,7 +60,7 @@ expect('hello world', 'to begin with', 'world');
 expect('hello world', 'not to begin with', 'world');
 ```
 
-## to end with
+### to end with &lt;string&gt;
 
 **Success**:
 
@@ -78,7 +82,7 @@ expect('hello world', 'to end with', 'hello');
 expect('hello world', 'not to end with', 'hello');
 ```
 
-## to match
+### to match &lt;RegExp&gt;
 
 **Success**:
 
@@ -101,7 +105,7 @@ expect('hello', 'to match', /\d+/);
 expect('hello', 'not to match', /\d+/);
 ```
 
-## to be empty (string)
+### to be empty
 
 **Success**:
 
@@ -122,7 +126,7 @@ expect('hello', 'to be empty');
 expect('hello', 'not to be empty');
 ```
 
-## to be non-empty (string)
+### to be non-empty
 
 **Success**:
 
@@ -140,13 +144,15 @@ expect('', 'to be non-empty');
 
 **Negation**:
 
+> **PRO TIP**: Use ["to be empty"](#to-be-empty) instead.
+
 ```js
 expect('', 'not to be non-empty');
 ```
 
-## includes / contains
+### includes &lt;string&gt; / contains &lt;string&gt;
 
-> _Aliases: `includes`, `contains`, `to include`, `to contain`_
+> _Aliases: `includes <string>`, `contains <string>`, `to include <string>`, `to contain <string>`_
 
 **Success**:
 

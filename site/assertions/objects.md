@@ -1,13 +1,13 @@
 ---
 title: Object Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Object Assertions
+### Object Assertions
 
 These assertions test objects, their properties, and object-specific behaviors.
 
-## to be an object
+### to be an object
 
 **Success**:
 
@@ -33,7 +33,7 @@ expect('hello', 'not to be an object');
 expect(null, 'not to be an object');
 ```
 
-## to be a record
+### to be a record
 
 > _Aliases: `to be a record`, `to be a plain object`_
 
@@ -58,7 +58,7 @@ expect(new Date(), 'to be a record');
 expect([], 'not to be a record');
 ```
 
-## to be empty (object)
+### to be empty (object)
 
 **Success**:
 
@@ -79,9 +79,9 @@ expect({ a: 1 }, 'to be empty');
 expect({ a: 1 }, 'not to be empty');
 ```
 
-## to have keys
+### to have keys &lt;array&gt;
 
-> _Aliases: `to have keys`, `to have properties`, `to have props`_
+> _Aliases: `to have keys <array>`, `to have properties <array>`, `to have props <array>`_
 
 **Success**:
 
@@ -103,7 +103,7 @@ expect({ a: 1 }, 'to have keys', ['a', 'b']);
 expect({ a: 1 }, 'not to have keys', ['a', 'b']);
 ```
 
-## to have a null prototype
+### to have a null prototype
 
 **Success**:
 
@@ -125,7 +125,7 @@ expect({}, 'to have a null prototype');
 expect({}, 'not to have a null prototype');
 ```
 
-## to be an enumerable property of
+### to be an enumerable property of &lt;object&gt;
 
 **Success**:
 
@@ -149,7 +149,7 @@ expect('b', 'to be an enumerable property of', obj);
 expect('b', 'not to be an enumerable property of', obj);
 ```
 
-## to be sealed
+### to be sealed
 
 **Success**:
 
@@ -172,7 +172,7 @@ expect({}, 'to be sealed');
 expect({}, 'not to be sealed');
 ```
 
-## to be frozen
+### to be frozen
 
 **Success**:
 
@@ -195,7 +195,7 @@ expect({}, 'to be frozen');
 expect({}, 'not to be frozen');
 ```
 
-## to be extensible
+### to be extensible
 
 **Success**:
 
@@ -218,11 +218,11 @@ expect(obj, 'to be extensible');
 expect(obj, 'not to be extensible');
 ```
 
-## to satisfy
+### to satisfy &lt;object&gt;
 
-> _Aliases: `to satisfy`, `to be like`_
+> _Aliases: `to satisfy <object>`, `to be like <object>`_
 
-"To satisfy" is a ~~wonky~~ _special_ deep partial match. It is similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual object contains _at least_ the properties and values specified in the expected object. It ignores any additional properties.
+"To satisfy" is a ~~wonky~~ _special_ loose "deep equal" assertion. It is similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual object contains _at least_ the properties and values specified in the expected object. It ignores any additional properties.
 
 In addition, any _regular expression_ in a property value position will be used to match the corresponding actual value (which will be coerced into a string). This makes it easy to assert that a string property contains a substring, starts with a prefix, or matches some other pattern.
 

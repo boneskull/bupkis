@@ -1,13 +1,13 @@
 ---
 title: Primitive Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Primitive Assertions
+## Primitive Assertions
 
 These are the most basic expectations about the _type_ of a subject.
 
-## to be a string
+### to be a string
 
 **Success**:
 
@@ -28,7 +28,7 @@ expect(42, 'to be a string');
 expect(42, 'not to be a string');
 ```
 
-## to be a boolean
+### to be a boolean
 
 > _Aliases: `to be a boolean`, `to be a bool`, `to be boolean`_
 
@@ -52,7 +52,7 @@ expect(0, 'to be a boolean');
 expect(0, 'not to be a boolean');
 ```
 
-## to be a number
+### to be a number
 
 > _Aliases: `to be a number`, `to be finite`_
 
@@ -81,7 +81,7 @@ expect(NaN, 'not to be a number');
 expect(Infinity, 'not to be a number');
 ```
 
-## to be a bigint
+### to be a bigint
 
 **Success**:
 
@@ -102,7 +102,7 @@ expect(42, 'to be a bigint');
 expect(42, 'not to be a bigint');
 ```
 
-## to be a symbol
+### to be a symbol
 
 **Success**:
 
@@ -123,7 +123,7 @@ expect('foo', 'to be a symbol');
 expect('foo', 'not to be a symbol');
 ```
 
-## to be null
+### to be null
 
 **Success**:
 
@@ -144,7 +144,7 @@ expect(undefined, 'to be null');
 expect(undefined, 'not to be null');
 ```
 
-## to be undefined
+### to be undefined
 
 **Success**:
 
@@ -165,7 +165,7 @@ expect(null, 'to be undefined');
 expect(null, 'not to be undefined');
 ```
 
-## to be a primitive
+### to be a primitive
 
 **Success**:
 

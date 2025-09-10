@@ -1,41 +1,27 @@
 ---
-title: Assertions
-children:
-  - assertions/primitives.md
-  - assertions/numeric.md
-  - assertions/other-types.md
-  - assertions/strings.md
-  - assertions/collections.md
-  - assertions/objects.md
-  - assertions/functions.md
-  - assertions/equality.md
-  - assertions/errors.md
-  - assertions/dates.md
-  - assertions/async.md
-showGroups: true
+title: About Assertions
+category: Reference
 ---
 
-# Assertions
+<span class="bupkis">Bupkis</span> comes with a smorgasbord of built-in assertions. Here's some general information about assertions.
 
-_BUPKIS_ comes with a variety of built-in assertions representing the most common expectations you might want to make.
+## Subjects, Phrases, & Parameters
 
-## Conventions
+Assertions or expectations have three (3) components when called via {@link bupkis!Expect expect()}/{@link bupkis!ExpectAsync expectAsync()}.
 
-**This is important; read it.**
+### Subjects
 
-### Subjects, Phrases, & Parameters
+> _See also:_ [Subject (glossary)](./glossary.md#subject)
 
-#### Subjects
+The first argument to {@link bupkis!Expect expect()} is called the _subject_. The subject is the value being tested. For example, in `expect(42, 'to be', 42)`, the subject is `42`.
 
-The first argument to `expect()` is called the _subject_. The subject is the value being tested. For example, in `expect(42, 'to be', 42)`, the subject is `42`.
+### Phrases
 
-#### Phrases
+> _See also:_ [Phrase (glossary)](./glossary.md#phrase)
 
-You may see the term _phrase_ referenced in the documentation. A _phrase_ is a string parameter to the `expect()` function that decides which assertion to execute. For example, in `expect(42, 'to be', 42)`, the phrase is `'to be'`.
+You may see the term _phrase_ referenced in the documentation. A _phrase_ is a string parameter to the {@link bupkis!Expect expect()} function that decides which assertion to execute. For example, in `expect(42, 'to be', 42)`, the phrase is `'to be'`.
 
-Assertions may have multiple phrases that end up executing the same assertion.
-We call these _aliases_. For example, the phrases `'to be'`, `'to equal'`, and
-`'is'` all execute the same equality assertion.
+Assertions may have multiple phrases that end up executing the same assertion. We call these _aliases_. For example, the phrases `'to be'`, `'to equal'`, and `'is'` all execute the same equality assertion.
 
 An assertion has _at least one_ phrase, but may have more than one. For example, the following assertion has two phrases:
 
@@ -49,7 +35,9 @@ expect(
 );
 ```
 
-#### Parameters
+### Parameters
+
+> _See also:_ [Parameter (glossary)](./glossary.md#parameter)
 
 A _parameter_ is considered anything else that's neither a phrase nor a value. This comes into play when an assertion is _parametric_; this means the assertion expects some extra value to use in some manner.
 
@@ -67,9 +55,9 @@ Assertions _without_ parameters are often called _non-parametric assertions_ or 
 >
 > …the phrase is `'to be a'` and the parameter is `'string'`.
 
-### Negation
+## Negating Assertions
 
-_Any_ assertion can be negated by prepending the phrase with `not`. For example:
+_Any_ assertion can be negated by prepending the _first_ phrase with `not`. For example:
 
 ```js
 expect(42, 'to be', 42);

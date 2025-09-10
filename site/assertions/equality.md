@@ -1,13 +1,13 @@
 ---
 title: Equality & Comparison Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Equality & Comparison Assertions
+## Equality & Comparison Assertions
 
 These assertions test equality, identity, and value comparisons.
 
-## to be
+### to be
 
 > _Aliases: `to be`, `to equal`, `equals`, `is`, `is equal to`, `to strictly equal`_
 
@@ -36,7 +36,7 @@ expect(42, 'not to be', '42');
 expect({}, 'not to equal', {});
 ```
 
-## to deep equal
+### to deep equal
 
 > _Aliases: `to deep equal`, `to deeply equal`_
 
@@ -61,7 +61,7 @@ expect({ a: 1 }, 'to deep equal', { a: 1, b: 2 });
 expect({ a: 1 }, 'not to deep equal', { a: 1, b: 2 });
 ```
 
-## to be one of
+### to be one of &lt;array&gt;
 
 **Success**:
 
@@ -83,9 +83,9 @@ expect(5, 'to be one of', [1, 2, 3]);
 expect(5, 'not to be one of', [1, 2, 3]);
 ```
 
-## to be an instance of
+### to be an instance of &lt;constructor&gt;
 
-> _Aliases: `to be an instance of`, `to be a`_
+> _Aliases: `to be an instance of <constructor>`, `to be a <constructor>`_
 
 **Success**:
 
@@ -108,9 +108,9 @@ expect('hello', 'to be an instance of', Number);
 expect('hello', 'not to be an instance of', Number);
 ```
 
-## to be a / to be an (type check)
+### to be a &lt;constructor&gt; / to be an &lt;constructor&gt;
 
-> _Aliases: `to be a`, `to be an`_
+> _Aliases: `to be a <constructor>`, `to be an <constructor>`_
 
 **Success**:
 

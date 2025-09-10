@@ -1,5 +1,6 @@
 ---
 title: Testing Custom Assertions
+category: Guides
 ---
 
 Creating reliable assertions is only possible through the ancient and glorious art of _software testing_.
@@ -322,11 +323,7 @@ npm test
 
 ## Next Steps
 
-- **[Custom Assertions Guide](./custom-assertion.md)** - Learn how to create custom assertions
-- **[Basic Usage](./usage.md)** - Understanding the fundamentals
 - **[fast-check Documentation][fast-check]** - Learn more about property-based testing
-
-Property-based testing gives you confidence that your custom assertions work correctly across a wide range of inputs, making your test suite more robust and your assertions more reliable.
 
 [fast-check]: https://fast-check.dev
 [node-test]: https://nodejs.org/api/test.html

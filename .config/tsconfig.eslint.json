@@ -12,7 +12,7 @@
     "../eslint.config.js",
     "../.commitlintrc.js",
     "./typedoc.js",
-    "../assets/font-loader.js",
+    "./typedoc-plugin-bupkis.js",
     "../scripts/*.js"
   ]
 }

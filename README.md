@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="./assets/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS logo"/>
-  <h1 align="center"><span class="twentieth-century-caps">⁓ BUPKIS ⁓<span></h1>
+  <img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS logo"/>
+  <h1 align="center"><span class="bupkis">⁓ BUPKIS ⁓<span></h1>
   <p align="center">
     Uncommonly extensible assertions for the beautiful people
     <br/>
@@ -13,7 +13,7 @@
 - [BUPKIS' Homepage][docs] (<https://bupkis.zip>)
 - [Assertion Reference][assertion-reference]
 - [Guide: Basic Usage][basic-usage]
-- [Guide: How to Create a Custom Assertion][create-a-custom-assertion]
+- [Guide: Creating a Custom Assertion][create-a-custom-assertion]
 
 ## Motivation
 
@@ -215,12 +215,12 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 
 [zod]: https://zod.dev
 [docs]: https://bupkis.zip
-[basic-usage]: https://bupkis.zip/documents/guides.basic_usage
+[basic-usage]: https://bupkis.zip/usage
 [unexpected]: https://unexpected.js.org
 [fast-check]: https://fast-check.dev
-[parametric]: https://bupkis.zip/documents/Reference.Glossary_of_Terms#parametric-assertion
-[custom-assertion-function]: https://bupkis.zip/documents/guides.how_to_create_a_custom_assertion#using-a-function
-[create-a-custom-assertion]: https://bupkis.zip/documents/Guides.How_to_Create_a_Custom_Assertion
-[assertion-reference]: https://bupkis.zip/documents/reference.assertions
+[parametric]: https://bupkis.zip/glossary#parametric-assertion
+[custom-assertion-function]: https://bupkis.zip/custom-assertions#static-assertions-function-style
+[create-a-custom-assertion]: https://bupkis.zip/custom-assertions
+[assertion-reference]: https://bupkis.zip/assertions
 [tshy]: https://github.com/isaacs/tshy
 [typedoc]: https://typedoc.org

@@ -1,13 +1,13 @@
 ---
 title: Error Assertions
-group: Assertions
+category: Assertions
 ---
 
-# Error Assertions
+## Error Assertions
 
 These assertions test Error objects and their properties.
 
-## to be an Error
+### to be an Error
 
 **Success**:
 
@@ -30,7 +30,7 @@ expect('error message', 'to be an Error');
 expect('error message', 'not to be an Error');
 ```
 
-## to have message
+### to have message &lt;string&gt;
 
 **Success**:
 
@@ -56,7 +56,7 @@ expect(error, 'to have message', 'Expected message');
 expect(error, 'not to have message', 'Expected message');
 ```
 
-## to have message matching
+### to have message matching &lt;RegExp&gt;
 
 **Success**:
 
