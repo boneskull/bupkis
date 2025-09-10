@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   test:
+    env:
+      FORCE_COLOR: '1'
     name: Build & Test
     runs-on: ubuntu-latest
     strategy:
