@@ -312,6 +312,32 @@ export type ExpectAsync<
 > = ExpectAsyncFunction<AsyncAssertions> &
   ExpectAsyncProps<AsyncAssertions, SyncAssertions>;
 
+/**
+ * The callable function type for asynchronous assertions.
+ *
+ * This type represents the actual function signature of an async expect
+ * function, created by mapping all available assertions to their respective
+ * function signatures and combining them using intersection types. Each
+ * assertion contributes its own overload to the final function type.
+ *
+ * The function signatures are derived from the {@link AssertionParts} of each
+ * assertion, with parameters that match the expected slots for natural language
+ * assertion calls.
+ *
+ * @example
+ *
+ * ```typescript
+ * // Example function type derived from async assertions
+ * const expectAsync: ExpectAsyncFunction<MyAsyncAssertions> = ...;
+ * await expectAsync(promise, 'to resolve');
+ * await expectAsync(promise, 'to resolve with value satisfying', expectedValue);
+ * ```
+ *
+ * @template T - Array of async assertion objects that define available
+ *   assertion logic
+ * @see {@link ExpectFunction} for the synchronous equivalent
+ * @see {@link SlotsFromParts} for how assertion parts are converted to function parameters
+ */
 export type ExpectAsyncFunction<
   T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
 > = UnionToIntersection<
@@ -324,6 +350,33 @@ export type ExpectAsyncFunction<
   }>
 >;
 
+/**
+ * Properties available on asynchronous expect functions.
+ *
+ * This interface defines the additional properties and methods that are
+ * attached to async expect functions, extending the base expect functionality
+ * with async-specific features. These properties provide access to the
+ * underlying assertions and enable function composition through the
+ * {@link UseFn | use} method.
+ *
+ * @example
+ *
+ * ```typescript
+ * const expectAsync: ExpectAsync<MyAsyncAssertions> =
+ *   createExpectAsyncFunction(assertions);
+ *
+ * // Access the underlying assertions
+ * console.log(expectAsync.assertions.length);
+ *
+ * // Compose with additional assertions
+ * const { expectAsync: enhanced } = expectAsync.use(moreAssertions);
+ * ```
+ *
+ * @template AsyncAssertions - Array of async assertion objects available to
+ *   this expect function
+ * @template SyncAssertions - Array of sync assertion objects available for
+ *   composition via {@link UseFn | use}
+ */
 export interface ExpectAsyncProps<
   AsyncAssertions extends AnyAsyncAssertions,
   SyncAssertions extends AnySyncAssertions,
@@ -386,6 +439,34 @@ export type FailFn = (reason?: string) => never;
 /**
  * Given a mixed array of assertions, filters out only the async assertions.
  */
+/**
+ * Given a mixed array of assertions, filters out only the async assertions.
+ *
+ * This utility type recursively examines each assertion in the input array and
+ * constructs a new tuple containing only the asynchronous assertions. It uses
+ * conditional types to test whether each assertion extends
+ * {@link AnyAsyncAssertion} and includes it in the result if so.
+ *
+ * Used primarily by {@link UseFn} to separate async assertions from mixed
+ * assertion arrays when composing expect functions.
+ *
+ * @example
+ *
+ * ```typescript
+ * type Mixed = [
+ *   SyncAssertion1,
+ *   AsyncAssertion1,
+ *   SyncAssertion2,
+ *   AsyncAssertion2,
+ * ];
+ * type AsyncOnly = FilterAsyncAssertions<Mixed>; // [AsyncAssertion1, AsyncAssertion2]
+ * ```
+ *
+ * @template MixedAssertions - Array that may contain both sync and async
+ *   assertions
+ * @see {@link FilterSyncAssertions} for extracting synchronous assertions
+ * @see {@link UseFn} for the primary use case of this type
+ */
 export type FilterAsyncAssertions<
   MixedAssertions extends readonly AnyAssertion[],
 > = MixedAssertions extends readonly [
@@ -412,10 +493,37 @@ export type FilterSyncAssertions<
   : readonly [];
 
 /**
- * Maps `AssertionParts` to the corresponding argument types for `expect` and
- * `expectAsync`, as provided by the user.
+ * Maps AssertionParts to the corresponding argument types for expect and
+ * expectAsync functions.
  *
- * Overloads each phrase literal slot with a negated version using a union.
+ * This utility type transforms assertion parts into the actual parameter types
+ * that users provide when calling expect functions. It handles both phrase
+ * literals and Zod schemas, creating appropriate TypeScript types for each
+ * slot.
+ *
+ * For phrase literals, it creates union types that include both the original
+ * phrase and its negated version (with "not " prefix). For Zod schemas, it
+ * extracts the inferred type. This enables natural language assertions with
+ * optional negation support.
+ *
+ * @remarks
+ * This type works recursively through the parts tuple, transforming each part
+ * according to its type. The resulting tuple maintains the same structure as
+ * the input but with user-facing TypeScript types instead of internal assertion
+ * part types.
+ * @example
+ *
+ * ```typescript
+ * // Given parts: ['to be a', z.string()]
+ * // Results in: ['to be a' | 'not to be a', string]
+ * type Slots = MapExpectSlots<['to be a', z.string()]>;
+ * // Usage: expect(value, 'to be a', 'hello') or expect(value, 'not to be a', 'hello')
+ * ```
+ *
+ * @template Parts - Tuple of assertion parts to be converted to function
+ *   parameter types
+ * @see {@link SlotsFromParts} for the complete slot transformation including subject injection
+ * @see {@link Negation} for how phrase negation is implemented
  */
 export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
   Parts extends readonly [
@@ -439,7 +547,30 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
     : readonly [];
 
 /**
- * Makes tuple types accept both mutable and readonly variants
+ * Makes tuple types accept both mutable and readonly variants.
+ *
+ * This utility type creates a union of both mutable and readonly versions of a
+ * tuple type, providing flexibility for function parameters that should accept
+ * either variant. This is particularly useful for assertion function parameters
+ * where users may pass either `const` arrays (readonly) or regular arrays.
+ *
+ * The type handles both array types and specific tuple types, creating
+ * appropriate unions for each case to maintain type safety while maximizing
+ * usability.
+ *
+ * @example
+ *
+ * ```typescript
+ * type FlexibleArgs = MutableOrReadonly<readonly [string, number]>;
+ * // Results in: [string, number] | readonly [string, number]
+ *
+ * function acceptArgs(args: FlexibleArgs) { ... }
+ * acceptArgs(['hello', 42]);           // ✓ mutable array
+ * acceptArgs(['hello', 42] as const);  // ✓ readonly array
+ * ```
+ *
+ * @template Tuple - The readonly tuple type to make flexible
+ * @see {@link ExpectFunction} and {@link ExpectAsyncFunction} which use this for parameter flexibility
  */
 export type MutableOrReadonly<Tuple extends readonly unknown[]> =
   Tuple extends readonly (infer Item)[]
@@ -449,20 +580,70 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
       : Tuple;
 
 /**
- * The type of a `PhraesLiteral` which is negated, e.g. "not to be"
+ * Creates a negated version of a phrase literal by prefixing "not ".
+ *
+ * This utility type transforms assertion phrases into their negated
+ * equivalents, enabling the natural language negation feature in Bupkis
+ * assertions. When users provide phrases like "not to be a string", this type
+ * helps the system understand and process the negation.
+ *
+ * The negation is applied at the type level during assertion matching and
+ * affects how the assertion logic is executed - negated assertions expect the
+ * opposite result.
+ *
+ * @example
+ *
+ * ```typescript
+ * type Negated = Negation<'to be a string'>; // "not to be a string"
+ * type AlsoNegated = Negation<'to equal'>; // "not to equal"
+ *
+ * // Usage in assertions:
+ * expect(42, 'not to be a string'); // Uses negated assertion logic
+ * ```
+ *
+ * @template S - The string literal phrase to be negated
+ * @see {@link AddNegation} for applying negation to entire AssertionParts tuples
+ * @see {@link MapExpectSlots} for how negation is incorporated into function signatures
  */
-export type Negation<S extends string> = `not ${S}`; /**
- * Properties available on `expectAsync()`; part of {@link ExpectAsync}.
- */
+export type Negation<S extends string> = `not ${S}`;
 
 /**
- * Prepares {@link MapExpectSlots} by injecting `unknown` if the `AssertionParts`
- * have no `z.ZodType` in the head position.
+ * Converts AssertionParts to complete function parameter types for expect
+ * functions.
  *
- * Also filters out `never` from the resulting tuple to guarantee tupleness.
+ * This utility type prepares assertion parts for use as function parameters by
+ * applying several transformations:
+ *
+ * 1. Injects an `unknown` type for the subject parameter if the first part is a
+ *    phrase literal
+ * 2. Maps the remaining parts to their corresponding TypeScript types via
+ *    {@link MapExpectSlots}
+ * 3. Filters out `never` types to ensure a clean tuple structure
+ *
+ * The subject injection is a key feature - when assertions start with phrases
+ * like "to be a string", users still need to provide the subject being tested
+ * as the first argument to expect functions.
  *
  * @remarks
- * This is a convenience and I hope it's not too confusing.
+ * This type is essential for bridging the gap between assertion definitions and
+ * user-facing function signatures. The subject injection ensures that all
+ * assertions have a consistent calling pattern regardless of whether they
+ * explicitly define a subject parameter.
+ * @example
+ *
+ * ```typescript
+ * // Assertion parts: ['to equal', z.string()]
+ * // Results in: [unknown, 'to equal' | 'not to equal', string]
+ * type Slots = SlotsFromParts<['to equal', z.string()]>;
+ *
+ * // Usage: expect(subject, 'to equal', 'expected')
+ * //        expect(subject, 'not to equal', 'unexpected')
+ * ```
+ *
+ * @template Parts - Tuple of assertion parts that define the assertion
+ *   structure
+ * @see {@link MapExpectSlots} for the core slot mapping logic
+ * @see {@link NoNeverTuple} for never-type filtering
  */
 export type SlotsFromParts<Parts extends AssertionParts> = NoNeverTuple<
   Parts extends readonly [infer First extends AssertionPart, ...infer _]
