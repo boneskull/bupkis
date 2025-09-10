@@ -107,10 +107,10 @@
   ],
   "scripts": {
     "build": "tshy",
+    "build:dev": "tshy --watch",
     "build:docs": "typedoc --cleanOutputDir --treatWarningsAsErrors",
-    "build:docs:watch": "run-s \"build:docs -- --watch\"",
-    "dev": "tshy --watch",
-    "dev:docs": "run-p build:docs:watch serve",
+    "build:docs:dev": "run-s \"build:docs -- --watch\"",
+    "docs:dev": "run-p build:docs:dev serve",
     "lint": "run-p lint:eslint lint:types lint:knip lint:markdown",
     "lint:commit": "commitlint",
     "lint:eslint": "eslint .",
@@ -123,12 +123,17 @@
     "prepare": "husky; run-s build",
     "prepublishOnly": "run-s build",
     "serve": "serve docs",
-    "test": "node --import tsx --test \"test/**/*.ts\"",
+    "test": "node $npm_package_config_test_flags \"$npm_package_config_test_pattern_all\"",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
-    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles --test --import tsx \"test/**/*.ts\"",
-    "test:property": "node --import tsx --test \"test/property/**/*.test.ts\"",
-    "test:property:dev": "node --import tsx --test --watch \"test/property/**/*.test.ts\"",
-    "test:watch": "node --import tsx --test \"test/**/*.ts\" --watch"
+    "test:dev": "node $npm_package_config_test_flags --watch \"$npm_package_config_test_pattern_all\"",
+    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles $npm_package_config_test_flags \"$npm_package_config_test_pattern_all\"",
+    "test:property": "node $npm_package_config_test_flags \"$npm_package_config_test_pattern_property\"",
+    "test:property:dev": "node $npm_package_config_test_flags --watch \"$npm_package_config_test_pattern_property\""
+  },
+  "config": {
+    "test_flags": "--import tsx --test --test-reporter=spec",
+    "test_pattern_all": "test/**/*.ts",
+    "test_pattern_property": "test/property/**/*.test.ts"
   },
   "peerDependencies": {
     "zod": "^4.1.5"
