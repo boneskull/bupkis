@@ -17,15 +17,32 @@ import { isA } from './guards.js';
 /**
  * _BUPKIS_' s custom `AssertionError` class, which is just a thin wrapper
  * around Node.js' {@link NodeAssertionError AssertionError}.
- *
- * @public
  */
 export class AssertionError extends NodeAssertionError {
+  /**
+   * @internal
+   */
   [kBupkisAssertionError] = true;
 
-  static isAssertionError(err: unknown): err is AssertionError {
+  override name = 'AssertionError';
+
+  /**
+   * @param options Options passed to {@link NodeAssertionError}'s constructor
+   */
+  constructor(options?: ConstructorParameters<typeof NodeAssertionError>[0]) {
+    super(options);
+  }
+
+  /**
+   * Type guard for an instance of this error.
+   *
+   * @param value Some value
+   * @returns `true` if `value` is an instance of `AssertionError`
+   */
+  static isAssertionError(value: unknown): value is AssertionError {
     return (
-      isA(err, NodeAssertionError) && Object.hasOwn(err, kBupkisAssertionError)
+      isA(value, NodeAssertionError) &&
+      Object.hasOwn(value, kBupkisAssertionError)
     );
   }
 }

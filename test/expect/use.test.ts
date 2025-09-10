@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test';
 import { z } from 'zod/v4';
 
-import { type Expect } from '../../src/api.js';
 import { type AnySyncAssertions } from '../../src/assertion/assertion-types.js';
 import { expect, expectAsync } from '../../src/bootstrap.js';
+import { type Expect } from '../../src/types.js';
 
 describe('expect.use()', () => {
   it('should create a new API with custom assertions', () => {

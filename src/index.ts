@@ -6,24 +6,84 @@
  * guards, schema definitions, utility functions, and error types.
  *
  * @module bupkis
+ * @category API
+ * @example
+ *
+ * ```ts
+ * import { expect, expectAsync, z, createAssertion } from 'bupkis';
+ * ```
+ *
+ * @showGroups
  */
 
-import { expect as sacrificialExpect } from './bootstrap.js';
-export type * from './api.js';
+import { z } from 'zod/v4';
 
-export * as assertion from './assertion/index.js';
+import { expect as sacrificialExpect } from './bootstrap.js';
 export { expect, expectAsync } from './bootstrap.js';
 
-export * as error from './error.js';
-export * as guards from './guards.js';
+export { AssertionError } from './error.js';
 
-export type * as metadata from './metadata.js';
-export * as schema from './schema.js';
+/**
+ * Re-export of most (all?) types defined within <span
+ * class="bupkis">Bupkis</span>.
+ *
+ * @example
+ *
+ * ```ts
+ * import { types } from 'bupkis';
+ * ```
+ */
 export type * as types from './types.js';
-export * as util from './util.js';
 
-export { z } from 'zod/v4';
+/**
+ * Re-export of {@link https://zod.dev Zod v4} for use in custom assertion
+ * implementations.
+ */
+export { z };
 
+/**
+ * @primaryExport
+ */
+export type {
+  Bupkis,
+  CreateAssertionFn,
+  CreateAsyncAssertionFn,
+  Expect,
+  ExpectAsync,
+  FailFn,
+  UseFn,
+} from './types.js';
 export { createAssertion, createAsyncAssertion, fail, use };
-const { createAssertion, createAsyncAssertion, fail, use, ..._rest } =
-  sacrificialExpect;
+const {
+  /**
+   * The main factory function for creating asynchronous assertions.
+   *
+   * Exported from the entry point; is also a property of {@link Expect} and
+   * {@link ExpectAsync}.
+   *
+   * @function
+   */
+  createAssertion,
+  /**
+   * The main factory function for creating asynchronous assertions.
+   *
+   * Exported from the entry point; is also a property of {@link Expect} and
+   * {@link ExpectAsync}.
+   *
+   * @function
+   */
+  createAsyncAssertion,
+  /**
+   * {@inheritDoc FailFn}
+   *
+   * @function
+   */
+  fail,
+  /**
+   * {@inheritDoc UseFn}
+   *
+   * @function
+   */
+  use,
+  ..._rest
+} = sacrificialExpect;

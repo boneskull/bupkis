@@ -88,40 +88,41 @@ const testConfigs = {
   },
 
   // deep equality - arrays
-  'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p': {
-    invalid: {
-      generators: [
-        fc.array(fc.string(), { minLength: 1 }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p',
+  'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p':
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.string(), { minLength: 1 }),
+          fc.constantFrom(
+            ...extractPhrases(
+              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+            ),
           ),
-        ),
-        fc.array(fc.integer(), { minLength: 1 }), // Different element types
-      ],
-    },
-    valid: {
-      generators: [
-        fc.array(fc.string()).chain((arr) => fc.constant(arr)),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-any-object-to-deep-equal-to-deeply-equal-array-any-object-3s3p',
+          fc.array(fc.integer(), { minLength: 1 }), // Different element types
+        ],
+      },
+      valid: {
+        generators: [
+          fc.array(fc.string()).chain((arr) => fc.constant(arr)),
+          fc.constantFrom(
+            ...extractPhrases(
+              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+            ),
           ),
-        ),
-        fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
-      ],
-      numRuns: 50,
+          fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
+        ],
+        numRuns: 50,
+      },
     },
-  },
 
   // array satisfies/is like
-  'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p': {
+  'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p': {
     invalid: {
       generators: [
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }),
         fc.constantFrom(
           ...extractPhrases(
-            'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p',
+            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
           ),
         ),
         fc.array(fc.integer(), { maxLength: 3, minLength: 3 }), // Different types, lengths
@@ -132,7 +133,7 @@ const testConfigs = {
         fc.array(fc.string(), { maxLength: 3, minLength: 3 }),
         fc.constantFrom(
           ...extractPhrases(
-            'array-any-object-to-satisfy-to-be-like-array-any-object-3s3p',
+            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
           ),
         ),
         fc.array(fc.string(), { maxLength: 2, minLength: 2 }), // Subset array
@@ -417,12 +418,14 @@ const testConfigs = {
     },
   },
 
-  'number-to-be-within-number-number-4s4p': {
+  'number-to-be-within-to-be-between-number-number-4s4p': {
     invalid: {
       generators: [
         fc.constant(0),
         fc.constantFrom(
-          ...extractPhrases('number-to-be-within-number-number-4s4p'),
+          ...extractPhrases(
+            'number-to-be-within-to-be-between-number-number-4s4p',
+          ),
         ),
         fc.constant(5), // Min
         fc.constant(10), // Max
@@ -432,7 +435,9 @@ const testConfigs = {
       generators: [
         fc.constant(7),
         fc.constantFrom(
-          ...extractPhrases('number-to-be-within-number-number-4s4p'),
+          ...extractPhrases(
+            'number-to-be-within-to-be-between-number-number-4s4p',
+          ),
         ),
         fc.constant(5), // Min
         fc.constant(10), // Max
