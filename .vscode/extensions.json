@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "wallabyjs.wallaby-vscode",
+    "github.copilot",
+    "github.copilot-chat",
+    "psulek-solo.typedoc-live-preview",
+    "remcohaszing.schemastore",
+    "davidanson.vscode-markdownlint"
+  ]
+}
