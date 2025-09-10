@@ -70,7 +70,7 @@ expect(42, 'to be greater than', 10);
 
 This is a parametric assertion because it needs the [parameter][] `10` to compare against the subject `42`.
 
-> This section expects you've read [Static Assertions](#static-assertions) above; especially the bit about [Allowed Return Types](#allowed-return-types). Just gloss over it quick; I'll wait.
+> This section expects you've read [Static Assertions](#static-assertions) above; especially the bit about [Allowed Return Types](#allowed-return-types-for-function-style-assertions). Just gloss over it quick; I'll wait.
 >
 > Actually—nevermind; I don't care. _I hate it when I read that sort of shit._
 

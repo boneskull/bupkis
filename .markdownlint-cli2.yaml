@@ -15,7 +15,9 @@ config:
   first-line-h1: false
 ignores:
   - '**/node_modules/**'
+  - '.github/prompts/*.prompt.md'
   - 'CHANGELOG.md' # generated
+  - 'docs/**/*.md'
 outputFormatters:
   - - 'markdownlint-cli2-formatter-pretty'
     - appendLink: true
