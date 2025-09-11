@@ -30,85 +30,92 @@
         "isDefault": true,
         "kind": "build"
       },
+      "isBackground": true,
       "label": "npm: dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "dev",
-      "type": "npm",
-      "isBackground": true
+      "type": "npm"
     },
     {
       "detail": "npm run lint:types -- --watch",
       "group": "test",
+      "isBackground": true,
       "label": "npm: lint:types:dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "lint:types:dev",
-      "type": "npm",
-      "isBackground": true
+      "type": "npm"
     },
     {
-      "type": "npm",
-      "script": "test:property:dev",
-      "group": "test",
-      "problemMatcher": [],
-      "label": "npm: test:property:dev",
       "detail": "node --import tsx --test \"test/property/**/*.test.ts\" --watch",
-      "isBackground": true
+      "group": "test",
+      "isBackground": true,
+      "label": "npm: test:property:dev",
+      "problemMatcher": [],
+      "script": "test:property:dev",
+      "type": "npm"
     },
     {
-      "type": "npm",
-      "script": "test:property",
-      "problemMatcher": [],
+      "detail": "node --import tsx --test \"test/property/**/*.test.ts\"",
       "group": "test",
       "label": "npm: test:property",
-      "detail": "node --import tsx --test \"test/property/**/*.test.ts\""
+      "problemMatcher": [],
+      "script": "test:property",
+      "type": "npm"
     },
     {
-      "type": "npm",
-      "script": "build:docs",
+      "detail": "typedoc",
       "group": "build",
-      "problemMatcher": [],
       "label": "npm: build:docs",
-      "detail": "typedoc"
+      "problemMatcher": [],
+      "script": "build:docs",
+      "type": "npm"
     },
     {
-      "isBackground": true,
-      "type": "npm",
-      "script": "build:docs:watch",
+      "detail": "npm run --silent build:docs -- --watch",
       "group": "build",
-      "problemMatcher": [],
+      "isBackground": true,
       "label": "npm: build:docs:watch",
-      "detail": "npm run --silent build:docs -- --watch"
+      "problemMatcher": [],
+      "script": "build:docs:watch",
+      "type": "npm"
     },
     {
-      "type": "npm",
+      "detail": "serve docs",
       "isBackground": true,
-      "script": "serve",
-      "problemMatcher": [],
       "label": "npm: serve",
-      "detail": "serve docs"
+      "problemMatcher": [],
+      "script": "serve",
+      "type": "npm"
     },
     {
       "dependsOn": ["npm: build:docs", "npm: serve"],
+      "isBackground": true,
       "label": "docs: start",
-      "problemMatcher": [],
-      "isBackground": true
+      "problemMatcher": []
     },
     {
-      "label": "dump-assertion-ids",
-      "type": "shell",
       "command": "node scripts/dump-assertion-ids.js --collection async",
-      "group": "build"
+      "group": "build",
+      "label": "dump-assertion-ids",
+      "type": "shell"
     },
     {
-      "label": "clear-cache",
-      "type": "shell",
       "command": "rm -rf dist",
-      "group": "build"
+      "group": "build",
+      "label": "clear-cache",
+      "type": "shell"
     },
     {
+      "command": "npm run lint:eslint",
       "label": "lint:eslint",
-      "type": "shell",
-      "command": "npm run lint:eslint"
+      "type": "shell"
+    },
+    {
+      "detail": "cspell \"**\"",
+      "label": "npm: lint:spelling",
+      "problemMatcher": [],
+      "script": "lint:spelling",
+      "type": "npm"
     }
   ],
   "version": "2.0.0"
