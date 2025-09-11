@@ -132,12 +132,12 @@ export default defineConfig(
       globals: globals.node,
     },
   },
-  eslintPluginJsonc.configs['flat/prettier'][0],
-  {
+  /** @type {any} */ (eslintPluginJsonc.configs['flat/prettier'][0]),
+  /** @type {any} */ ({
     ...eslintPluginJsonc.configs['flat/prettier'][1],
     extends: [tseslint.configs.disableTypeChecked],
-  },
-  eslintPluginJsonc.configs['flat/prettier'][2],
+  }),
+  /** @type {any} */ (eslintPluginJsonc.configs['flat/prettier'][2]),
   {
     ignores: [
       'docs',
