@@ -85,7 +85,7 @@ export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
  * @param fn - Function to test
  * @returns Whether the function is constructable
  */
-export const isConstructable = (fn: unknown): fn is Constructor => {
+export const isConstructible = (fn: unknown): fn is Constructor => {
   if (fn === Symbol || fn === BigInt) {
     return false;
   }

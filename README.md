@@ -21,7 +21,7 @@
 >
 > ‒sickos, probably
 
-Look, we're ~~old~~ ~~wizened~~ ~~experienced~~ knowledegable and we've written a lot of tests. We've used a lot of assertion libraries. There are ones we prefer and ones we don't.
+Look, we're ~~old~~ ~~wizened~~ ~~experienced~~ knowledgeable and we've written a lot of tests. We've used a lot of assertion libraries. There are ones we prefer and ones we don't.
 
 But none of them do quite what _BUPKIS_ does. We want an assertion library that prioritizes:
 

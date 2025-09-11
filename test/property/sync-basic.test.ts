@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe } from 'node:test';
 
 import { BasicAssertions } from '../../src/assertion/impl/sync-basic.js';
-import { isConstructable } from '../../src/guards.js';
+import { isConstructible } from '../../src/guards.js';
 import { keyBy } from '../../src/util.js';
 import {
   type PropertyTestConfig,
@@ -151,7 +151,7 @@ const testConfigs = {
   'unknown-to-be-a-class-to-be-a-constructor-2s1p': {
     invalid: {
       generators: [
-        fc.anything().filter((v) => !isConstructable(v)),
+        fc.anything().filter((v) => !isConstructible(v)),
         fc.constantFrom(
           ...extractPhrases('unknown-to-be-a-class-to-be-a-constructor-2s1p'),
         ),
