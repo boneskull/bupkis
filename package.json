@@ -123,12 +123,12 @@
     "prepare": "husky; run-s build",
     "prepublishOnly": "run-s build",
     "serve": "serve docs",
-    "test": "node $npm_package_testConfig_test_flags \"$npm_package_testConfig_test_pattern_all\"",
+    "test": "node --test --test-reporter=spec --import tsx \"test/**/*.test.ts\"",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
-    "test:dev": "node $npm_package_testConfig_test_flags --watch \"$npm_package_testConfig_test_pattern_all\"",
-    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles $npm_package_testConfig_test_flags \"$npm_package_testConfig_test_pattern_all\"",
-    "test:property": "node $npm_package_testConfig_test_flags \"$npm_package_testConfig_test_pattern_property\"",
-    "test:property:dev": "node $npm_package_testConfig_test_flags --watch \"$npm_package_testConfig_test_pattern_property\""
+    "test:dev": "node --test --import tsx --watch --test-reporter=spec \"test/**/*.test.ts\"",
+    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles --test --import tsx --test-reporter=spec \"test/**/*.test.ts\"",
+    "test:property": "node --test --import tsx --test-reporter=spec \"test/property/*.test.ts\"",
+    "test:property:dev": "node --test --import tsx --test-reporter=spec --watch \"test/property/*.test.ts\""
   },
   "peerDependencies": {
     "zod": "^4.1.5"
