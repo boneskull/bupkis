@@ -1,16 +1,13 @@
-/**
- * @import {InfiniteDepthConfigWithExtends} from 'typescript-eslint'
- */
-
 import jsPlugin from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import eslintPluginJsonc from 'eslint-plugin-jsonc';
 import perfectionist from 'eslint-plugin-perfectionist';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 // TODO: setup eslint-plugin-n
-export default tseslint.config(
+export default defineConfig(
   jsPlugin.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   perfectionist.configs['recommended-natural'],
@@ -135,16 +132,12 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
-  /** @type {InfiniteDepthConfigWithExtends} */ (
-    eslintPluginJsonc.configs['flat/prettier'][0]
-  ),
-  /** @type {InfiniteDepthConfigWithExtends} */ ({
+  eslintPluginJsonc.configs['flat/prettier'][0],
+  {
     ...eslintPluginJsonc.configs['flat/prettier'][1],
     extends: [tseslint.configs.disableTypeChecked],
-  }),
-  /** @type {InfiniteDepthConfigWithExtends} */ (
-    eslintPluginJsonc.configs['flat/prettier'][2]
-  ),
+  },
+  eslintPluginJsonc.configs['flat/prettier'][2],
   {
     ignores: [
       'docs',
