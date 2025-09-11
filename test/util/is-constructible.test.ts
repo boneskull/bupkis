@@ -2,9 +2,9 @@ import * as fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { expect } from '../../src/bootstrap.js';
-import { isConstructable } from '../../src/guards.js';
+import { isConstructible } from '../../src/guards.js';
 
-describe('isConstructable property tests', () => {
+describe('isConstructible property tests', () => {
   it('should return true for ES6 classes', () => {
     fc.assert(
       fc.property(
@@ -22,7 +22,7 @@ describe('isConstructable property tests', () => {
           Promise,
           RegExp,
         ),
-        (ctor) => isConstructable(ctor),
+        (ctor) => isConstructible(ctor),
       ),
     );
   });
@@ -39,7 +39,7 @@ describe('isConstructable property tests', () => {
           },
           function EmptyConstructor() {},
         ),
-        (ctor) => isConstructable(ctor),
+        (ctor) => isConstructible(ctor),
       ),
     );
   });
@@ -64,12 +64,12 @@ describe('isConstructable property tests', () => {
             expect.fail('Should not have been called');
           },
         ),
-        (fn) => !isConstructable(fn),
+        (fn) => !isConstructible(fn),
       ),
     );
   });
 
-  it('should return false for non-functions and unconstructable functions', () => {
+  it('should return false for non-functions and inconstructible functions', () => {
     fc.assert(
       fc.property(
         fc.oneof(
@@ -86,7 +86,7 @@ describe('isConstructable property tests', () => {
           fc.constantFrom(BigInt),
           fc.constantFrom(() => {}),
         ),
-        (value) => !isConstructable(value),
+        (value) => !isConstructible(value),
       ),
     );
   });
@@ -131,7 +131,7 @@ describe('isConstructable property tests', () => {
         (fn) => {
           // We expect these to be detected as constructable since they can be called with `new`
           // This test will show us if our implementation handles these edge cases correctly
-          const result = isConstructable(fn);
+          const result = isConstructible(fn);
 
           if (!result) {
             return false;
@@ -174,7 +174,7 @@ describe('isConstructable property tests', () => {
         ),
         (value) => {
           try {
-            expect(() => isConstructable(value), 'not to throw');
+            expect(() => isConstructible(value), 'not to throw');
             return true;
           } catch {
             return false;
@@ -187,9 +187,9 @@ describe('isConstructable property tests', () => {
   it('should be idempotent', () => {
     fc.assert(
       fc.property(fc.anything(), (value) => {
-        const result1 = isConstructable(value);
-        const result2 = isConstructable(value);
-        const result3 = isConstructable(value);
+        const result1 = isConstructible(value);
+        const result2 = isConstructible(value);
+        const result3 = isConstructible(value);
 
         // Should return the same result every time
         return result1 === result2 && result2 === result3;

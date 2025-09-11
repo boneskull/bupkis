@@ -201,7 +201,7 @@ await expectAsync(connect, 'to connect to the mungobase');
 > );
 > ```
 >
-> <span class="bupkis">Bupkis</span> contains [many cute helper schemas like this][schema namespace] to correct for the various impedence mismatches <span class="bupkis">Bupkis</span> and Zod.
+> <span class="bupkis">Bupkis</span> contains [many cute helper schemas like this][schema namespace] to correct for the various impedance mismatches <span class="bupkis">Bupkis</span> and Zod.
 
 ## Composing Assertions
 

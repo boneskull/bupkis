@@ -3,7 +3,7 @@
  *
  * This module provides reusable Zod schemas for validating constructors,
  * functions, property keys, promises, and other common JavaScript types used
- * throughout the assertion system. These tend to work around the impedence
+ * throughout the assertion system. These tend to work around the impedance
  * mismatch between **BUPKIS** and Zod.
  *
  * These are used internally, but consumers may also find them useful.
@@ -36,7 +36,7 @@ import { z } from 'zod/v4';
 
 import {
   isA,
-  isConstructable,
+  isConstructible,
   isFunction,
   isNonNullObject,
   isPromiseLike,
@@ -49,7 +49,7 @@ import { type Constructor, type MutableOrReadonly } from './types.js';
  *
  * This schema validates values that can be used as constructors, including ES6
  * classes, traditional constructor functions, and built-in constructors. It
- * uses the {@link isConstructable} guard function to determine if a value can be
+ * uses the {@link isConstructible} guard function to determine if a value can be
  * invoked with the `new` operator to create object instances.
  *
  * @privateRemarks
@@ -73,7 +73,7 @@ import { type Constructor, type MutableOrReadonly } from './types.js';
  */
 
 export const ClassSchema = z
-  .custom<Constructor>(isConstructable)
+  .custom<Constructor>(isConstructible)
   .register(BupkisRegistry, { name: 'ClassSchema' })
   .describe('Class / Constructor');
 
