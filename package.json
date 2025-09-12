@@ -178,7 +178,7 @@
     "typedoc-plugin-redirect": "1.2.0",
     "typedoc-plugin-zod": "1.4.2",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.42.0"
+    "typescript-eslint": "8.43.0"
   },
   "publishConfig": {
     "access": "public",
