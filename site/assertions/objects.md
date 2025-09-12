@@ -3,7 +3,7 @@ title: Object Assertions
 category: Assertions
 ---
 
-### Object Assertions
+## Object Assertions
 
 These assertions test objects, their properties, and object-specific behaviors.
 
@@ -58,7 +58,7 @@ expect(new Date(), 'to be a record');
 expect([], 'not to be a record');
 ```
 
-### to be empty (object)
+### &lt;object&gt; to be empty
 
 **Success**:
 

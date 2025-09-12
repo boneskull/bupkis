@@ -114,9 +114,9 @@ expect(greet, 'to have arity', 2);
 expect(greet, 'not to have arity', 2);
 ```
 
-### to throw &lt;string | RegExp | object&gt;
+### to throw &lt;matcher&gt;
 
-This assertion _optionally_ accepts a parameter which must be a `string`, `RegExp` or `object`:
+This assertion _optionally_ accepts a "matcher" which must be a `string`, `RegExp` or a partial `object` structure:
 
 - If omitted, the assertion checks that the function throws _anything_.
 - If a `string`, matches the `message` prop of the thrown Error exactly; if a non-error was thrown, the value is coerced to a string and matched directly.
@@ -249,7 +249,7 @@ expect(
 
 > _Aliases: `to throw a <error> satisfying <object>`, `to throw an <error> satisfying <object>`_
 
-This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-string--regexp--object) (with an object parameter).
+This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-matcher) (with an object parameter).
 
 **Success**:
 

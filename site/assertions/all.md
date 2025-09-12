@@ -14,3 +14,4 @@ category: Assertions
 {@include ./errors.md}
 {@include ./dates.md}
 {@include ./async.md}
+{@include ./callback.md}
