@@ -8,6 +8,8 @@ import type { z } from 'zod/v4';
 
 import type { AnyAssertion } from '../../src/assertion/assertion-types.js';
 
+import { expect, expectAsync } from '../../src/bootstrap.js';
+import { FailAssertionError } from '../../src/error.js';
 import { isString } from '../../src/guards.js';
 
 export const createPhraseExtractor = <
@@ -52,4 +54,156 @@ export const createPhraseExtractor = <
     }, []) as [string, ...string[]];
   };
   return extractPhrases;
+};
+export type ExpectationResult =
+  | { error: unknown; failed: true }
+  | {
+      error?: never;
+      failed?: false;
+    };
+
+export const createAsyncExpectations = () => {
+  const validExpectationAsync = async (
+    value: unknown,
+    ...args: unknown[]
+  ): Promise<ExpectationResult> => {
+    try {
+      await expectAsync(value, ...args);
+      return { failed: false };
+    } catch (err) {
+      return { error: err, failed: true };
+    }
+  };
+
+  const validNegatedExpectationAsync = async (
+    value: unknown,
+    ...args: unknown[]
+  ): Promise<ExpectationResult> => {
+    try {
+      await expectAsync(value, `not ${args[0]}`, ...args.slice(1));
+      return { failed: false };
+    } catch (err) {
+      return { error: err, failed: true };
+    }
+  };
+
+  const invalidNegatedExpectationAsync = async (
+    value: unknown,
+    ...args: unknown[]
+  ): Promise<ExpectationResult> => {
+    try {
+      await expectAsync(value, `not ${args[0]}`, ...args.slice(1));
+      return {
+        error: new FailAssertionError({
+          actual: 'success',
+          expected: 'failure',
+          message: 'Expected negated assertion to fail but it passed instead',
+        }),
+        failed: true,
+      };
+    } catch {
+      return { failed: false };
+    }
+  };
+
+  const invalidExpectationAsync = async (
+    value: unknown,
+    ...args: unknown[]
+  ): Promise<ExpectationResult> => {
+    try {
+      await expectAsync(value, ...args);
+      return {
+        error: new FailAssertionError({
+          actual: 'success',
+          expected: 'failure',
+          message: 'Expected assertion to fail but it passed instead',
+        }),
+        failed: true,
+      };
+    } catch {
+      return { failed: false };
+    }
+  };
+
+  return {
+    invalidExpectationAsync,
+    invalidNegatedExpectationAsync,
+    validExpectationAsync,
+    validNegatedExpectationAsync,
+  };
+};
+
+/**
+ * Creates expectation functions that return results instead of throwing.
+ */
+
+export const createExpectations = () => {
+  const validExpectation = (
+    value: unknown,
+    ...args: unknown[]
+  ): ExpectationResult => {
+    try {
+      expect(value, ...args);
+      return { failed: false };
+    } catch (err) {
+      return { error: err, failed: true };
+    }
+  };
+
+  const validNegatedExpectation = (
+    value: unknown,
+    ...args: unknown[]
+  ): ExpectationResult => {
+    try {
+      expect(value, `not ${args[0]}`, ...args.slice(1));
+      return { failed: false };
+    } catch (err) {
+      return { error: err, failed: true };
+    }
+  };
+
+  const invalidNegatedExpectation = (
+    value: unknown,
+    ...args: unknown[]
+  ): ExpectationResult => {
+    try {
+      expect(value, `not ${args[0]}`, ...args.slice(1));
+      return {
+        error: new FailAssertionError({
+          actual: 'success',
+          expected: 'failure',
+          message: 'Expected negated assertion to fail but it passed instead',
+        }),
+        failed: true,
+      };
+    } catch {
+      return { failed: false };
+    }
+  };
+
+  const invalidExpectation = (
+    value: unknown,
+    ...args: unknown[]
+  ): ExpectationResult => {
+    try {
+      expect(value, ...args);
+      return {
+        error: new FailAssertionError({
+          actual: 'success',
+          expected: 'failure',
+          message: 'Expected assertion to fail but it passed instead',
+        }),
+        failed: true,
+      };
+    } catch {
+      return { failed: false };
+    }
+  };
+
+  return {
+    invalidExpectation,
+    invalidNegatedExpectation,
+    validExpectation,
+    validNegatedExpectation,
+  };
 };

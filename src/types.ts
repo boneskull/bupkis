@@ -269,14 +269,7 @@ export interface CreateAsyncAssertionFn {
     parts: Parts,
     impl: Impl,
   ): AssertionFunctionAsync<Parts, Impl, Slots>;
-} /**
- * @template BaseSyncAssertions Base set of synchronous
- *   {@link Assertion | Assertions}; will be the builtin sync assertions, at
- *   minimum)
- * @template BaseAsyncAssertions Base set of asynchronous
- *   {@link Assertion | Assertions}; will be the builtin async assertions, at
- *   minimum)
- */
+}
 
 /**
  * The main synchronous assertion function.
@@ -683,4 +676,43 @@ export interface UseFn<
     ExtendedSyncAssertions,
     ExtendedAsyncAssertions
   >;
+}
+
+/**
+ * Maps Zod `def.type` strings to their corresponding ZodType classes.
+ *
+ * This allows for type-safe discrimination of ZodTypes based on their internal
+ * `def.type` property in Zod v4.
+ */
+export interface ZodTypeMap {
+  any: z.ZodAny;
+  array: z.ZodArray<any>;
+  bigint: z.ZodBigInt;
+  boolean: z.ZodBoolean;
+  catch: z.ZodCatch<any>;
+  date: z.ZodDate;
+  default: z.ZodDefault<any>;
+  enum: z.ZodEnum<any>;
+  function: z.ZodFunction<any, any>;
+  lazy: z.ZodLazy<any>;
+  literal: z.ZodLiteral<any>;
+  map: z.ZodMap<any, any>;
+  never: z.ZodNever;
+  null: z.ZodNull;
+  nullable: z.ZodNullable<any>;
+  number: z.ZodNumber;
+  object: z.ZodObject<any>;
+  optional: z.ZodOptional<any>;
+  pipe: z.ZodPipe<any, any>;
+  promise: z.ZodPromise<any>;
+  readonly: z.ZodReadonly<any>;
+  record: z.ZodRecord<any, any>;
+  set: z.ZodSet<any>;
+  string: z.ZodString;
+  symbol: z.ZodSymbol;
+  tuple: z.ZodTuple<any>;
+  undefined: z.ZodUndefined;
+  union: z.ZodUnion<any>;
+  unknown: z.ZodUnknown;
+  void: z.ZodVoid;
 }

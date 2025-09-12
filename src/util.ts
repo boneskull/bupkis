@@ -20,15 +20,56 @@
 import { type StringKeyOf } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { isNonNullObject, isPromiseLike, isString } from './guards.js';
 import {
-  FunctionSchema,
+  isNonNullObject,
+  isPromiseLike,
+  isString,
+  isZodType,
+} from './guards.js';
+import {
   RegExpSchema,
   StrongMapSchema,
   StrongSetSchema,
   WrappedPromiseLikeSchema,
 } from './schema.js';
 
+/**
+ * Options for {@link valueToSchema}
+ */
+export interface ValueToSchemaOptions {
+  /**
+   * Current depth (internal)
+   *
+   * @internal
+   */
+  _currentDepth?: number;
+
+  /** Whether to allow mixed types in arrays (default: true) */
+  allowMixedArrays?: boolean;
+
+  /** If `true`, use `z.literal()` for primitive values instead of type schemas */
+  literalPrimitives?: boolean;
+
+  /**
+   * If `true`, treat `RegExp` literals as `RegExp` literals; otherwise treat as
+   * strings and attempt match
+   */
+  literalRegExp?: boolean;
+
+  /** Maximum nesting depth to prevent stack overflow (default: 10) */
+  maxDepth?: number;
+
+  /** If `true`, will disallow unknown properties in objects */
+  strict?: boolean;
+}
+
+/**
+ * Maps an array of objects to an object keyed by the specified key.
+ *
+ * @param collection Array of objects
+ * @param key Name of key
+ * @returns Object mapping key values to objects
+ */
 export function keyBy<
   const T extends readonly Record<PropertyKey, any>[],
   K extends StringKeyOf<T[number]>,
@@ -86,23 +127,7 @@ export function keyBy<
  */
 export const valueToSchema = (
   value: unknown,
-  options: {
-    /** Current depth (internal) */
-    _currentDepth?: number;
-    /** Whether to allow mixed types in arrays (default: true) */
-    allowMixedArrays?: boolean;
-    /** If `true`, use `z.literal()` for primitive values instead of type schemas */
-    literalPrimitives?: boolean;
-    /**
-     * If `true`, treat `RegExp` literals as `RegExp` literals; otherwise treat
-     * as strings and attempt match
-     */
-    literalRegExp?: boolean;
-    /** Maximum nesting depth to prevent stack overflow (default: 10) */
-    maxDepth?: number;
-    /** If `true`, will disallow unknown properties in objects */
-    strict?: boolean;
-  } = {},
+  options: ValueToSchemaOptions = {},
   visited = new WeakSet<object>(),
 ): z.ZodType => {
   const {
@@ -131,7 +156,7 @@ export const valueToSchema = (
     return z.nan();
   }
   if (value === Infinity || value === -Infinity) {
-    return z.literal(value as any);
+    return z.literal(value);
   }
 
   const valueType = typeof value;
@@ -142,7 +167,7 @@ export const valueToSchema = (
     case 'boolean':
       return literalPrimitives ? z.literal(value as boolean) : z.boolean();
     case 'function':
-      return FunctionSchema;
+      return z.function();
     case 'number':
       return literalPrimitives ? z.literal(value as number) : z.number();
     case 'string':
@@ -164,6 +189,16 @@ export const valueToSchema = (
     try {
       // Handle built-in object types
       if (value instanceof Date) {
+        // Check if it's a valid date
+        if (isNaN(value.getTime())) {
+          // For invalid dates, use a literal or custom validator
+          return z.custom<Date>(
+            (val) => val instanceof Date && isNaN(val.getTime()),
+            {
+              message: 'Expected an invalid Date',
+            },
+          );
+        }
         return z.date();
       }
 
@@ -201,7 +236,7 @@ export const valueToSchema = (
       // Handle arrays
       if (Array.isArray(value)) {
         if (value.length === 0) {
-          return z.array(z.unknown());
+          return z.array(z.never());
         }
 
         const elementSchemas = value.map((item) =>
@@ -216,10 +251,60 @@ export const valueToSchema = (
         );
 
         if (allowMixedArrays) {
-          // Create a union of all unique element types
-          const uniqueSchemas = Array.from(
-            new Set(elementSchemas.map((schema) => schema.constructor.name)),
-          ).map((_, index) => elementSchemas[index]);
+          // Helper function to generate structural keys for schemas
+          const getSchemaKey = <T extends z.core.SomeType | z.ZodType>(
+            zodType: T,
+          ): string => {
+            const schema = zodType as z.ZodType;
+            if (isZodType(schema, 'literal')) {
+              return `${schema.constructor.name}:${String(schema.def.values)}`;
+            }
+
+            if (isZodType(schema, 'array')) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              const elementKey = getSchemaKey((schema.def as any).element);
+              return `ZodArray<${elementKey}>`;
+            }
+
+            if (isZodType(schema, 'object')) {
+              // For objects, create a key based on the property keys and their types
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              const shape = (schema.def as any).shape as Record<
+                string,
+                z.ZodType
+              >;
+              const shapeKeys = Object.keys(shape)
+                .sort()
+                .map((key) => {
+                  const propSchema = shape[key]!;
+                  return `${key}:${getSchemaKey(propSchema)}`;
+                });
+              return `ZodObject<{${shapeKeys.join(',')}}>`;
+            }
+
+            if (isZodType(schema, 'union')) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              const optionKeys = ((schema.def as any).options as z.ZodType[])
+                .map((option) => getSchemaKey(option))
+                .sort();
+              return `ZodUnion<[${optionKeys.join(',')}]>`;
+            }
+
+            // For other types, use the constructor name
+            return schema.constructor.name;
+          };
+
+          const seenSchemaKeys = new Set<string>();
+          const uniqueSchemas: z.ZodType[] = [];
+
+          for (const schema of elementSchemas) {
+            const schemaKey = getSchemaKey(schema);
+
+            if (!seenSchemaKeys.has(schemaKey)) {
+              seenSchemaKeys.add(schemaKey);
+              uniqueSchemas.push(schema);
+            }
+          }
 
           if (uniqueSchemas.length === 1) {
             return z.array(uniqueSchemas[0]!);
