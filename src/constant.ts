@@ -27,6 +27,14 @@ export const kStringLiteral: unique symbol = Symbol('bupkis:string-literal');
 export const kBupkisAssertionError: unique symbol = Symbol('bupkis-error');
 
 /**
+ * Symbol used to flag a `FailAssertionError`
+ *
+ * @internal
+ */
+export const kBupkisFailAssertionError: unique symbol =
+  Symbol('bupkis-fail-error');
+
+/**
  * Symbol used to flag a `NegatedAssertionError`
  *
  * @internal

@@ -313,10 +313,11 @@ export const ParametricAssertions = [
     ],
     (_, expected) => valueToSchema(expected, { strict: true }),
   ),
-  // @ts-expect-error fix later
   createAssertion(
     [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], ArrayLikeSchema],
-    (_, expected) => valueToSchema(expected, { strict: true }),
+    (_, expected) => {
+      return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+    },
   ),
   createAssertion([FunctionSchema, 'to throw'], (subject) => {
     const error = trapError(subject);

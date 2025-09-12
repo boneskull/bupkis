@@ -20,6 +20,7 @@ import {
 } from '../../schema.js';
 import { valueToSchema } from '../../util.js';
 import { createAsyncAssertion } from '../create.js';
+import { CallbackAsyncAssertions } from './callback.js';
 
 const trapAsyncFnError = async (fn: () => unknown) => {
   try {
@@ -37,7 +38,7 @@ const trapPromiseError = async (promise: PromiseLike<unknown>) => {
   }
 };
 
-export const AsyncAssertions = [
+export const PromiseAssertions = [
   createAsyncAssertion(
     [FunctionSchema, ['to resolve', 'to fulfill']],
     async (subject) => {
@@ -282,3 +283,10 @@ export const AsyncAssertions = [
     },
   ),
 ] as const;
+
+export const AsyncAssertions = [
+  ...PromiseAssertions,
+  ...CallbackAsyncAssertions,
+] as const;
+
+export { CallbackAsyncAssertions };

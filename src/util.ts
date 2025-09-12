@@ -20,20 +20,51 @@
 import { type StringKeyOf } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { isNonNullObject, isPromiseLike, isString } from './guards.js';
-import {
-  FunctionSchema,
-  RegExpSchema,
-  StrongMapSchema,
-  StrongSetSchema,
-  WrappedPromiseLikeSchema,
-} from './schema.js';
+export * from './value-to-schema.js';
 
-export function keyBy<
-  const T extends readonly Record<PropertyKey, any>[],
-  K extends StringKeyOf<T[number]>,
->(collection: T, key: K): Record<string, T[number]> {
-  const result = {} as Record<string, T[number]>;
+/**
+ * _Recursively_ searches within an object, array, or any nested structure to
+ * find whether a specific key exists.
+ *
+ * Handles circular references by tracking visited objects to prevent infinite
+ * recursion.
+ *
+ * @example
+ *
+ * ```ts
+ * const obj = { a: 1, b: { c: 2, d: [{ e: 3 }] } };
+ *
+ * hasKey(obj, 'c'); // true
+ * hasKey(obj, 'e'); // true
+ * hasKey(obj, 'x'); // false (key not found)
+ * ```
+ *
+ * @param obj The object, array, or value to search within
+ * @param key The key to search for
+ * @param visited Internal set for circular reference detection
+ * @returns True if the key is found anywhere in the structure, false otherwise
+ */
+export function hasKey(
+  obj: unknown,
+  key: PropertyKey,
+  visited = new WeakSet<object>(),
+): boolean {
+  // Handle primitives that can't contain keys
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+
+  // Prevent infinite recursion with circular references
+  if (visited.has(obj)) {
+    return false;
+  }
+  visited.add(obj);
+
+  try {
+    // Check if this object has the key
+    if (Object.hasOwn(obj, key)) {
+      return true;
+    }
 
   for (const item of collection) {
     const keyValue = item[key];
@@ -86,23 +117,6 @@ export function keyBy<
  */
 export const valueToSchema = (
   value: unknown,
-  options: {
-    /** Current depth (internal) */
-    _currentDepth?: number;
-    /** Whether to allow mixed types in arrays (default: true) */
-    allowMixedArrays?: boolean;
-    /** If `true`, use `z.literal()` for primitive values instead of type schemas */
-    literalPrimitives?: boolean;
-    /**
-     * If `true`, treat `RegExp` literals as `RegExp` literals; otherwise treat
-     * as strings and attempt match
-     */
-    literalRegExp?: boolean;
-    /** Maximum nesting depth to prevent stack overflow (default: 10) */
-    maxDepth?: number;
-    /** If `true`, will disallow unknown properties in objects */
-    strict?: boolean;
-  } = {},
   visited = new WeakSet<object>(),
 ): z.ZodType => {
   const {
@@ -130,41 +144,14 @@ export const valueToSchema = (
   if (Number.isNaN(value as number)) {
     return z.nan();
   }
-  if (value === Infinity || value === -Infinity) {
-    return z.literal(value as any);
-  }
+  visited.add(obj);
 
-  const valueType = typeof value;
-
-  switch (valueType) {
-    case 'bigint':
-      return literalPrimitives ? z.literal(value as bigint) : z.bigint();
-    case 'boolean':
-      return literalPrimitives ? z.literal(value as boolean) : z.boolean();
-    case 'function':
-      return FunctionSchema;
-    case 'number':
-      return literalPrimitives ? z.literal(value as number) : z.number();
-    case 'string':
-      return literalPrimitives ? z.literal(value as string) : z.string();
-    case 'symbol':
-      return z.symbol();
-  }
-
-  // Handle objects
-  if (typeof value === 'object' && value !== null) {
-    // Check for circular references
-    if (visited.has(value)) {
-      // Return a recursive schema reference or unknown for circular refs
-      return z.unknown();
-    }
-
-    visited.add(value);
-
-    try {
-      // Handle built-in object types
-      if (value instanceof Date) {
-        return z.date();
+  try {
+    // Check if this object has the key with the exact value
+    if (Object.hasOwn(obj, key)) {
+      const objRecord = obj as Record<PropertyKey, unknown>;
+      if (objRecord[key] === value) {
+        return true;
       }
 
       if (value instanceof RegExp) {
@@ -193,44 +180,11 @@ export const valueToSchema = (
       if (value instanceof Error) {
         return z.instanceof(Error);
       }
-
-      if (isPromiseLike(value)) {
-        return WrappedPromiseLikeSchema;
-      }
-
-      // Handle arrays
-      if (Array.isArray(value)) {
-        if (value.length === 0) {
-          return z.array(z.unknown());
-        }
-
-        const elementSchemas = value.map((item) =>
-          valueToSchema(
-            item,
-            {
-              ...options,
-              _currentDepth: _currentDepth + 1,
-            },
-            visited,
-          ),
-        );
-
-        if (allowMixedArrays) {
-          // Create a union of all unique element types
-          const uniqueSchemas = Array.from(
-            new Set(elementSchemas.map((schema) => schema.constructor.name)),
-          ).map((_, index) => elementSchemas[index]);
-
-          if (uniqueSchemas.length === 1) {
-            return z.array(uniqueSchemas[0]!);
-          } else {
-            return z.array(
-              z.union(uniqueSchemas as [z.ZodType, z.ZodType, ...z.ZodType[]]),
-            );
-          }
-        } else {
-          // Use the first element's schema for all elements
-          return z.array(elementSchemas[0]!);
+    } else {
+      // For objects, search in each property value
+      for (const propValue of Object.values(obj)) {
+        if (hasKeyValue(propValue, key, value, visited)) {
+          return true;
         }
       }
 

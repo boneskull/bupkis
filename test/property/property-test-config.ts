@@ -12,6 +12,22 @@
 import type fc from 'fast-check';
 import type { Parameters } from 'fast-check';
 
+export type InferPropertyTestConfigVariantAsyncProperty<T> =
+  T extends PropertyTestConfigVariantAsyncProperty<infer U>
+    ? PropertyTestConfigVariantAsyncProperty<U>
+    : never;
+
+export type InferPropertyTestConfigVariantModel<
+  T extends PropertyTestConfigVariant<any, any>,
+> =
+  T extends PropertyTestConfigVariantModel<infer M, infer R>
+    ? PropertyTestConfigVariantModel<M, R>
+    : never;
+export type InferPropertyTestConfigVariantProperty<T> =
+  T extends PropertyTestConfigVariantProperty<infer U>
+    ? PropertyTestConfigVariantProperty<U>
+    : never;
+
 /**
  * Configuration for property-based tests that extends
  * {@link Parameters fast-check's Parameters}.
@@ -28,21 +44,21 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
   /**
    * Generator for invalid input (should fail the assertion)
    */
-  invalid: PropertyTestConfigVariantConfig;
+  invalid: PropertyTestConfigVariant;
   /**
    * Generator for invalid input in negated form (should fail the negated
    * assertion)
    */
-  invalidNegated?: PropertyTestConfigVariantConfig;
+  invalidNegated?: PropertyTestConfigVariant;
   /**
    * Generator for valid input (should pass the assertion)
    */
-  valid: PropertyTestConfigVariantConfig;
+  valid: PropertyTestConfigVariant;
   /**
    * Generator for valid input in negated form (should pass the negated
    * assertion)
    */
-  validNegated?: PropertyTestConfigVariantConfig;
+  validNegated?: PropertyTestConfigVariant;
 }
 
 /**
@@ -73,10 +89,56 @@ export type PropertyTestConfigParameters = Omit<Parameters<any>, 'examples'>;
  * For parameterized assertions, the "rest" of the tuple contains generators for
  * the parameter and extra phrase literals / parameters that may follow.
  */
-interface PropertyTestConfigVariantConfig extends PropertyTestConfigParameters {
+export type PropertyTestConfigVariant<
+  Model extends object = object,
+  Real = any,
+> =
+  | PropertyTestConfigVariantAsyncGenerators
+  | PropertyTestConfigVariantAsyncProperty<any>
+  | PropertyTestConfigVariantGenerators
+  | PropertyTestConfigVariantModel<Model, Real>
+  | PropertyTestConfigVariantProperty<any>;
+
+export interface PropertyTestConfigVariantAsyncGenerators
+  extends PropertyTestConfigVariantGenerators {
+  async: true;
+}
+
+export interface PropertyTestConfigVariantAsyncProperty<T>
+  extends BasePropertyTestConfigVariant {
+  asyncProperty: () => fc.IAsyncProperty<T> | fc.IAsyncPropertyWithHooks<T>;
+}
+
+export interface PropertyTestConfigVariantGenerators
+  extends BasePropertyTestConfigVariant {
   generators: readonly [
     subject: fc.Arbitrary<any>,
     phrase: fc.Arbitrary<string>,
     ...fc.Arbitrary<any>[],
   ];
+  /**
+   * If true, this variant expects fast-check to timeout/interrupt the test.
+   * Used for async callback tests where the assertion waits indefinitely for
+   * callbacks that should never be called.
+   */
+  shouldInterrupt?: boolean;
+}
+
+export interface PropertyTestConfigVariantModel<Model extends object, Real>
+  extends BasePropertyTestConfigVariant {
+  commands: fc.Arbitrary<fc.Command<Model, Real>>[];
+  commandsConstraints: fc.CommandsContraints;
+  initialState: fc.ModelRunSetup<Model, Real>;
+}
+
+export interface PropertyTestConfigVariantProperty<T>
+  extends BasePropertyTestConfigVariant {
+  afterEach?: never;
+  beforeEach?: never;
+  property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
+}
+
+interface BasePropertyTestConfigVariant extends PropertyTestConfigParameters {
+  afterEach?: fc.AsyncPropertyHookFunction | fc.PropertyHookFunction;
+  beforeEach?: fc.AsyncPropertyHookFunction | fc.PropertyHookFunction;
 }
