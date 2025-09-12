@@ -1,10 +1,10 @@
 import { z } from 'zod/v4';
 
-import { NullProtoObjectSchema, PropertyKeySchema } from '../../schema.js';
+import { DictionarySchema, PropertyKeySchema } from '../../schema.js';
 import { createAssertion } from '../create.js';
 
 export const EsotericAssertions = [
-  createAssertion(['to have a null prototype'], NullProtoObjectSchema),
+  createAssertion(['to have a null prototype'], DictionarySchema),
   createAssertion(
     [PropertyKeySchema, 'to be an enumerable property of', z.looseObject({})],
     (subject, obj) =>

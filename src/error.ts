@@ -10,6 +10,7 @@ import { AssertionError as NodeAssertionError } from 'node:assert';
 
 import {
   kBupkisAssertionError,
+  kBupkisFailAssertionError,
   kBupkisNegatedAssertionError,
 } from './constant.js';
 import { isA } from './guards.js';
@@ -27,13 +28,6 @@ export class AssertionError extends NodeAssertionError {
   override name = 'AssertionError';
 
   /**
-   * @param options Options passed to {@link NodeAssertionError}'s constructor
-   */
-  constructor(options?: ConstructorParameters<typeof NodeAssertionError>[0]) {
-    super(options);
-  }
-
-  /**
    * Type guard for an instance of this error.
    *
    * @param value Some value
@@ -47,6 +41,22 @@ export class AssertionError extends NodeAssertionError {
   }
 }
 
+export class FailAssertionError extends AssertionError {
+  /**
+   * @internal
+   */
+  [kBupkisFailAssertionError] = true;
+
+  override name = 'FailAssertionError';
+
+  static isFailAssertionError(err: unknown): err is FailAssertionError {
+    return (
+      isA(err, FailAssertionError) &&
+      Object.hasOwn(err, kBupkisFailAssertionError)
+    );
+  }
+}
+
 /**
  * Error type used internally to catch failed negated assertions.
  *
@@ -54,6 +64,8 @@ export class AssertionError extends NodeAssertionError {
  */
 export class NegatedAssertionError extends AssertionError {
   [kBupkisNegatedAssertionError] = true;
+
+  override name = 'NegatedAssertionError';
 
   static isNegatedAssertionError(err: unknown): err is NegatedAssertionError {
     return (

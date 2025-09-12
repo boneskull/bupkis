@@ -1,2 +1,3 @@
 export { AsyncAssertions } from './async.js';
-export { SyncAssertions } from './sync.js';
+export { CallbackAsyncAssertions, CallbackSyncAssertions } from './callback.js';
+export { SyncAssertions as SyncAssertions } from './sync.js';

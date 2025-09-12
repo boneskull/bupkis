@@ -52,6 +52,7 @@ export type {
   ExpectAsync,
   FailFn,
   UseFn,
+  ZodTypeMap,
 } from './types.js';
 export { createAssertion, createAsyncAssertion, fail, use };
 const {

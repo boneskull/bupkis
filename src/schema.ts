@@ -242,9 +242,12 @@ export const StrongSetSchema = z
  * `Object.prototype`, making them useful as pure data containers or
  * dictionaries.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `ObjectWithNullPrototype` for later reference and type checking purposes.
+ *
+ * Changing this to be a `ZodRecord` would be nice, but that would end up
+ * blasting away the original object's prototype.
  * @example
  *
  * ```typescript
@@ -260,13 +263,21 @@ export const StrongSetSchema = z
  * ```
  *
  * @group Schema
+ * @see Aliases: {@link NullProtoObjectSchema}, {@link DictionarySchema}
  */
-export const NullProtoObjectSchema = z
+export const DictionarySchema = z
   .custom<Record<PropertyKey, unknown>>(
     (value) => isNonNullObject(value) && Object.getPrototypeOf(value) === null,
   )
   .describe('Object with null prototype')
   .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' });
+
+/**
+ * {@inheritDoc DictionarySchema}
+ *
+ * @group Schema
+ */
+export const NullProtoObjectSchema = DictionarySchema;
 
 /**
  * A Zod schema that validates functions declared with the `async` keyword.
@@ -276,7 +287,7 @@ export const NullProtoObjectSchema = z
  * function's internal `[[ToString]]` representation to distinguish async
  * functions from regular functions that might return Promises.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `AsyncFunctionSchema` for later reference and type checking purposes. This
  * schema cannot reliably detect functions that return Promises but are not
@@ -318,7 +329,7 @@ export const AsyncFunctionSchema = FunctionSchema.refine(
  * if it converts to `true` when evaluated in a boolean context - essentially
  * any value that is not one of the eight falsy values.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Truthy` and
  * indicates that it accepts anything as valid input for evaluation.
  * @example
@@ -354,7 +365,7 @@ export const TruthySchema = z
  * in JavaScript are: `false`, `0`, `-0`, `0n`, `""` (empty string), `null`,
  * `undefined`, and `NaN`.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Falsy` and
  * indicates that it accepts anything as valid input for evaluation.
  * @example
@@ -392,7 +403,7 @@ export const FalsySchema = z
  * distinguishing them from objects and functions which are non-primitive
  * reference types.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Primitive`
  * and indicates that it accepts primitive values as valid input.
  * @example
@@ -474,7 +485,7 @@ export const ArrayLikeSchema = z
  * It ensures the validated value is a proper regular expression object with all
  * associated methods and properties.
  *
- * @remarks
+ * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `RegExp` for
  * later reference and type checking purposes.
  * @example

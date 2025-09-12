@@ -6,7 +6,7 @@ import { keyBy } from '../../src/util.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
-} from './config.js';
+} from './property-test-config.js';
 import { createPhraseExtractor } from './property-test-util.js';
 import {
   assertExhaustiveTestConfig,
@@ -385,7 +385,7 @@ const testConfigs = {
 } as const satisfies Record<string, PropertyTestConfig>;
 
 describe('Property-Based Tests for Collection Assertions', () => {
-  assertExhaustiveTestConfig(assertions, testConfigs);
+  assertExhaustiveTestConfig('sync collection', assertions, testConfigs);
 
   runPropertyTests(testConfigs, assertions, testConfigDefaults);
 });
