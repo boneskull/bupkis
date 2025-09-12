@@ -639,7 +639,7 @@ span:has(.tsd-kind-parameter) {
     .tsd-signature-type,
     .tsd-type-kind-parameter
   ) {
-  font-size: 0.875em;
+  font-size: 0.9em;
 }
 
 code.tsd-tag {
