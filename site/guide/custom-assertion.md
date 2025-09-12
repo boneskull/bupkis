@@ -158,12 +158,12 @@ Add as many as you want. Yes… yes. Keep adding them. Goood.
 The target use case for async assertions are high-level expectations against some async I/O operation, like an API call or database query. Here's an example—using the venerable `mungodb` package—to check if a database connection function connects successfully:
 
 ```ts
-import { z, use, createAsyncAssertion, FunctionSchema } from 'bupkis';
+import { z, use, createAsyncAssertion } from 'bupkis';
 import { connect } from 'mungodb';
 
 // Assertion that checks if the DB connected
 const dbConnectedAssertion = createAsyncAssertion(
-  [FunctionSchema, 'to connect to the mungobase'],
+  [z.function(), 'to connect to the mungobase'],
   async (connectFn) => {
     try {
       const db = await connectFn();
@@ -190,18 +190,6 @@ const { expectAsync } = use([dbConnectedAssertion]);
 
 await expectAsync(connect, 'to connect to the mungobase');
 ```
-
-> If your eyes are sharp, you'll have noticed the {@linkcode schema!FunctionSchema | FunctionSchema} creeping in there. _What's `FunctionSchema`?_
->
-> Zod v4 [changes][zod-migration] how `z.function()` works; it's now intended purely for wrapping functions and automatically validating their arguments and return values. This is fine + dandy—but it isn't what we need here. We just want to say "this parameter is a function." `FunctionSchema` is a simple schema that does just that. It's defined similarly to this:
->
-> ```ts
-> export const FunctionSchema = z.custom<(...args: any[]) => any>(
->   (value) => typeof value === 'function',
-> );
-> ```
->
-> <span class="bupkis">Bupkis</span> contains [many cute helper schemas like this][schema namespace] to correct for the various impedance mismatches <span class="bupkis">Bupkis</span> and Zod.
 
 ## Composing Assertions
 
@@ -545,9 +533,7 @@ _Remember: we are doomed to toil in this prison-house of language._
 [parameter]: /reference/glossary.md#parameter
 [parametric assertions]: /reference/glossary.md#parametric-assertion
 [phrase]: /reference/glossary.md#phrase
-[schema namespace]: /modules/index.schema
 [schema-based assertion]: /reference/glossary.md#schema-based-assertion
 [subject]: /reference/glossary.md#subject
 [zod schema]: https://zod.dev/api
 [zod]: https://zod.dev
-[zod-migration]: https://zod.dev/v4/changelog
