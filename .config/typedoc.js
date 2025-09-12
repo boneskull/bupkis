@@ -92,6 +92,6 @@ export default {
   },
   searchInComments: true,
   searchInDocuments: true,
-  sort: ['kind'],
+  sort: ['kind', 'alphabetical'],
   tsconfig: './tsconfig.typedoc.json',
 };
