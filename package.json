@@ -187,9 +187,7 @@
   "knip": {
     "ignoreDependencies": [
       "@types/wallabyjs",
-      "markdownlint-cli2-formatter-pretty",
-      "expect-type",
-      "tsx"
+      "markdownlint-cli2-formatter-pretty"
     ],
     "ignore": [
       ".wallaby.js",
