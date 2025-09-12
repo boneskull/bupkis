@@ -24,7 +24,7 @@ import type {
   AssertionPart,
   PhraseLiteralChoice,
 } from './assertion/assertion-types.js';
-import type { Constructor } from './types.js';
+import type { Constructor, ZodTypeMap } from './types.js';
 
 /**
  * Returns `true` if the given value looks like a Zod v4 schema, determined by
@@ -33,28 +33,60 @@ import type { Constructor } from './types.js';
  * Note: This relies on Zod's internal shape and is intended for runtime
  * discrimination within this library.
  *
- * @template T
+ * @template T - The specific ZodType to check for (based on def.type)
  * @param value - Value to test
  * @returns Whether the value is `ZodType`-like
  */
-export const isZodType = (value: unknown): value is z.ZodType =>
-  !!(
-    value &&
-    typeof value === 'object' &&
+export function isZodType<T extends keyof ZodTypeMap>(
+  value: unknown,
+  type: T,
+): value is ZodTypeMap[T];
+/**
+ * Returns `true` if the given value looks like a Zod v4 schema, determined by
+ * the presence of an internal {@link z.core.$ZodTypeDef} field.
+ *
+ * Note: This relies on Zod's internal shape and is intended for runtime
+ * discrimination within this library.
+ *
+ * @param value - Value to test
+ * @returns Whether the value is `ZodType`-like
+ */
+export function isZodType(value: unknown): value is z.ZodType;
+export function isZodType<T extends keyof ZodTypeMap>(
+  value: unknown,
+  type?: T,
+): value is T extends keyof ZodTypeMap ? ZodTypeMap[T] : z.ZodType {
+  const isValid =
+    isObject(value) &&
     'def' in value &&
-    value.def &&
+    !!value.def &&
     typeof value.def === 'object' &&
-    'type' in value.def
-  );
+    'type' in value.def;
+
+  if (!isValid) return false;
+  if (type === undefined) return true;
+
+  return (value as z.ZodType).def.type === type;
+}
 
 /**
- * Returns true if the given value is a {@link z.ZodPromise} schema.
+ * Type guard for a plain object.
+ *
+ * @param value Value to test
+ * @returns `true` if the value is a plain object, `false` otherwise
+ */
+export const isObject = (value: unknown): value is NonNullable<object> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+/**
+ * Returns `true` if the given value is a {@link z.ZodPromise} schema.
  *
  * @param value - Value to test
  * @returns `true` if the value is a `ZodPromise` schema; `false` otherwise
  */
 export const isZodPromise = (value: unknown): value is z.ZodPromise =>
-  isZodType(value) && value.def.type === 'promise';
+  isZodType(value, 'promise');
 
 /**
  * Checks if a value is "promise-like", meaning it is a "thenable" object.
@@ -63,12 +95,7 @@ export const isZodPromise = (value: unknown): value is z.ZodPromise =>
  * @returns `true` if the value is promise-like, `false` otherwise
  */
 export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
-  !!(
-    value &&
-    typeof value === 'object' &&
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    typeof (value as any).then === 'function'
-  );
+  isObject(value) && 'then' in value && isFunction(value.then);
 
 /**
  * Returns `true` if the given value is a constructable function (i.e., a

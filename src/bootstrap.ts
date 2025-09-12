@@ -7,8 +7,7 @@
  * @packageDocumentation
  */
 
-import { AsyncAssertions } from './assertion/impl/async.js';
-import { SyncAssertions } from './assertion/impl/sync.js';
+import { AsyncAssertions, SyncAssertions } from './assertion/index.js';
 import { type Expect, type ExpectAsync } from './types.js';
 import { createUse } from './use.js';
 

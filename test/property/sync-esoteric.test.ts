@@ -3,7 +3,7 @@ import { describe } from 'node:test';
 
 import { EsotericAssertions } from '../../src/assertion/impl/sync-esoteric.js';
 import { keyBy } from '../../src/util.js';
-import { type PropertyTestConfig } from './config.js';
+import { type PropertyTestConfig } from './property-test-config.js';
 import { createPhraseExtractor } from './property-test-util.js';
 import {
   assertExhaustiveTestConfig,
@@ -117,9 +117,7 @@ const testConfigs: Record<string, PropertyTestConfig> = {
   'unknown-to-have-a-null-prototype-2s1p': {
     invalid: {
       generators: [
-        fc
-          .object({ withNullPrototype: true })
-          .filter((v) => Object.getPrototypeOf(v) !== null), // non-null-prototype object
+        fc.object(), // regular objects with non-null prototypes
         fc.constantFrom(
           ...extractPhrases('unknown-to-have-a-null-prototype-2s1p'),
         ),
@@ -137,7 +135,7 @@ const testConfigs: Record<string, PropertyTestConfig> = {
 };
 
 describe('Property-Based Tests for Esoteric Assertions', () => {
-  assertExhaustiveTestConfig(assertions, testConfigs);
+  assertExhaustiveTestConfig('sync esoteric', assertions, testConfigs);
 
   runPropertyTests(testConfigs, assertions, testConfigDefaults);
 });

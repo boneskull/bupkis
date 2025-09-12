@@ -16,7 +16,11 @@ import {
   type ParsedValues,
 } from './assertion/assertion-types.js';
 import { createAssertion, createAsyncAssertion } from './assertion/create.js';
-import { AssertionError, NegatedAssertionError } from './error.js';
+import {
+  AssertionError,
+  FailAssertionError,
+  NegatedAssertionError,
+} from './error.js';
 import { isAssertionFailure, isString } from './guards.js';
 import {
   type Expect,
@@ -578,7 +582,7 @@ const detectNegation = (
 };
 
 const fail: FailFn = (reason?: string): never => {
-  throw new AssertionError({ message: reason });
+  throw new FailAssertionError({ message: reason });
 };
 
 /**

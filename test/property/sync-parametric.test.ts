@@ -2,11 +2,13 @@ import fc from 'fast-check';
 import { describe } from 'node:test';
 
 import { ParametricAssertions } from '../../src/assertion/impl/sync-parametric.js';
+import { expect } from '../../src/bootstrap.js';
+import { FailAssertionError } from '../../src/error.js';
 import { keyBy } from '../../src/util.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
-} from './config.js';
+} from './property-test-config.js';
 import { createPhraseExtractor } from './property-test-util.js';
 import {
   assertExhaustiveTestConfig,
@@ -91,53 +93,153 @@ const testConfigs = {
   'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p':
     {
       invalid: {
-        generators: [
-          fc.array(fc.string(), { minLength: 1 }),
-          fc.constantFrom(
-            ...extractPhrases(
-              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
-            ),
+        property: () =>
+          fc.property(
+            fc.array(fc.string(), { minLength: 1 }).chain((arr) => {
+              const arrayArb = fc.constant(arr);
+              const otherArrayArb = fc.array(fc.integer(), { minLength: 1 });
+              return fc.tuple(
+                arrayArb,
+                fc.constantFrom(
+                  ...extractPhrases(
+                    'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+                  ),
+                ),
+                otherArrayArb,
+              );
+            }),
+            (params) => {
+              try {
+                expect(...params);
+                expect.fail('Expected test to fail, but it passed');
+              } catch (err) {
+                if (FailAssertionError.isFailAssertionError(err)) {
+                  throw err;
+                }
+              }
+            },
           ),
-          fc.array(fc.integer(), { minLength: 1 }), // Different element types
-        ],
+      },
+      invalidNegated: {
+        property: () =>
+          fc.property(
+            fc.array(fc.string()).chain((arr) => {
+              const arrayArb = fc.constant(arr);
+              return fc.tuple(
+                arrayArb,
+                fc.constantFrom(
+                  ...extractPhrases(
+                    'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+                  ),
+                ),
+                arrayArb,
+              );
+            }),
+            (params) => {
+              try {
+                expect(params[0], `not ${params[1]}`, ...params.slice(2));
+                expect.fail('Expected test to fail, but it passed');
+              } catch (err) {
+                if (FailAssertionError.isFailAssertionError(err)) {
+                  throw err;
+                }
+              }
+            },
+          ),
       },
       valid: {
-        generators: [
-          fc.array(fc.string()).chain((arr) => fc.constant(arr)),
-          fc.constantFrom(
-            ...extractPhrases(
-              'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
-            ),
-          ),
-          fc.array(fc.string()).chain((arr) => fc.constant([...arr])),
-        ],
         numRuns: 50,
+        property: () =>
+          fc.property(
+            fc.array(fc.string()).chain((arr) => {
+              const arrayArb = fc.constant(arr);
+              return fc.tuple(
+                arrayArb,
+                fc.constantFrom(
+                  ...extractPhrases(
+                    'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+                  ),
+                ),
+                arrayArb,
+              );
+            }),
+            (params) => {
+              expect(...params);
+            },
+          ),
+      },
+      validNegated: {
+        property: () =>
+          fc.property(
+            fc.array(fc.string(), { minLength: 1 }).chain((arr) => {
+              const arrayArb = fc.constant(arr);
+              const otherArrayArb = fc.array(fc.integer(), { minLength: 1 });
+              return fc.tuple(
+                arrayArb,
+                fc.constantFrom(
+                  ...extractPhrases(
+                    'array-unknown-object-to-deep-equal-to-deeply-equal-array-unknown-object-3s3p',
+                  ),
+                ),
+                otherArrayArb,
+              );
+            }),
+            (params) => {
+              expect(params[0], `not ${params[1]}`, ...params.slice(2));
+            },
+          ),
       },
     },
 
   // array satisfies/is like
   'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p': {
     invalid: {
-      generators: [
-        fc.array(fc.string(), { maxLength: 2, minLength: 2 }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
-          ),
+      property: () =>
+        fc.property(
+          fc.array(fc.string(), { maxLength: 2, minLength: 2 }).chain((arr) => {
+            const arrArb = fc.constant(arr);
+            const differentArrArb = fc.array(fc.integer(), {
+              maxLength: 3,
+              minLength: 3,
+            }); // Different types, lengths
+            return fc.tuple(
+              arrArb,
+              fc.constantFrom(
+                ...extractPhrases(
+                  'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
+                ),
+              ),
+              differentArrArb,
+            );
+          }),
+          (params) => {
+            try {
+              expect(...params);
+              expect.fail('Expected test to fail, but it passed');
+            } catch (err) {
+              if (FailAssertionError.isFailAssertionError(err)) {
+                throw err;
+              }
+            }
+          },
         ),
-        fc.array(fc.integer(), { maxLength: 3, minLength: 3 }), // Different types, lengths
-      ],
     },
     valid: {
-      generators: [
-        fc.array(fc.string(), { maxLength: 3, minLength: 3 }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
-          ),
+      property: () =>
+        fc.property(
+          fc.array(fc.string(), { maxLength: 3, minLength: 3 }).chain((arr) => {
+            const arrArb = fc.constant(arr);
+            const phraseArb = fc.constantFrom(
+              ...extractPhrases(
+                'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
+              ),
+            );
+            return fc.tuple(arrArb, phraseArb, arrArb);
+          }),
+          (params) => {
+            expect(...params);
+          },
         ),
-        fc.array(fc.string(), { maxLength: 2, minLength: 2 }), // Subset array
-      ],
     },
   },
 
@@ -448,51 +550,97 @@ const testConfigs = {
   // deep equality - objects
   'object-to-deep-equal-to-deeply-equal-object-3s3p': {
     invalid: {
-      generators: [
-        fc.record({ a: fc.string() }),
-        fc.constantFrom(
-          ...extractPhrases('object-to-deep-equal-to-deeply-equal-object-3s3p'),
+      property: () =>
+        fc.property(
+          fc.record({ a: fc.string() }).chain((obj) => {
+            const objArb = fc.constant(obj);
+            const otherObjArb = fc.record({ b: fc.string() }); // Different structure
+            return fc.tuple(
+              objArb,
+              fc.constantFrom(
+                ...extractPhrases(
+                  'object-to-deep-equal-to-deeply-equal-object-3s3p',
+                ),
+              ),
+              otherObjArb,
+            );
+          }),
+          (params) => {
+            try {
+              expect(...params);
+              expect.fail('Expected test to fail, but it passed');
+            } catch (err) {
+              if (FailAssertionError.isFailAssertionError(err)) {
+                throw err;
+              }
+            }
+          },
         ),
-        fc.record({ b: fc.string() }), // Different structure
-      ],
     },
     valid: {
-      generators: [
-        fc
-          .record({ a: fc.string() })
-          .chain((obj) => fc.tuple(fc.constant(obj), fc.constant({ ...obj })))
-          .map(([obj]) => obj),
-        fc.constantFrom(
-          ...extractPhrases('object-to-deep-equal-to-deeply-equal-object-3s3p'),
-        ),
-        fc
-          .record({ a: fc.string() })
-          .chain((obj) => fc.tuple(fc.constant(obj), fc.constant({ ...obj })))
-          .map(([, obj]) => obj),
-      ],
       numRuns: 50,
+      property: () =>
+        fc.property(
+          fc.record({ a: fc.string() }).chain((obj) => {
+            const objArb = fc.constant(obj);
+            const phraseArb = fc.constantFrom(
+              ...extractPhrases(
+                'object-to-deep-equal-to-deeply-equal-object-3s3p',
+              ),
+            );
+            const equalObjArb = fc.constant({ ...obj });
+            return fc.tuple(objArb, phraseArb, equalObjArb);
+          }),
+          (params) => {
+            expect(...params);
+          },
+        ),
     },
   },
 
   // object satisfies/is like
   'object-to-satisfy-to-be-like-object-3s3p': {
     invalid: {
-      generators: [
-        fc.record({ a: fc.constant(1), b: fc.constant(2) }),
-        fc.constantFrom(
-          ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+      property: () =>
+        fc.property(
+          fc.record({ a: fc.constant(1), b: fc.constant(2) }).chain((obj) => {
+            const objArb = fc.constant(obj);
+            const differentObjArb = fc.record({ c: fc.constant(3) }); // Missing properties
+            return fc.tuple(
+              objArb,
+              fc.constantFrom(
+                ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+              ),
+              differentObjArb,
+            );
+          }),
+          (params) => {
+            try {
+              expect(...params);
+              expect.fail('Expected test to fail, but it passed');
+            } catch (err) {
+              if (FailAssertionError.isFailAssertionError(err)) {
+                throw err;
+              }
+            }
+          },
         ),
-        fc.record({ c: fc.constant(3) }), // Missing properties
-      ],
     },
     valid: {
-      generators: [
-        fc.record({ a: fc.constant(1), b: fc.constant(2) }),
-        fc.constantFrom(
-          ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+      property: () =>
+        fc.property(
+          fc.record({ a: fc.constant(1), b: fc.constant(2) }).chain((obj) => {
+            const objArb = fc.constant(obj);
+            const phraseArb = fc.constantFrom(
+              ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+            );
+            const subsetObjArb = fc.constant({ a: 1 }); // Subset properties
+            return fc.tuple(objArb, phraseArb, subsetObjArb);
+          }),
+          (params) => {
+            expect(...params);
+          },
         ),
-        fc.record({ a: fc.constant(1) }), // Subset properties
-      ],
     },
   },
   'string-includes-contains-to-include-to-contain-string-3s3p': {
@@ -722,6 +870,6 @@ const testConfigs = {
 } satisfies Record<string, PropertyTestConfig>;
 
 describe('Property-Based Tests for Sync Parametric Assertions', () => {
-  assertExhaustiveTestConfig(assertions, testConfigs);
+  assertExhaustiveTestConfig('sync parametric', assertions, testConfigs);
   runPropertyTests(testConfigs, assertions, testConfigDefaults);
 });

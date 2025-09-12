@@ -1,19 +1,19 @@
 import fc from 'fast-check';
 import { describe } from 'node:test';
 
-import { AsyncAssertions } from '../../src/assertion/impl/async.js';
+import { PromiseAssertions } from '../../src/assertion/impl/async.js';
 import { keyBy } from '../../src/util.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
-} from './config.js';
+} from './property-test-config.js';
 import { createPhraseExtractor } from './property-test-util.js';
 import {
   assertExhaustiveTestConfig,
-  runPropertyTestsAsync,
+  runPropertyTests,
 } from './property-test.macro.js';
 
-const assertions = keyBy(AsyncAssertions, 'id');
+const assertions = keyBy(PromiseAssertions, 'id');
 
 const extractPhrases = createPhraseExtractor(assertions);
 
@@ -26,6 +26,7 @@ const testConfigs = {
   'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
     {
       invalid: {
+        async: true,
         generators: [
           // Generate functions that throw/reject (invalid for "to resolve")
           fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
@@ -41,6 +42,7 @@ const testConfigs = {
         ],
       },
       valid: {
+        async: true,
         generators: [
           // Generate functions that resolve (valid for "to resolve")
           fc.func(fc.constant('expected value')).map(
@@ -61,6 +63,7 @@ const testConfigs = {
   // Test functions that reject (to reject)
   'functionschema-to-reject-2s2p': {
     invalid: {
+      async: true,
       generators: [
         // Generate functions that resolve (invalid for "to reject")
         fc.func(fc.string()).map(
@@ -72,6 +75,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         // Generate functions that throw/reject (valid for "to reject")
         fc.func(fc.string()).map((fn) => async (..._args: unknown[]) => {
@@ -86,6 +90,7 @@ const testConfigs = {
   // Test functions rejecting with specific error class
   'functionschema-to-reject-with-a-to-reject-with-an-classschema-3s3p': {
     invalid: {
+      async: true,
       generators: [
         // Generate function that throws wrong error type
         fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
@@ -101,6 +106,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         // Generate function that throws correct error type
         fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
@@ -119,6 +125,7 @@ const testConfigs = {
   // Test functions rejecting with string patterns
   'functionschema-to-reject-with-string-regexp-object-3s3p': {
     invalid: {
+      async: true,
       generators: [
         // Generate functions that don't reject or reject with wrong value
         fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
@@ -134,6 +141,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         // Generate functions that reject with the expected value
         fc
@@ -155,6 +163,7 @@ const testConfigs = {
   // Test functions that resolve (to resolve/to fulfill)
   'functionschema-to-resolve-to-fulfill-2s2p': {
     invalid: {
+      async: true,
       generators: [
         // Generate functions that throw/reject (invalid for "to resolve")
         fc.func(fc.string()).map((fn) => async (..._args: unknown[]) => {
@@ -167,6 +176,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         // Generate functions that resolve (valid for "to resolve")
         fc.func(fc.string()).map(
@@ -184,6 +194,7 @@ const testConfigs = {
   'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
     {
       invalid: {
+        async: true,
         generators: [
           // Generate promises that resolve to incorrect values
           fc
@@ -199,6 +210,7 @@ const testConfigs = {
         ],
       },
       valid: {
+        async: true,
         generators: [
           // Generate promises that resolve to correct values
           fc.constant(Promise.resolve({ baz: 'quux', foo: 'bar' })),
@@ -215,6 +227,7 @@ const testConfigs = {
   // Test promises that reject (to reject)
   'wrappedpromiselikeschema-to-reject-2s2p': {
     invalid: {
+      async: true,
       generators: [
         fc.anything().map((val) => Promise.resolve(val)),
         fc.constantFrom(
@@ -223,6 +236,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         fc
           .string()
@@ -238,6 +252,7 @@ const testConfigs = {
   'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-classschema-3s3p':
     {
       invalid: {
+        async: true,
         generators: [
           fc.string().map((msg) => Promise.reject(new TypeError(msg))),
           fc.constantFrom(
@@ -249,6 +264,7 @@ const testConfigs = {
         ],
       },
       valid: {
+        async: true,
         generators: [
           fc.string().map((msg) => Promise.reject(new TypeError(msg))),
           fc.constantFrom(
@@ -262,35 +278,43 @@ const testConfigs = {
     },
 
   // Test promises rejecting with string patterns
-  'wrappedpromiselikeschema-to-reject-with-string-regexp-object-3s3p': {
-    invalid: {
-      generators: [
-        fc
-          .string()
-          .filter((s) => s !== 'expected message')
-          .map((msg) => {
-            // Create a thenable that defers promise creation to avoid unhandled rejections
-            return {
-              then: (onfulfilled?: () => void, onrejected?: () => void) =>
-                Promise.reject(new Error(msg)).then(onfulfilled, onrejected),
-            };
-          }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'wrappedpromiselikeschema-to-reject-with-string-regexp-object-3s3p',
+  'wrappedpromiselikeschema-to-reject-with-error-satisfying-string-regexp-object-3s3p':
+    {
+      invalid: {
+        async: true,
+        generators: [
+          fc
+            .string()
+            .filter((s) => s !== 'expected message')
+            .map((msg) => {
+              // Create a thenable that defers promise creation to avoid unhandled rejections
+              return {
+                then: (onfulfilled?: () => void, onrejected?: () => void) =>
+                  Promise.reject(new Error(msg)).then(onfulfilled, onrejected),
+              };
+            }),
+          fc.constantFrom(
+            ...extractPhrases(
+              'wrappedpromiselikeschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
+            ),
           ),
-        ),
-        fc.constant('expected message'), // Error message doesn't match
-      ],
-    },
-    valid: {
-      generators: [
-        // Create a thenable that defers promise creation to avoid unhandled rejections
-        fc.constant({
-          then: (onfulfilled?: () => void, onrejected?: () => void) =>
-            Promise.reject(new Error('expected message')).then(
-              onfulfilled,
-              onrejected,
+          fc.constant('expected message'), // Error message doesn't match
+        ],
+      },
+      valid: {
+        async: true,
+        generators: [
+          // Create a thenable that defers promise creation to avoid unhandled rejections
+          fc.constant({
+            then: (onfulfilled?: () => void, onrejected?: () => void) =>
+              Promise.reject(new Error('expected message')).then(
+                onfulfilled,
+                onrejected,
+              ),
+          }),
+          fc.constantFrom(
+            ...extractPhrases(
+              'wrappedpromiselikeschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
             ),
         }),
         fc.constantFrom(
@@ -306,6 +330,7 @@ const testConfigs = {
   // Test promises that resolve (to resolve/to fulfill)
   'wrappedpromiselikeschema-to-resolve-to-fulfill-2s2p': {
     invalid: {
+      async: true,
       generators: [
         fc
           .string()
@@ -318,6 +343,7 @@ const testConfigs = {
       ],
     },
     valid: {
+      async: true,
       generators: [
         fc.anything().map((val) => Promise.resolve(val)),
         fc.constantFrom(
@@ -331,7 +357,7 @@ const testConfigs = {
 } as const satisfies Record<string, PropertyTestConfig>;
 
 describe('Property-based tests for async assertions', () => {
-  assertExhaustiveTestConfig(assertions, testConfigs);
+  assertExhaustiveTestConfig('promise', assertions, testConfigs);
 
-  runPropertyTestsAsync(testConfigs, assertions, testConfigDefaults);
+  runPropertyTests(testConfigs, assertions, testConfigDefaults);
 });

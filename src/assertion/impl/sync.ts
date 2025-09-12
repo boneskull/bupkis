@@ -9,6 +9,7 @@
  * @packageDocumentation
  */
 
+import { CallbackSyncAssertions } from './callback.js';
 import { BasicAssertions } from './sync-basic.js';
 import { CollectionAssertions } from './sync-collection.js';
 import { EsotericAssertions } from './sync-esoteric.js';
@@ -19,10 +20,12 @@ export const SyncAssertions = [
   ...BasicAssertions,
   ...EsotericAssertions,
   ...ParametricAssertions,
+  ...CallbackSyncAssertions,
 ] as const;
 
 export {
   BasicAssertions,
+  CallbackSyncAssertions,
   CollectionAssertions,
   EsotericAssertions,
   ParametricAssertions,

@@ -15,6 +15,10 @@
  * - `sync-esoteric` - maps to `EsotericAssertions` from
  *   `src/assertion/impl/sync-esoteric.ts`
  * - `async` - maps to `AsyncAssertions` from `src/assertion/impl/async.ts`
+ * - `async-callback` - maps to `CallbackAsyncAssertions` from
+ *   `src/assertion/impl/callback.ts`
+ * - `sync-callback` - maps to `CallbackSyncAssertions` from
+ *   `src/assertion/impl/callback.ts`
  *
  * This script uses `parseArgs` from `node:util` and dumps values using
  * `console.dir()`.
@@ -36,9 +40,14 @@
 import { parseArgs } from 'node:util';
 
 // Import assertion collections
-import { AsyncAssertions } from '../dist/esm/assertion/impl/async.js';
+import {
+  AsyncAssertions,
+  CallbackAsyncAssertions,
+  PromiseAssertions,
+} from '../dist/esm/assertion/impl/async.js';
 import {
   BasicAssertions,
+  CallbackSyncAssertions,
   CollectionAssertions,
   EsotericAssertions,
   ParametricAssertions,
@@ -49,8 +58,11 @@ import {
 const collections = /** @type {const} */ ({
   all: [...SyncAssertions, ...AsyncAssertions],
   async: AsyncAssertions,
+  'async-callback': CallbackAsyncAssertions,
+  promise: PromiseAssertions,
   sync: SyncAssertions,
   'sync-basic': BasicAssertions,
+  'sync-callback': CallbackSyncAssertions,
   'sync-collection': CollectionAssertions,
   'sync-esoteric': EsotericAssertions,
   'sync-parametric': ParametricAssertions,
