@@ -32,7 +32,7 @@ expect('hello', 'to be an array');
 expect('hello', 'not to be an array');
 ```
 
-### to be empty (array)
+### &lt;array&gt; to be empty
 
 **Success**:
 
@@ -53,7 +53,7 @@ expect([1, 2, 3], 'to be empty');
 expect([1, 2, 3], 'not to be empty');
 ```
 
-### to have length &lt;nonnegative-integer&gt;
+### &lt;array&gt; to have length &lt;nonnegative-integer&gt;
 
 **Success**:
 
@@ -75,7 +75,7 @@ expect([1, 2], 'to have length', 3);
 expect([1, 2], 'not to have length', 3);
 ```
 
-### to be non-empty (array)
+### &lt;array&gt; to be non-empty
 
 **Success**:
 
@@ -97,7 +97,7 @@ expect([], 'to be non-empty');
 expect([], 'not to be non-empty');
 ```
 
-### to contain &lt;any&gt; / to include &lt;any&gt; (array)
+### &lt;array&gt; to contain &lt;any&gt;
 
 > _Aliases: `to contain <any>`, `to include <any>`_
 
@@ -121,7 +121,7 @@ expect([1, 2, 3], 'to contain', 5);
 expect([1, 2, 3], 'not to contain', 5);
 ```
 
-### to contain &lt;any&gt; / to include &lt;any&gt; (Map)
+### &lt;Map&gt; to contain &lt;any&gt;
 
 > _Aliases: `to contain <any>`, `to include <any>`_
 
@@ -150,7 +150,7 @@ expect(map, 'to contain', 'key3');
 expect(map, 'not to contain', 'key3');
 ```
 
-### to have size &lt;nonnegative-integer&gt; (Map)
+### &lt;Map&gt; to have size &lt;nonnegative-integer&gt;
 
 **Success**:
 
@@ -176,7 +176,7 @@ expect(map, 'to have size', 2);
 expect(map, 'not to have size', 2);
 ```
 
-### to be empty (Map)
+### &lt;Map&gt; to be empty
 
 **Success**:
 
@@ -198,7 +198,7 @@ expect(map, 'to be empty');
 expect(map, 'not to be empty');
 ```
 
-### to contain &lt;any&gt; / to include &lt;any&gt; (Set)
+### &lt;Set&gt; to contain &lt;any&gt;
 
 > _Aliases: `to contain <any>`, `to include <any>`_
 
@@ -224,7 +224,7 @@ expect(set, 'to contain', 5);
 expect(set, 'not to contain', 5);
 ```
 
-### to have size &lt;nonnegative-integer&gt; (Set)
+### &lt;Set&gt; to have size &lt;nonnegative-integer&gt;
 
 **Success**:
 
@@ -247,7 +247,7 @@ expect(set, 'to have size', 3);
 expect(set, 'not to have size', 3);
 ```
 
-### to be empty (Set)
+### &lt;Set&gt; to be empty
 
 **Success**:
 
@@ -291,7 +291,7 @@ expect([1, 2, 3], 'to be a Set');
 expect([1, 2, 3], 'not to be a Set');
 ```
 
-### to contain &lt;any&gt; / to include &lt;any&gt; (WeakMap)
+### &lt;WeakMap&gt; to contain &lt;any&gt;
 
 > _Aliases: `to contain <any>`, `to include <any>`_
 
@@ -340,7 +340,7 @@ expect(new Map(), 'to be a WeakMap');
 expect(new Map(), 'not to be a WeakMap');
 ```
 
-### to contain &lt;any&gt; / to include &lt;any&gt; (WeakSet)
+### &lt;WeakSet&gt; to contain &lt;any&gt;
 
 > _Aliases: `to contain <any>`, `to include <any>`_
 
