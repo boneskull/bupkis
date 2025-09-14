@@ -68,14 +68,8 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
  * our various use-cases. These configurations are applied in a cascading
  * manner, with variant-specific first, then config-level, then finally defaults
  * (defined elsewhere).
- *
- * Omits `examples` from `Parameters` because this test suite uses pure
- * property-based testing with generators rather than example-based testing. The
- * `examples` property is for providing specific test cases, while `generators`
- * defines how to create random inputs that should satisfy the assertion
- * properties.
  */
-export type PropertyTestConfigParameters = Omit<Parameters<any>, 'examples'>;
+export type PropertyTestConfigParameters = Parameters<any>;
 
 /**
  * Configuration for a specific variant of an assertion in property-based tests.
