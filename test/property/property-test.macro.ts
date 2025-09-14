@@ -56,7 +56,7 @@ export const assertExhaustiveTestConfig = (
 };
 
 const globalTestConfigDefaults = {
-  numRuns: process.env.WALLABY ? 5 : 100,
+  numRuns: process.env.WALLABY ? 10 : 250,
 } as const satisfies PropertyTestConfigParameters;
 
 const isPropertyTestConfigVariantGenerators = (
