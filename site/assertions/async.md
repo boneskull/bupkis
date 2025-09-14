@@ -61,9 +61,9 @@ await expectAsync(Promise.resolve(42), 'to reject');
 await expectAsync(Promise.resolve(42), 'not to reject');
 ```
 
-### to reject with a &lt;constructor&gt; / to reject with an &lt;constructor&gt;
+### to reject with a &lt;constructor&gt;
 
-> _Aliases: `to reject with a <constructor>`, `to reject with an <constructor>`_
+> _Aliases: `to reject with a <constructor>`_
 
 **Success**:
 
@@ -102,7 +102,7 @@ await expectAsync(
 );
 ```
 
-### to reject with &lt;string | RegExp | object&gt;
+### to reject with error satisfying &lt;string | RegExp | object&gt;
 
 **Success**:
 

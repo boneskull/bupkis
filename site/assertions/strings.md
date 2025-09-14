@@ -150,9 +150,9 @@ expect('', 'to be non-empty');
 expect('', 'not to be non-empty');
 ```
 
-### includes &lt;string&gt; / contains &lt;string&gt;
+### includes &lt;string&gt;
 
-> _Aliases: `includes <string>`, `contains <string>`, `to include <string>`, `to contain <string>`_
+> _Aliases: `includes <string>`_
 
 **Success**:
 

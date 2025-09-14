@@ -99,7 +99,7 @@ expect([], 'not to be non-empty');
 
 ### &lt;array&gt; to contain &lt;any&gt;
 
-> _Aliases: `to contain <any>`, `to include <any>`_
+> _Aliases: `to contain <any>`_
 
 **Success**:
 
@@ -123,7 +123,7 @@ expect([1, 2, 3], 'not to contain', 5);
 
 ### &lt;Map&gt; to contain &lt;any&gt;
 
-> _Aliases: `to contain <any>`, `to include <any>`_
+> _Aliases: `to contain <any>`_
 
 **Success**:
 
@@ -200,7 +200,7 @@ expect(map, 'not to be empty');
 
 ### &lt;Set&gt; to contain &lt;any&gt;
 
-> _Aliases: `to contain <any>`, `to include <any>`_
+> _Aliases: `to contain <any>`_
 
 **Success**:
 
@@ -293,7 +293,7 @@ expect([1, 2, 3], 'not to be a Set');
 
 ### &lt;WeakMap&gt; to contain &lt;any&gt;
 
-> _Aliases: `to contain <any>`, `to include <any>`_
+> _Aliases: `to contain <any>`_
 
 **Success**:
 
@@ -342,7 +342,7 @@ expect(new Map(), 'not to be a WeakMap');
 
 ### &lt;WeakSet&gt; to contain &lt;any&gt;
 
-> _Aliases: `to contain <any>`, `to include <any>`_
+> _Aliases: `to contain <any>`_
 
 **Success**:
 
