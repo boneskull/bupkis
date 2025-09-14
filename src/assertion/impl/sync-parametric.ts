@@ -308,14 +308,13 @@ export const ParametricAssertions = [
       }
     },
   ),
-  // @ts-expect-error fix later
   createAssertion(
     [
       z.looseObject({}),
       ['to deep equal', 'to deeply equal'],
       z.looseObject({}),
     ],
-    (_, expected) => valueToSchema(expected, { strict: true }),
+    (_, expected) => valueToSchema(expected, valueToSchemaOptionsForDeepEqual),
   ),
   createAssertion(
     [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], ArrayLikeSchema],
@@ -381,10 +380,7 @@ export const ParametricAssertions = [
           .or(z.coerce.string().regex(param))
           .safeParse(error).success;
       } else if (isNonNullObject(param)) {
-        const schema = valueToSchema(param, {
-          literalPrimitives: true,
-          strict: true,
-        });
+        const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
         return schema.safeParse(error).success;
       } else {
         throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
@@ -401,6 +397,7 @@ export const ParametricAssertions = [
     ],
     (subject, ctor, param) => {
       const error = trapError(subject);
+
       if (!isA(error, ctor)) {
         return {
           actual: error,
@@ -410,47 +407,32 @@ export const ParametricAssertions = [
             : `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${error as unknown}`,
         };
       }
-
+      let schema: undefined | z.ZodType;
+      // TODO: can valueToSchema handle the first two conditional branches?
       if (isString(param)) {
-        const result = z
+        schema = z
           .looseObject({
-            message: z.coerce.string().refine((msg) => msg.includes(param)),
+            message: z.coerce.string().pipe(z.literal(param)),
           })
-          .or(z.coerce.string().refine((str) => str.includes(param)))
-          .safeParse(error);
-        if (!result.success) {
-          return {
-            actual: isError(error) ? error.message : String(error),
-            expected: `error with message containing "${param}"`,
-            message: `Expected error message to contain "${param}", but got: ${isError(error) ? error.message : String(error)}`,
-          };
-        }
+          .or(z.coerce.string().pipe(z.literal(param)));
       } else if (isA(param, RegExp)) {
-        const result = z
+        schema = z
           .looseObject({
             message: z.coerce.string().regex(param),
           })
-          .or(z.coerce.string().regex(param))
-          .safeParse(error);
-        if (!result.success) {
-          return {
-            actual: isError(error) ? error.message : String(error),
-            expected: `error with message matching ${param}`,
-            message: `Expected error message to match ${param}, but got: ${isError(error) ? error.message : String(error)}`,
-          };
-        }
+          .or(z.coerce.string().regex(param));
       } else if (isNonNullObject(param)) {
-        const schema = valueToSchema(param);
-        const result = schema.safeParse(error);
-        if (!result.success) {
-          return {
-            actual: error as unknown,
-            expected: param,
-            message: `Expected error to match object: ${inspect(param)}, but got: ${inspect(error)}`,
-          };
-        }
-      } else {
-        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
+      }
+      if (!schema) {
+        throw new TypeError(
+          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        );
+      }
+
+      const result = schema.safeParse(error);
+      if (!result.success) {
+        return result.error;
       }
     },
   ),
@@ -460,7 +442,15 @@ export const ParametricAssertions = [
       ['includes', 'contains', 'to include', 'to contain'],
       z.string(),
     ],
-    (subject, expected) => subject.includes(expected),
+    (subject, expected) => {
+      if (!subject.includes(expected)) {
+        return {
+          actual: subject,
+          expected: `string including "${expected}"`,
+          message: `Expected "${subject}" to include "${expected}"`,
+        };
+      }
+    },
   ),
 
   createAssertion([z.string(), 'to match', RegExpSchema], (subject, regex) =>
@@ -472,14 +462,11 @@ export const ParametricAssertions = [
       ['to satisfy', 'to be like'],
       z.looseObject({}),
     ],
-    (subject, shape) =>
-      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-      valueToSchema(shape) as unknown as z.ZodType<{}, z.core.$loose>,
+    (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
   ),
   createAssertion(
     [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
-    (subject, shape) =>
-      valueToSchema(shape) as unknown as typeof ArrayLikeSchema,
+    (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
   ),
   createAssertion(
     [FunctionSchema, 'to have arity', z.number().int().nonnegative()],

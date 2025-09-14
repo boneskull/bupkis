@@ -47,9 +47,12 @@ export const PromiseAssertions = [
     async (subject) => {
       try {
         await subject();
-        return true;
       } catch {
-        return false;
+        return {
+          actual: 'function rejected',
+          expected: 'function to fulfill',
+          message: 'Expected function to fulfill, but it rejected instead',
+        };
       }
     },
   ),
@@ -58,33 +61,38 @@ export const PromiseAssertions = [
     async (subject) => {
       try {
         await subject;
-        return true;
       } catch {
-        return false;
+        return {
+          actual: 'promise rejected',
+          expected: 'promise to not reject',
+          message: 'Expected promise to fulfill, but it rejected instead',
+        };
       }
     },
   ),
 
   // Non-parameterized "to reject" assertions
   createAsyncAssertion([FunctionSchema, 'to reject'], async (subject) => {
-    let rejected = false;
     try {
       await subject();
-    } catch {
-      rejected = true;
-    }
-    return rejected;
+      return {
+        actual: 'function fulfilled',
+        expected: 'function to reject',
+        message: 'Expected function to reject, but it fulfilled instead',
+      };
+    } catch {}
   }),
   createAsyncAssertion(
     [WrappedPromiseLikeSchema, 'to reject'],
     async (subject) => {
-      let rejected = false;
       try {
         await subject;
-      } catch {
-        rejected = true;
-      }
-      return rejected;
+        return {
+          actual: 'function fulfilled',
+          expected: 'function to reject',
+          message: 'Expected function to reject, but it fulfilled instead',
+        };
+      } catch {}
     },
   ),
   // Parameterized "to reject" with class constructor
@@ -117,66 +125,89 @@ export const PromiseAssertions = [
   createAsyncAssertion(
     [
       FunctionSchema,
-      ['to reject with'],
+      ['to reject with error satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (subject, param) => {
       const error = await trapAsyncFnError(subject);
       if (!error) {
-        return false;
+        return {
+          actual: 'function fulfilled',
+          expect: 'function to reject',
+          message: 'Expected function to reject, but it fulfilled instead',
+        };
       }
 
+      let schema: undefined | z.ZodType;
+      // TODO: can valueToSchema handle the first two conditional branches?
       if (isString(param)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().pipe(z.literal(param)),
           })
-          .or(z.coerce.string().pipe(z.literal(param)))
-          .safeParse(error).success;
+          .or(z.coerce.string().pipe(z.literal(param)));
       } else if (isA(param, RegExp)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().regex(param),
           })
-          .or(z.coerce.string().regex(param))
-          .safeParse(error).success;
+          .or(z.coerce.string().regex(param));
       } else if (isNonNullObject(param)) {
-        return valueToSchema(param, { strict: false }).safeParse(error).success;
-      } else {
-        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
+      }
+      if (!schema) {
+        throw new TypeError(
+          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        );
+      }
+
+      const result = schema.safeParse(error);
+      if (!result.success) {
+        return result.error;
       }
     },
   ),
   createAsyncAssertion(
     [
       WrappedPromiseLikeSchema,
-      ['to reject with'],
+      ['to reject with error satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (subject, param) => {
       const error = await trapPromiseError(subject);
       if (!error) {
-        return false;
+        return {
+          actual: 'promise fulfilled',
+          expect: 'promise to reject',
+          message: 'Expected promise to reject, but it fulfilled instead',
+        };
       }
-
+      let schema: undefined | z.ZodType;
+      // TODO: can valueToSchema handle the first two conditional branches?
       if (isString(param)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().pipe(z.literal(param)),
           })
-          .or(z.coerce.string().pipe(z.literal(param)))
-          .safeParse(error).success;
+          .or(z.coerce.string().pipe(z.literal(param)));
       } else if (isA(param, RegExp)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().regex(param),
           })
-          .or(z.coerce.string().regex(param))
-          .safeParse(error).success;
+          .or(z.coerce.string().regex(param));
       } else if (isNonNullObject(param)) {
-        return valueToSchema(param, { strict: false }).safeParse(error).success;
-      } else {
-        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
+      }
+      if (!schema) {
+        throw new TypeError(
+          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        );
+      }
+
+      const result = schema.safeParse(error);
+      if (!result.success) {
+        return result.error;
       }
     },
   ),
@@ -200,35 +231,32 @@ export const PromiseAssertions = [
           )}`,
         };
       }
+      let schema: undefined | z.ZodType;
+      // TODO: can valueToSchema handle the first two conditional branches?
       if (isString(param)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().pipe(z.literal(param)),
           })
-          .or(z.coerce.string().pipe(z.literal(param)))
-          .safeParse(value).success;
+          .or(z.coerce.string().pipe(z.literal(param)));
       } else if (isA(param, RegExp)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().regex(param),
           })
-          .or(z.coerce.string().regex(param))
-          .safeParse(value).success;
+          .or(z.coerce.string().regex(param));
       } else if (isNonNullObject(param)) {
-        const schema = valueToSchema(param);
-        const result = schema.safeParse(value);
-        if (!result.success) {
-          return {
-            actual: value,
-            expected: param,
-            message: `Expected resolved value to satisfy schema ${inspect(
-              param,
-            )}, but it does not`,
-          };
-        }
-        return true;
-      } else {
-        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
+      }
+      if (!schema) {
+        throw new TypeError(
+          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        );
+      }
+
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        return result.error;
       }
     },
   ),
@@ -245,43 +273,40 @@ export const PromiseAssertions = [
         value = await subject();
       } catch (err) {
         return {
-          actual: err,
-          expect: 'function to not throw',
-          message: `Expected function to not throw, but it threw ${inspect(
+          actual: 'function rejected',
+          expect: 'function to fulfill',
+          message: `Expected function to fulfill, but it rejected with ${inspect(
             err,
           )}`,
         };
       }
 
+      let schema: undefined | z.ZodType;
+      // TODO: can valueToSchema handle the first two conditional branches?
       if (isString(param)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().pipe(z.literal(param)),
           })
-          .or(z.coerce.string().pipe(z.literal(param)))
-          .safeParse(value).success;
+          .or(z.coerce.string().pipe(z.literal(param)));
       } else if (isA(param, RegExp)) {
-        return z
-          .object({
+        schema = z
+          .looseObject({
             message: z.coerce.string().regex(param),
           })
-          .or(z.coerce.string().regex(param))
-          .safeParse(value).success;
+          .or(z.coerce.string().regex(param));
       } else if (isNonNullObject(param)) {
-        const schema = valueToSchema(param);
-        const result = schema.safeParse(value);
-        if (!result.success) {
-          return {
-            actual: value,
-            expected: param,
-            message: `Expected resolved value to satisfy schema ${inspect(
-              param,
-            )}, but it does not`,
-          };
-        }
-        return true;
-      } else {
-        throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
+      }
+      if (!schema) {
+        throw new TypeError(
+          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        );
+      }
+
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        return result.error;
       }
     },
   ),
