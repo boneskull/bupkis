@@ -20,9 +20,7 @@ const extractPhrases = createPhraseExtractor(assertions);
 /**
  * Test config defaults
  */
-const testConfigDefaults: PropertyTestConfigParameters = {
-  numRuns: 500,
-} as const;
+const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 const testConfigs = {
   'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':

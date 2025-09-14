@@ -148,7 +148,6 @@ const testConfigs = {
           ),
       },
       valid: {
-        numRuns: 50,
         property: () =>
           fc.property(
             fc.array(fc.string()).chain((arr) => {
@@ -578,7 +577,6 @@ const testConfigs = {
         ),
     },
     valid: {
-      numRuns: 50,
       property: () =>
         fc.property(
           fc.record({ a: fc.string() }).chain((obj) => {
@@ -864,7 +862,6 @@ const testConfigs = {
           ),
           fc.constant('test'),
         ],
-        numRuns: 50, // Reduce runs since equality requires exact matching
       },
     },
 } satisfies Record<string, PropertyTestConfig>;

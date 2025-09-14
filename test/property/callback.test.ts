@@ -25,9 +25,7 @@ const extractAsyncPhrases = createPhraseExtractor(asyncAssertions);
 /**
  * Test config defaults for callback assertions
  */
-const testConfigDefaults: PropertyTestConfigParameters = {
-  numRuns: 100,
-} as const;
+const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 const objectFilter = fc
   .object()
@@ -792,7 +790,6 @@ const asyncTestConfigs = {
             { '': undefined },
           ],
         ],
-        numRuns: 500,
       },
       invalidNegated: {
         asyncProperty: () =>
