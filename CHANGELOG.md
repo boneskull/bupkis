@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.2.0...bupkis-v0.3.0) (2025-09-14)
+
+
+### Features
+
+* **assertions:** add callback assertions ([a879213](https://github.com/boneskull/bupkis/commit/a87921398e63583fe75e8085ea20bb4406d0dbdb))
+* **createAssertion:** allow ZodError return types from assertion implementation functions ([0dbd940](https://github.com/boneskull/bupkis/commit/0dbd94028da4761f6c4842fd6411782b20925b82))
+
+
+### Bug Fixes
+
+* **assertions:** fix all manner of issues w/r/t "to satisfies" and deep equality ([c0800a3](https://github.com/boneskull/bupkis/commit/c0800a3523876ac6b1b3083325f2bb3dafed8bdc))
+* **assertions:** fix edge-cases in "to satisfy" and "deep equal" assertions ([a879213](https://github.com/boneskull/bupkis/commit/a87921398e63583fe75e8085ea20bb4406d0dbdb))
+* restore caching for async schema assertions ([8b62d74](https://github.com/boneskull/bupkis/commit/8b62d74db596155a1cf10e2da55dfe251b082589))
+
 ## [0.2.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.1.2...bupkis-v0.2.0) (2025-09-10)
 
 
