@@ -11,7 +11,11 @@ import {
   StrongSetSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { valueToSchema } from '../../util.js';
+import {
+  valueToSchema,
+  valueToSchemaOptionsForDeepEqual,
+  valueToSchemaOptionsForSatisfies,
+} from '../../value-to-schema.js';
 import { createAssertion } from '../create.js';
 
 const trapError = (fn: () => unknown): unknown => {

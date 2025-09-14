@@ -1,11 +1,5 @@
 /**
- * Utility functions for object satisfaction and shape validation.
- *
- * This module provides core utility functions for checking if objects satisfy
- * expected shapes, including `satisfies` for partial matching,
- * `exhaustivelySatisfies` for exact matching, and `shallowSatisfiesShape` for
- * converting shapes to Zod schemas. All functions handle circular references
- * safely.
+ * Utility functions.
  *
  * @category API
  * @example
@@ -18,7 +12,6 @@
  */
 
 import { type StringKeyOf } from 'type-fest';
-import { z } from 'zod/v4';
 
 export * from './value-to-schema.js';
 
@@ -66,6 +59,148 @@ export function hasKey(
       return true;
     }
 
+    // Recursively search in object/array values
+    if (Array.isArray(obj)) {
+      // For arrays, search in each element
+      for (const item of obj) {
+        if (hasKey(item, key, visited)) {
+          return true;
+        }
+      }
+    } else {
+      // For objects, search in each property value
+      for (const propValue of Object.values(obj)) {
+        if (hasKey(propValue, key, visited)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } finally {
+    visited.delete(obj);
+  }
+}
+
+/**
+ * _Recursively_ searches within an object, array, or any nested structure to
+ * find whether a specific value exists.
+ *
+ * Uses strict equality (===) to compare values, with special handling for empty
+ * objects. Handles circular references by tracking visited objects to prevent
+ * infinite recursion.
+ *
+ * @example
+ *
+ * ```ts
+ * const obj = { a: 1, b: { c: 2, d: [{ e: 3 }] }, empty: {} };
+ *
+ * hasValue(obj, 2); // true (found in obj.b.c)
+ * hasValue(obj, 3); // true (found in obj.b.d[0].e)
+ * hasValue(obj, {}); // true (found in obj.empty, matches empty objects)
+ * hasValue(obj, '1'); // false (strict equality, 1 !== '1')
+ * hasValue(obj, 999); // false (value not found)
+ * ```
+ *
+ * @param obj The object, array, or value to search within
+ * @param value The value to search for (using strict equality, with special
+ *   empty object handling)
+ * @param visited Internal set for circular reference detection
+ * @returns True if the value is found anywhere in the structure, false
+ *   otherwise
+ */
+export function hasValue(
+  obj: unknown,
+  value: unknown,
+  visited = new WeakSet<object>(),
+): boolean {
+  // Direct value comparison
+  if (obj === value) {
+    return true;
+  }
+
+  // Special case: Check for empty objects
+  if (
+    typeof obj === 'object' &&
+    obj !== null &&
+    !Array.isArray(obj) &&
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value)
+  ) {
+    const objKeys = Object.keys(obj);
+    const valueKeys = Object.keys(value);
+
+    // Both are empty objects
+    if (objKeys.length === 0 && valueKeys.length === 0) {
+      return true;
+    }
+  }
+
+  // Handle primitives that can't contain nested values
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+
+  // Prevent infinite recursion with circular references
+  if (visited.has(obj)) {
+    return false;
+  }
+  visited.add(obj);
+
+  try {
+    // Recursively search in object/array values
+    if (Array.isArray(obj)) {
+      // For arrays, search in each element
+      for (const item of obj) {
+        if (hasValue(item, value, visited)) {
+          return true;
+        }
+      }
+    } else {
+      // For objects, search in each property value
+      for (const propValue of Object.values(obj)) {
+        if (hasValue(propValue, value, visited)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } finally {
+    visited.delete(obj);
+  }
+}
+
+/**
+ * _Recursively_ searches for a key-value pair within an object or array.
+ *
+ * Uses strict equality (===) to compare values. Handles circular references by
+ * tracking visited objects to prevent infinite recursion.
+ *
+ * @example
+ *
+ * ```ts
+ * const obj = { a: 1, b: { c: 2, d: [{ e: 3 }] } };
+ *
+ * hasKeyValue(obj, 'c', 2); // true
+ * hasKeyValue(obj, 'e', 3); // true
+ * hasKeyValue(obj, 'a', '1'); // false (strict equality)
+ * hasKeyValue(obj, 'x', 1); // false (key not found)
+ * /**
+ * Maps an array of objects to an object keyed by the specified key.
+ *
+ * @param collection Array of objects
+ * @param key Name of key
+ * @returns Object mapping key values to objects
+ * ```
+ */
+export function keyBy<
+  const T extends readonly Record<PropertyKey, any>[],
+  K extends StringKeyOf<T[number]>,
+>(collection: T, key: K): Record<string, T[number]> {
+  const result = {} as Record<string, T[number]>;
+
   for (const item of collection) {
     const keyValue = item[key];
     if (
@@ -79,147 +214,3 @@ export function hasKey(
 
   return result;
 }
-
-/**
- * Recursively converts an arbitrary value to a Zod v4 schema that would
- * validate values with the same structure.
- *
- * This function analyzes the runtime value and generates a corresponding Zod
- * schema that captures the value's structure and type information. It handles
- * primitives, objects, arrays, functions, and various built-in types, with
- * support for circular reference detection.
- *
- * @example
- *
- * ```typescript
- * // Primitive types
- * valueToSchema('hello'); // z.string()
- * valueToSchema(42); // z.number()
- * valueToSchema(true); // z.boolean()
- *
- * // Objects
- * valueToSchema({ name: 'John', age: 30 });
- * // z.object({ name: z.string(), age: z.number() })
- *
- * // Arrays
- * valueToSchema(['a', 'b', 'c']); // z.array(z.string())
- * valueToSchema([1, 'mixed']); // z.array(z.union([z.number(), z.string()]))
- *
- * // Nested structures
- * valueToSchema({ users: [{ name: 'John' }] });
- * // z.object({ users: z.array(z.object({ name: z.string() })) })
- * ```
- *
- * @param value - The value to convert to a schema
- * @param options - Configuration options for schema generation
- * @param visited - Internal WeakSet for circular reference detection
- * @returns A Zod schema that validates values matching the input's structure
- */
-export const valueToSchema = (
-  value: unknown,
-  visited = new WeakSet<object>(),
-): z.ZodType => {
-  const {
-    _currentDepth = 0,
-    allowMixedArrays = true,
-    literalPrimitives = false,
-    literalRegExp = false,
-    maxDepth = 10,
-    strict = false,
-  } = options;
-
-  // Prevent infinite recursion
-  if (_currentDepth >= maxDepth) {
-    return z.unknown();
-  }
-
-  // Handle primitives
-  if (value === null) {
-    return z.null();
-  }
-
-  if (value === undefined) {
-    return z.undefined();
-  }
-  if (Number.isNaN(value as number)) {
-    return z.nan();
-  }
-  visited.add(obj);
-
-  try {
-    // Check if this object has the key with the exact value
-    if (Object.hasOwn(obj, key)) {
-      const objRecord = obj as Record<PropertyKey, unknown>;
-      if (objRecord[key] === value) {
-        return true;
-      }
-
-      if (value instanceof RegExp) {
-        if (literalRegExp) {
-          return RegExpSchema;
-        }
-        return z.coerce.string().regex(value);
-      }
-
-      if (value instanceof Map) {
-        return StrongMapSchema;
-      }
-
-      if (value instanceof Set) {
-        return StrongSetSchema;
-      }
-
-      if (value instanceof WeakMap) {
-        return z.instanceof(WeakMap);
-      }
-
-      if (value instanceof WeakSet) {
-        return z.instanceof(WeakSet);
-      }
-
-      if (value instanceof Error) {
-        return z.instanceof(Error);
-      }
-    } else {
-      // For objects, search in each property value
-      for (const propValue of Object.values(obj)) {
-        if (hasKeyValue(propValue, key, value, visited)) {
-          return true;
-        }
-      }
-
-      // Handle plain objects
-      if (isNonNullObject(value)) {
-        const schemaShape: Record<string, z.ZodType<any>> = {};
-
-        for (const [key, val] of Object.entries(value)) {
-          if (isString(key)) {
-            schemaShape[key] = valueToSchema(
-              val,
-              {
-                ...options,
-                _currentDepth: _currentDepth + 1,
-              },
-              visited,
-            );
-          }
-        }
-
-        return strict
-          ? z.strictObject(schemaShape)
-          : z.looseObject(schemaShape);
-      }
-
-      // Handle other object types (ArrayBuffer, etc.)
-      return z.custom<object>(
-        (val) => typeof val === 'object' && val !== null,
-        { message: 'Expected an object' },
-      );
-    } finally {
-      visited.delete(value);
-    }
-  }
-
-  // Fallback for unknown types
-  return z.unknown();
-};
