@@ -8,13 +8,14 @@
 
 import Debug from 'debug';
 import { inspect } from 'util';
-import { type z } from 'zod/v4';
+import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
 import {
   isAssertionFailure,
   isBoolean,
+  isError,
   isPromiseLike,
   isZodPromise,
   isZodType,
@@ -183,6 +184,8 @@ export class BupkisAssertionFunctionSync<
         expected: result.expected,
         message: result.message ?? `Assertion ${this} failed`,
       });
+    } else if (isError(result) && result instanceof z.ZodError) {
+      throw this.translateZodError(stackStartFn, result, ...parsedValues);
     } else if (result as unknown) {
       throw new TypeError(
         `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
