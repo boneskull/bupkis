@@ -108,9 +108,9 @@ expect('hello', 'to be an instance of', Number);
 expect('hello', 'not to be an instance of', Number);
 ```
 
-### to be a &lt;constructor&gt; / to be an &lt;constructor&gt;
+### to be a &lt;constructor&gt;
 
-> _Aliases: `to be a <constructor>`, `to be an <constructor>`_
+> _Aliases: `to be a <constructor>`_
 
 **Success**:
 
