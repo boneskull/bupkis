@@ -366,7 +366,7 @@ const testConfigs = {
           fc.constantFrom('to throw a', 'to thrown an'),
           fc.constant(TypeError),
           fc.constant('satisfying'),
-          fc.constant('specific'), // Looking for 'specific' in 'specific error' (should pass)
+          fc.constant(/specific/), // Looking for 'specific' in 'specific error' (should pass)
         ],
       },
     },
