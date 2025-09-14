@@ -227,9 +227,19 @@ export type AssertionImplAsync<Parts extends AssertionParts> =
  */
 export type AssertionImplFnAsync<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
-) => Promise<
-  AssertionFailure | boolean | void | z.ZodType<ParsedSubject<Parts>>
->;
+) =>
+  | AssertionImplFnReturnType<Parts>
+  | Promise<AssertionImplFnReturnType<Parts>>;
+
+/**
+ * The return type of an assertion implementation function.
+ */
+export type AssertionImplFnReturnType<Parts extends AssertionParts> =
+  | AssertionFailure
+  | boolean
+  | void
+  | z.ZodError
+  | z.ZodType<ParsedSubject<Parts>>;
 
 /**
  * The implementation of an assertion as a sync function.
@@ -248,7 +258,7 @@ export type AssertionImplFnAsync<Parts extends AssertionParts> = (
  */
 export type AssertionImplFnSync<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
-) => AssertionFailure | boolean | void | z.ZodType<ParsedSubject<Parts>>;
+) => AssertionImplFnReturnType<Parts>;
 
 /**
  * Maps an {@link AssertionPart} to a parameter to an {@link AssertionImpl}.
