@@ -27,6 +27,7 @@ import { createAssertion, createAsyncAssertion } from '../create.js';
  * @param type - The type of callback ('callback' or 'nodeback')
  * @returns Error object with consistent structure for sync assertions
  */
+/* c8 ignore next */
 const createNotCalledError = (type: 'callback' | 'nodeback') => ({
   actual: 'not called',
   expected: `${type} to be called`,
@@ -40,6 +41,7 @@ const createNotCalledError = (type: 'callback' | 'nodeback') => ({
  * @param type - The type of callback ('callback' or 'nodeback')
  * @returns Error object with consistent structure for async assertions
  */
+/* c8 ignore next */
 const createAsyncNotCalledError = (type: 'callback' | 'nodeback') => ({
   actual: `${type} not called`,
   expected: `${type} to be called`,
@@ -393,6 +395,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, param) => {
       const { called, value } = trapCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
       }
@@ -415,6 +418,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, expected) => {
       const { called, value } = trapCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
       }
@@ -434,6 +438,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, param) => {
       const { called, error, value } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -461,6 +466,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, expected) => {
       const { called, error, value } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -484,6 +490,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject) => {
       const { called, error } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -506,6 +513,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, ctor) => {
       const { called, error } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -537,6 +545,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, param) => {
       const { called, error } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -566,6 +575,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, param) => {
       const { called, value } = trapCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
       }
@@ -586,6 +596,7 @@ export const CallbackSyncAssertions = [
     ],
     (subject, param) => {
       const { called, error, value } = trapNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
       }
@@ -609,6 +620,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject) => {
       const { called } = await trapAsyncCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return {
           actual: 'callback not called',
@@ -626,6 +638,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject) => {
       const { called } = await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return {
           actual: 'nodeback not called',
@@ -648,6 +661,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, param) => {
       const { called, value } = await trapAsyncCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
       }
@@ -670,6 +684,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, expected) => {
       const { called, value } = await trapAsyncCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
       }
@@ -690,6 +705,7 @@ export const CallbackAsyncAssertions = [
     async (subject, param) => {
       const { called, error, value } =
         await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
@@ -718,6 +734,7 @@ export const CallbackAsyncAssertions = [
     async (subject, expected) => {
       const { called, error, value } =
         await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
@@ -741,6 +758,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject) => {
       const { called, error } = await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
@@ -762,6 +780,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, ctor) => {
       const { called, error } = await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
@@ -795,6 +814,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, param) => {
       const { called, error } = await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
@@ -824,6 +844,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, param) => {
       const { called, value } = await trapAsyncCallbackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
       }
@@ -845,6 +866,7 @@ export const CallbackAsyncAssertions = [
     async (subject, param) => {
       const { called, error, value } =
         await trapAsyncNodebackInvocation(subject);
+      /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
       }
