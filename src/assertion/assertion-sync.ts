@@ -217,7 +217,7 @@ export class BupkisAssertionSchemaSync<
 {
   override execute(
     parsedValues: ParsedValues<Parts>,
-    args: unknown[],
+    _args: unknown[],
     stackStartFn: (...args: any[]) => any,
     parseResult?: ParsedResult<Parts>,
   ): void {
