@@ -41,6 +41,28 @@ describe('Assertion creation functions', () => {
           z.number(),
         ]);
       });
+
+      describe('when the implementation returns an AssertionFailure w/o a message', () => {
+        it('should throw an AssertionError with a default message', () => {
+          const assertion = expect.createAssertion(
+            [z.number(), 'to be even'],
+            (value) =>
+              value % 2 === 0
+                ? true
+                : {
+                    actual: value,
+                    expected: 'even number',
+                  },
+          );
+
+          // const newExpect = expect.use([assertion]);
+          expect(
+            () => assertion.execute([3], [], () => undefined),
+            'to throw',
+            `Assertion ${assertion} failed`,
+          );
+        });
+      });
     });
   });
 
