@@ -123,7 +123,7 @@ const testConfigs = {
     },
   },
   // Test functions rejecting with string patterns
-  'functionschema-to-reject-with-string-regexp-object-3s3p': {
+  'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p': {
     invalid: {
       async: true,
       generators: [
@@ -134,7 +134,7 @@ const testConfigs = {
         }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-reject-with-string-regexp-object-3s3p',
+            'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
           ),
         ),
         fc.constant({ baz: 'quux' }), // Expected rejection value
@@ -153,7 +153,7 @@ const testConfigs = {
           }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-reject-with-string-regexp-object-3s3p',
+            'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
           ),
         ),
         fc.constant({ baz: 'quux' }), // Expected rejection value matches
@@ -316,16 +316,11 @@ const testConfigs = {
             ...extractPhrases(
               'wrappedpromiselikeschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
             ),
-        }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'wrappedpromiselikeschema-to-reject-with-string-regexp-object-3s3p',
           ),
-        ),
-        fc.constant('expected message'), // Error message matches exactly
-      ],
+          fc.constant('expected message'), // Error message matches exactly
+        ],
+      },
     },
-  },
 
   // Test promises that resolve (to resolve/to fulfill)
   'wrappedpromiselikeschema-to-resolve-to-fulfill-2s2p': {
