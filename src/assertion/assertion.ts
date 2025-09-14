@@ -13,7 +13,7 @@ import Debug from 'debug';
 import slug from 'slug';
 import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
-import { z } from 'zod/v4';
+import { type z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
@@ -186,22 +186,7 @@ export abstract class BupkisAssertion<
     zodError: z.ZodError,
     ...values: ParsedValues<Parts>
   ): AssertionError {
-    const flat = z.flattenError(zodError);
-
-    let pretty = flat.formErrors.join('; ');
-    for (const [keypath, errors] of Object.entries(flat.fieldErrors)) {
-      pretty += `; ${keypath}: ${(errors as unknown[]).join('; ')}`;
-    }
-
-    const [actual, ...expected] = values as unknown as [unknown, ...unknown[]];
-
-    return new AssertionError({
-      actual,
-      expected: expected.length === 1 ? expected[0] : expected,
-      message: `Assertion ${this} failed: ${pretty}`,
-      operator: `${this}`,
-      stackStartFn,
-    });
+    return AssertionError.fromZodError(zodError, stackStartFn, values);
   }
 
   /**

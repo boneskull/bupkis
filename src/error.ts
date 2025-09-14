@@ -7,6 +7,7 @@
  */
 
 import { AssertionError as NodeAssertionError } from 'node:assert';
+import { z } from 'zod/v4';
 
 import {
   kBupkisAssertionError,
@@ -14,6 +15,7 @@ import {
   kBupkisNegatedAssertionError,
 } from './constant.js';
 import { isA } from './guards.js';
+import { type AssertionParts, type ParsedValues } from './types.js';
 
 /**
  * _BUPKIS_' s custom `AssertionError` class, which is just a thin wrapper
@@ -26,6 +28,42 @@ export class AssertionError extends NodeAssertionError {
   [kBupkisAssertionError] = true;
 
   override name = 'AssertionError';
+
+  /**
+   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
+   * human-friendly message.
+   *
+   * @remarks
+   * This does not handle parameterized assertions with more than one parameter
+   * too cleanly; it's unclear how a test runner would display the expected
+   * values. This will probably need a fix in the future.
+   * @param stackStartFn The function to start the stack trace from
+   * @param zodError The original `ZodError`
+   * @param values Values which caused the error
+   * @returns New `AssertionError`
+   */
+  static fromZodError<Parts extends AssertionParts>(
+    zodError: z.ZodError,
+    stackStartFn: (...args: any[]) => any,
+    values: ParsedValues<Parts>,
+  ): AssertionError {
+    const flat = z.flattenError(zodError);
+
+    let pretty = flat.formErrors.join('; ');
+    for (const [keypath, errors] of Object.entries(flat.fieldErrors)) {
+      pretty += `; ${keypath}: ${(errors as unknown[]).join('; ')}`;
+    }
+
+    const [actual, ...expected] = values as unknown as [unknown, ...unknown[]];
+
+    return new AssertionError({
+      actual,
+      expected: expected.length === 1 ? expected[0] : expected,
+      message: `Assertion ${this} failed: ${pretty}`,
+      operator: `${this}`,
+      stackStartFn,
+    });
+  }
 
   /**
    * Type guard for an instance of this error.
