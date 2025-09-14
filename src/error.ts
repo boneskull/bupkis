@@ -41,6 +41,10 @@ export class AssertionError extends NodeAssertionError {
   }
 }
 
+/**
+ * Variant of an {@link AssertionError} that is thrown when
+ * {@link bupkis!expect.fail} is called.
+ */
 export class FailAssertionError extends AssertionError {
   /**
    * @internal
