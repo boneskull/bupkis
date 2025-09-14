@@ -83,8 +83,10 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 - `npm test` - Run all tests (unit + property) using Node.js built-in test runner with `tsx` loader
 - `npm run test:watch` - Run all tests in watch mode
-- `npm run test:property` - Run only property-based tests with fast-check
+- `npm run test:property` - Run only property-based tests with fast-check (timeout: 1m recommended)
 - `npm run test:property:dev` - Run property tests in watch mode
+- **Individual Property Tests**: For faster execution, run individual property test files: `node --test --import tsx test/property/<file>.test.ts`
+- **Build Requirements**: Tests do not require `npm run build` - only `scripts/dump-assertion-ids.js` requires the build step
 
 **Linting & Type Checking**:
 
@@ -140,7 +142,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Comprehensive unit tests for all built-in assertions
 - Edge cases for argument parsing and type inference
 - Both sync and async paths are fully covered
-- Tests should be written in TypeScript using the `node:test` framework, leveragine `describe` for grouping and `it` for individual tests; titles should be written in BDD-style ("should...")
+- Tests should be written in TypeScript using the `node:test` framework, leveraging `describe` for grouping and `it` for individual tests; titles should be written in BDD-style ("should...")
 
 ## Integration Points
 
@@ -207,6 +209,7 @@ Choose only the tail end of the output to confirm success.
   - If Wallaby MCP is installed and you are able to Start Wallaby, do so.
   - If the Wallaby extension is installed and you are able to Start Wallaby, do so.
 - If you need to create and run a temporary file, **always** put the file in `.tmp/`. If the directory does not exist, create it. `.tmp` is ignored by Git.
+- **Temporary Scripts**: Always use ESM syntax (`import`/`export`) in temporary scripts, never CommonJS (`require`). Files should use `.mjs` extension for ESM or be placed in `.tmp/` directory.
 
 **Error Investigation**:
 
