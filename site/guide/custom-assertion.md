@@ -351,6 +351,7 @@ If a function-style assertion must indicate failure, it can:
 2. Return `false` to indicate failure (also not recommended)
 3. Return an [AssertionFailure][] object to indicate failure with details (**recommended**)
 4. Return a Zod schema (**recommended**)
+5. Return a {@link bupkis!z.ZodError | ZodError} object to indicate failure with details (**recommended**). This is helpful for when you need to run `.safeParse()` yourself.
 
 > **Why don't we want to throw?**
 > We don't want to encourage throwing because <span class="bupkis">Bupkis</span> will do this for you. It may also inhibit current or future functionality. It will work, but it might not be pretty.
