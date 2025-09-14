@@ -12,7 +12,7 @@ In no particular order, here are some things We want to implement:
   - ✅ Support for more intrinsics; `Set`, `Map`, `WeakSet`, `WeakMap`, `WeakRef`
   - ✅ Random convenience like `is frozen`, `is sealed`, `is extensible`
   - ✅ Deep equality / partial equality, strict and loose
-  - Callbacks & async callbacks
+  - ✅ Callbacks & async callbacks
   - Whatever else. There's always room for more, within reason!
 - Custom assertion improvements
   - Custom diffs
