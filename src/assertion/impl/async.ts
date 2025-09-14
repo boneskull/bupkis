@@ -18,7 +18,10 @@ import {
   FunctionSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { valueToSchema } from '../../util.js';
+import {
+  valueToSchema,
+  valueToSchemaOptionsForSatisfies,
+} from '../../value-to-schema.js';
 import { createAsyncAssertion } from '../create.js';
 import { CallbackAsyncAssertions } from './callback.js';
 
