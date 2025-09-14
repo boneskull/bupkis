@@ -85,6 +85,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - `npm run test:watch` - Run all tests in watch mode
 - `npm run test:property` - Run only property-based tests with fast-check (timeout: 1m recommended)
 - `npm run test:property:dev` - Run property tests in watch mode
+- `npm run test:base -- test/<file>.test.ts` - Run specific test files easily (preferred method for individual files)
 - **Individual Property Tests**: For faster execution, run individual property test files: `node --test --import tsx test/property/<file>.test.ts`
 - **Build Requirements**: Tests do not require `npm run build` - only `scripts/dump-assertion-ids.js` requires the build step
 
