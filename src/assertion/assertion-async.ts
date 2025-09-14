@@ -22,6 +22,7 @@ import {
   type AssertionSchemaAsync,
   type AssertionSlots,
   type ParsedResult,
+  type ParsedResultSuccess,
   type ParsedValues,
 } from './assertion-types.js';
 import { BupkisAssertion } from './assertion.js';
@@ -174,9 +175,31 @@ export class BupkisAssertionSchemaAsync<
     parsedValues: ParsedValues<Parts>,
     _args: unknown[],
     stackStartFn: (...args: any[]) => any,
-    _parseResult?: ParsedResult<Parts>,
+    parseResult?: ParsedResult<Parts>,
   ): Promise<void> {
-    // For async, fall back to standard implementation for now
+    // Check if we have cached validation result from parseValuesAsync
+    const cachedValidation = parseResult?.success
+      ? parseResult.subjectValidationResult
+      : undefined;
+
+    if (cachedValidation) {
+      debug(
+        'Using cached subject validation result from parseValuesAsync for %s',
+        this,
+      );
+      if (!cachedValidation.success) {
+        // Subject validation failed during parseValuesAsync, throw the cached error
+        throw this.translateZodError(
+          stackStartFn,
+          cachedValidation.error,
+          ...parsedValues,
+        );
+      }
+      // Subject validation passed, nothing more to do
+      return;
+    }
+
+    // Fall back to standard validation if no cached result
     const [subject] = parsedValues;
     try {
       await this.impl.parseAsync(subject);
@@ -186,6 +209,85 @@ export class BupkisAssertionSchemaAsync<
       }
       throw error;
     }
+  }
+
+  override async parseValuesAsync<Args extends readonly unknown[]>(
+    args: Args,
+  ): Promise<ParsedResult<Parts>> {
+    const { slots } = this;
+    const parsedValues: any[] = [];
+    const mismatch = this.maybeParseValuesArgMismatch(args);
+    if (mismatch) {
+      return mismatch;
+    }
+
+    let exactMatch = true;
+    let subjectValidationResult:
+      | undefined
+      | { data: any; success: true }
+      | { error: z.ZodError; success: false };
+
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i]!;
+      const arg = args[i];
+      const parsedLiteralResult = this.parseSlotForLiteral(slot, i, arg);
+      if (parsedLiteralResult === true) {
+        continue;
+      } else if (parsedLiteralResult !== false) {
+        return parsedLiteralResult;
+      }
+
+      // For the subject slot (first slot if it's unknown/any), try optimized validation
+      if (
+        i === 0 &&
+        (slot.def.type === 'unknown' || slot.def.type === 'any') &&
+        this.isSimpleSchemaAssertion()
+      ) {
+        try {
+          const result = await this.impl.parseAsync(arg);
+          subjectValidationResult = { data: result, success: true };
+          parsedValues.push(result); // Use validated data
+        } catch (error) {
+          if (isA(error, z.ZodError)) {
+            subjectValidationResult = { error, success: false };
+            parsedValues.push(arg); // Keep original for error reporting
+          } else {
+            throw error; // Re-throw non-Zod errors
+          }
+        }
+        exactMatch = false; // Subject was validated, so we know the exact type
+        continue;
+      }
+
+      // Standard slot processing for non-optimized cases
+      if (slot.def.type === 'unknown' || slot.def.type === 'any') {
+        debug('Skipping unknown/any slot validation for arg', arg);
+        parsedValues.push(arg);
+        exactMatch = false;
+        continue;
+      }
+
+      const result = await slot.safeParseAsync(arg);
+      if (!result.success) {
+        return {
+          success: false,
+        };
+      }
+      parsedValues.push(result.data);
+    }
+
+    const result: ParsedResultSuccess<Parts> = {
+      exactMatch,
+      parsedValues: parsedValues as unknown as ParsedValues<Parts>,
+      success: true,
+    };
+
+    // Add cached validation result if we performed optimization
+    if (subjectValidationResult) {
+      result.subjectValidationResult = subjectValidationResult;
+    }
+
+    return result;
   }
 
   /**
