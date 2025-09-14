@@ -20,7 +20,9 @@ const extractPhrases = createPhraseExtractor(assertions);
 /**
  * Test config defaults
  */
-const testConfigDefaults: PropertyTestConfigParameters = {} as const;
+const testConfigDefaults: PropertyTestConfigParameters = {
+  numRuns: 500,
+} as const;
 
 const testConfigs = {
   'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
@@ -38,7 +40,11 @@ const testConfigs = {
               'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
-          fc.constant('expected value'), // Expected value doesn't match actual
+          fc.oneof(
+            fc.constant({ baz: 'quux' }),
+            fc.constant(/expected message/),
+            fc.constant('expected message'),
+          ), // Expected value doesn't match actual
         ],
       },
       valid: {
@@ -93,10 +99,16 @@ const testConfigs = {
       async: true,
       generators: [
         // Generate function that throws wrong error type
-        fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
-          fn(); // Generate some behavior
-          throw new TypeError('type error');
-        }),
+        fc.oneof(
+          fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+            fn(); // Generate some behavior
+            throw new TypeError('type error');
+          }),
+          fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+            // just resolve
+            fn();
+          }),
+        ),
         fc.constantFrom(
           ...extractPhrases(
             'functionschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
@@ -137,7 +149,11 @@ const testConfigs = {
             'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
           ),
         ),
-        fc.constant({ baz: 'quux' }), // Expected rejection value
+        fc.oneof(
+          fc.constant({ baz: 'quux' }),
+          fc.constant(/expected message/),
+          fc.constant('expected message'),
+        ), // Expected rejection value
       ],
     },
     valid: {
@@ -197,16 +213,26 @@ const testConfigs = {
         async: true,
         generators: [
           // Generate promises that resolve to incorrect values
-          fc
-            .object()
-            .filter((v) => !('baz' in v) || v.baz !== 'quux')
-            .map((val) => Promise.resolve(val)),
+          fc.oneof(
+            fc
+              .object()
+              .filter((v) => !('baz' in v) || v.baz !== 'quux')
+              .map((val) => Promise.resolve(val)),
+            fc
+              .object()
+              .filter((v) => !('baz' in v) || v.baz !== 'quux')
+              .map(() => Promise.reject(new Error('oops'))),
+          ),
           fc.constantFrom(
             ...extractPhrases(
               'wrappedpromiselikeschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
-          fc.constant({ baz: 'quux' }), // Expected value matches actual exactly
+          fc.oneof(
+            fc.constant({ baz: 'quux' }),
+            fc.constant(/expected message/),
+            fc.constant('expected message'),
+          ), // Expected value matches actual exactly
         ],
       },
       valid: {
@@ -254,7 +280,16 @@ const testConfigs = {
       invalid: {
         async: true,
         generators: [
-          fc.string().map((msg) => Promise.reject(new TypeError(msg))),
+          fc.oneof(
+            fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+              fn(); // Generate some behavior
+              throw new TypeError('type error');
+            }),
+            fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+              // just resolve
+              fn();
+            }),
+          ),
           fc.constantFrom(
             ...extractPhrases(
               'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
@@ -298,7 +333,11 @@ const testConfigs = {
               'wrappedpromiselikeschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
             ),
           ),
-          fc.constant('expected message'), // Error message doesn't match
+          fc.oneof(
+            fc.constant({ baz: 'quux' }),
+            fc.constant(/expected message/),
+            fc.constant('expected message'),
+          ),
         ],
       },
       valid: {

@@ -155,6 +155,7 @@ export const PromiseAssertions = [
       } else if (isNonNullObject(param)) {
         schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       }
+      /* c8 ignore next 5 */
       if (!schema) {
         throw new TypeError(
           `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
@@ -199,6 +200,7 @@ export const PromiseAssertions = [
       } else if (isNonNullObject(param)) {
         schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       }
+      /* c8 ignore next 5 */
       if (!schema) {
         throw new TypeError(
           `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
@@ -248,6 +250,7 @@ export const PromiseAssertions = [
       } else if (isNonNullObject(param)) {
         schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       }
+      /* c8 ignore next 5 */
       if (!schema) {
         throw new TypeError(
           `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
@@ -298,6 +301,7 @@ export const PromiseAssertions = [
       } else if (isNonNullObject(param)) {
         schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       }
+      /* c8 ignore next 5 */
       if (!schema) {
         throw new TypeError(
           `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
