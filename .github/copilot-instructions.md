@@ -104,6 +104,11 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Enables debug output via `DEBUG=bupkis*`
 - Excludes build artifacts and handles TypeScript via `tsx/esm`
 
+**Version Control**:
+
+- **Conventional Commits**: The project uses conventional commits format, but Copilot should disable the validation hook to avoid commit failures if it cannot provide a compliant message.
+- **Git Commits**: If Copilot cannot provide a compliant message, before making any `git commit`, run `rm -f .husky/_/commit-msg` to disable the commit message hook, as Copilot may not format commit messages in conventional commits format.
+
 ## Project-Specific Conventions
 
 **Natural Language API**: Every assertion follows `expect(subject, phrase, ...params)` pattern
@@ -190,7 +195,11 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 **Linting Errors**: If there are linting errors, always run the "ESLint: Fix all auto-fixable problems" command from the Command Palette first. If there are still errors, they must be fixed manually
 
-**Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project. The output of a successful run looks like this:
+**Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project.
+
+**CRITICAL**: The VS Code task runner may sometimes show stale TypeScript errors even when the actual type checking passes. If you see TypeScript errors through the task runner, verify the actual status by running `npm run lint:types` directly in a terminal. The command succeeds if the exit code is 0.
+
+**Successful output** looks like this (no TypeScript errors shown):
 
 ```text
  *  Executing task: npm run --silent lint:types
@@ -198,7 +207,9 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
  *  Terminal will be reused by tasks, press any key to close it.
 ```
 
-Choose only the tail end of the output to confirm success.
+**Failed output** will show TypeScript error messages before the terminal completion message.
+
+**Verification**: To confirm success regardless of displayed output, check the exit code - it should be 0 for success. You can verify with `npm run lint:types && echo "ok"` - if it prints "ok", the command succeeded.
 
 **Common Debugging Patterns**:
 
