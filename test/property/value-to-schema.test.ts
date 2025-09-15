@@ -401,6 +401,7 @@ describe('valueToSchema property tests', () => {
       fc.property(
         fc.letrec((tie) => ({
           value: fc.oneof(
+            { depthSize: 'small' },
             fc.string(),
             fc.integer(),
             fc.boolean(),
@@ -641,7 +642,11 @@ describe('valueToSchema property tests', () => {
       fc.property(
         fc.letrec((tie) => ({
           node: fc.record({
-            child: fc.oneof(fc.constant(null), tie('node')),
+            child: fc.oneof(
+              { depthSize: 'small' },
+              fc.constant(null),
+              tie('node'),
+            ),
             data: fc.string(),
             id: fc.integer(),
             // Create potential circular reference by referencing the node type
@@ -673,7 +678,10 @@ describe('valueToSchema property tests', () => {
       fc.property(
         fc.letrec((tie) => ({
           tree: fc.record({
-            children: fc.array(tie('tree'), { maxLength: 2 }), // Reduced from 3 to 2
+            children: fc.array(tie('tree'), {
+              depthIdentifier: 'tree-depth',
+              maxLength: 2,
+            }),
             metadata: fc.record({
               created: fc.date(),
               tags: fc.array(fc.string(), { maxLength: 2 }),
