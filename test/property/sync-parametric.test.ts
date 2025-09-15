@@ -191,7 +191,7 @@ const testConfigs = {
     },
 
   // array satisfies/is like
-  'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p': {
+  'array-unknown-object-to-satisfy-to-be-like-lazy-3s3p': {
     invalid: {
       property: () =>
         fc.property(
@@ -205,7 +205,7 @@ const testConfigs = {
               arrArb,
               fc.constantFrom(
                 ...extractPhrases(
-                  'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
+                  'array-unknown-object-to-satisfy-to-be-like-lazy-3s3p',
                 ),
               ),
               differentArrArb,
@@ -230,7 +230,7 @@ const testConfigs = {
             const arrArb = fc.constant(arr);
             const phraseArb = fc.constantFrom(
               ...extractPhrases(
-                'array-unknown-object-to-satisfy-to-be-like-array-unknown-object-3s3p',
+                'array-unknown-object-to-satisfy-to-be-like-lazy-3s3p',
               ),
             );
             return fc.tuple(arrArb, phraseArb, arrArb);
@@ -597,7 +597,7 @@ const testConfigs = {
   },
 
   // object satisfies/is like
-  'object-to-satisfy-to-be-like-object-3s3p': {
+  'object-to-satisfy-to-be-like-lazy-3s3p': {
     invalid: {
       property: () =>
         fc.property(
@@ -607,7 +607,7 @@ const testConfigs = {
             return fc.tuple(
               objArb,
               fc.constantFrom(
-                ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+                ...extractPhrases('object-to-satisfy-to-be-like-lazy-3s3p'),
               ),
               differentObjArb,
             );
@@ -630,7 +630,7 @@ const testConfigs = {
           fc.record({ a: fc.constant(1), b: fc.constant(2) }).chain((obj) => {
             const objArb = fc.constant(obj);
             const phraseArb = fc.constantFrom(
-              ...extractPhrases('object-to-satisfy-to-be-like-object-3s3p'),
+              ...extractPhrases('object-to-satisfy-to-be-like-lazy-3s3p'),
             );
             const subsetObjArb = fc.constant({ a: 1 }); // Subset properties
             return fc.tuple(objArb, phraseArb, subsetObjArb);

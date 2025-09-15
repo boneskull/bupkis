@@ -33,7 +33,7 @@ describe('Assertion creation functions', () => {
         );
 
         expect(assertion, 'to be a', BupkisAssertionFunctionSync);
-        expect(assertion.parts, 'to satisfy', [
+        expect(assertion.parts, 'to deeply equal', [
           z.number(),
           'to be between',
           z.number(),

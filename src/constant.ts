@@ -43,3 +43,5 @@ export const kBupkisFailAssertionError: unique symbol =
 export const kBupkisNegatedAssertionError: unique symbol = Symbol(
   'bupkis-negated-error',
 );
+
+export const kExpectIt: unique symbol = Symbol('bupkis-expect-it');

@@ -5,6 +5,7 @@ import {
   type AnyAsyncAssertions,
   type AnySyncAssertions,
 } from './assertion/assertion-types.js';
+import { kExpectIt } from './constant.js';
 import {
   createBaseExpect,
   createExpectAsyncFunction,
@@ -12,10 +13,30 @@ import {
 } from './expect.js';
 import {
   type Concat,
+  type ExpectIt,
   type FilterAsyncAssertions,
   type FilterSyncAssertions,
   type UseFn,
 } from './types.js';
+
+const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
+  expect: any,
+): ExpectIt<SyncAssertions> => {
+  const expectIt = (...args: readonly unknown[]) => {
+    const func = Object.assign(
+      (subject: unknown) => {
+        const allArgs = [subject, ...args];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        expect(...allArgs);
+      },
+      {
+        [kExpectIt]: true,
+      },
+    );
+    return func;
+  };
+  return expectIt as unknown as ExpectIt<SyncAssertions>;
+};
 
 export function createUse<
   const T extends AnySyncAssertions,
@@ -50,6 +71,7 @@ export function createUse<
     const expect = Object.assign(
       expectFunction,
       createBaseExpect(allSyncAssertions, allAsyncAssertions, 'sync'),
+      { it: createExpectIt(expectFunction) },
     );
     const expectAsync = Object.assign(
       expectAsyncFunction,

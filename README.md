@@ -111,9 +111,32 @@ To formalize the conventions at a high level:
   expect(subject, 'phrase', [parameter?, phrase?, parameter?, ...]);
   ```
 
-- One more convention worth mentioning is _negation_.
+- If an assertion's phrase contains something like "to satisfy" or "satisfying", then the next parameter has special meaning. It is somewhat like Jest's `expect.objectContaining()`, but more powerful (prior art: [unexpected's `to satisfy` assertion](https://unexpected.js.org/assertions/any/to-satisfy/)).
 
-  You can _negate_ just about any phrase by prepending it with `not` and a space. For example:
+  There are three (3) things to know about this parameter:
+  1. It matches objects, but only verifies that the keys provided are present and the values match.
+  2. If the value of any given property in an object is a _regular expression_, the real value will be coerced to a string and tested against the regular expression. This provides easy string matching within nested properties.
+  3. _Any assertion_ (including custom assertions) can be embedded within them via the `expect.it()` function:
+
+  ```ts
+  expect(user, 'to satisfy', {
+    name: expect.it('to be a string'),
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // equivalent to "to match" below
+    age: expect.it('to be greater than', 18),
+    roles: [expect.it('to be a string')], // Each array element must be a string
+    metadata: {
+      lastLogin: expect.it('to match', /^\d{4}-\d{2}-\d{2}$/),
+      preferences: {
+        theme: expect.it('to be one of', ['light', 'dark']),
+        notifications: expect.it('to be a boolean'),
+      },
+    },
+  });
+  ```
+
+  > See [Embeddable Assertions][] for more a thorough explanation.
+
+- You can _negate_ just about any phrase by prepending it with `not`. For example:
 
   ```js
   expect(actual, 'to be', expected);
@@ -224,3 +247,4 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 [assertion-reference]: https://bupkis.zip/assertions
 [tshy]: https://github.com/isaacs/tshy
 [typedoc]: https://typedoc.org
+[embeddable assertions]: https://bupkis.zip/documents/Basic_Usage#embeddable-assertions

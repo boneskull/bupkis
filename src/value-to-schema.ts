@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 
 import {
+  isExpectItExecutor,
   isNonNullObject,
   isObject,
   isPromiseLike,
@@ -100,6 +101,30 @@ export const valueToSchema = (
     case 'boolean':
       return literalPrimitives ? z.literal(value as boolean) : z.boolean();
     case 'function':
+      // Check if this is an ExpectItExecutor
+      if (isExpectItExecutor(value)) {
+        // Only allow nested assertions when strict is false (e.g., "to satisfy" semantics)
+        if (strict) {
+          throw new TypeError(
+            'ExpectItExecutor (expect.it) functions are not allowed in strict mode. ' +
+              'Use "to satisfy" assertions for nested expectations.',
+          );
+        }
+        // Return a schema that executes the ExpectItExecutor when validated
+        return z.custom<unknown>(
+          (subject: unknown) => {
+            try {
+              value(subject);
+              return true;
+            } catch {
+              return false;
+            }
+          },
+          {
+            message: 'Failed expect.it assertion',
+          },
+        );
+      }
       return z.function();
     case 'number':
       return literalPrimitives ? z.literal(value as number) : z.number();

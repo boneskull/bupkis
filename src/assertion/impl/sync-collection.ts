@@ -5,9 +5,9 @@ import { StrongMapSchema, StrongSetSchema } from '../../schema.js';
 import { createAssertion } from '../create.js';
 
 export const CollectionAssertions = [
-  // Map assertions (including WeakMap)
+  // Map assertions (including WeakMap) - use StrongMapSchema instead of z.map for better type inference
   createAssertion(
-    [z.map(z.any(), z.any()), ['to contain', 'to include'], z.any()],
+    [StrongMapSchema, ['to contain', 'to include'], z.any()],
     (subject, key) => subject.has(key),
   ),
   // Size-based assertions only for strong Maps (not WeakMaps)
@@ -21,7 +21,7 @@ export const CollectionAssertions = [
   ),
   // Set assertions (including WeakSet)
   createAssertion(
-    [z.set(z.any()), ['to contain', 'to include'], z.any()],
+    [StrongSetSchema, ['to contain', 'to include'], z.any()],
     (subject, value) => subject.has(value),
   ),
   // Size-based assertions only for strong Sets (not WeakSets)

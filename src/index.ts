@@ -50,6 +50,8 @@ export type {
   CreateAsyncAssertionFn,
   Expect,
   ExpectAsync,
+  ExpectIt,
+  ExpectItExecutor,
   FailFn,
   UseFn,
   ZodTypeMap,

@@ -53,6 +53,8 @@ import type {
   RawAssertionImplSchemaSync,
 } from './assertion/assertion-types.js';
 
+import { type kExpectIt } from './constant.js';
+
 /**
  * Creates a negated version of a tuple of
  * {@link AssertionPart | AssertionParts}.
@@ -110,8 +112,6 @@ export interface BaseExpect {
   fail: FailFn;
 }
 
-export type * from './assertion/assertion-types.js';
-
 /**
  * The main API as returned by a {@link UseFn}.
  *
@@ -165,6 +165,8 @@ export interface Bupkis<
     Concat<BaseAsyncAssertions, ExtendedAsyncAssertions>
   >;
 }
+
+export type * from './assertion/assertion-types.js';
 
 /**
  * Helper type to concatenate two tuples
@@ -399,6 +401,125 @@ export type ExpectFunction<
 >;
 
 /**
+ * Creates embeddable assertion functions that can be used with `to satisfy`.
+ *
+ * This type generates a union of all possible `expect.it` function signatures
+ * based on the available synchronous assertions. Each assertion contributes its
+ * own function signature to create embeddable executors that can be used within
+ * object patterns for complex validation scenarios.
+ *
+ * The resulting functions are designed to be used exclusively within `'to
+ * satisfy'` assertion contexts, where they provide type-safe pattern matching
+ * for nested object structures. Direct execution of these functions outside of
+ * their intended context is not supported.
+ *
+ * @example
+ *
+ * ```typescript
+ * // Create embeddable assertion functions
+ * const isString = expect.it('to be a string');
+ * const isPositive = expect.it('to be greater than', 0);
+ *
+ * // Use within 'to satisfy' patterns
+ * expect(user, 'to satisfy', {
+ *   name: isString,
+ *   age: isPositive,
+ *   email: /\S+@\S+/,
+ * });
+ * ```
+ *
+ * @template SyncAssertions - Array of synchronous assertion objects that define
+ *   the available assertion logic for embeddable functions
+ * @see {@link ExpectItFunction} for individual function signature generation
+ * @see {@link ExpectItExecutor} for the executor function interface
+ */
+export type ExpectIt<
+  SyncAssertions extends AnySyncAssertions = BuiltinSyncAssertions,
+> = UnionToIntersection<
+  TupleToUnion<{
+    [K in keyof SyncAssertions]: SyncAssertions[K] extends AnySyncAssertion
+      ? SyncAssertions[K]['parts'] extends AssertionParts
+        ? ExpectItFunction<SyncAssertions[K]['parts']>
+        : never
+      : never;
+  }>
+>;
+
+/**
+ * Interface for executor functions created by `expect.it()`.
+ *
+ * ExpectItExecutor functions are the result of calling `expect.it()` with
+ * assertion parameters. They encapsulate the assertion logic and can be
+ * executed later within `'to satisfy'` pattern matching contexts. These
+ * functions are marked with an internal symbol to distinguish them from regular
+ * functions during pattern validation.
+ *
+ * The executor accepts a subject value and performs the embedded assertion
+ * logic against it. The subject type is constrained by the Zod schema that
+ * represents the first part of the assertion definition, ensuring type safety
+ * during pattern matching.
+ *
+ * @example
+ *
+ * ```typescript
+ * const isStringExecutor = expect.it('to be a string');
+ * // isStringExecutor is an ExpectItExecutor<z.ZodString>
+ *
+ * // Used within satisfy patterns
+ * expect({ name: 'Alice' }, 'to satisfy', {
+ *   name: isStringExecutor, // Validates that name is a string
+ * });
+ * ```
+ *
+ * @template Subject - The Zod schema type that constrains the subject parameter
+ * @see {@link ExpectItFunction} for the factory function that creates executors
+ */
+export interface ExpectItExecutor<Subject extends z.ZodType> {
+  (subject: z.infer<Subject>): void;
+  [kExpectIt]: true;
+}
+
+/**
+ * Function signature for creating ExpectItExecutor instances.
+ *
+ * This type represents the factory function that creates embeddable assertion
+ * executors from assertion parts. It takes the assertion parameters (excluding
+ * the subject) and returns an executor function that can be embedded within
+ * `'to satisfy'` patterns.
+ *
+ * The function signature is derived from assertion parts by removing the first
+ * part (which becomes the subject type for the executor) and using the
+ * remaining parts as parameters. This allows for natural language assertion
+ * creation that mirrors the main `expect()` function but produces reusable
+ * executor functions.
+ *
+ * The resulting executor is constrained to only work with subjects that match
+ * the first assertion part, providing compile-time type safety for pattern
+ * matching scenarios.
+ *
+ * @example
+ *
+ * ```typescript
+ * // For assertion parts: [z.string(), 'to match', z.instanceof(RegExp)]
+ * // Results in function: (pattern: RegExp) => ExpectItExecutor<z.ZodString>
+ * const matchesPattern = expect.it('to match', /^[A-Z]/);
+ *
+ * expect({ code: 'ABC123' }, 'to satisfy', {
+ *   code: matchesPattern, // Validates that code matches the pattern
+ * });
+ * ```
+ *
+ * @template Parts - Tuple of assertion parts that define the function signature
+ *   and executor constraints
+ * @see {@link ExpectItExecutor} for the returned executor interface
+ * @see {@link TupleTail} for parameter extraction from assertion parts
+ * @see {@link SlotsFromParts} for type slot generation
+ */
+export type ExpectItFunction<Parts extends AssertionParts> = (
+  ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
+) => Parts[0] extends z.ZodType ? ExpectItExecutor<Parts[0]> : never;
+
+/**
  * Properties of {@link expect}.
  */
 export interface ExpectSyncProps<
@@ -411,6 +532,8 @@ export interface ExpectSyncProps<
    * @preventExpand
    */
   assertions: SyncAssertions;
+
+  it: ExpectIt<SyncAssertions>;
 
   /**
    * Function to add more assertions to this `expect()`, returning a new
@@ -600,6 +723,23 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
  */
 export type Negation<S extends string> = `not ${S}`;
 
+export type SatisfyPatternValue =
+  | bigint
+  | boolean
+  | ExpectItExecutor<any>
+  | Map<SatisfyPatternValue, SatisfyPatternValue>
+  | null
+  | number
+  | RegExp
+  | SatisfyPatternValue[]
+  | Set<SatisfyPatternValue>
+  | string
+  | symbol
+  | undefined
+  | WeakMap<Extract<SatisfyPatternValue, object>, SatisfyPatternValue>
+  | WeakSet<Extract<SatisfyPatternValue, object>>
+  | { [key: string]: SatisfyPatternValue };
+
 /**
  * Converts AssertionParts to complete function parameter types for expect
  * functions.
@@ -645,6 +785,29 @@ export type SlotsFromParts<Parts extends AssertionParts> = NoNeverTuple<
       : MapExpectSlots<Parts>
     : never
 >;
+
+/**
+ * Gets the tail (all elements except the first) of a tuple type.
+ *
+ * Unlike ArrayTail from type-fest, this preserves the tuple structure as a
+ * readonly tuple rather than converting to an array type.
+ *
+ * @example
+ *
+ * ```typescript
+ * type Example = TupleTail<readonly [string, number, boolean]>; // readonly [number, boolean]
+ * type Single = TupleTail<readonly [string]>; // readonly []
+ * type Empty = TupleTail<readonly []>; // readonly []
+ * ```
+ *
+ * @template T - The tuple type to get the tail of
+ */
+export type TupleTail<T extends readonly unknown[]> = T extends readonly [
+  unknown,
+  ...infer Rest,
+]
+  ? Rest
+  : readonly [];
 
 /**
  * The type of a `use()` function.

@@ -151,33 +151,6 @@ const testConfigs = {
     },
   },
 
-  // Map contains/includes key
-  'mapany-any-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new Map([['existing', 'value']])),
-        fc.constantFrom(
-          ...extractPhrases('mapany-any-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant('missing'), // Key that doesn't exist
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc.constant(
-          new Map([
-            ['key1', 'value1'],
-            ['key2', 'value2'],
-          ]),
-        ), // Fixed map with known keys
-        fc.constantFrom(
-          ...extractPhrases('mapany-any-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constantFrom('key1', 'key2'), // One of the keys in the map
-      ] as const,
-    },
-  },
-
   // Object has keys/properties/props (string keys only)
   'object-to-have-keys-to-have-properties-to-have-props-string-3s3p': {
     invalid: {
@@ -222,28 +195,6 @@ const testConfigs = {
     },
   },
 
-  // Set contains/includes value
-  'setany-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new Set(['existing'])),
-        fc.constantFrom(
-          ...extractPhrases('setany-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant('missing'), // Value that doesn't exist
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc.constant(new Set([42, 'value1', 'value2'])), // Fixed set with known values
-        fc.constantFrom(
-          ...extractPhrases('setany-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constantFrom(42, 'value1', 'value2'), // One of the values in the set
-      ] as const,
-    },
-  },
-
   // Map is empty
   'strongmapschema-to-be-empty-2s2p': {
     invalid: {
@@ -258,6 +209,33 @@ const testConfigs = {
       generators: [
         fc.constant(new Map()),
         fc.constantFrom(...extractPhrases('strongmapschema-to-be-empty-2s2p')),
+      ] as const,
+    },
+  },
+
+  // Map contains/includes key
+  'strongmapschema-to-contain-to-include-any-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant(new Map([['existing', 'value']])),
+        fc.constantFrom(
+          ...extractPhrases('strongmapschema-to-contain-to-include-any-3s3p'),
+        ),
+        fc.constant('missing'), // Key that doesn't exist
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(
+          new Map([
+            ['key1', 'value1'],
+            ['key2', 'value2'],
+          ]),
+        ), // Fixed map with known keys
+        fc.constantFrom(
+          ...extractPhrases('strongmapschema-to-contain-to-include-any-3s3p'),
+        ),
+        fc.constantFrom('key1', 'key2'), // One of the keys in the map
       ] as const,
     },
   },
@@ -307,6 +285,28 @@ const testConfigs = {
       generators: [
         fc.constant(new Set()),
         fc.constantFrom(...extractPhrases('strongsetschema-to-be-empty-2s2p')),
+      ] as const,
+    },
+  },
+
+  // Set contains/includes value
+  'strongsetschema-to-contain-to-include-any-3s3p': {
+    invalid: {
+      generators: [
+        fc.constant(new Set(['existing'])),
+        fc.constantFrom(
+          ...extractPhrases('strongsetschema-to-contain-to-include-any-3s3p'),
+        ),
+        fc.constant('missing'), // Value that doesn't exist
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant(new Set([42, 'value1', 'value2'])), // Fixed set with known values
+        fc.constantFrom(
+          ...extractPhrases('strongsetschema-to-contain-to-include-any-3s3p'),
+        ),
+        fc.constantFrom(42, 'value1', 'value2'), // One of the values in the set
       ] as const,
     },
   },
