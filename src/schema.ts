@@ -78,14 +78,6 @@ export const ConstructibleSchema = z
   .describe('Constructible Function');
 
 /**
- * @deprecated Use {@link ConstructibleSchema} instead. `ClassSchema` is a
- *   misnomer since it validates any constructible function, not just classes.
- *   This alias will be removed in a future version.
- * @group Schema
- */
-export const ClassSchema = ConstructibleSchema;
-
-/**
  * A Zod schema that validates any JavaScript function.
  *
  * This schema provides function validation capabilities similar to the

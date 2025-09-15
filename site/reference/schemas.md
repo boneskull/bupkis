@@ -77,10 +77,6 @@ const { expect } = use([classAssertion]);
 expect(class MyError extends Error {}, 'to be a subclass of Error');
 ```
 
-### ClassSchema _(deprecated)_
-
-{@link schema!ClassSchema ClassSchema} is deprecated. Use {@link schema!ConstructibleSchema ConstructibleSchema} instead. `ClassSchema` is a misnomer since it validates any constructible function, not just classes.
-
 ### FalsySchema
 
 {@link schema!FalsySchema FalsySchema} schema matches any _falsy_ value:
