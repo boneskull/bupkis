@@ -2,25 +2,17 @@
  * Arguably-useful Zod schemas for common types and validation patterns.
  *
  * This module provides reusable Zod schemas for validating constructors,
- * functions, property keys, promises, and other common JavaScript types used
- * throughout the assertion system. These tend to work around the impedance
- * mismatch between **BUPKIS** and Zod.
+ * property keys, promises, and other common JavaScript types used throughout
+ * the assertion system. These tend to work around the impedance mismatch
+ * between **BUPKIS** and Zod.
  *
  * These are used internally, but consumers may also find them useful.
  *
- * For example, we have {@link FunctionSchema} which accepts any
- * function—regardless of its signature. We need this because Zod v4's
- * `z.function()` no longer returns a `ZodType` (ref:
- * {@link https://zod.dev/v4/changelog | Zod v4 Migration Guide}) and so behaves
- * differently. `FunctionSchema` allows us to work with functions as _values_
- * instead of something to be implemented.
- *
- * Similarly—but not a new development—`z.promise()` does not parse a
- * {@link Promise} object; it parses the _fulfilled value_. This is not what we
- * want for "is a Promise" assertions, but it _can_ be useful for making sense
- * of the fulfilled value. To solve this, we have
- * {@link WrappedPromiseLikeSchema} (which explicitly supports
- * {@link PromiseLike}/"thenable" objects).
+ * For example, `z.promise()` does not parse a {@link Promise} object; it parses
+ * the _fulfilled value_. This is not what we want for "is a Promise"
+ * assertions, but it _can_ be useful for making sense of the fulfilled value.
+ * To solve this, we have {@link WrappedPromiseLikeSchema} (which explicitly
+ * supports {@link PromiseLike}/"thenable" objects).
  *
  * @category API
  * @example
@@ -38,7 +30,6 @@ import {
   isA,
   isConstructible,
   isExpectItExecutor,
-  isFunction,
   isNonNullObject,
   isPromiseLike,
 } from './guards.js';
@@ -46,7 +37,6 @@ import { BupkisRegistry } from './metadata.js';
 import {
   type Constructor,
   type ExpectItExecutor,
-  type MutableOrReadonly,
   type SatisfyPatternValue,
 } from './types.js';
 
@@ -82,41 +72,6 @@ export const ConstructibleSchema = z
   .custom<Constructor>(isConstructible)
   .register(BupkisRegistry, { name: 'ConstructibleSchema' })
   .describe('Constructible Function');
-
-/**
- * A Zod schema that validates any JavaScript function.
- *
- * This schema provides function validation capabilities similar to the
- * parseable-only `z.function()` from Zod v3.x, but works with Zod v4's
- * architecture. It validates that the input value is any callable function,
- * including regular functions, arrow functions, async functions, generator
- * functions, and methods.
- *
- * @privateRemarks
- * The schema is registered in the {@link BupkisRegistry} with the name
- * `FunctionSchema` for later reference and type checking purposes.
- * @example
- *
- * ```typescript
- * FunctionSchema.parse(function () {}); // ✓ Valid
- * FunctionSchema.parse(() => {}); // ✓ Valid
- * FunctionSchema.parse(async () => {}); // ✓ Valid
- * FunctionSchema.parse(function* () {}); // ✓ Valid
- * FunctionSchema.parse(Math.max); // ✓ Valid
- * FunctionSchema.parse('not a function'); // ✗ Throws validation error
- * FunctionSchema.parse({}); // ✗ Throws validation error
- * ```
- *
- * @group Schema
- */
-export const FunctionSchema = z
-  .custom<(...args: MutableOrReadonly<unknown[]>) => unknown>(isFunction)
-  .register(BupkisRegistry, {
-    name: 'FunctionSchema',
-  })
-  .describe(
-    'Any function; similar to parseable-only `z.function()` in Zod v3.x',
-  );
 
 /**
  * A Zod schema that validates JavaScript property keys.
@@ -321,9 +276,12 @@ export const NullProtoObjectSchema = DictionarySchema;
  *
  * @group Schema
  */
-export const AsyncFunctionSchema = FunctionSchema.refine(
-  (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
-)
+export const AsyncFunctionSchema = z
+  .custom<(...args: unknown[]) => Promise<unknown>>(
+    (value) =>
+      typeof value === 'function' &&
+      Object.prototype.toString.call(value) === '[object AsyncFunction]',
+  )
   .describe('Function declared with the `async` keyword')
   .register(BupkisRegistry, { name: 'AsyncFunctionSchema' });
 

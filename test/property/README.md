@@ -87,7 +87,7 @@ Contains the core "macro" functions that generate and execute property-based tes
 **Example test structure generated:**
 
 ```typescript
-describe('Assertion: {FunctionSchema} "to be a string"', () => {
+describe('Assertion: {z.function()} "to be a string"', () => {
   it('should pass for all valid inputs [string-assertion-id]', () => {
     // Uses fc.property with valid generators
   });

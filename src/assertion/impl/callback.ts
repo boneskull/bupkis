@@ -11,7 +11,7 @@ import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
 import { isA, isNonNullObject, isString } from '../../guards.js';
-import { ConstructibleSchema, FunctionSchema } from '../../schema.js';
+import { ConstructibleSchema } from '../../schema.js';
 import {
   valueToSchema,
   type ValueToSchemaOptions,
@@ -19,6 +19,14 @@ import {
   valueToSchemaOptionsForSatisfies,
 } from '../../value-to-schema.js';
 import { createAssertion, createAsyncAssertion } from '../create.js';
+
+// Local function schema for callback assertions that maintains
+// compatibility with the callback functions expecting
+// (...args: unknown[]) => unknown signature
+const FunctionSchema = z.custom<(...args: unknown[]) => unknown>(
+  (value): value is (...args: unknown[]) => unknown =>
+    typeof value === 'function',
+);
 
 /**
  * Creates a standardized error object for when a callback or nodeback is not

@@ -5,7 +5,6 @@ import {
   AsyncFunctionSchema,
   ConstructibleSchema,
   FalsySchema,
-  FunctionSchema,
   PrimitiveSchema,
   PropertyKeySchema,
   StrongSetSchema,
@@ -46,7 +45,7 @@ export const BasicAssertions = [
   createAssertion(['to be false'], z.literal(false)),
   createAssertion([['to be a bigint', 'to be a BigInt']], z.bigint()),
   createAssertion([['to be a symbol', 'to be a Symbol']], z.symbol()),
-  createAssertion(['to be a function'], FunctionSchema),
+  createAssertion(['to be a function'], z.function()),
   createAssertion(['to be an async function'], AsyncFunctionSchema),
   createAssertion(['to be NaN'], z.nan()),
   createAssertion(

@@ -5,7 +5,6 @@ import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   ArrayLikeSchema,
   ConstructibleSchema,
-  FunctionSchema,
   RegExpSchema,
   SatisfyPatternSchema,
   StrongMapSchema,
@@ -257,7 +256,7 @@ export const ParametricAssertions = [
 
   // Function arity assertion
   createAssertion(
-    [FunctionSchema, 'to have arity', z.number().int().nonnegative()],
+    [z.function(), 'to have arity', z.number().int().nonnegative()],
     (subject, expectedArity) => {
       if (subject.length !== expectedArity) {
         return {
@@ -323,7 +322,7 @@ export const ParametricAssertions = [
       return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
     },
   ),
-  createAssertion([FunctionSchema, 'to throw'], (subject) => {
+  createAssertion([z.function(), 'to throw'], (subject) => {
     const error = trapError(subject);
     if (!error) {
       return {
@@ -333,7 +332,7 @@ export const ParametricAssertions = [
     }
   }),
   createAssertion(
-    [FunctionSchema, ['to throw a', 'to thrown an'], ConstructibleSchema],
+    [z.function(), ['to throw a', 'to thrown an'], ConstructibleSchema],
     (subject, ctor) => {
       const error = trapError(subject);
       if (!error) {
@@ -356,7 +355,7 @@ export const ParametricAssertions = [
   ),
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to throw'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
@@ -390,7 +389,7 @@ export const ParametricAssertions = [
   ),
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to throw a', 'to thrown an'],
       ConstructibleSchema,
       'satisfying',
@@ -470,7 +469,7 @@ export const ParametricAssertions = [
     (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
   ),
   createAssertion(
-    [FunctionSchema, 'to have arity', z.number().int().nonnegative()],
+    [z.function(), 'to have arity', z.number().int().nonnegative()],
     (subject, expectedArity) => {
       if (subject.length !== expectedArity) {
         return {

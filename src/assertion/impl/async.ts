@@ -13,11 +13,7 @@ import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
 import { isA, isNonNullObject, isString } from '../../guards.js';
-import {
-  ConstructibleSchema,
-  FunctionSchema,
-  WrappedPromiseLikeSchema,
-} from '../../schema.js';
+import { ConstructibleSchema, WrappedPromiseLikeSchema } from '../../schema.js';
 import {
   valueToSchema,
   valueToSchemaOptionsForSatisfies,
@@ -43,7 +39,7 @@ const trapPromiseError = async (promise: PromiseLike<unknown>) => {
 
 export const PromiseAssertions = [
   createAsyncAssertion(
-    [FunctionSchema, ['to resolve', 'to fulfill']],
+    [z.function(), ['to resolve', 'to fulfill']],
     async (subject) => {
       try {
         await subject();
@@ -72,7 +68,7 @@ export const PromiseAssertions = [
   ),
 
   // Non-parameterized "to reject" assertions
-  createAsyncAssertion([FunctionSchema, 'to reject'], async (subject) => {
+  createAsyncAssertion([z.function(), 'to reject'], async (subject) => {
     try {
       await subject();
       return {
@@ -98,7 +94,7 @@ export const PromiseAssertions = [
   // Parameterized "to reject" with class constructor
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to reject with a', 'to reject with an'],
       ConstructibleSchema,
     ],
@@ -128,7 +124,7 @@ export const PromiseAssertions = [
   // Parameterized "to reject" with string, RegExp, or object patterns
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to reject with error satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
@@ -270,7 +266,7 @@ export const PromiseAssertions = [
 
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to fulfill with value satisfying', 'to resolve with value satisfying'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
