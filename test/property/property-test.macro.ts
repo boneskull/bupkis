@@ -42,7 +42,9 @@ export const assertExhaustiveTestConfig = (
   it(`should test all available assertions in ${collectionName}`, () => {
     const allCollectionIds = new Set(Object.keys(assertions));
     const testedIds = new Set(Object.keys(testConfigs));
-    const diff = allCollectionIds.difference(testedIds);
+    const diff = new Set(
+      [...allCollectionIds].filter((id) => !testedIds.has(id)),
+    );
     try {
       expect(diff, 'to be empty');
     } catch {

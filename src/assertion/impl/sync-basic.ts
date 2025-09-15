@@ -3,7 +3,7 @@ import { z } from 'zod/v4';
 import { BupkisRegistry } from '../../metadata.js';
 import {
   AsyncFunctionSchema,
-  ClassSchema,
+  ConstructibleSchema,
   FalsySchema,
   FunctionSchema,
   PrimitiveSchema,
@@ -64,7 +64,10 @@ export const BasicAssertions = [
   createAssertion(['to be undefined'], z.undefined()),
   createAssertion([['to be an array', 'to be array']], z.array(z.any())),
   createAssertion([['to be a date', 'to be a Date']], z.date()),
-  createAssertion([['to be a class', 'to be a constructor']], ClassSchema),
+  createAssertion(
+    [['to be a class', 'to be a constructor']],
+    ConstructibleSchema,
+  ),
   createAssertion(['to be a primitive'], PrimitiveSchema),
 
   createAssertion(

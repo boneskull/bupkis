@@ -92,46 +92,47 @@ const testConfigs = {
   },
 
   // Test functions rejecting with specific error class
-  'functionschema-to-reject-with-a-to-reject-with-an-classschema-3s3p': {
-    invalid: {
-      async: true,
-      generators: [
-        // Generate function that throws wrong error type
-        fc.oneof(
+  'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p':
+    {
+      invalid: {
+        async: true,
+        generators: [
+          // Generate function that throws wrong error type
+          fc.oneof(
+            fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+              fn(); // Generate some behavior
+              throw new TypeError('type error');
+            }),
+            fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
+              // just resolve
+              fn();
+            }),
+          ),
+          fc.constantFrom(
+            ...extractPhrases(
+              'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
+            ),
+          ),
+          fc.constant(RangeError), // Expecting RangeError but function throws TypeError
+        ],
+      },
+      valid: {
+        async: true,
+        generators: [
+          // Generate function that throws correct error type
           fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
             fn(); // Generate some behavior
             throw new TypeError('type error');
           }),
-          fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
-            // just resolve
-            fn();
-          }),
-        ),
-        fc.constantFrom(
-          ...extractPhrases(
-            'functionschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
+          fc.constantFrom(
+            ...extractPhrases(
+              'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
+            ),
           ),
-        ),
-        fc.constant(RangeError), // Expecting RangeError but function throws TypeError
-      ],
+          fc.constant(TypeError), // Expecting TypeError and function throws TypeError
+        ],
+      },
     },
-    valid: {
-      async: true,
-      generators: [
-        // Generate function that throws correct error type
-        fc.func(fc.anything()).map((fn) => async (..._args: unknown[]) => {
-          fn(); // Generate some behavior
-          throw new TypeError('type error');
-        }),
-        fc.constantFrom(
-          ...extractPhrases(
-            'functionschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
-          ),
-        ),
-        fc.constant(TypeError), // Expecting TypeError and function throws TypeError
-      ],
-    },
-  },
   // Test functions rejecting with string patterns
   'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p': {
     invalid: {
@@ -273,7 +274,7 @@ const testConfigs = {
   },
 
   // Test promises rejecting with specific error class
-  'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-classschema-3s3p':
+  'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p':
     {
       invalid: {
         async: true,
@@ -290,7 +291,7 @@ const testConfigs = {
           ),
           fc.constantFrom(
             ...extractPhrases(
-              'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
+              'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(RangeError), // Promise rejects with TypeError, not RangeError
@@ -302,7 +303,7 @@ const testConfigs = {
           fc.string().map((msg) => Promise.reject(new TypeError(msg))),
           fc.constantFrom(
             ...extractPhrases(
-              'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-classschema-3s3p',
+              'wrappedpromiselikeschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(TypeError), // Promise rejects with TypeError, expecting TypeError

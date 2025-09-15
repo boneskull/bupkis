@@ -11,7 +11,7 @@ import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
 import { isA, isNonNullObject, isString } from '../../guards.js';
-import { ClassSchema, FunctionSchema } from '../../schema.js';
+import { ConstructibleSchema, FunctionSchema } from '../../schema.js';
 import {
   valueToSchema,
   type ValueToSchemaOptions,
@@ -509,7 +509,7 @@ export const CallbackSyncAssertions = [
         'to invoke nodeback with a',
         'to invoke nodeback with an',
       ],
-      ClassSchema,
+      ConstructibleSchema,
     ],
     (subject, ctor) => {
       const { called, error } = trapNodebackInvocation(subject);
@@ -776,7 +776,7 @@ export const CallbackAsyncAssertions = [
         'to eventually invoke nodeback with a',
         'to eventually invoke nodeback with an',
       ],
-      ClassSchema,
+      ConstructibleSchema,
     ],
     async (subject, ctor) => {
       const { called, error } = await trapAsyncNodebackInvocation(subject);

@@ -281,7 +281,7 @@ const syncTestConfigs = {
       ],
     },
   },
-  'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-classschema-3s3p':
+  'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-constructibleschema-3s3p':
     {
       invalid: {
         generators: [
@@ -293,7 +293,7 @@ const syncTestConfigs = {
           }),
           fc.constantFrom(
             ...extractSyncPhrases(
-              'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-classschema-3s3p',
+              'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(Error),
@@ -306,7 +306,7 @@ const syncTestConfigs = {
           }),
           fc.constantFrom(
             ...extractSyncPhrases(
-              'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-classschema-3s3p',
+              'functionschema-to-call-nodeback-with-a-to-call-nodeback-with-an-to-invoke-nodeback-with-a-to-invoke-nodeback-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(Error),
@@ -928,7 +928,7 @@ const asyncTestConfigs = {
         timeout: 2000, // Longer timeout to accommodate assertion library timeout
       },
     },
-  'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-classschema-3s3p':
+  'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-constructibleschema-3s3p':
     {
       invalid: {
         async: true,
@@ -941,7 +941,7 @@ const asyncTestConfigs = {
           }),
           fc.constantFrom(
             ...extractAsyncPhrases(
-              'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-classschema-3s3p',
+              'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(Error),
@@ -956,7 +956,7 @@ const asyncTestConfigs = {
           }),
           fc.constantFrom(
             ...extractAsyncPhrases(
-              'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-classschema-3s3p',
+              'functionschema-to-eventually-call-nodeback-with-a-to-eventually-call-nodeback-with-an-to-eventually-invoke-nodeback-with-a-to-eventually-invoke-nodeback-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(Error),

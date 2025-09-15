@@ -4,7 +4,7 @@ import { z } from 'zod/v4';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   ArrayLikeSchema,
-  ClassSchema,
+  ConstructibleSchema,
   FunctionSchema,
   RegExpSchema,
   SatisfyPatternSchema,
@@ -56,7 +56,7 @@ const knownTypes = Object.freeze(
 
 export const ParametricAssertions = [
   createAssertion(
-    [['to be an instance of', 'to be a'], ClassSchema],
+    [['to be an instance of', 'to be a'], ConstructibleSchema],
     (_, ctor) => z.instanceof(ctor),
   ),
   createAssertion(
@@ -333,7 +333,7 @@ export const ParametricAssertions = [
     }
   }),
   createAssertion(
-    [FunctionSchema, ['to throw a', 'to thrown an'], ClassSchema],
+    [FunctionSchema, ['to throw a', 'to thrown an'], ConstructibleSchema],
     (subject, ctor) => {
       const error = trapError(subject);
       if (!error) {
@@ -392,7 +392,7 @@ export const ParametricAssertions = [
     [
       FunctionSchema,
       ['to throw a', 'to thrown an'],
-      ClassSchema,
+      ConstructibleSchema,
       'satisfying',
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
