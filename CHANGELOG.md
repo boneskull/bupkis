@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.3.0...bupkis-v0.4.0) (2025-09-15)
+
+
+### Features
+
+* implement embeddable assertions ([3050d1c](https://github.com/boneskull/bupkis/commit/3050d1c0d57048a840449935fd0dfead370b0f11)), closes [#46](https://github.com/boneskull/bupkis/issues/46)
+
+
+### Bug Fixes
+
+* **schema:** rename ClassSchema to ConstructibleSchema ([#47](https://github.com/boneskull/bupkis/issues/47)) ([c497a24](https://github.com/boneskull/bupkis/commit/c497a249ad6428a8a2082aadfd7796c1e7f8b82f))
+
 ## [0.3.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.2.0...bupkis-v0.3.0) (2025-09-14)
 
 
