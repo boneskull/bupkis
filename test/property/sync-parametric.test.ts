@@ -318,13 +318,13 @@ const testConfigs = {
   },
 
   // function throws specific error type
-  'functionschema-to-throw-a-to-thrown-an-classschema-3s3p': {
+  'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p': {
     invalid: {
       generators: [
         helperGenerators.throwingFunction, // Throws Error, expecting TypeError (wrong type)
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-a-to-thrown-an-classschema-3s3p',
+            'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p',
           ),
         ),
         fc.constant(TypeError),
@@ -335,7 +335,7 @@ const testConfigs = {
         helperGenerators.errorThrowingFunction, // Throws TypeError, expecting TypeError (correct type)
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-a-to-thrown-an-classschema-3s3p',
+            'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p',
           ),
         ),
         fc.constant(TypeError),
@@ -344,7 +344,7 @@ const testConfigs = {
   },
 
   // function throws error type with message
-  'functionschema-to-throw-a-to-thrown-an-classschema-satisfying-string-regexp-object-5s5p':
+  'functionschema-to-throw-a-to-thrown-an-constructibleschema-satisfying-string-regexp-object-5s5p':
     {
       invalid: {
         generators: [
@@ -813,13 +813,13 @@ const testConfigs = {
   },
 
   // instance of
-  'unknown-to-be-an-instance-of-to-be-a-classschema-3s2p': {
+  'unknown-to-be-an-instance-of-to-be-a-constructibleschema-3s2p': {
     invalid: {
       generators: [
         fc.string(),
         fc.constantFrom(
           ...extractPhrases(
-            'unknown-to-be-an-instance-of-to-be-a-classschema-3s2p',
+            'unknown-to-be-an-instance-of-to-be-a-constructibleschema-3s2p',
           ),
         ),
         fc.constant(Array), // String is not instance of Array
@@ -830,7 +830,7 @@ const testConfigs = {
         fc.constant([]),
         fc.constantFrom(
           ...extractPhrases(
-            'unknown-to-be-an-instance-of-to-be-a-classschema-3s2p',
+            'unknown-to-be-an-instance-of-to-be-a-constructibleschema-3s2p',
           ),
         ),
         fc.constant(Array),

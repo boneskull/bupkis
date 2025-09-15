@@ -56,9 +56,9 @@ const { expect } = use([asyncFnAssertion]);
 expect(async () => {}, 'to be an async function');
 ```
 
-### ClassSchema
+### ConstructibleSchema
 
-{@link schema!ClassSchema ClassSchema} matches JavaScript functions which may be constructed with the [new keyword][]. This includes any function which was defined using the `function` keyword in addition to classes (created with `class` or otherwise).
+{@link schema!ConstructibleSchema ConstructibleSchema} matches JavaScript functions which may be constructed with the [new keyword][]. This includes any function which was defined using the `function` keyword in addition to classes (created with `class` or otherwise).
 
 > **Important:** We can only know if a function is _constructible_; we cannot know if it was specifically created using the `class` keyword or is otherwise intended to be a "class". This is a language-level limitation. If someone knows a way around this, please [open an issue][issue-tracker]!
 
@@ -66,16 +66,20 @@ expect(async () => {}, 'to be an async function');
 
 ```ts
 import { createAssertion, use } from 'bupkis';
-import { ClassSchema } from 'bupkis/schema';
+import { ConstructibleSchema } from 'bupkis/schema';
 
 const classAssertion = createAssertion(
-  [ClassSchema, 'to be a subclass of Error'],
-  ClassSchema.refine((subject) => subject.prototype instanceof Error),
+  [ConstructibleSchema, 'to be a subclass of Error'],
+  ConstructibleSchema.refine((subject) => subject.prototype instanceof Error),
 );
 
 const { expect } = use([classAssertion]);
 expect(class MyError extends Error {}, 'to be a subclass of Error');
 ```
+
+### ClassSchema _(deprecated)_
+
+{@link schema!ClassSchema ClassSchema} is deprecated. Use {@link schema!ConstructibleSchema ConstructibleSchema} instead. `ClassSchema` is a misnomer since it validates any constructible function, not just classes.
 
 ### FalsySchema
 

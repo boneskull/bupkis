@@ -24,7 +24,7 @@
   - `expect.ts` - Main entry points (`expect`, `expectAsync`)
   - `bootstrap.ts` - Factory functions for creating assertion engines
   - `guards.ts` - Runtime type guards and validation utilities
-  - `schema.ts` - Reusable Zod schemas (`ClassSchema`, `FunctionSchema`, etc.)
+  - `schema.ts` - Reusable Zod schemas (`ConstructibleSchema`, `FunctionSchema`, etc.)
   - `types.ts` - Complex TypeScript type definitions and inference system
   - `util.ts` - Object matching utilities (`satisfies`, `exhaustivelySatisfies`)
   - `error.ts` - Custom error classes (`AssertionError`, `NegatedAssertionError`)
@@ -158,7 +158,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 **Module Boundaries**:
 
 - `guards.ts` - runtime type checking (used throughout)
-- `schema.ts` - reusable Zod schemas (`ClassSchema`, `FunctionSchema`, etc.)
+- `schema.ts` - reusable Zod schemas (`ConstructibleSchema`, `FunctionSchema`, etc.)
 - `util.ts` - object matching utilities (`satisfies`, `exhaustivelySatisfies`)
 - `bootstrap.ts` - factory functions for creating assertion engines
 - Clear separation between sync/async assertion implementations

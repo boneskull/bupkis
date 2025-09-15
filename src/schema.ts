@@ -45,7 +45,7 @@ import { BupkisRegistry } from './metadata.js';
 import { type Constructor, type MutableOrReadonly } from './types.js';
 
 /**
- * A Zod schema that validates JavaScript classes or constructor functions.
+ * A Zod schema that validates JavaScript constructible functions.
  *
  * This schema validates values that can be used as constructors, including ES6
  * classes, traditional constructor functions, and built-in constructors. It
@@ -54,28 +54,36 @@ import { type Constructor, type MutableOrReadonly } from './types.js';
  *
  * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
- * `ClassSchema` for later reference and type checking purposes.
+ * `ConstructibleSchema` for later reference and type checking purposes.
  * @example
  *
  * ```typescript
  * class MyClass {}
  * function MyConstructor() {}
  *
- * ClassSchema.parse(MyClass); // ✓ Valid
- * ClassSchema.parse(MyConstructor); // ✓ Valid
- * ClassSchema.parse(Array); // ✓ Valid
- * ClassSchema.parse(Date); // ✓ Valid
- * ClassSchema.parse(() => {}); // ✗ Throws validation error
- * ClassSchema.parse({}); // ✗ Throws validation error
+ * ConstructibleSchema.parse(MyClass); // ✓ Valid
+ * ConstructibleSchema.parse(MyConstructor); // ✓ Valid
+ * ConstructibleSchema.parse(Array); // ✓ Valid
+ * ConstructibleSchema.parse(Date); // ✓ Valid
+ * ConstructibleSchema.parse(() => {}); // ✗ Throws validation error
+ * ConstructibleSchema.parse({}); // ✗ Throws validation error
  * ```
  *
  * @group Schema
  */
 
-export const ClassSchema = z
+export const ConstructibleSchema = z
   .custom<Constructor>(isConstructible)
-  .register(BupkisRegistry, { name: 'ClassSchema' })
-  .describe('Class / Constructor');
+  .register(BupkisRegistry, { name: 'ConstructibleSchema' })
+  .describe('Constructible Function');
+
+/**
+ * @deprecated Use {@link ConstructibleSchema} instead. `ClassSchema` is a
+ *   misnomer since it validates any constructible function, not just classes.
+ *   This alias will be removed in a future version.
+ * @group Schema
+ */
+export const ClassSchema = ConstructibleSchema;
 
 /**
  * A Zod schema that validates any JavaScript function.

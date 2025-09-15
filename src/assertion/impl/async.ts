@@ -14,7 +14,7 @@ import { z } from 'zod/v4';
 
 import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
-  ClassSchema,
+  ConstructibleSchema,
   FunctionSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
@@ -97,7 +97,11 @@ export const PromiseAssertions = [
   ),
   // Parameterized "to reject" with class constructor
   createAsyncAssertion(
-    [FunctionSchema, ['to reject with a', 'to reject with an'], ClassSchema],
+    [
+      FunctionSchema,
+      ['to reject with a', 'to reject with an'],
+      ConstructibleSchema,
+    ],
     async (subject, ctor) => {
       const error = await trapAsyncFnError(subject);
       if (!error) {
@@ -110,7 +114,7 @@ export const PromiseAssertions = [
     [
       WrappedPromiseLikeSchema,
       ['to reject with a', 'to reject with an'],
-      ClassSchema,
+      ConstructibleSchema,
     ],
     async (subject, ctor) => {
       const error = await trapPromiseError(subject);
