@@ -11,13 +11,13 @@ An alternative [phrase].
 
 ### Assertion
 
-A validation rule that tests whether a [subject](#subject) meets specific criteria. In _BUPKIS_, assertions are expressed as natural language [phrases](#phrase) combined with optional [parameters](#parameter). Each assertion has an [implementation](#assertion-implementation) ([schema](#zod-schema) or function) that performs the actual validation.
+A validation rule that tests whether a [subject](#subject) meets specific criteria. In <span class="bupkis">BUPKIS</span>, assertions are expressed as natural language [phrases](#phrase) combined with optional [parameters](#parameter). Each assertion has an [implementation](#assertion-implementation) ([schema](#zod-schema) or function) that performs the actual validation.
 
 _See also: [Expectation](#expectation)_
 
 ### Assertion Engine
 
-The internal system that processes [assertion](#assertion) calls, parses arguments into [slots](#slot), matches them against registered assertions, and executes the validation logic. _BUPKIS_ has separate [sync](#synchronous-assertion) and [async](#asynchronous-assertion) assertion engines.
+The internal system that processes [assertion](#assertion) calls, parses arguments into [slots](#slot), matches them against registered assertions, and executes the validation logic. <span class="bupkis">BUPKIS</span> has separate [sync](#synchronous-assertion) and [async](#asynchronous-assertion) assertion engines.
 
 ### Assertion Failure
 
@@ -45,7 +45,7 @@ The raw definition of an [assertion](#assertion)'s structure, including [phrases
 
 ### AssertionError
 
-The standard Node.js error thrown when an [assertion](#assertion) fails. _BUPKIS_ uses this for compatibility with testing frameworks.
+The standard Node.js error thrown when an [assertion](#assertion) fails. <span class="bupkis">BUPKIS</span> uses this for compatibility with testing frameworks.
 
 ### Asynchronous Assertion
 
@@ -55,7 +55,7 @@ An [assertion](#assertion) designed to work with Promises and async operations. 
 
 ### Expectation
 
-A statement about what should be true about a value or behavior. This term is used interchangeably with "assertion" in the context of _BUPKIS_. For example, "I expect this value to be a string" expresses the same concept as "I assert this value is a string."
+A statement about what should be true about a value or behavior. This term is used interchangeably with "assertion" in the context of <span class="bupkis">BUPKIS</span>. For example, "I expect this value to be a string" expresses the same concept as "I assert this value is a string."
 
 _See also: [Assertion](#assertion)_
 
@@ -77,11 +77,11 @@ An [assertion](#assertion) implemented using a JavaScript function rather than a
 
 ### Natural Language API
 
-_BUPKIS_'s approach to [assertion](#assertion) syntax that uses human-readable [phrases](#phrase) instead of method chaining. For example, `expect(value, 'to be greater than', 5)` instead of `expect(value).toBeGreaterThan(5)`.
+<span class="bupkis">BUPKIS</span>'s approach to [assertion](#assertion) syntax that uses human-readable [phrases](#phrase) instead of method chaining. For example, `expect(value, 'to be greater than', 5)` instead of `expect(value).toBeGreaterThan(5)`.
 
 ### Negation
 
-The ability to invert an [assertion](#assertion) using `'not'`. For example, `expect(5, 'not to be a string')`. _BUPKIS_ automatically supports negation for all assertions.
+The ability to invert an [assertion](#assertion) using `'not'`. For example, `expect(5, 'not to be a string')`. <span class="bupkis">BUPKIS</span> automatically supports negation for all assertions.
 
 ## P
 
@@ -127,10 +127,10 @@ An [assertion](#assertion) that completes immediately without waiting for Promis
 
 ### use()
 
-The method for registering custom [assertions](#assertion) with _BUPKIS_. Called as `expect.use([customAssertions])` and returns new [`expect`](#expect) and [`expectAsync`](#expectasync) functions that include the custom assertions.
+The method for registering custom [assertions](#assertion) with <span class="bupkis">BUPKIS</span>. Called as `expect.use([customAssertions])` and returns new [`expect`](#expect) and [`expectAsync`](#expectasync) functions that include the custom assertions.
 
 ## Z
 
 ### Zod Schema
 
-A validation schema from the Zod library used to define [assertion implementations](#assertion-implementation) and [parameter](#parameter) types. _BUPKIS_ is built around Zod v4 and uses schemas extensively for both validation and type inference.
+A validation schema from the Zod library used to define [assertion implementations](#assertion-implementation) and [parameter](#parameter) types. <span class="bupkis">BUPKIS</span> is built around Zod v4 and uses schemas extensively for both validation and type inference.

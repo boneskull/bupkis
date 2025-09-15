@@ -16,7 +16,7 @@ Property-based testing is particularly well-suited for testing assertions becaus
 - **Confidence**: Hundreds or thousands of test cases run automatically
 - **Documentation**: Properties serve as executable specifications
 
-_BUPKIS_ recommends [fast-check][] for property-based testing due to its flexibility, popularity, and the sad fact that the author has no idea about any other property-based testing libraries.
+<span class="bupkis">BUPKIS</span> recommends [fast-check][] for property-based testing due to its flexibility, popularity, and the sad fact that the author has no idea about any other property-based testing libraries.
 
 This guide will use the built-in Node.js test runner [`node:test`][node-test], but you can use any test framework you prefer.
 

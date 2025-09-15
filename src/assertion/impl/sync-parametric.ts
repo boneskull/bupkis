@@ -7,6 +7,7 @@ import {
   ClassSchema,
   FunctionSchema,
   RegExpSchema,
+  SatisfyPatternSchema,
   StrongMapSchema,
   StrongSetSchema,
   WrappedPromiseLikeSchema,
@@ -460,12 +461,12 @@ export const ParametricAssertions = [
     [
       z.looseObject({}).nonoptional(),
       ['to satisfy', 'to be like'],
-      z.looseObject({}),
+      SatisfyPatternSchema,
     ],
     (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
   ),
   createAssertion(
-    [ArrayLikeSchema, ['to satisfy', 'to be like'], ArrayLikeSchema],
+    [ArrayLikeSchema, ['to satisfy', 'to be like'], SatisfyPatternSchema],
     (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
   ),
   createAssertion(

@@ -24,7 +24,9 @@ import type {
   AssertionPart,
   PhraseLiteralChoice,
 } from './assertion/assertion-types.js';
-import type { Constructor, ZodTypeMap } from './types.js';
+import type { Constructor, ExpectItExecutor, ZodTypeMap } from './types.js';
+
+import { kExpectIt } from './constant.js';
 
 /**
  * Returns `true` if the given value looks like a Zod v4 schema, determined by
@@ -221,6 +223,30 @@ export const isPhraseLiteralChoice = (
 export const isPhraseLiteral = (value: AssertionPart): value is string =>
   isString(value) && !value.startsWith('not ');
 
+/**
+ * Generic type guard for instanceof checks.
+ *
+ * This function provides a type-safe way to check if a value is an instance of
+ * a given constructor, with proper type narrowing for TypeScript. It combines
+ * the null/object check with instanceof to ensure the value is a valid object
+ * before performing the instance check.
+ *
+ * @example
+ *
+ * ```typescript
+ * const obj = new Date();
+ * if (isA(obj, Date)) {
+ *   // obj is now typed as Date
+ *   console.log(obj.getTime());
+ * }
+ * ```
+ *
+ * @template T - The constructor type to check against
+ * @param value - Value to test
+ * @param ctor - Constructor function to check instanceof
+ * @returns `true` if the value is an instance of the constructor, `false`
+ *   otherwise
+ */
 export const isA = <T extends Constructor>(
   value: unknown,
   ctor: T,
@@ -228,4 +254,58 @@ export const isA = <T extends Constructor>(
   return isNonNullObject(value) && value instanceof ctor;
 };
 
+/**
+ * Type guard for Error instances.
+ *
+ * This function checks if a value is an instance of the Error class or any of
+ * its subclasses. It's useful for error handling and type narrowing when
+ * working with unknown values that might be errors.
+ *
+ * @example
+ *
+ * ```typescript
+ * try {
+ *   throw new TypeError('Something went wrong');
+ * } catch (err) {
+ *   if (isError(err)) {
+ *     // err is now typed as Error
+ *     console.log(err.message);
+ *   }
+ * }
+ * ```
+ *
+ * @param value - Value to test
+ * @returns `true` if the value is an Error instance, `false` otherwise
+ */
 export const isError = (value: unknown): value is Error => isA(value, Error);
+
+/**
+ * Type guard for {@link ExpectItExecutor} functions.
+ *
+ * This function checks if a value is an {@link ExpectItExecutor} function
+ * created by {@link bupkis!expect.it | expect.it()}. {@link ExpectItExecutor}
+ * functions are special functions that contain assertion logic and are marked
+ * with an internal symbol for identification. They are used in nested
+ * assertions within "to satisfy" patterns and other complex assertion
+ * scenarios.
+ *
+ * @example
+ *
+ * ```typescript
+ * const executor = expect.it('to be a string');
+ * if (isExpectItExecutor(executor)) {
+ *   // executor is now typed as ExpectItExecutor
+ *   // Can be used in satisfaction patterns
+ * }
+ * ```
+ *
+ * @template Subject - The subject type that the executor function operates on
+ * @param value - Value to test
+ * @returns `true` if the value is an ExpectItExecutor function, `false`
+ *   otherwise
+ */
+export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
+  value: unknown,
+): value is ExpectItExecutor<Subject> => {
+  return isFunction(value) && kExpectIt in value && value[kExpectIt] === true;
+};

@@ -37,12 +37,18 @@ import { z } from 'zod/v4';
 import {
   isA,
   isConstructible,
+  isExpectItExecutor,
   isFunction,
   isNonNullObject,
   isPromiseLike,
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
-import { type Constructor, type MutableOrReadonly } from './types.js';
+import {
+  type Constructor,
+  type ExpectItExecutor,
+  type MutableOrReadonly,
+  type SatisfyPatternValue,
+} from './types.js';
 
 /**
  * A Zod schema that validates JavaScript classes or constructor functions.
@@ -506,3 +512,84 @@ export const RegExpSchema = z
   .instanceof(RegExp)
   .describe('A RegExp instance')
   .register(BupkisRegistry, { name: 'RegExp' });
+
+/**
+ * A recursive Zod schema that validates values allowed in "to satisfy"
+ * assertion patterns.
+ *
+ * This schema defines the allowed structure for patterns used with "to satisfy"
+ * and "to be like" assertions. It supports a recursive structure that can
+ * contain:
+ *
+ * - **Primitive values**: strings, numbers, booleans, null, undefined, bigint,
+ *   symbols
+ * - **Regular expressions**: for pattern matching against string values
+ * - **ExpectItExecutor functions**: nested assertions created via `expect.it()`
+ * - **Objects**: with properties that recursively follow this same pattern
+ * - **Arrays**: with elements that recursively follow this same pattern
+ *
+ * The schema handles the special semantics required for "to satisfy"
+ * assertions:
+ *
+ * - RegExp values are used for pattern testing rather than exact matching
+ * - ExpectItExecutor functions are executed as nested assertions
+ * - Objects and arrays can contain any combination of the above recursively
+ *
+ * @privateRemarks
+ * Uses `z.lazy()` to handle recursive object and array structures without
+ * causing infinite recursion during schema definition. The schema is registered
+ * in the `BupkisRegistry` for reference and type checking.
+ * @example
+ *
+ * ```typescript
+ * // Primitive values
+ * SatisfyPatternSchema.parse('hello'); // ✓ Valid
+ * SatisfyPatternSchema.parse(42); // ✓ Valid
+ * SatisfyPatternSchema.parse(true); // ✓ Valid
+ *
+ * // Regular expressions for pattern matching
+ * SatisfyPatternSchema.parse(/test/); // ✓ Valid
+ *
+ * // ExpectItExecutor functions
+ * SatisfyPatternSchema.parse(expect.it('to be a string')); // ✓ Valid
+ *
+ * // Complex nested structures
+ * SatisfyPatternSchema.parse({
+ *   name: expect.it('to be a string'),
+ *   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+ *   age: expect.it('to be greater than', 0),
+ *   tags: [expect.it('to be a string')],
+ * }); // ✓ Valid
+ *
+ * // Invalid values
+ * SatisfyPatternSchema.parse(new Date()); // ✗ Invalid (not supported type)
+ * SatisfyPatternSchema.parse(() => {}); // ✗ Invalid (regular function, not ExpectItExecutor)
+ * ```
+ *
+ * @group Schema
+ */
+export const SatisfyPatternSchema: z.ZodType<SatisfyPatternValue> = z
+  .lazy(() =>
+    z.union([
+      // Primitive types
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.null(),
+      z.undefined(),
+      z.bigint(),
+      z.symbol(),
+
+      // Special types for "to satisfy" semantics
+      z.instanceof(RegExp), // For pattern matching
+      z.custom<ExpectItExecutor<any>>(isExpectItExecutor, {
+        message:
+          'Expected an ExpectItExecutor function (created with expect.it())',
+      }), // For nested assertions
+
+      // Recursive structures
+      z.array(SatisfyPatternSchema), // Arrays of satisfy patterns
+      z.record(z.string(), SatisfyPatternSchema), // Objects with satisfy pattern values
+    ]),
+  )
+  .register(BupkisRegistry, { name: 'SatisfyPatternSchema' });
