@@ -280,12 +280,12 @@ const testConfigs = {
     },
   },
 
-  'functionschema-to-have-arity-number-3s3p': {
+  'function-to-have-arity-number-3s3p': {
     invalid: {
       generators: [
         fc.constant(() => {}), // Zero arity
         fc.constantFrom(
-          ...extractPhrases('functionschema-to-have-arity-number-3s3p'),
+          ...extractPhrases('function-to-have-arity-number-3s3p'),
         ),
         fc.constant(2), // Expecting 2 arguments
       ] as const,
@@ -294,7 +294,7 @@ const testConfigs = {
       generators: [
         fc.constant((_a: any, _b: any) => {}), // Two arity
         fc.constantFrom(
-          ...extractPhrases('functionschema-to-have-arity-number-3s3p'),
+          ...extractPhrases('function-to-have-arity-number-3s3p'),
         ),
         fc.constant(2), // Expecting 2 arguments
       ] as const,
@@ -302,29 +302,29 @@ const testConfigs = {
   },
 
   // function throws (no specific error)
-  'functionschema-to-throw-2s2p': {
+  'function-to-throw-2s2p': {
     invalid: {
       generators: [
         helperGenerators.nonThrowingFunction,
-        fc.constantFrom(...extractPhrases('functionschema-to-throw-2s2p')),
+        fc.constantFrom(...extractPhrases('function-to-throw-2s2p')),
       ],
     },
     valid: {
       generators: [
         helperGenerators.throwingFunction,
-        fc.constantFrom(...extractPhrases('functionschema-to-throw-2s2p')),
+        fc.constantFrom(...extractPhrases('function-to-throw-2s2p')),
       ],
     },
   },
 
   // function throws specific error type
-  'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p': {
+  'function-to-throw-a-to-thrown-an-constructibleschema-3s3p': {
     invalid: {
       generators: [
         helperGenerators.throwingFunction, // Throws Error, expecting TypeError (wrong type)
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p',
+            'function-to-throw-a-to-thrown-an-constructibleschema-3s3p',
           ),
         ),
         fc.constant(TypeError),
@@ -335,7 +335,7 @@ const testConfigs = {
         helperGenerators.errorThrowingFunction, // Throws TypeError, expecting TypeError (correct type)
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-a-to-thrown-an-constructibleschema-3s3p',
+            'function-to-throw-a-to-thrown-an-constructibleschema-3s3p',
           ),
         ),
         fc.constant(TypeError),
@@ -344,7 +344,7 @@ const testConfigs = {
   },
 
   // function throws error type with message
-  'functionschema-to-throw-a-to-thrown-an-constructibleschema-satisfying-string-regexp-object-5s5p':
+  'function-to-throw-a-to-thrown-an-constructibleschema-satisfying-string-regexp-object-5s5p':
     {
       invalid: {
         generators: [
@@ -371,7 +371,7 @@ const testConfigs = {
     },
 
   // function throws with message/pattern
-  'functionschema-to-throw-string-regexp-object-3s3p': {
+  'function-to-throw-string-regexp-object-3s3p': {
     invalid: {
       generators: [
         fc.constant(() => {
@@ -379,7 +379,7 @@ const testConfigs = {
         }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-string-regexp-object-3s3p',
+            'function-to-throw-string-regexp-object-3s3p',
           ),
         ),
         fc.constant('specific error'),
@@ -392,7 +392,7 @@ const testConfigs = {
         }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-throw-string-regexp-object-3s3p',
+            'function-to-throw-string-regexp-object-3s3p',
           ),
         ),
         fc.constant('specific error'),

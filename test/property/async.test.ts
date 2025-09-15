@@ -23,7 +23,7 @@ const extractPhrases = createPhraseExtractor(assertions);
 const testConfigDefaults: PropertyTestConfigParameters = {} as const;
 
 const testConfigs = {
-  'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
+  'function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p':
     {
       invalid: {
         async: true,
@@ -35,7 +35,7 @@ const testConfigs = {
           }),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
+              'function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.oneof(
@@ -56,7 +56,7 @@ const testConfigs = {
           ),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
+              'function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-string-regexp-object-3s3p',
             ),
           ),
           fc.constant('expected value'), // Expected value matches actual exactly
@@ -65,7 +65,7 @@ const testConfigs = {
     },
 
   // Test functions that reject (to reject)
-  'functionschema-to-reject-2s2p': {
+  'function-to-reject-2s2p': {
     invalid: {
       async: true,
       generators: [
@@ -75,7 +75,7 @@ const testConfigs = {
             async (..._args: unknown[]) =>
               fn(), // Always resolves
         ),
-        fc.constantFrom(...extractPhrases('functionschema-to-reject-2s2p')),
+        fc.constantFrom(...extractPhrases('function-to-reject-2s2p')),
       ],
     },
     valid: {
@@ -86,13 +86,13 @@ const testConfigs = {
           const value = fn();
           throw new Error('Generated error: ' + value);
         }),
-        fc.constantFrom(...extractPhrases('functionschema-to-reject-2s2p')),
+        fc.constantFrom(...extractPhrases('function-to-reject-2s2p')),
       ],
     },
   },
 
   // Test functions rejecting with specific error class
-  'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p':
+  'function-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p':
     {
       invalid: {
         async: true,
@@ -110,7 +110,7 @@ const testConfigs = {
           ),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
+              'function-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(RangeError), // Expecting RangeError but function throws TypeError
@@ -126,7 +126,7 @@ const testConfigs = {
           }),
           fc.constantFrom(
             ...extractPhrases(
-              'functionschema-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
+              'function-to-reject-with-a-to-reject-with-an-constructibleschema-3s3p',
             ),
           ),
           fc.constant(TypeError), // Expecting TypeError and function throws TypeError
@@ -134,7 +134,7 @@ const testConfigs = {
       },
     },
   // Test functions rejecting with string patterns
-  'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p': {
+  'function-to-reject-with-error-satisfying-string-regexp-object-3s3p': {
     invalid: {
       async: true,
       generators: [
@@ -145,7 +145,7 @@ const testConfigs = {
         }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
+            'function-to-reject-with-error-satisfying-string-regexp-object-3s3p',
           ),
         ),
         fc.oneof(
@@ -168,7 +168,7 @@ const testConfigs = {
           }),
         fc.constantFrom(
           ...extractPhrases(
-            'functionschema-to-reject-with-error-satisfying-string-regexp-object-3s3p',
+            'function-to-reject-with-error-satisfying-string-regexp-object-3s3p',
           ),
         ),
         fc.constant({ baz: 'quux' }), // Expected rejection value matches
@@ -176,7 +176,7 @@ const testConfigs = {
     },
   },
   // Test functions that resolve (to resolve/to fulfill)
-  'functionschema-to-resolve-to-fulfill-2s2p': {
+  'function-to-resolve-to-fulfill-2s2p': {
     invalid: {
       async: true,
       generators: [
@@ -186,7 +186,7 @@ const testConfigs = {
           throw new Error('Generated error: ' + value);
         }),
         fc.constantFrom(
-          ...extractPhrases('functionschema-to-resolve-to-fulfill-2s2p'),
+          ...extractPhrases('function-to-resolve-to-fulfill-2s2p'),
         ),
       ],
     },
@@ -200,7 +200,7 @@ const testConfigs = {
               fn(), // Always resolves
         ),
         fc.constantFrom(
-          ...extractPhrases('functionschema-to-resolve-to-fulfill-2s2p'),
+          ...extractPhrases('function-to-resolve-to-fulfill-2s2p'),
         ),
       ],
     },

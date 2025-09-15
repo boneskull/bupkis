@@ -20,13 +20,11 @@ import {
 } from '../../value-to-schema.js';
 import { createAssertion, createAsyncAssertion } from '../create.js';
 
-// Local function schema for callback assertions that maintains
-// compatibility with the callback functions expecting
-// (...args: unknown[]) => unknown signature
-const FunctionSchema = z.custom<(...args: unknown[]) => unknown>(
-  (value): value is (...args: unknown[]) => unknown =>
-    typeof value === 'function',
-);
+// Helper to cast function type for trap compatibility
+const asTrapFunction = (fn: Function): ((...args: unknown[]) => unknown) => 
+  fn as (...args: unknown[]) => unknown;
+
+
 
 /**
  * Creates a standardized error object for when a callback or nodeback is not
@@ -379,17 +377,17 @@ const trapAsyncNodebackInvocation = async (
 export const CallbackSyncAssertions = [
   // Basic callback invocation - synchronous
   createAssertion(
-    [FunctionSchema, ['to call callback', 'to invoke callback']],
+    [z.function(), ['to call callback', 'to invoke callback']],
     (subject) => {
-      const { called } = trapCallbackInvocation(subject);
+      const { called } = trapCallbackInvocation(asTrapFunction(subject));
       return called;
     },
   ),
 
   createAssertion(
-    [FunctionSchema, ['to call nodeback', 'to invoke nodeback']],
+    [z.function(), ['to call nodeback', 'to invoke nodeback']],
     (subject) => {
-      const { called } = trapNodebackInvocation(subject);
+      const { called } = trapNodebackInvocation(asTrapFunction(subject));
       return called;
     },
   ),
@@ -397,12 +395,12 @@ export const CallbackSyncAssertions = [
   // Callback with value - deep equality check
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to call callback with', 'to invoke callback with'],
       z.unknown(),
     ],
     (subject, param) => {
-      const { called, value } = trapCallbackInvocation(subject);
+      const { called, value } = trapCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
@@ -415,7 +413,7 @@ export const CallbackSyncAssertions = [
   // Callback with exact value - strict equality check
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to call callback with exactly',
         'to call callback with exact value',
@@ -425,7 +423,7 @@ export const CallbackSyncAssertions = [
       z.unknown(),
     ],
     (subject, expected) => {
-      const { called, value } = trapCallbackInvocation(subject);
+      const { called, value } = trapCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
@@ -440,12 +438,12 @@ export const CallbackSyncAssertions = [
   // Nodeback with value - deep equality check
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to call nodeback with', 'to invoke nodeback with'],
       z.unknown(),
     ],
     (subject, param) => {
-      const { called, error, value } = trapNodebackInvocation(subject);
+      const { called, error, value } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -463,7 +461,7 @@ export const CallbackSyncAssertions = [
   // Nodeback with exact value - strict equality check
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to call nodeback with exactly',
         'to call nodeback with exact value',
@@ -473,7 +471,7 @@ export const CallbackSyncAssertions = [
       z.unknown(),
     ],
     (subject, expected) => {
-      const { called, error, value } = trapNodebackInvocation(subject);
+      const { called, error, value } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -493,11 +491,11 @@ export const CallbackSyncAssertions = [
   // Nodeback with error - synchronous
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to call nodeback with error', 'to invoke nodeback with error'],
     ],
     (subject) => {
-      const { called, error } = trapNodebackInvocation(subject);
+      const { called, error } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -510,7 +508,7 @@ export const CallbackSyncAssertions = [
   // Nodeback with specific error class - synchronous
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to call nodeback with a',
         'to call nodeback with an',
@@ -520,7 +518,7 @@ export const CallbackSyncAssertions = [
       ConstructibleSchema,
     ],
     (subject, ctor) => {
-      const { called, error } = trapNodebackInvocation(subject);
+      const { called, error } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -547,12 +545,12 @@ export const CallbackSyncAssertions = [
   // Nodeback with specific error pattern - synchronous
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to call nodeback with error', 'to invoke nodeback with error'],
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     (subject, param) => {
-      const { called, error } = trapNodebackInvocation(subject);
+      const { called, error } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -574,7 +572,7 @@ export const CallbackSyncAssertions = [
   // Callback satisfying pattern - partial matching
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to call callback with value satisfying',
         'to invoke callback with value satisfying',
@@ -582,7 +580,7 @@ export const CallbackSyncAssertions = [
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     (subject, param) => {
-      const { called, value } = trapCallbackInvocation(subject);
+      const { called, value } = trapCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('callback');
@@ -595,7 +593,7 @@ export const CallbackSyncAssertions = [
   // Nodeback satisfying pattern - partial matching
   createAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to call nodeback with value satisfying',
         'to invoke nodeback with value satisfying',
@@ -603,7 +601,7 @@ export const CallbackSyncAssertions = [
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     (subject, param) => {
-      const { called, error, value } = trapNodebackInvocation(subject);
+      const { called, error, value } = trapNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createNotCalledError('nodeback');
@@ -623,11 +621,11 @@ export const CallbackAsyncAssertions = [
   // Async versions
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to eventually call callback', 'to eventually invoke callback'],
     ],
     async (subject) => {
-      const { called } = await trapAsyncCallbackInvocation(subject);
+      const { called } = await trapAsyncCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return {
@@ -641,11 +639,11 @@ export const CallbackAsyncAssertions = [
 
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       ['to eventually call nodeback', 'to eventually invoke nodeback'],
     ],
     async (subject) => {
-      const { called } = await trapAsyncNodebackInvocation(subject);
+      const { called } = await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return {
@@ -660,7 +658,7 @@ export const CallbackAsyncAssertions = [
   // Async callback with value - deep equality check
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call callback with',
         'to eventually invoke callback with',
@@ -668,7 +666,7 @@ export const CallbackAsyncAssertions = [
       z.unknown(),
     ],
     async (subject, param) => {
-      const { called, value } = await trapAsyncCallbackInvocation(subject);
+      const { called, value } = await trapAsyncCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
@@ -681,7 +679,7 @@ export const CallbackAsyncAssertions = [
   // Async callback with exact value - strict equality check
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call callback with exactly',
         'to eventually call callback with exact value',
@@ -691,7 +689,7 @@ export const CallbackAsyncAssertions = [
       z.unknown(),
     ],
     async (subject, expected) => {
-      const { called, value } = await trapAsyncCallbackInvocation(subject);
+      const { called, value } = await trapAsyncCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
@@ -703,7 +701,7 @@ export const CallbackAsyncAssertions = [
   // Async nodeback with value - deep equality check
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with',
         'to eventually invoke nodeback with',
@@ -712,7 +710,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, param) => {
       const { called, error, value } =
-        await trapAsyncNodebackInvocation(subject);
+        await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
@@ -730,7 +728,7 @@ export const CallbackAsyncAssertions = [
   // Async nodeback with exact value - strict equality check
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with exactly',
         'to eventually call nodeback with exact value',
@@ -741,7 +739,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, expected) => {
       const { called, error, value } =
-        await trapAsyncNodebackInvocation(subject);
+        await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
@@ -758,14 +756,14 @@ export const CallbackAsyncAssertions = [
 
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with error',
         'to eventually invoke nodeback with error',
       ],
     ],
     async (subject) => {
-      const { called, error } = await trapAsyncNodebackInvocation(subject);
+      const { called, error } = await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
@@ -777,7 +775,7 @@ export const CallbackAsyncAssertions = [
 
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with a',
         'to eventually call nodeback with an',
@@ -787,7 +785,7 @@ export const CallbackAsyncAssertions = [
       ConstructibleSchema,
     ],
     async (subject, ctor) => {
-      const { called, error } = await trapAsyncNodebackInvocation(subject);
+      const { called, error } = await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
@@ -813,7 +811,7 @@ export const CallbackAsyncAssertions = [
 
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with error',
         'to eventually invoke nodeback with error',
@@ -821,7 +819,7 @@ export const CallbackAsyncAssertions = [
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (subject, param) => {
-      const { called, error } = await trapAsyncNodebackInvocation(subject);
+      const { called, error } = await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
@@ -843,7 +841,7 @@ export const CallbackAsyncAssertions = [
   // Async callback satisfying pattern - partial matching
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call callback with value satisfying',
         'to eventually invoke callback with value satisfying',
@@ -851,7 +849,7 @@ export const CallbackAsyncAssertions = [
       z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
     ],
     async (subject, param) => {
-      const { called, value } = await trapAsyncCallbackInvocation(subject);
+      const { called, value } = await trapAsyncCallbackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('callback');
@@ -864,7 +862,7 @@ export const CallbackAsyncAssertions = [
   // Async nodeback satisfying pattern - partial matching
   createAsyncAssertion(
     [
-      FunctionSchema,
+      z.function(),
       [
         'to eventually call nodeback with value satisfying',
         'to eventually invoke nodeback with value satisfying',
@@ -873,7 +871,7 @@ export const CallbackAsyncAssertions = [
     ],
     async (subject, param) => {
       const { called, error, value } =
-        await trapAsyncNodebackInvocation(subject);
+        await trapAsyncNodebackInvocation(asTrapFunction(subject));
       /* c8 ignore next */
       if (!called) {
         return createAsyncNotCalledError('nodeback');
