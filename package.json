@@ -171,7 +171,7 @@
     "serve": "14.2.5",
     "tshy": "3.0.2",
     "tsx": "4.20.5",
-    "type-fest": "4.41.0",
+    "type-fest": "5.0.0",
     "typedoc": "0.28.12",
     "typedoc-plugin-dt-links": "2.0.18",
     "typedoc-plugin-extras": "4.0.1",
