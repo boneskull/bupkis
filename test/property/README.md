@@ -13,15 +13,21 @@ Property-based tests verify that assertions behave correctly across four differe
 
 Tests are organized by assertion category:
 
-- `sync-basic.test.ts` - Basic type assertions (string, number, boolean, etc.)
-- `sync-collection.test.ts` - Array and object assertions (contains, length, etc.)
-- `sync-esoteric.test.ts` - Advanced assertions (instanceof, satisfies, etc.)
-- `sync-parametric.test.ts` - Parameterized assertions (greater than, matches, etc.)
-- `async.test.ts` - Promise-based assertions (resolve, reject, etc.)
+- [`sync-basic.test.ts`](sync-basic.test.ts) - Basic type assertions (string, number, boolean, etc.)
+- [`sync-collection.test.ts`](sync-collection.test.ts) - Array and object assertions (contains, length, etc.)
+- [`sync-esoteric.test.ts`](sync-esoteric.test.ts) - Advanced assertions (instanceof, satisfies, etc.)
+- [`sync-parametric.test.ts`](sync-parametric.test.ts) - Parameterized assertions (greater than, matches, etc.)
+- [`async-callback.test.ts`](async-callback.test.ts) - Callback-based asynchronous assertions
+- [`async-parametric.test.ts`](async-parametric.test.ts) - Parameterized asynchronous assertions
+
+Non-assertion utilities needing extra attention are also tested here:
+
+- [`is-constructible.test.ts`](is-constructible.test.ts) - Tests for constructible types
+- [`value-to-schema.test.ts`](value-to-schema.test.ts) - Validation of value-to-schema conversions
 
 ## Key Files
 
-### `config.ts`
+### [`property-test-config.ts`](property-test-config.ts)
 
 Defines the configuration types and interfaces for property-based tests.
 
@@ -47,7 +53,7 @@ Each variant config specifies:
 - `generators` - Array of fast-check generators for test inputs
 - Fast-check parameters (numRuns, seed, etc.)
 
-### `property-test-util.ts`
+### [`property-test-util.ts`](property-test-util.ts)
 
 Contains utility functions for property-based test setup and data extraction.
 
@@ -58,16 +64,36 @@ Contains utility functions for property-based test setup and data extraction.
 **Usage example:**
 
 ```typescript
-const phrases = extractPhrases(assertions['to-be-a-string']);
+const phrases = extractPhrases(assertions.stringAssertion);
 // Returns: ['to be a string']
 
 // Used in test configurations:
-fc.constantFrom(...extractPhrases(assertion));
+const testConfigs = new Map([
+  [
+    assertions.stringAssertion,
+    {
+      valid: {
+        generators: [
+          fc.string(),
+          fc.constantFrom(...extractPhrases(assertions.stringAssertion)),
+        ],
+      },
+      invalid: {
+        generators: [
+          fc.anything().filter((v) => typeof v !== 'string'),
+          fc.constantFrom(...extractPhrases(assertions.stringAssertion)),
+        ],
+      },
+    },
+  ],
+]);
+
+runPropertyTests(testConfigs, assertions);
 ```
 
 This utility is essential for generating valid assertion phrases in property tests, ensuring that the natural language API is tested with correct syntax.
 
-### `property-test.macro.ts`
+### [`property-test.macro.ts`](property-test.macro.ts)
 
 Contains the core "macro" functions that generate and execute property-based test suites.
 
@@ -88,11 +114,11 @@ Contains the core "macro" functions that generate and execute property-based tes
 
 ```typescript
 describe('Assertion: {FunctionSchema} "to be a string"', () => {
-  it('should pass for all valid inputs [string-assertion-id]', () => {
+  it('should pass for all valid inputs', () => {
     // Uses fc.property with valid generators
   });
 
-  it('should fail for all invalid inputs [string-assertion-id]', () => {
+  it('should fail for all invalid inputs', () => {
     // Uses fc.property with invalid generators, expects AssertionError
   });
 
@@ -144,7 +170,7 @@ npm run test:property
 npm run test:property:dev
 
 # Run specific property test file
-node --import tsx --test test/property/sync-basic.test.ts
+node --import tsx --test test/property/[`sync-basic.test.ts`](sync-basic.test.ts)
 ```
 
 **Note**: Property-based tests cannot be executed through the Wallaby MCP server and must be run from the command line.
@@ -153,47 +179,48 @@ node --import tsx --test test/property/sync-basic.test.ts
 
 ### Basic Type Assertion
 
-````typescript
-## Configuration Examples
-
-### Basic Type Assertion
-
 ```typescript
-'to-be-a-string': {
-  invalid: {
-    generators: [
-      fc.anything().filter(v => typeof v !== 'string'),
-      fc.constantFrom(...extractPhrases(assertions['to-be-a-string'])),
-    ],
+[
+  assertions.stringAssertion,
+  {
+    invalid: {
+      generators: [
+        fc.anything().filter((v) => typeof v !== 'string'),
+        fc.constantFrom(...extractPhrases(assertions.stringAssertion)),
+      ],
+    },
+    valid: {
+      generators: [
+        fc.string(),
+        fc.constantFrom(...extractPhrases(assertions.stringAssertion)),
+      ],
+    },
   },
-  valid: {
-    generators: [
-      fc.string(),
-      fc.constantFrom(...extractPhrases(assertions['to-be-a-string'])),
-    ],
-  },
-},
-````
+],
+```
 
 ### Parameterized Assertion
 
 ```typescript
-'to-be-greater-than': {
-  invalid: {
-    generators: [
-      fc.integer(),
-      fc.constantFrom(...extractPhrases(assertions['to-be-greater-than'])),
-      fc.integer().map(n => n + 1), // Generate number greater than first
-    ],
+[
+  assertions.functionArityAssertion,
+  {
+    invalid: {
+      generators: [
+        fc.constant((a: number, b: number) => a + b),
+        fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
+        fc.constant(3), // Wrong arity - function has 2 params, testing with 3
+      ] as const,
+    },
+    valid: {
+      generators: [
+        fc.constant((a: number, b: number) => a + b),
+        fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
+        fc.constant(2), // Correct arity - function has 2 params
+      ] as const,
+    },
   },
-  valid: {
-    generators: [
-      fc.integer(),
-      fc.constantFrom(...extractPhrases(assertions['to-be-greater-than'])),
-      fc.integer().map(n => n - 1), // Generate number less than first
-    ],
-  },
-},
+],
 ```
 
 This systematic approach ensures comprehensive testing coverage while maintaining the natural language expressiveness that makes Bupkis unique.
