@@ -87,7 +87,6 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - `npm run test:property:dev` - Run property tests in watch mode
 - `npm run test:base -- test/<file>.test.ts` - Run specific test files easily (preferred method for individual files)
 - **Individual Property Tests**: For faster execution, run individual property test files: `node --test --import tsx test/property/<file>.test.ts`
-- **Build Requirements**: Tests do not require `npm run build` - only `scripts/dump-assertion-ids.js` requires the build step
 
 **Linting & Type Checking**:
 
@@ -180,6 +179,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - `mcp_wallaby_wallaby_runtimeValues` - Inspect variable values at specific code locations
 - Additional tools: `mcp_wallaby_wallaby_allTestsForFile`, `mcp_wallaby_wallaby_testById`, `mcp_wallaby_wallaby_updateFileSnapshots`
 - Fallback: `npm test` for basic test execution when Wallaby MCP is unavailable
+- If needed, run `npm run debug:assertion-ids` to dump a mapping of assertion ID to assertion description. Arguments to this script can be provided by appending `-- --collection=<collection-name>` where `<collection-name>` is one of `all`, `async`, `async-callback`, `async-parametric`, `sync`, `sync-basic`, `sync-callback`, `sync-collection`, `sync-esoteric`, or `sync-parametric`. The default is `all`.
 
 **Property-Based Testing**: All tests in `test/property/` use [fast-check][] for property-based tests.
 

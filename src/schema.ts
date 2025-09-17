@@ -30,25 +30,19 @@
  * ```
  *
  * @packageDocumentation
+ * @showGroups
  */
 
 import { z } from 'zod/v4';
 
 import {
-  isA,
   isConstructible,
-  isExpectItExecutor,
   isFunction,
   isNonNullObject,
   isPromiseLike,
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
-import {
-  type Constructor,
-  type ExpectItExecutor,
-  type MutableOrReadonly,
-  type SatisfyPatternValue,
-} from './types.js';
+import { type Constructor, type MutableOrReadonly } from './types.js';
 
 /**
  * A Zod schema that validates JavaScript constructible functions.
@@ -86,11 +80,8 @@ export const ConstructibleSchema = z
 /**
  * A Zod schema that validates any JavaScript function.
  *
- * This schema provides function validation capabilities similar to the
- * parseable-only `z.function()` from Zod v3.x, but works with Zod v4's
- * architecture. It validates that the input value is any callable function,
- * including regular functions, arrow functions, async functions, generator
- * functions, and methods.
+ * This schema accepts a function having any signature and avoids Zod's parsing
+ * overhead.
  *
  * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
@@ -114,9 +105,7 @@ export const FunctionSchema = z
   .register(BupkisRegistry, {
     name: 'FunctionSchema',
   })
-  .describe(
-    'Any function; similar to parseable-only `z.function()` in Zod v3.x',
-  );
+  .describe('Any function');
 
 /**
  * A Zod schema that validates JavaScript property keys.
@@ -179,68 +168,9 @@ export const WrappedPromiseLikeSchema = z
   .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' });
 
 /**
- * A Zod schema that validates Map instances excluding WeakMap instances.
- *
- * This schema ensures that the validated value is a Map and specifically
- * excludes WeakMap instances through refinement validation. This is useful when
- * you need to ensure you're working with a regular Map that allows iteration
- * and enumeration of keys, unlike WeakMaps which are not enumerable.
- *
- * @remarks
- * The schema is registered in the `BupkisRegistry` with the name
- * `StrongMapSchema` for later reference and type checking purposes.
- * @example
- *
- * ```typescript
- * const validMap = new Map([
- *   ['key1', 'value1'],
- *   ['key2', 'value2'],
- * ]);
- * StrongMapSchema.parse(validMap); // ✓ Valid
- *
- * const weakMap = new WeakMap();
- * StrongMapSchema.parse(weakMap); // ✗ Throws validation error
- * ```
- *
- * @group Schema
- */
-export const StrongMapSchema = z
-  .instanceof(Map)
-  .refine((value) => !isA(value, WeakMap))
-  .describe('A Map that is not a WeakMap')
-  .register(BupkisRegistry, { name: 'StrongMapSchema' });
-
-/**
- * A Zod schema that validates Set instances excluding WeakSet instances.
- *
- * This schema ensures that the validated value is a Set and specifically
- * excludes WeakSet instances through refinement validation. This is useful when
- * you need to ensure you're working with a regular Set that allows iteration
- * and enumeration of values, unlike WeakSets which are not enumerable.
- *
- * @remarks
- * The schema is registered in the `BupkisRegistry` with the name
- * `StrongSetSchema` for later reference and type checking purposes.
- * @example
- *
- * ```typescript
- * const validSet = new Set([1, 2, 3]);
- * StrongSetSchema.parse(validSet); // ✓ Valid
- *
- * const weakSet = new WeakSet();
- * StrongSetSchema.parse(weakSet); // ✗ Throws validation error
- * ```
- *
- * @group Schema
- */
-export const StrongSetSchema = z
-  .instanceof(Set)
-  .refine((value) => !isA(value, WeakSet))
-  .describe('A Set that is not a WeakSet')
-  .register(BupkisRegistry, { name: 'StrongSetSchema' });
-
-/**
  * A Zod schema that validates plain objects with null prototypes.
+ *
+ * > Aliases: {@link NullProtoObjectSchema}, {@link DictionarySchema}
  *
  * This schema validates objects that have been created with
  * `Object.create(null)` or otherwise have their prototype set to `null`. Such
@@ -269,7 +199,6 @@ export const StrongSetSchema = z
  * ```
  *
  * @group Schema
- * @see Aliases: {@link NullProtoObjectSchema}, {@link DictionarySchema}
  */
 export const DictionarySchema = z
   .custom<Record<PropertyKey, unknown>>(
@@ -512,84 +441,3 @@ export const RegExpSchema = z
   .instanceof(RegExp)
   .describe('A RegExp instance')
   .register(BupkisRegistry, { name: 'RegExp' });
-
-/**
- * A recursive Zod schema that validates values allowed in "to satisfy"
- * assertion patterns.
- *
- * This schema defines the allowed structure for patterns used with "to satisfy"
- * and "to be like" assertions. It supports a recursive structure that can
- * contain:
- *
- * - **Primitive values**: strings, numbers, booleans, null, undefined, bigint,
- *   symbols
- * - **Regular expressions**: for pattern matching against string values
- * - **ExpectItExecutor functions**: nested assertions created via `expect.it()`
- * - **Objects**: with properties that recursively follow this same pattern
- * - **Arrays**: with elements that recursively follow this same pattern
- *
- * The schema handles the special semantics required for "to satisfy"
- * assertions:
- *
- * - RegExp values are used for pattern testing rather than exact matching
- * - ExpectItExecutor functions are executed as nested assertions
- * - Objects and arrays can contain any combination of the above recursively
- *
- * @privateRemarks
- * Uses `z.lazy()` to handle recursive object and array structures without
- * causing infinite recursion during schema definition. The schema is registered
- * in the `BupkisRegistry` for reference and type checking.
- * @example
- *
- * ```typescript
- * // Primitive values
- * SatisfyPatternSchema.parse('hello'); // ✓ Valid
- * SatisfyPatternSchema.parse(42); // ✓ Valid
- * SatisfyPatternSchema.parse(true); // ✓ Valid
- *
- * // Regular expressions for pattern matching
- * SatisfyPatternSchema.parse(/test/); // ✓ Valid
- *
- * // ExpectItExecutor functions
- * SatisfyPatternSchema.parse(expect.it('to be a string')); // ✓ Valid
- *
- * // Complex nested structures
- * SatisfyPatternSchema.parse({
- *   name: expect.it('to be a string'),
- *   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
- *   age: expect.it('to be greater than', 0),
- *   tags: [expect.it('to be a string')],
- * }); // ✓ Valid
- *
- * // Invalid values
- * SatisfyPatternSchema.parse(new Date()); // ✗ Invalid (not supported type)
- * SatisfyPatternSchema.parse(() => {}); // ✗ Invalid (regular function, not ExpectItExecutor)
- * ```
- *
- * @group Schema
- */
-export const SatisfyPatternSchema: z.ZodType<SatisfyPatternValue> = z
-  .lazy(() =>
-    z.union([
-      // Primitive types
-      z.string(),
-      z.number(),
-      z.boolean(),
-      z.null(),
-      z.undefined(),
-      z.bigint(),
-      z.symbol(),
-
-      // Special types for "to satisfy" semantics
-      z.instanceof(RegExp), // For pattern matching
-      z.custom<ExpectItExecutor<any>>(isExpectItExecutor, {
-        message:
-          'Expected an ExpectItExecutor function (created with expect.it())',
-      }), // For nested assertions
-
-      // Recursive structures
-      z.array(SatisfyPatternSchema), // Arrays of satisfy patterns
-      z.record(z.string(), SatisfyPatternSchema), // Objects with satisfy pattern values
-    ]),
-  )
-  .register(BupkisRegistry, { name: 'SatisfyPatternSchema' });

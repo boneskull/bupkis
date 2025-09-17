@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "noEmit": true,
     "allowJs": true,
-    "checkJs": true
+    "checkJs": true,
+    "noEmit": true
   },
   "extends": "../tsconfig.json",
   "include": [
@@ -13,6 +13,6 @@
     "../.commitlintrc.js",
     "./typedoc.js",
     "./typedoc-plugin-bupkis.js",
-    "../scripts/*.js"
+    "../scripts/*"
   ]
 }

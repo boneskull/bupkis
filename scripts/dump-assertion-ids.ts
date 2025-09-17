@@ -5,20 +5,15 @@
  * It can optionally be filtered by collection. The collections are:
  *
  * - `all` (default)
- * - `sync` - maps to `SyncAssertions` from `src/assertion/impl/sync.ts`
- * - `sync-basic` - maps to `BasicAssertions` from
- *   src/assertion/impl/sync-basic.ts`
- * - `sync-parametric` - maps to `ParametricAssertions` from
- *   `src/assertion/impl/sync-parametric.ts`
- * - `sync-collection` - maps to `CollectionAssertions` from
- *   `src/assertion/impl/sync-collection.ts`
- * - `sync-esoteric` - maps to `EsotericAssertions` from
- *   `src/assertion/impl/sync-esoteric.ts`
- * - `async` - maps to `AsyncAssertions` from `src/assertion/impl/async.ts`
- * - `async-callback` - maps to `CallbackAsyncAssertions` from
- *   `src/assertion/impl/callback.ts`
- * - `sync-callback` - maps to `CallbackSyncAssertions` from
- *   `src/assertion/impl/callback.ts`
+ * - `sync` - maps to `SyncAssertions`
+ * - `sync-basic` - maps to `BasicAssertions`
+ * - `sync-parametric` - maps to `SyncParametricAssertions`
+ * - `sync-collection` - maps to `CollectionAssertions`
+ * - `sync-esoteric` - maps to `EsotericAssertions`
+ * - `async` - maps to `AsyncAssertions`
+ * - `async-parametric` - maps to `AsyncSyncParametricAssertions`
+ * - `async-callback` - maps to `AsyncCallbackAssertions`
+ * - `sync-callback` - maps to `SyncCallbackAssertions`
  *
  * This script uses `parseArgs` from `node:util` and dumps values using
  * `console.dir()`.
@@ -26,7 +21,7 @@
  * Usage:
  *
  * ```sh
- * node scripts/dump-assertion-ids.js [--collection <collection>]
+ * npx tsx scripts/dump-assertion-ids.ts [--collection <collection>]
  * ```
  *
  * Before modifying or adding an assertion, run this script and pipe the output
@@ -42,31 +37,31 @@ import { parseArgs } from 'node:util';
 // Import assertion collections
 import {
   AsyncAssertions,
-  CallbackAsyncAssertions,
-  PromiseAssertions,
-} from '../dist/esm/assertion/impl/async.js';
+  AsyncCallbackAssertions,
+  AsyncParametricAssertions,
+} from '../src/assertion/impl/async.js';
 import {
   BasicAssertions,
-  CallbackSyncAssertions,
   CollectionAssertions,
   EsotericAssertions,
-  ParametricAssertions,
   SyncAssertions,
-} from '../dist/esm/assertion/impl/sync.js';
+  SyncCallbackAssertions,
+  SyncParametricAssertions,
+} from '../src/assertion/impl/sync.js';
 
 // Define collection mappings
-const collections = /** @type {const} */ ({
+const collections = /** @type {const} */ {
   all: [...SyncAssertions, ...AsyncAssertions],
   async: AsyncAssertions,
-  'async-callback': CallbackAsyncAssertions,
-  promise: PromiseAssertions,
+  'async-callback': AsyncCallbackAssertions,
+  'async-parametric': AsyncParametricAssertions,
   sync: SyncAssertions,
   'sync-basic': BasicAssertions,
-  'sync-callback': CallbackSyncAssertions,
+  'sync-callback': SyncCallbackAssertions,
   'sync-collection': CollectionAssertions,
   'sync-esoteric': EsotericAssertions,
-  'sync-parametric': ParametricAssertions,
-});
+  'sync-parametric': SyncParametricAssertions,
+};
 
 // Parse command line arguments
 const { values } = parseArgs({
@@ -90,15 +85,15 @@ if (!(collection in collections)) {
 }
 
 // Get assertions for the specified collection
-const assertions =
-  collections[/** @type {keyof typeof collections} */ (collection)];
+const assertions = collections[collection as keyof typeof collections];
 
 // Extract IDs and dump them
 const ids = Object.fromEntries(
   assertions.map(
-    /** @param {(typeof collections)[keyof typeof collections][number]} assertion */ (
-      assertion,
-    ) => [assertion.id, `${assertion}`],
+    (assertion: (typeof collections)[keyof typeof collections][number]) => [
+      assertion.id,
+      `${assertion}`,
+    ],
   ),
 );
 
