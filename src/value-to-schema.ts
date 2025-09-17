@@ -8,12 +8,7 @@ import {
   isString,
   isZodType,
 } from './guards.js';
-import {
-  RegExpSchema,
-  StrongMapSchema,
-  StrongSetSchema,
-  WrappedPromiseLikeSchema,
-} from './schema.js';
+import { RegExpSchema, WrappedPromiseLikeSchema } from './schema.js';
 
 /**
  * Recursively converts an arbitrary value to a Zod v4 schema that would
@@ -175,11 +170,11 @@ export const valueToSchema = (
       }
 
       if (value instanceof Map) {
-        return StrongMapSchema;
+        return z.instanceof(Map);
       }
 
       if (value instanceof Set) {
-        return StrongSetSchema;
+        return z.instanceof(Set);
       }
 
       if (value instanceof WeakMap) {

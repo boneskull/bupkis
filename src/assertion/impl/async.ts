@@ -1,328 +1,81 @@
 /**
- * Asynchronous assertion implementations.
- *
- * This module contains all built-in asynchronous assertion implementations for
- * working with Promises and async operations. It provides assertions for
- * Promise resolution, rejection, and async function behavior validation with
- * comprehensive error handling.
+ * Re-exports all asynchronous assertions as assertion collections.
  *
  * @packageDocumentation
+ * @groupDescription Assertion Collections
+ * Collections of individual assertions. For those building on top of <span class="bupkis">BUPKIS</span>.
+ * @showGroups
  */
 
-import { inspect } from 'node:util';
-import { z } from 'zod/v4';
-
-import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
-  ConstructibleSchema,
-  FunctionSchema,
-  WrappedPromiseLikeSchema,
-} from '../../schema.js';
+  functionEventuallyCallCallbackAssertion,
+  functionEventuallyCallCallbackWithExactValueAssertion,
+  functionEventuallyCallCallbackWithValueAssertion,
+  functionEventuallyCallCallbackWithValueSatisfyingAssertion,
+  functionEventuallyCallNodebackAssertion,
+  functionEventuallyCallNodebackWithErrorAssertion,
+  functionEventuallyCallNodebackWithErrorClassAssertion,
+  functionEventuallyCallNodebackWithErrorPatternAssertion,
+  functionEventuallyCallNodebackWithExactValueAssertion,
+  functionEventuallyCallNodebackWithValueAssertion,
+  functionEventuallyCallNodebackWithValueSatisfyingAssertion,
+} from './async-callback.js';
 import {
-  valueToSchema,
-  valueToSchemaOptionsForSatisfies,
-} from '../../value-to-schema.js';
-import { createAsyncAssertion } from '../create.js';
-import { CallbackAsyncAssertions } from './callback.js';
+  functionFulfillWithValueSatisfyingAssertion,
+  functionRejectAssertion,
+  functionRejectWithErrorSatisfyingAssertion,
+  functionRejectWithTypeAssertion,
+  functionResolveAssertion,
+  promiseFulfillWithValueSatisfyingAssertion,
+  promiseRejectAssertion,
+  promiseRejectWithErrorSatisfyingAssertion,
+  promiseRejectWithTypeAssertion,
+  promiseResolveAssertion,
+} from './async-parametric.js';
 
-const trapAsyncFnError = async (fn: () => unknown) => {
-  try {
-    await fn();
-  } catch (err) {
-    return err;
-  }
-};
-
-const trapPromiseError = async (promise: PromiseLike<unknown>) => {
-  try {
-    await promise;
-  } catch (err) {
-    return err;
-  }
-};
-
-export const PromiseAssertions = [
-  createAsyncAssertion(
-    [FunctionSchema, ['to resolve', 'to fulfill']],
-    async (subject) => {
-      try {
-        await subject();
-      } catch {
-        return {
-          actual: 'function rejected',
-          expected: 'function to fulfill',
-          message: 'Expected function to fulfill, but it rejected instead',
-        };
-      }
-    },
-  ),
-  createAsyncAssertion(
-    [WrappedPromiseLikeSchema, ['to resolve', 'to fulfill']],
-    async (subject) => {
-      try {
-        await subject;
-      } catch {
-        return {
-          actual: 'promise rejected',
-          expected: 'promise to not reject',
-          message: 'Expected promise to fulfill, but it rejected instead',
-        };
-      }
-    },
-  ),
-
-  // Non-parameterized "to reject" assertions
-  createAsyncAssertion([FunctionSchema, 'to reject'], async (subject) => {
-    try {
-      await subject();
-      return {
-        actual: 'function fulfilled',
-        expected: 'function to reject',
-        message: 'Expected function to reject, but it fulfilled instead',
-      };
-    } catch {}
-  }),
-  createAsyncAssertion(
-    [WrappedPromiseLikeSchema, 'to reject'],
-    async (subject) => {
-      try {
-        await subject;
-        return {
-          actual: 'function fulfilled',
-          expected: 'function to reject',
-          message: 'Expected function to reject, but it fulfilled instead',
-        };
-      } catch {}
-    },
-  ),
-  // Parameterized "to reject" with class constructor
-  createAsyncAssertion(
-    [
-      FunctionSchema,
-      ['to reject with a', 'to reject with an'],
-      ConstructibleSchema,
-    ],
-    async (subject, ctor) => {
-      const error = await trapAsyncFnError(subject);
-      if (!error) {
-        return false;
-      }
-      return isA(error, ctor);
-    },
-  ),
-  createAsyncAssertion(
-    [
-      WrappedPromiseLikeSchema,
-      ['to reject with a', 'to reject with an'],
-      ConstructibleSchema,
-    ],
-    async (subject, ctor) => {
-      const error = await trapPromiseError(subject);
-      if (!error) {
-        return false;
-      }
-      return isA(error, ctor);
-    },
-  ),
-
-  // Parameterized "to reject" with string, RegExp, or object patterns
-  createAsyncAssertion(
-    [
-      FunctionSchema,
-      ['to reject with error satisfying'],
-      z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
-    ],
-    async (subject, param) => {
-      const error = await trapAsyncFnError(subject);
-      if (!error) {
-        return {
-          actual: 'function fulfilled',
-          expect: 'function to reject',
-          message: 'Expected function to reject, but it fulfilled instead',
-        };
-      }
-
-      let schema: undefined | z.ZodType;
-      // TODO: can valueToSchema handle the first two conditional branches?
-      if (isString(param)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().pipe(z.literal(param)),
-          })
-          .or(z.coerce.string().pipe(z.literal(param)));
-      } else if (isA(param, RegExp)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().regex(param),
-          })
-          .or(z.coerce.string().regex(param));
-      } else if (isNonNullObject(param)) {
-        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-      }
-      /* c8 ignore next 5 */
-      if (!schema) {
-        throw new TypeError(
-          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        );
-      }
-
-      const result = schema.safeParse(error);
-      if (!result.success) {
-        return result.error;
-      }
-    },
-  ),
-  createAsyncAssertion(
-    [
-      WrappedPromiseLikeSchema,
-      ['to reject with error satisfying'],
-      z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
-    ],
-    async (subject, param) => {
-      const error = await trapPromiseError(subject);
-      if (!error) {
-        return {
-          actual: 'promise fulfilled',
-          expect: 'promise to reject',
-          message: 'Expected promise to reject, but it fulfilled instead',
-        };
-      }
-      let schema: undefined | z.ZodType;
-      // TODO: can valueToSchema handle the first two conditional branches?
-      if (isString(param)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().pipe(z.literal(param)),
-          })
-          .or(z.coerce.string().pipe(z.literal(param)));
-      } else if (isA(param, RegExp)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().regex(param),
-          })
-          .or(z.coerce.string().regex(param));
-      } else if (isNonNullObject(param)) {
-        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-      }
-      /* c8 ignore next 5 */
-      if (!schema) {
-        throw new TypeError(
-          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        );
-      }
-
-      const result = schema.safeParse(error);
-      if (!result.success) {
-        return result.error;
-      }
-    },
-  ),
-
-  createAsyncAssertion(
-    [
-      WrappedPromiseLikeSchema,
-      ['to fulfill with value satisfying', 'to resolve with value satisfying'],
-      z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
-    ],
-    async (promise, param) => {
-      let value: unknown;
-      try {
-        value = await promise;
-      } catch (err) {
-        return {
-          actual: err,
-          expect: 'promise to not reject',
-          message: `Expected promise to not reject, but it rejected with ${inspect(
-            err,
-          )}`,
-        };
-      }
-      let schema: undefined | z.ZodType;
-      // TODO: can valueToSchema handle the first two conditional branches?
-      if (isString(param)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().pipe(z.literal(param)),
-          })
-          .or(z.coerce.string().pipe(z.literal(param)));
-      } else if (isA(param, RegExp)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().regex(param),
-          })
-          .or(z.coerce.string().regex(param));
-      } else if (isNonNullObject(param)) {
-        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-      }
-      /* c8 ignore next 5 */
-      if (!schema) {
-        throw new TypeError(
-          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        );
-      }
-
-      const result = schema.safeParse(value);
-      if (!result.success) {
-        return result.error;
-      }
-    },
-  ),
-
-  createAsyncAssertion(
-    [
-      FunctionSchema,
-      ['to fulfill with value satisfying', 'to resolve with value satisfying'],
-      z.union([z.string(), z.instanceof(RegExp), z.looseObject({})]),
-    ],
-    async (subject, param) => {
-      let value: unknown;
-      try {
-        value = await subject();
-      } catch (err) {
-        return {
-          actual: 'function rejected',
-          expect: 'function to fulfill',
-          message: `Expected function to fulfill, but it rejected with ${inspect(
-            err,
-          )}`,
-        };
-      }
-
-      let schema: undefined | z.ZodType;
-      // TODO: can valueToSchema handle the first two conditional branches?
-      if (isString(param)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().pipe(z.literal(param)),
-          })
-          .or(z.coerce.string().pipe(z.literal(param)));
-      } else if (isA(param, RegExp)) {
-        schema = z
-          .looseObject({
-            message: z.coerce.string().regex(param),
-          })
-          .or(z.coerce.string().regex(param));
-      } else if (isNonNullObject(param)) {
-        schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-      }
-      /* c8 ignore next 5 */
-      if (!schema) {
-        throw new TypeError(
-          `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        );
-      }
-
-      const result = schema.safeParse(value);
-      if (!result.success) {
-        return result.error;
-      }
-    },
-  ),
+/**
+ * Tuple of all built-in `Promise`-based parametric assertions.
+ *
+ * @group Assertion Collections
+ */
+export const AsyncParametricAssertions = [
+  functionResolveAssertion,
+  promiseResolveAssertion,
+  functionRejectAssertion,
+  promiseRejectAssertion,
+  functionRejectWithTypeAssertion,
+  promiseRejectWithTypeAssertion,
+  functionRejectWithErrorSatisfyingAssertion,
+  promiseRejectWithErrorSatisfyingAssertion,
+  promiseFulfillWithValueSatisfyingAssertion,
+  functionFulfillWithValueSatisfyingAssertion,
 ] as const;
 
+/**
+ * Tuple of all built-in async callback assertions.
+ *
+ * @group Assertion Collections
+ */
+export const AsyncCallbackAssertions = [
+  functionEventuallyCallCallbackAssertion,
+  functionEventuallyCallNodebackAssertion,
+  functionEventuallyCallCallbackWithValueAssertion,
+  functionEventuallyCallCallbackWithExactValueAssertion,
+  functionEventuallyCallNodebackWithValueAssertion,
+  functionEventuallyCallNodebackWithExactValueAssertion,
+  functionEventuallyCallNodebackWithErrorAssertion,
+  functionEventuallyCallNodebackWithErrorClassAssertion,
+  functionEventuallyCallNodebackWithErrorPatternAssertion,
+  functionEventuallyCallCallbackWithValueSatisfyingAssertion,
+  functionEventuallyCallNodebackWithValueSatisfyingAssertion,
+] as const;
+
+/**
+ * Tuple of all built-in async assertions (Promise + Callback).
+ *
+ * @group Assertion Collections
+ */
 export const AsyncAssertions = [
-  ...PromiseAssertions,
-  ...CallbackAsyncAssertions,
+  ...AsyncParametricAssertions,
+  ...AsyncCallbackAssertions,
 ] as const;
-
-export { CallbackAsyncAssertions };

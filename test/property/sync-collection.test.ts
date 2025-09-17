@@ -1,20 +1,18 @@
 import fc from 'fast-check';
 import { describe } from 'node:test';
 
-import { CollectionAssertions } from '../../src/assertion/impl/sync-collection.js';
-import { keyBy } from '../../src/util.js';
+import * as assertions from '../../src/assertion/impl/sync-collection.js';
+import { CollectionAssertions } from '../../src/assertion/index.js';
+import { type AnyAssertion } from '../../src/types.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { createPhraseExtractor } from './property-test-util.js';
+import { extractPhrases } from './property-test-util.js';
 import {
-  assertExhaustiveTestConfig,
+  assertExhaustiveTestConfigs,
   runPropertyTests,
 } from './property-test.macro.js';
-
-const assertions = keyBy(CollectionAssertions, 'id');
-const extractPhrases = createPhraseExtractor(assertions);
 
 /**
  * Shared state for WeakMap/WeakSet testing
@@ -58,7 +56,7 @@ class SharedWeakSetState {
 /**
  * Test config defaults
  */
-const testConfigDefaults = {} as const satisfies PropertyTestConfigParameters;
+const testConfigDefaults = {} satisfies PropertyTestConfigParameters;
 
 /**
  * Helper generators for collection testing
@@ -73,319 +71,845 @@ const helperGenerators = {
     fc.bigInt(),
     fc.string().map(Symbol),
   ),
-} as const;
+};
 
 /**
  * Test configurations for each collection assertion.
  */
-const testConfigs = {
-  'array-to-be-non_empty-2s2p': {
-    invalid: {
-      generators: [
-        fc.constant([]),
-        fc.constantFrom(...extractPhrases('array-to-be-non_empty-2s2p')),
-      ],
+const testConfigs = new Map<
+  AnyAssertion,
+  PropertyTestConfig | PropertyTestConfig[]
+>([
+  [
+    assertions.arrayContainsAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.string()),
+          fc.constantFrom(...extractPhrases(assertions.arrayContainsAssertion)),
+          fc.integer(),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant([42, 'test', true]),
+          fc.constantFrom(...extractPhrases(assertions.arrayContainsAssertion)),
+          fc.constantFrom(42, 'test', true),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.array(fc.anything(), { minLength: 1 }),
-        fc.constantFrom(...extractPhrases('array-to-be-non_empty-2s2p')),
-      ],
-    },
-  },
-  // Array contains/includes value
-  'array-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.array(fc.string()),
-        fc.constantFrom(
-          ...extractPhrases('array-to-contain-to-include-any-3s3p'),
-        ),
-        fc.integer(), // Looking for integer in string array
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc.constant([42, 'test', true]), // Fixed array with known contents
-        fc.constantFrom(
-          ...extractPhrases('array-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constantFrom(42, 'test', true), // One of the values in the array
-      ] as const,
-    },
-  },
+  ],
 
-  // Array length/size assertions
-  'array-to-have-length-number-3s3p': {
-    invalid: {
-      generators: [
-        fc.array(fc.anything()),
-        fc.constantFrom(...extractPhrases('array-to-have-length-number-3s3p')),
-        fc.integer().filter((n) => n < 0 || n > 100), // Unlikely lengths
-      ] as const,
+  [
+    assertions.arrayLengthAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.anything()),
+          fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
+          fc.integer().filter((n) => n < 0 || n > 100),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant([1, 2, 3]),
+          fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
+          fc.constant(3),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant([1, 2, 3]), // Fixed array with length 3
-        fc.constantFrom(...extractPhrases('array-to-have-length-number-3s3p')),
-        fc.constant(3), // Matching length
-      ] as const,
-    },
-  },
+  ],
 
-  // Array has size
-  'array-to-have-size-number-3s3p': {
-    invalid: {
-      generators: [
-        fc.array(fc.anything()),
-        fc.constantFrom(...extractPhrases('array-to-have-size-number-3s3p')),
-        fc.integer().filter((n) => n < 0 || n > 100), // Unlikely sizes
-      ] as const,
+  [
+    assertions.arraySizeAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.anything()),
+          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
+          fc.integer().filter((n) => n < 0 || n > 100),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(['a', 'b']),
+          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
+          fc.constant(2),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(['a', 'b']), // Fixed array with size 2
-        fc.constantFrom(...extractPhrases('array-to-have-size-number-3s3p')),
-        fc.constant(2), // Matching size
-      ] as const,
-    },
-  },
+  ],
 
-  // Object has keys/properties/props (string keys only)
-  'object-to-have-keys-to-have-properties-to-have-props-string-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with known keys
-        fc.constantFrom(
-          ...extractPhrases(
-            'object-to-have-keys-to-have-properties-to-have-props-string-3s3p',
+  [
+    assertions.collectionSizeBetweenAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Map([['a', 1]])), // size 1, outside range [2,4]
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
+            ),
+            fc.constant([2, 4]),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['a', 1],
+                ['b', 2],
+                ['c', 3],
+              ]),
+            ), // size 3, within range [2,4]
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
+            ),
+            fc.constant([2, 4]),
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Set([1])), // size 1, outside range [2,4]
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
+            ),
+            fc.constant([2, 4]),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(new Set([1, 2, 3])), // size 3, within range [2,4]
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
+            ),
+            fc.constant([2, 4]),
+          ],
+        },
+      },
+    ],
+  ],
+
+  // Size comparison assertions
+  [
+    assertions.collectionSizeGreaterThanAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['a', 1],
+                ['b', 2],
+              ]),
+            ), // size 2
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
+            ),
+            fc.integer({ min: 2 }), // 2 or greater
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['a', 1],
+                ['b', 2],
+                ['c', 3],
+              ]),
+            ), // size 3
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
+            ),
+            fc.integer({ max: 2 }), // less than 3
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Set([1, 2])), // size 2
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
+            ),
+            fc.integer({ min: 2 }), // 2 or greater
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(new Set([1, 2, 3])), // size 3
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
+            ),
+            fc.integer({ max: 2 }), // less than 3
+          ],
+        },
+      },
+    ],
+  ],
+  [
+    assertions.collectionSizeLessThanAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['a', 1],
+                ['b', 2],
+                ['c', 3],
+              ]),
+            ), // size 3
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+            ),
+            fc.integer({ max: 3 }), // 3 or less
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['a', 1],
+                ['b', 2],
+              ]),
+            ), // size 2
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+            ),
+            fc.integer({ min: 3 }), // greater than 2
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Set([1, 2, 3])), // size 3
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+            ),
+            fc.integer({ max: 3 }), // 3 or less
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(new Set([1, 2])), // size 2
+            fc.constantFrom(
+              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+            ),
+            fc.integer({ min: 3 }), // greater than 2
+          ],
+        },
+      },
+    ],
+  ],
+  [
+    assertions.emptyMapAssertion,
+    {
+      invalid: {
+        generators: [
+          fc
+            .dictionary(fc.string(), fc.anything(), { minKeys: 1 })
+            .map((obj) => new Map(Object.entries(obj))),
+          fc.constantFrom(...extractPhrases(assertions.emptyMapAssertion)),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Map()),
+          fc.constantFrom(...extractPhrases(assertions.emptyMapAssertion)),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.emptySetAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.array(fc.anything(), { minLength: 1 }).map((arr) => new Set(arr)),
+          fc.constantFrom(...extractPhrases(assertions.emptySetAssertion)),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set()),
+          fc.constantFrom(...extractPhrases(assertions.emptySetAssertion)),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.mapContainsAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Map([['existing', 'value']])),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            fc.constant('missing'),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['key1', 'value1'],
+                ['key2', 'value2'],
+              ]),
+            ),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            fc.constantFrom('key1', 'key2'),
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            helperGenerators.primitive,
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            fc.constant(SharedWeakMapState.getKey()),
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            fc.constant({}),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
+            fc.constant(SharedWeakMapState.getKey()),
+          ],
+        },
+      },
+    ],
+  ],
+
+  [
+    assertions.mapEntryAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['key1', 'value1'],
+                ['key2', 'value2'],
+              ]),
+            ),
+            fc.constantFrom(...extractPhrases(assertions.mapEntryAssertion)),
+            fc.constant(['missing-key', 'missing-value']),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(
+              new Map([
+                ['key1', 'value1'],
+                ['key2', 'value2'],
+              ]),
+            ),
+            fc.constantFrom(...extractPhrases(assertions.mapEntryAssertion)),
+            fc.constantFrom(['key1', 'value1'], ['key2', 'value2']),
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapEntryAssertion)),
+            fc.constant([{}, 'wrong-value']),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(SharedWeakMapState.getWeakMap()),
+            fc.constantFrom(...extractPhrases(assertions.mapEntryAssertion)),
+            fc.constant([SharedWeakMapState.getKey(), 'value']),
+          ],
+        },
+      },
+    ],
+  ],
+
+  [
+    assertions.mapEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['a', 1],
+              ['b', 2],
+            ]),
           ),
-        ),
-        fc.array(fc.constantFrom('x', 'y', 'z'), { minLength: 1 }), // Keys that don't exist
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with known keys
-        fc.constantFrom(
-          ...extractPhrases(
-            'object-to-have-keys-to-have-properties-to-have-props-string-3s3p',
+          fc.constantFrom(...extractPhrases(assertions.mapEqualityAssertion)),
+          fc.constant(
+            new Map([
+              ['a', 1],
+              ['b', 3],
+            ]),
           ),
-        ),
-        fc.array(fc.constantFrom('a', 'b', 'c'), { minLength: 1 }), // Keys that exist in the object
-      ] as const,
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['a', 1],
+              ['b', 2],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapEqualityAssertion)),
+          fc.constant(
+            new Map([
+              ['a', 1],
+              ['b', 2],
+            ]),
+          ), // Order doesn't matter
+        ],
+      },
     },
-  },
+  ],
 
-  // Object has size (number of properties)
-  'object-to-have-size-number-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with 3 properties
-        fc.constantFrom(...extractPhrases('object-to-have-size-number-3s3p')),
-        fc.integer({ min: 0 }).filter((n) => n !== 3), // Non-negative integers except 3
-      ] as const,
+  // Map assertions
+  [
+    assertions.mapKeyAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['key1', 'value1'],
+              ['key2', 'value2'],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapKeyAssertion)),
+          fc.constant('missing-key'),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['key1', 'value1'],
+              ['key2', 'value2'],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapKeyAssertion)),
+          fc.constantFrom('key1', 'key2'),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant({ a: 1, b: 2, c: 3 }), // Fixed object with 3 properties
-        fc.constantFrom(...extractPhrases('object-to-have-size-number-3s3p')),
-        fc.constant(3), // Matching size
-      ] as const,
-    },
-  },
+  ],
 
-  // Map is empty
-  'strongmapschema-to-be-empty-2s2p': {
-    invalid: {
-      generators: [
-        fc
-          .dictionary(fc.string(), fc.anything(), { minKeys: 1 })
-          .map((obj) => new Map(Object.entries(obj))),
-        fc.constantFrom(...extractPhrases('strongmapschema-to-be-empty-2s2p')),
-      ] as const,
+  [
+    assertions.mapSizeAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.integer({ max: 10, min: 0 }).map((size) => {
+            const map = new Map();
+            for (let i = 0; i < size; i++) {
+              map.set(`key${i}`, `value${i}`);
+            }
+            return map;
+          }),
+          fc.constantFrom(...extractPhrases(assertions.mapSizeAssertion)),
+          fc.integer({ max: 100, min: 11 }),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['a', 1],
+              ['b', 2],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapSizeAssertion)),
+          fc.constant(2),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(new Map()),
-        fc.constantFrom(...extractPhrases('strongmapschema-to-be-empty-2s2p')),
-      ] as const,
-    },
-  },
+  ],
 
-  // Map contains/includes key
-  'strongmapschema-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new Map([['existing', 'value']])),
-        fc.constantFrom(
-          ...extractPhrases('strongmapschema-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant('missing'), // Key that doesn't exist
-      ] as const,
+  [
+    assertions.mapValueAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['key1', 'value1'],
+              ['key2', 'value2'],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapValueAssertion)),
+          fc.constant('missing-value'),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(
+            new Map([
+              ['key1', 'value1'],
+              ['key2', 'value2'],
+            ]),
+          ),
+          fc.constantFrom(...extractPhrases(assertions.mapValueAssertion)),
+          fc.constantFrom('value1', 'value2'),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(
-          new Map([
-            ['key1', 'value1'],
-            ['key2', 'value2'],
-          ]),
-        ), // Fixed map with known keys
-        fc.constantFrom(
-          ...extractPhrases('strongmapschema-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constantFrom('key1', 'key2'), // One of the keys in the map
-      ] as const,
-    },
-  },
+  ],
 
-  // Map has size
-  'strongmapschema-to-have-size-number-3s3p': {
-    invalid: {
-      generators: [
-        fc.integer({ max: 10, min: 0 }).map((size) => {
-          const map = new Map();
-          for (let i = 0; i < size; i++) {
-            map.set(`key${i}`, `value${i}`);
-          }
-          return map;
-        }),
-        fc.constantFrom(
-          ...extractPhrases('strongmapschema-to-have-size-number-3s3p'),
-        ),
-        fc.integer({ max: 100, min: 11 }), // Different size than the map
-      ] as const,
+  [
+    assertions.nonEmptyArrayAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant([]),
+          fc.constantFrom(...extractPhrases(assertions.nonEmptyArrayAssertion)),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.array(fc.anything(), { minLength: 1 }),
+          fc.constantFrom(...extractPhrases(assertions.nonEmptyArrayAssertion)),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(
-          new Map([
-            ['a', 1],
-            ['b', 2],
-          ]),
-        ), // Fixed map with size 2
-        fc.constantFrom(
-          ...extractPhrases('strongmapschema-to-have-size-number-3s3p'),
-        ),
-        fc.constant(2), // Matching size
-      ] as const,
-    },
-  },
+  ],
 
-  // Set is empty
-  'strongsetschema-to-be-empty-2s2p': {
-    invalid: {
-      generators: [
-        fc.array(fc.anything(), { minLength: 1 }).map((arr) => new Set(arr)),
-        fc.constantFrom(...extractPhrases('strongsetschema-to-be-empty-2s2p')),
-      ] as const,
+  [
+    assertions.objectKeysAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant({ a: 1, b: 2, c: 3 }),
+          fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),
+          fc.array(fc.constantFrom('x', 'y', 'z'), { minLength: 1 }),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant({ a: 1, b: 2, c: 3 }),
+          fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),
+          fc.array(fc.constantFrom('a', 'b', 'c'), { minLength: 1 }),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(new Set()),
-        fc.constantFrom(...extractPhrases('strongsetschema-to-be-empty-2s2p')),
-      ] as const,
-    },
-  },
+  ],
 
-  // Set contains/includes value
-  'strongsetschema-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new Set(['existing'])),
-        fc.constantFrom(
-          ...extractPhrases('strongsetschema-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant('missing'), // Value that doesn't exist
-      ] as const,
+  [
+    assertions.objectSizeAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant({ a: 1, b: 2, c: 3 }),
+          fc.constantFrom(...extractPhrases(assertions.objectSizeAssertion)),
+          fc.integer({ min: 0 }).filter((n) => n !== 3),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant({ a: 1, b: 2, c: 3 }),
+          fc.constantFrom(...extractPhrases(assertions.objectSizeAssertion)),
+          fc.constant(3),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(new Set([42, 'value1', 'value2'])), // Fixed set with known values
-        fc.constantFrom(
-          ...extractPhrases('strongsetschema-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constantFrom(42, 'value1', 'value2'), // One of the values in the set
-      ] as const,
-    },
-  },
+  ],
 
-  // Set has size
-  'strongsetschema-to-have-size-number-3s3p': {
-    invalid: {
-      generators: [
-        fc.integer({ max: 10, min: 0 }).map((size) => {
-          const set = new Set();
-          for (let i = 0; i < size; i++) {
-            set.add(`value${i}`);
-          }
-          return set;
-        }),
-        fc.constantFrom(
-          ...extractPhrases('strongsetschema-to-have-size-number-3s3p'),
-        ),
-        fc.integer({ max: 100, min: 11 }), // Different size than the set
-      ] as const,
-    },
-    valid: {
-      generators: [
-        fc.constant(new Set(['a', 'b', 'c'])), // Fixed set with size 3
-        fc.constantFrom(
-          ...extractPhrases('strongsetschema-to-have-size-number-3s3p'),
-        ),
-        fc.constant(3), // Matching size
-      ] as const,
-    },
-  },
+  [
+    assertions.setContainsAssertion,
+    [
+      {
+        invalid: {
+          generators: [
+            fc.constant(new Set(['existing'])),
+            fc.constantFrom(...extractPhrases(assertions.setContainsAssertion)),
+            fc.constant('missing'),
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(new Set(['val1', 'val2'])),
+            fc.constantFrom(...extractPhrases(assertions.setContainsAssertion)),
+            fc.constantFrom('val1', 'val2'),
+          ],
+        },
+      },
+      {
+        invalid: {
+          generators: [
+            fc.constant(new WeakSet()),
+            fc.constantFrom(...extractPhrases(assertions.setContainsAssertion)),
+            helperGenerators.primitive,
+          ],
+        },
+        valid: {
+          generators: [
+            fc.constant(SharedWeakSetState.getWeakSet()),
+            fc.constantFrom(...extractPhrases(assertions.setContainsAssertion)),
+            fc.constant(SharedWeakSetState.getValue()),
+          ],
+        },
+      },
+    ],
+  ],
 
-  // WeakMap contains/includes key
-  'weakmap-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new WeakMap()),
-        fc.constantFrom(
-          ...extractPhrases('weakmap-to-contain-to-include-any-3s3p'),
-        ),
-        helperGenerators.primitive, // WeakMap only accepts objects as keys
-      ] as const,
+  [
+    assertions.setDifferenceEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have difference'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([2, 3])), // Wrong result
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have difference'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([1])), // Correct difference
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(SharedWeakMapState.getWeakMap()),
-        fc.constantFrom(
-          ...extractPhrases('weakmap-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant(SharedWeakMapState.getKey()),
-      ] as const,
-    },
-  },
+  ],
 
-  // WeakSet contains/includes value
-  'weakset-to-contain-to-include-any-3s3p': {
-    invalid: {
-      generators: [
-        fc.constant(new WeakSet()),
-        fc.constantFrom(
-          ...extractPhrases('weakset-to-contain-to-include-any-3s3p'),
-        ),
-        helperGenerators.primitive, // WeakSet only accepts objects as values
-      ] as const,
+  [
+    assertions.setDisjointAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constantFrom(...extractPhrases(assertions.setDisjointAssertion)),
+          fc.constant(new Set([2, 3, 4])),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constantFrom(...extractPhrases(assertions.setDisjointAssertion)),
+          fc.constant(new Set([3, 4])),
+        ],
+      },
     },
-    valid: {
-      generators: [
-        fc.constant(SharedWeakSetState.getWeakSet()),
-        fc.constantFrom(
-          ...extractPhrases('weakset-to-contain-to-include-any-3s3p'),
-        ),
-        fc.constant(SharedWeakSetState.getValue()),
-      ] as const,
+  ],
+
+  [
+    assertions.setEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constantFrom(...extractPhrases(assertions.setEqualityAssertion)),
+          fc.constant(new Set([1, 2, 4])),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constantFrom(...extractPhrases(assertions.setEqualityAssertion)),
+          fc.constant(new Set([1, 2, 3])), // Same elements
+        ],
+      },
     },
-  },
-} as const satisfies Record<string, PropertyTestConfig>;
+  ],
+
+  [
+    assertions.setIntersectionAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constantFrom(
+            ...extractPhrases(assertions.setIntersectionAssertion),
+          ),
+          fc.constant(new Set([3, 4])),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constantFrom(
+            ...extractPhrases(assertions.setIntersectionAssertion),
+          ),
+          fc.constant(new Set([2, 3, 4])),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setIntersectionEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have intersection'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([1, 4])), // Wrong result
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have intersection'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([2, 3])), // Correct intersection
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setSizeAssertion,
+    {
+      invalid: {
+        generators: [
+          fc
+            .array(fc.anything(), { maxLength: 3, minLength: 3 })
+            .map((arr) => new Set(arr))
+            .filter(({ size }) => size !== 3), // deduping can shrink it
+          fc.constantFrom(...extractPhrases(assertions.setSizeAssertion)),
+          fc.integer().filter((n) => n !== 3),
+        ],
+      },
+      valid: {
+        generators: [
+          fc
+            .array(fc.anything(), { maxLength: 3, minLength: 3 })
+            .map((arr) => new Set(arr))
+            .filter(({ size }) => size === 3), // deduping can shrink it
+          fc.constantFrom(...extractPhrases(assertions.setSizeAssertion)),
+          fc.constant(3),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setSubsetAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3, 4])),
+          fc.constantFrom(...extractPhrases(assertions.setSubsetAssertion)),
+          fc.constant(new Set([1, 2])),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constantFrom(...extractPhrases(assertions.setSubsetAssertion)),
+          fc.constant(new Set([1, 2, 3])),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setSupersetAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constantFrom(...extractPhrases(assertions.setSupersetAssertion)),
+          fc.constant(new Set([1, 2, 3])),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3, 4])),
+          fc.constantFrom(...extractPhrases(assertions.setSupersetAssertion)),
+          fc.constant(new Set([1, 2])),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setSymmetricDifferenceEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have symmetric difference'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([2, 3])), // Wrong result
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2, 3])),
+          fc.constant('to have symmetric difference'),
+          fc.constant(new Set([2, 3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([1, 4])), // Correct symmetric difference
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.setUnionEqualityAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constant('to have union'),
+          fc.constant(new Set([3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([1, 2, 3])), // Wrong result
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant(new Set([1, 2])),
+          fc.constant('to have union'),
+          fc.constant(new Set([3, 4])),
+          fc.constant('equal to'),
+          fc.constant(new Set([1, 2, 3, 4])), // Correct union
+        ],
+      },
+    },
+  ],
+]);
 
 describe('Property-Based Tests for Collection Assertions', () => {
-  assertExhaustiveTestConfig('sync collection', assertions, testConfigs);
-
-  runPropertyTests(testConfigs, assertions, testConfigDefaults);
+  assertExhaustiveTestConfigs(
+    'Collection Assertions',
+    CollectionAssertions,
+    testConfigs,
+  );
+  runPropertyTests(testConfigs, testConfigDefaults);
 });

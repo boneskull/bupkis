@@ -469,7 +469,7 @@ describe('valueToSchema property tests', () => {
   it('should reject non-functions for function schemas', () => {
     fc.assert(
       fc.property(generators.functions, (fn) => {
-        const schema = valueToSchema(fn);
+        const schema = valueToSchema(void fn);
         const result = schema.safeParse('not a function');
         return !result.success;
       }),

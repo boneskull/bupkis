@@ -7,9 +7,9 @@ category: Assertions
 
 These assertions test equality, identity, and value comparisons.
 
-### to be
+### to equal &lt;any&gt;
 
-> _Aliases: `to be`, `to equal`, `equals`, `is`, `is equal to`, `to strictly equal`_
+> _Aliases: `to equal <any>`, `to be <any>`, `equals <any>`, `is <any>`, `is equal to <any>`, `to strictly equal <any>`, `is strictly equal to <any>`_
 
 **Success**:
 
@@ -36,9 +36,9 @@ expect(42, 'not to be', '42');
 expect({}, 'not to equal', {});
 ```
 
-### to deep equal
+### to deep equal &lt;any&gt;
 
-> _Aliases: `to deep equal`, `to deeply equal`_
+> _Aliases: `to deep equal <any>`, `to deeply equal <any>`_
 
 **Success**:
 

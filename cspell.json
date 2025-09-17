@@ -54,7 +54,11 @@
     "slugifies",
     "tyvm",
     "toshimaru",
-    "contraints"
+    "contraints",
+    "isdisjointfrom",
+    "issupersetof",
+    "issubsetof",
+    "commitlintrc"
   ],
   "words": ["bupkis", "bussin", "nevermind", "pataphysical", "inconstructible"]
 }

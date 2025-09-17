@@ -102,7 +102,9 @@ await expectAsync(
 );
 ```
 
-### to reject with error satisfying &lt;string | RegExp | object&gt;
+### to reject with error satisfying &lt;any&gt;
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 **Success**:
 
@@ -150,9 +152,11 @@ await expectAsync(
 );
 ```
 
-### to fulfill with value satisfying &lt;string | RegExp | object&gt;
+### to fulfill with value satisfying &lt;any&gt;
 
-> _Aliases: `to fulfill with value satisfying <string | RegExp | object>`, `to resolve to value satisfying <string | RegExp | object>`_
+> _Aliases: `to fulfill with value satisfying <any>`, `to resolve to value satisfying <any>`_
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 **Success**:
 

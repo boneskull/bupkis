@@ -201,6 +201,21 @@ export const isNullOrNonObject = (value: unknown): value is null | Primitive =>
   typeof value !== 'object' || value === null;
 
 /**
+ * Type guard for a valid WeakKey (object, function, or symbol).
+ *
+ * WeakMaps and WeakSets can only use objects (including functions) or symbols
+ * as keys, not primitives like strings, numbers, booleans, null, or undefined.
+ *
+ * @param value Value to check
+ * @returns `true` if the value is a valid WeakKey (object, function, or
+ *   symbol), `false` otherwise
+ */
+export const isWeakKey = (value: unknown): value is WeakKey =>
+  (typeof value === 'object' && value !== null) ||
+  typeof value === 'function' ||
+  typeof value === 'symbol';
+
+/**
  * Type guard for a {@link PhraseLiteralChoice}, which is a tuple of strings.
  *
  * @param value Assertion part to check

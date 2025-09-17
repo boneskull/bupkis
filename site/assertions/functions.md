@@ -52,9 +52,9 @@ expect(function () {}, 'to be an async function');
 expect(function () {}, 'not to be an async function');
 ```
 
-### to be a class
+### to be a constructor
 
-> _Aliases: `to be a class`, `to be a constructor`_
+> _Aliases: `to be a constructor`, `to be constructible`, `to be a class`_
 
 > ⚠️ Warning!
 >
@@ -114,14 +114,13 @@ expect(greet, 'to have arity', 2);
 expect(greet, 'not to have arity', 2);
 ```
 
-### to throw &lt;matcher&gt;
+### to throw [any]
 
-This assertion _optionally_ accepts a "matcher" which must be a `string`, `RegExp` or a partial `object` structure:
+> _Aliases: `to throw`, `to throw an error satisfying`_
+>
+> This assertion _optionally_ accepts a parameter using the ["to satisfy"](objects.md#to-satisfy-) semantics.
 
-- If omitted, the assertion checks that the function throws _anything_.
-- If a `string`, matches the `message` prop of the thrown Error exactly; if a non-error was thrown, the value is coerced to a string and matched directly.
-- If a `RegExp`, tests the `message` prop of the thrown Error; if a non-error was thrown, the value is coerced to a string and tested directly.
-- If an `object`, ["to satisfy"](./objects.md#to-satisfy-) semantics are used.
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 **Success**:
 
@@ -245,11 +244,13 @@ expect(
 );
 ```
 
-### to throw an &lt;error&gt; satisfying &lt;object&gt;
+### to throw an &lt;error&gt; satisfying &lt;any&gt;
 
-> _Aliases: `to throw a <error> satisfying <object>`, `to throw an <error> satisfying <object>`_
+> _Aliases: `to throw a <error> satisfying <any>`, `to throw an <error> satisfying <any>`_
 
-This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-matcher) (with an object parameter).
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
+
+This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-).
 
 **Success**:
 

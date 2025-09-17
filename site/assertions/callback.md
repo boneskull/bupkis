@@ -87,11 +87,11 @@ function withoutNodeback(callback) {
 expect(withoutNodeback, 'not to call nodeback');
 ```
 
-### &lt;function&gt; to call callback with &lt;unknown&gt;
+### &lt;function&gt; to call callback with &lt;any&gt;
 
-> _Aliases: `to call callback with`, `to invoke callback with`_
+> _Aliases: `to call callback with <any>`, `to invoke callback with <any>`_
 
-Tests that a function calls its callback with a specific value.
+Tests that a function calls its callback with a specific value matched via deep equality.
 
 **Success**:
 
@@ -189,9 +189,11 @@ function withWrongValue(callback) {
 expect(withWrongValue, 'not to call callback with exactly', 'failure');
 ```
 
-### &lt;function&gt; to call callback with value satisfying &lt;string | RegExp | object&gt;
+### &lt;function&gt; to call callback with value satisfying &lt;any&gt;
 
 > _Aliases: `to call callback with value satisfying`, `to invoke callback with value satisfying`_
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 Tests that a function calls its callback with a value that matches a pattern using partial object matching.
 
@@ -238,7 +240,7 @@ function withNoMatch(callback) {
 expect(withNoMatch, 'not to call callback with value satisfying', /Error:/);
 ```
 
-### &lt;function&gt; to call nodeback with &lt;unknown&gt;
+### &lt;function&gt; to call nodeback with &lt;any&gt;
 
 > _Aliases: `to call nodeback with`, `to invoke nodeback with`_
 
@@ -288,9 +290,9 @@ function differentResult(callback) {
 expect(differentResult, 'not to call nodeback with', 'result');
 ```
 
-### &lt;function&gt; to call nodeback with exactly &lt;unknown&gt;
+### &lt;function&gt; to call nodeback with exactly &lt;any&gt;
 
-> _Aliases: `to call nodeback with exactly`, `to call nodeback with exact value`, `to invoke nodeback with exactly`, `to invoke nodeback with exact value`_
+> _Aliases: `to call nodeback with exactly <any>`, `to call nodeback with exact value <any>`, `to invoke nodeback with exactly <any>`, `to invoke nodeback with exact value <any>`_
 
 Tests that a function calls its Node.js-style callback successfully (no error) with an exact value using strict equality.
 
@@ -345,7 +347,7 @@ expect(failedOperation, 'not to call nodeback successfully', 'result');
 
 ### &lt;function&gt; to call nodeback with error
 
-> _Aliases: `to call nodeback with error`, `to invoke nodeback with error`_
+> _Aliases: `to call nodeback with error`, `to invoke nodeback with error`, `to call nodeback with error satisfying`, `to invoke nodeback with error satisfying`_
 
 Tests that a function calls its Node.js-style callback with an error.
 
@@ -423,7 +425,7 @@ function typeErrorOperation(callback) {
 expect(typeErrorOperation, 'not to call nodeback with a', TypeError);
 ```
 
-### &lt;function&gt; to call nodeback with error &lt;string | RegExp | object&gt;
+### &lt;function&gt; to call nodeback with error &lt;any&gt;
 
 Tests that a function calls its Node.js-style callback with an error matching a specific pattern.
 
@@ -465,9 +467,11 @@ expect(withWrongError, 'to call nodeback with error', 'Expected message');
 // AssertionError: Expected function to call nodeback with error matching pattern
 ```
 
-### &lt;function&gt; to call nodeback with value satisfying &lt;string | RegExp | object&gt;
+### &lt;function&gt; to call nodeback with value satisfying &lt;any&gt;
 
 > _Aliases: `to call nodeback with value satisfying`, `to invoke nodeback with value satisfying`_
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 Tests that a function calls its Node.js-style callback successfully with a value that satisfies a specific pattern.
 
@@ -601,7 +605,7 @@ await expectAsync(
 
 ### &lt;function&gt; to eventually call callback with exactly &lt;unknown&gt;
 
-> _Aliases: `to eventually call callback with exactly`_
+> _Aliases: `to eventually call callback with exactly <any>`, `to eventually invoke callback with exactly <any>`_
 
 Tests that a function eventually calls its callback with an exact value using strict equality in an asynchronous context.
 
@@ -625,9 +629,11 @@ await expectAsync(
 );
 ```
 
-### &lt;function&gt; to eventually call callback with value satisfying &lt;function&gt;
+### &lt;function&gt; to eventually call callback with value satisfying &lt;any&gt;
 
-> _Aliases: `to eventually call callback with value satisfying`_
+> _Aliases: `to eventually call callback with value satisfying <any>`, `to eventually invoke callback with value satisfying <any>`_
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 Tests that a function eventually calls its callback with a value that satisfies a pattern in an asynchronous context.
 
@@ -657,9 +663,9 @@ await expectAsync(
 );
 ```
 
-### &lt;function&gt; to eventually call nodeback with exactly &lt;unknown&gt;
+### &lt;function&gt; to eventually call nodeback with exactly &lt;any&gt;
 
-> _Aliases: `to eventually call nodeback with exactly`_
+> _Aliases: `to eventually call nodeback with exactly <any>`, `to eventually invoke nodeback with exactly <any>`_
 
 Tests that a function eventually calls its Node.js-style callback successfully with an exact value using strict equality.
 
@@ -683,9 +689,9 @@ await expectAsync(
 );
 ```
 
-### &lt;function&gt; to eventually call nodeback with &lt;unknown&gt;
+### &lt;function&gt; to eventually call nodeback with &lt;any&gt;
 
-> _Aliases: `to eventually call nodeback with`_
+> _Aliases: `to eventually call nodeback with <any>`, `to eventually invoke callback with <any>`_
 
 Tests that a function eventually calls its Node.js-style callback successfully with a specific value using deep equality.
 
@@ -750,7 +756,7 @@ await expectAsync(
 );
 ```
 
-### &lt;function&gt; to eventually call nodeback with error &lt;string | RegExp | object&gt;
+### &lt;function&gt; to eventually call nodeback with error &lt;any&gt;
 
 Tests that a function eventually calls its Node.js-style callback with an error matching a specific pattern.
 
@@ -782,9 +788,11 @@ await expectAsync(
 );
 ```
 
-### &lt;function&gt; to eventually call nodeback with value satisfying &lt;function&gt;
+### &lt;function&gt; to eventually call nodeback with value satisfying &lt;any&gt;
 
-> _Aliases: `to eventually call nodeback with value satisfying`_
+> _Aliases: `to eventually call nodeback with value satisfying <any>`, `to eventually invoke nodeback with value satisfying <any>`_
+
+> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
 
 Tests that a function eventually calls its Node.js-style callback successfully with a value that satisfies a specific pattern using partial matching.
 
