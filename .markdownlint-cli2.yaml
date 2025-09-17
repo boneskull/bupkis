@@ -13,6 +13,7 @@ config:
   no-inline-html: false
   first-line-heading: false
   first-line-h1: false
+  link-fragments: false
 ignores:
   - '**/node_modules/**'
   - '.github/prompts/*.prompt.md'

@@ -218,9 +218,9 @@ expect(obj, 'to be extensible');
 expect(obj, 'not to be extensible');
 ```
 
-### to satisfy &lt;object&gt;
+### to satisfy &lt;any&gt;
 
-> _Aliases: `to satisfy <object>`, `to be like <object>`_
+> _Aliases: `to satisfy <any>`, `to be like <any>`_
 
 "To satisfy" is a ~~wonky~~ _special_ loose "deep equal" assertion. It is similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual object contains _at least_ the properties and values specified in the expected object. It ignores any additional properties.
 

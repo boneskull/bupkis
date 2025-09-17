@@ -11,11 +11,14 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 import { inspect } from 'node:util';
+import setDifference from 'set.prototype.difference';
+import { type Entries } from 'type-fest';
 
 import { type AnyAssertion } from '../../src/assertion/assertion-types.js';
 import { expect, expectAsync } from '../../src/bootstrap.js';
 import { AssertionError, FailAssertionError } from '../../src/error.js';
 import { isError, isFunction } from '../../src/guards.js';
+import { keyBy } from '../../src/util.js';
 import {
   type InferPropertyTestConfigVariantModel,
   type InferPropertyTestConfigVariantProperty,
@@ -34,28 +37,29 @@ import {
  * @param assertions Assertions to check
  * @param testConfigs Config to check
  */
-export const assertExhaustiveTestConfig = (
+export function assertExhaustiveTestConfigs(
   collectionName: string,
-  assertions: Record<string, AnyAssertion>,
-  testConfigs: Record<string, PropertyTestConfig>,
-): void => {
+  assertions: readonly AnyAssertion[],
+  testConfigs: Map<AnyAssertion, any>,
+): void {
   it(`should test all available assertions in ${collectionName}`, () => {
-    const allCollectionIds = new Set(Object.keys(assertions));
-    const testedIds = new Set(Object.keys(testConfigs));
-    const diff = new Set(
-      [...allCollectionIds].filter((id) => !testedIds.has(id)),
-    );
+    const assertionsById = keyBy(assertions, 'id');
+    const allCollectionIds = new Set(Object.keys(assertionsById));
+    const testedIds = new Set([...testConfigs.keys()].map(({ id }) => id));
+    const diff = setDifference(allCollectionIds, testedIds);
     try {
       expect(diff, 'to be empty');
     } catch {
       throw new AssertionError({
-        message: `Some assertions in collection "${collectionName}" are missing property test configurations: ${[
+        message: `Some assertions in collection "${collectionName}" are missing property test configurations:\n${[
           ...diff,
-        ].join(', ')}`,
+        ]
+          .map((id) => `  ❌ ${assertionsById[id]} [${id}]`)
+          .join('\n')}`,
       });
     }
   });
-};
+}
 
 const globalTestConfigDefaults = {
   numRuns: process.env.WALLABY ? 10 : process.env.CI ? 100 : 200,
@@ -122,6 +126,7 @@ const isPropertyTestConfigVariantAsyncProperty = (
 type ExpectationResult =
   | { error: unknown; failed: true }
   | {
+      error?: never;
       failed?: false;
     };
 
@@ -188,6 +193,261 @@ export const invalidExpectation = (
 };
 
 /**
+ * Runs a single property test for an assertion configured by a
+ * {@link PropertyTestConfig} object.
+ *
+ * @param assertion Assertion to test
+ * @param testConfig Test configuration
+ * @param testConfigDefaults Defaults to apply
+ */
+const runPropertyTest = <T extends AnyAssertion>(
+  assertion: T,
+  testConfig: PropertyTestConfig,
+  testConfigDefaults: PropertyTestConfigParameters = {},
+): void => {
+  const {
+    invalid,
+    valid,
+    invalidNegated = valid,
+    validNegated = invalid,
+    ...fcParams
+  } = testConfig;
+  const { id } = assertion;
+
+  describe(`Assertion: ${assertion} [${id}]`, () => {
+    for (const [name, variant] of [
+      ['invalid', invalid],
+      ['valid', valid],
+      ['invalidNegated', invalidNegated],
+      ['validNegated', validNegated],
+    ] as const) {
+      it(`should pass ${name} checks [${id}]`, async () => {
+        if (isPropertyTestConfigVariantModel(variant)) {
+          const {
+            afterEach = () => {},
+            beforeEach = () => {},
+            commands,
+            commandsConstraints,
+            initialState,
+            ...propFcParams
+          } = variant;
+          const finalParams = {
+            ...globalTestConfigDefaults,
+            ...testConfigDefaults,
+            ...fcParams,
+            ...propFcParams,
+          };
+          fc.assert(
+            fc
+              .asyncProperty(
+                fc.commands(commands, commandsConstraints),
+                async (cmds) => {
+                  fc.modelRun(initialState, cmds);
+                },
+              )
+              .beforeEach(beforeEach)
+              .afterEach(afterEach),
+            finalParams,
+          );
+        } else if (isPropertyTestConfigVariantGenerators(variant)) {
+          const {
+            afterEach = () => {},
+            beforeEach = () => {},
+            generators,
+            shouldInterrupt = false,
+            ...propFcParams
+          } = variant;
+          const finalParams = {
+            ...globalTestConfigDefaults,
+            ...testConfigDefaults,
+            ...fcParams,
+            ...propFcParams,
+          };
+
+          let err: unknown;
+          const property = fc
+            .property(...generators, (value, ...part) => {
+              switch (name) {
+                case 'invalid': {
+                  const { error, failed } = invalidExpectation(value, ...part);
+                  if (failed) {
+                    throw error;
+                  }
+                  break;
+                }
+                case 'invalidNegated': {
+                  const { error, failed } = invalidNegatedExpectation(
+                    value,
+                    ...part,
+                  );
+                  if (failed) {
+                    throw error;
+                  }
+                  break;
+                }
+                case 'valid': {
+                  const { error, failed } = validExpectation(value, ...part);
+                  if (failed) {
+                    throw error;
+                  }
+                  break;
+                }
+                case 'validNegated': {
+                  const { error, failed } = negatedValidExpectation(
+                    value,
+                    ...part,
+                  );
+                  if (failed) {
+                    throw error;
+                  }
+                  break;
+                }
+              }
+            })
+            .beforeEach(beforeEach)
+            .afterEach(afterEach);
+
+          const result = fc.check(property, finalParams);
+
+          // TODO: there are some flags to control fc's timeout behavior
+          // that we could use instead of inspecting the error message
+          if (shouldInterrupt) {
+            // Check if the failure was due to a timeout
+            const isTimeout =
+              result.failed &&
+              isError(result.errorInstance) &&
+              result.errorInstance.message.includes(
+                'Property timeout: exceeded limit',
+              );
+            if (!isTimeout) {
+              let message = `Expected test to timeout/interrupt, but it failed for another reason: ${inspect(result)}`;
+              if (isError(err)) {
+                message += `\nUnderlying error: ${err.message}`;
+              }
+              expect.fail(message);
+            }
+          } else if (result.failed) {
+            let message = `Expected test to pass, but it failed: ${inspect(result)}`;
+            if (isError(err)) {
+              message += `\nUnderlying error: ${err.message}`;
+            }
+            expect.fail(message);
+          }
+        } else if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
+          const {
+            afterEach = () => {},
+            beforeEach = () => {},
+            generators,
+            shouldInterrupt = false,
+            ...propFcParams
+          } = variant;
+          const finalParams = {
+            ...globalTestConfigDefaults,
+            ...testConfigDefaults,
+            ...fcParams,
+            ...propFcParams,
+          };
+          let err: unknown;
+
+          const asyncProperty = fc
+            .asyncProperty(...generators, async (value, ...part) => {
+              switch (name) {
+                case 'valid': {
+                  try {
+                    await expectAsync(value, ...part);
+                    return true;
+                  } catch (e) {
+                    err = e;
+                    return false;
+                  }
+                }
+                case 'invalid': {
+                  try {
+                    await expectAsync(value, ...part);
+                    return false;
+                  } catch {
+                    return true;
+                  }
+                }
+                case 'invalidNegated': {
+                  try {
+                    await expectAsync(
+                      value,
+                      `not ${part[0]}`,
+                      ...part.slice(1),
+                    );
+                    return false;
+                  } catch {
+                    return true;
+                  }
+                }
+                case 'validNegated': {
+                  try {
+                    await expectAsync(
+                      value,
+                      `not ${part[0]}`,
+                      ...part.slice(1),
+                    );
+                    return true;
+                  } catch (e) {
+                    err = e;
+                    return false;
+                  }
+                }
+              }
+            })
+            .beforeEach(beforeEach)
+            .afterEach(afterEach);
+
+          const result = await fc.check(asyncProperty, finalParams);
+
+          if (shouldInterrupt) {
+            // Check if the failure was due to a timeout
+            const isTimeout =
+              result.failed &&
+              isError(result.errorInstance) &&
+              result.errorInstance.message.includes(
+                'Property timeout: exceeded limit',
+              );
+            if (!isTimeout) {
+              let message = `Expected test to timeout/interrupt, but it failed for another reason: ${inspect(result)}`;
+              if (isError(err)) {
+                message += `\nUnderlying error: ${err.message}`;
+              }
+              expect.fail(message);
+            }
+          } else if (result.failed) {
+            let message = `Expected test to pass, but it failed: ${inspect(result)}`;
+            if (isError(err)) {
+              message += `\nUnderlying error: ${err.message}`;
+            }
+            expect.fail(message);
+          }
+        } else if (isPropertyTestConfigVariantProperty(variant)) {
+          const { property, ...propFcParams } = variant;
+          const finalParams = {
+            ...globalTestConfigDefaults,
+            ...testConfigDefaults,
+            ...fcParams,
+            ...propFcParams,
+          };
+          fc.assert(property(), finalParams);
+        } else if (isPropertyTestConfigVariantAsyncProperty(variant)) {
+          const { asyncProperty, ...propFcParams } = variant;
+          const finalParams = {
+            ...globalTestConfigDefaults,
+            ...testConfigDefaults,
+            ...fcParams,
+            ...propFcParams,
+          };
+          await fc.assert(asyncProperty(), finalParams);
+        }
+      });
+    }
+  });
+};
+
+/**
  * Runs property tests across four (4) sets of inputs for some subset of
  * assertions.
  *
@@ -200,252 +460,48 @@ export const invalidExpectation = (
  * @param assertions Assertions, keyed on ID
  * @param testConfigDefaults Defaults to apply to each test variant, if any
  */
-export const runPropertyTests = <
+export function runPropertyTests<
+  const T extends Map<AnyAssertion, PropertyTestConfig | PropertyTestConfig[]>,
+>(testConfigs: T, testConfigDefaults: PropertyTestConfigParameters = {}): void {
+  for (const [assertion, testConfig] of testConfigs) {
+    if (Array.isArray(testConfig)) {
+      for (const singleTestConfig of testConfig) {
+        runPropertyTest(assertion, singleTestConfig, testConfigDefaults);
+      }
+    } else {
+      runPropertyTest(assertion, testConfig, testConfigDefaults);
+    }
+  }
+}
+
+/**
+ * Runs property tests across four (4) sets of inputs for some subset of
+ * assertions.
+ *
+ * - Valid (should pass)
+ * - Invalid (should fail)
+ * - ValidNegated (should pass)
+ * - InvalidNegated (should fail)
+ *
+ * @param testConfigs Test configurations, keyed on ID
+ * @param assertions Assertions, keyed on ID
+ * @param testConfigDefaults Defaults to apply to each test variant, if any
+ */
+export function runPropertyTestsById<
   const T extends Record<string, PropertyTestConfig>,
 >(
   testConfigs: T,
   assertions: Record<keyof T, AnyAssertion>,
   testConfigDefaults: PropertyTestConfigParameters = {},
-): void => {
-  for (const [id, config] of Object.entries(testConfigs)) {
-    const {
-      invalid,
-      valid,
-      invalidNegated = valid,
-      validNegated = invalid,
-      ...fcParams
-    } = config;
-
-    describe(`Assertion: ${assertions[id]}`, () => {
-      for (const [name, variant] of [
-        ['invalid', invalid],
-        ['valid', valid],
-        ['invalidNegated', invalidNegated],
-        ['validNegated', validNegated],
-      ] as const) {
-        it(`should pass ${name} checks [${id}]`, async () => {
-          if (isPropertyTestConfigVariantModel(variant)) {
-            const {
-              afterEach = () => {},
-              beforeEach = () => {},
-              commands,
-              commandsConstraints,
-              initialState,
-              ...propFcParams
-            } = variant;
-            const finalParams = {
-              ...globalTestConfigDefaults,
-              ...testConfigDefaults,
-              ...fcParams,
-              ...propFcParams,
-            };
-            fc.assert(
-              fc
-                .asyncProperty(
-                  fc.commands(commands, commandsConstraints),
-                  async (cmds) => {
-                    fc.modelRun(initialState, cmds);
-                  },
-                )
-                .beforeEach(beforeEach)
-                .afterEach(afterEach),
-              finalParams,
-            );
-          } else if (isPropertyTestConfigVariantGenerators(variant)) {
-            const {
-              afterEach = () => {},
-              beforeEach = () => {},
-              generators,
-              shouldInterrupt = false,
-              ...propFcParams
-            } = variant;
-            const finalParams = {
-              ...globalTestConfigDefaults,
-              ...testConfigDefaults,
-              ...fcParams,
-              ...propFcParams,
-            };
-
-            let err: unknown;
-            const property = fc
-              .property(...generators, (value, ...part) => {
-                switch (name) {
-                  case 'valid': {
-                    try {
-                      expect(value, ...part);
-                      return true;
-                    } catch (e) {
-                      err = e;
-                      return false;
-                    }
-                  }
-                  case 'invalid': {
-                    try {
-                      expect(value, ...part);
-                      return false;
-                    } catch {
-                      return true;
-                    }
-                  }
-                  case 'invalidNegated': {
-                    try {
-                      expect(value, `not ${part[0]}`, ...part.slice(1));
-                      return false;
-                    } catch {
-                      return true;
-                    }
-                  }
-                  case 'validNegated': {
-                    try {
-                      expect(value, `not ${part[0]}`, ...part.slice(1));
-                      return true;
-                    } catch (e) {
-                      err = e;
-                      return false;
-                    }
-                  }
-                }
-              })
-              .beforeEach(beforeEach)
-              .afterEach(afterEach);
-
-            const result = fc.check(property, finalParams);
-
-            // TODO: there are some flags to control fc's timeout behavior
-            // that we could use instead of inspecting the error message
-            if (shouldInterrupt) {
-              // Check if the failure was due to a timeout
-              const isTimeout =
-                result.failed &&
-                isError(result.errorInstance) &&
-                result.errorInstance.message.includes(
-                  'Property timeout: exceeded limit',
-                );
-              if (!isTimeout) {
-                let message = `Expected test to timeout/interrupt, but it failed for another reason: ${inspect(result)}`;
-                if (isError(err)) {
-                  message += `\nUnderlying error: ${err.message}`;
-                }
-                expect.fail(message);
-              }
-            } else if (result.failed) {
-              let message = `Expected test to pass, but it failed: ${inspect(result)}`;
-              if (isError(err)) {
-                message += `\nUnderlying error: ${err.message}`;
-              }
-              expect.fail(message);
-            }
-          } else if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
-            const {
-              afterEach = () => {},
-              beforeEach = () => {},
-              generators,
-              shouldInterrupt = false,
-              ...propFcParams
-            } = variant;
-            const finalParams = {
-              ...globalTestConfigDefaults,
-              ...testConfigDefaults,
-              ...fcParams,
-              ...propFcParams,
-            };
-            let err: unknown;
-
-            const asyncProperty = fc
-              .asyncProperty(...generators, async (value, ...part) => {
-                switch (name) {
-                  case 'valid': {
-                    try {
-                      await expectAsync(value, ...part);
-                      return true;
-                    } catch (e) {
-                      err = e;
-                      return false;
-                    }
-                  }
-                  case 'invalid': {
-                    try {
-                      await expectAsync(value, ...part);
-                      return false;
-                    } catch {
-                      return true;
-                    }
-                  }
-                  case 'invalidNegated': {
-                    try {
-                      await expectAsync(
-                        value,
-                        `not ${part[0]}`,
-                        ...part.slice(1),
-                      );
-                      return false;
-                    } catch {
-                      return true;
-                    }
-                  }
-                  case 'validNegated': {
-                    try {
-                      await expectAsync(
-                        value,
-                        `not ${part[0]}`,
-                        ...part.slice(1),
-                      );
-                      return true;
-                    } catch (e) {
-                      err = e;
-                      return false;
-                    }
-                  }
-                }
-              })
-              .beforeEach(beforeEach)
-              .afterEach(afterEach);
-
-            const result = await fc.check(asyncProperty, finalParams);
-
-            if (shouldInterrupt) {
-              // Check if the failure was due to a timeout
-              const isTimeout =
-                result.failed &&
-                isError(result.errorInstance) &&
-                result.errorInstance.message.includes(
-                  'Property timeout: exceeded limit',
-                );
-              if (!isTimeout) {
-                let message = `Expected test to timeout/interrupt, but it failed for another reason: ${inspect(result)}`;
-                if (isError(err)) {
-                  message += `\nUnderlying error: ${err.message}`;
-                }
-                expect.fail(message);
-              }
-            } else if (result.failed) {
-              let message = `Expected test to pass, but it failed: ${inspect(result)}`;
-              if (isError(err)) {
-                message += `\nUnderlying error: ${err.message}`;
-              }
-              expect.fail(message);
-            }
-          } else if (isPropertyTestConfigVariantProperty(variant)) {
-            const { property, ...propFcParams } = variant;
-            const finalParams = {
-              ...globalTestConfigDefaults,
-              ...testConfigDefaults,
-              ...fcParams,
-              ...propFcParams,
-            };
-            fc.assert(property(), finalParams);
-          } else if (isPropertyTestConfigVariantAsyncProperty(variant)) {
-            const { asyncProperty, ...propFcParams } = variant;
-            const finalParams = {
-              ...globalTestConfigDefaults,
-              ...testConfigDefaults,
-              ...fcParams,
-              ...propFcParams,
-            };
-            await fc.assert(asyncProperty(), finalParams);
-          }
-        });
-      }
-    });
+): void {
+  for (const entry of Object.entries(testConfigs) as Entries<T>) {
+    const [id, testConfig] = entry;
+    const assertion = assertions[id];
+    if (!assertion) {
+      throw new ReferenceError(
+        `No assertion found for property test config with id: ${String(id)}`,
+      );
+    }
+    runPropertyTest(assertion, testConfig, testConfigDefaults);
   }
-};
+}

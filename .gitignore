@@ -142,6 +142,8 @@ src/**/*.d.ts*
 src/**/*.js*
 test/**/*.d.ts*
 test/**/*.js*
+scripts/*.d.ts*
+scripts/*.js*
 docs
 
 .tmp

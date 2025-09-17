@@ -103,6 +103,29 @@ const { expect } = use([falsyAssertion]);
 expect('', 'to be nothing');
 ```
 
+### FunctionSchema
+
+{@link schema!FunctionSchema FunctionSchema} matches any JavaScript function, including regular functions, arrow functions, async functions, generator functions, and class constructors. _It does not make any attempt at validating the signature_, which makes it useful for comparing subject types when matching assertions.
+
+> _Note:_ Zod v~4.0.0 changed how `z.function()` worked, which made it unsuitable for validation. This was reverted in Zod v4.1.0.
+
+**Example:**
+
+```ts
+import { createAssertion, use } from 'bupkis';
+import { FunctionSchema } from 'bupkis/schema';
+
+const fnAssertion = createAssertion(
+  [FunctionSchema, 'to be a function with arity 2'],
+  FunctionSchema.refine((subject) => subject.length === 2),
+);
+const { expect } = use([fnAssertion]);
+function add(a: number, b: number) {
+  return a + b;
+}
+expect(add, 'to be a function with arity 2');
+```
+
 ### DictionarySchema
 
 > _Alias:_ {@link schema!NullProtoObjectSchema NullProtoObjectSchema}
@@ -194,47 +217,6 @@ const globalRegexAssertion = createAssertion(
 const { expect } = use([globalRegexAssertion]);
 
 expect(/pants/g, 'to be a RegExp with the global flag');
-```
-
-### StrongMapSchema
-
-{@link schema!StrongMapSchema StrongMapSchema} matches [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) objects, but not `WeakMap` objects. This exists because {@link bupkis!z.map z.map()} matches both.
-
-**Example:**
-
-```ts
-import { createAssertion, use } from 'bupkis';
-import { StrongMapSchema } from 'bupkis/schema';
-
-const stringNumberMapAssertion = createAssertion(
-  [StrongMapSchema, 'to be a Map with string keys and number values'],
-  StrongMapSchema.pipe(z.map(z.string(), z.number())),
-);
-
-const { expect } = use([stringNumberMapAssertion]);
-expect(
-  new Map([['pants', 42]]),
-  'to be a Map with string keys and number values',
-);
-```
-
-### StrongSetSchema
-
-{@link schema!StrongSetSchema StrongSetSchema} matches [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) objects, but not `WeakSet` objects. This exists because {@link bupkis!z.set z.set()} matches both.
-
-**Example:**
-
-```ts
-import { createAssertion, use } from 'bupkis';
-import { StrongSetSchema } from 'bupkis/schema';
-
-const stringSetAssertion = createAssertion(
-  [StrongSetSchema, 'to be a Set of strings'],
-  StrongSetSchema.pipe(z.set(z.string())),
-);
-
-const { expect } = use([stringSetAssertion]);
-expect(new Set(['pants', 'shirts']), 'to be a Set of strings');
 ```
 
 ## TruthySchema

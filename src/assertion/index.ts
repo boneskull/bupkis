@@ -5,6 +5,8 @@
  * creating custom assertions. It serves as the primary interface for assertion
  * construction and configuration.
  *
+ * @showGroups
+ *
  * @packageDocumentation
  */
 

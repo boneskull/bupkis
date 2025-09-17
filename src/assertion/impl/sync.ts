@@ -6,27 +6,298 @@
  * function behavior validation, and property checks. Each assertion is
  * implemented with proper error handling and type safety.
  *
+ * @groupDescription Assertion Collections
+ * Collections of individual assertions. For those building on top of <span class="bupkis">BUPKIS</span>.
+ *
  * @packageDocumentation
+ * @showGroups
  */
 
-import { CallbackSyncAssertions } from './callback.js';
-import { BasicAssertions } from './sync-basic.js';
-import { CollectionAssertions } from './sync-collection.js';
-import { EsotericAssertions } from './sync-esoteric.js';
-import { ParametricAssertions } from './sync-parametric.js';
+import {
+  arrayAssertion,
+  asyncFunctionAssertion,
+  bigintAssertion,
+  booleanAssertion,
+  classAssertion,
+  dateAssertion,
+  definedAssertion,
+  emptyArrayAssertion,
+  emptyObjectAssertion,
+  emptyStringAssertion,
+  errorAssertion,
+  falseAssertion,
+  falsyAssertion,
+  functionAssertion,
+  infiniteAssertion,
+  integerAssertion,
+  nanAssertion,
+  negativeAssertion,
+  negativeInfinityAssertion,
+  negativeIntegerAssertion,
+  nonEmptyStringAssertion,
+  nullAssertion,
+  numberAssertion,
+  objectAssertion,
+  positiveAssertion,
+  positiveInfinityAssertion,
+  positiveIntegerAssertion,
+  primitiveAssertion,
+  recordAssertion,
+  regexpAssertion,
+  setAssertion,
+  stringAssertion,
+  symbolAssertion,
+  trueAssertion,
+  truthyAssertion,
+  undefinedAssertion,
+  weakMapAssertion,
+  weakSetAssertion,
+} from './sync-basic.js';
+import {
+  functionCallCallbackAssertion,
+  functionCallCallbackWithExactValueAssertion,
+  functionCallCallbackWithValueAssertion,
+  functionCallCallbackWithValueSatisfyingAssertion,
+  functionCallNodebackAssertion,
+  functionCallNodebackWithErrorAssertion,
+  functionCallNodebackWithErrorClassAssertion,
+  functionCallNodebackWithErrorPatternAssertion,
+  functionCallNodebackWithExactValueAssertion,
+  functionCallNodebackWithValueAssertion,
+  functionCallNodebackWithValueSatisfyingAssertion,
+} from './sync-callback.js';
+import {
+  arrayContainsAssertion,
+  arrayLengthAssertion,
+  arraySizeAssertion,
+  collectionSizeBetweenAssertion,
+  collectionSizeGreaterThanAssertion,
+  collectionSizeLessThanAssertion,
+  emptyMapAssertion,
+  emptySetAssertion,
+  mapContainsAssertion,
+  mapEntryAssertion,
+  mapEqualityAssertion,
+  mapKeyAssertion,
+  mapSizeAssertion,
+  mapValueAssertion,
+  nonEmptyArrayAssertion,
+  objectKeysAssertion,
+  objectSizeAssertion,
+  setContainsAssertion,
+  setDifferenceEqualityAssertion,
+  setDisjointAssertion,
+  setEqualityAssertion,
+  setIntersectionAssertion,
+  setIntersectionEqualityAssertion,
+  setSizeAssertion,
+  setSubsetAssertion,
+  setSupersetAssertion,
+  setSymmetricDifferenceEqualityAssertion,
+  setUnionEqualityAssertion,
+} from './sync-collection.js';
+import {
+  enumerablePropertyAssertion,
+  extensibleAssertion,
+  frozenAssertion,
+  nullPrototypeAssertion,
+  sealedAssertion,
+} from './sync-esoteric.js';
+import {
+  arrayDeepEqualAssertion,
+  arraySatisfiesAssertion,
+  errorMessageAssertion,
+  errorMessageMatchingAssertion,
+  functionArityAssertion,
+  functionThrowsAssertion,
+  functionThrowsMatchingAssertion,
+  functionThrowsTypeAssertion,
+  functionThrowsTypeSatisfyingAssertion,
+  instanceOfAssertion,
+  numberCloseToAssertion,
+  numberGreaterThanAssertion,
+  numberGreaterThanOrEqualAssertion,
+  numberLessThanAssertion,
+  numberLessThanOrEqualAssertion,
+  numberWithinRangeAssertion,
+  objectDeepEqualAssertion,
+  objectSatisfiesAssertion,
+  oneOfAssertion,
+  strictEqualityAssertion,
+  stringBeginsWithAssertion,
+  stringEndsWithAssertion,
+  stringGreaterThanAssertion,
+  stringGreaterThanOrEqualAssertion,
+  stringIncludesAssertion,
+  stringLessThanAssertion,
+  stringLessThanOrEqualAssertion,
+  stringMatchesAssertion,
+  typeOfAssertion,
+} from './sync-parametric.js';
 
+/**
+ * Tuple of all built-in esoteric synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
+export const EsotericAssertions = [
+  nullPrototypeAssertion,
+  enumerablePropertyAssertion,
+  sealedAssertion,
+  frozenAssertion,
+  extensibleAssertion,
+] as const;
+
+/**
+ * Tuple of all built-in basic synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
+export const BasicAssertions = [
+  stringAssertion,
+  numberAssertion,
+  infiniteAssertion,
+  positiveInfinityAssertion,
+  negativeInfinityAssertion,
+  booleanAssertion,
+  positiveAssertion,
+  positiveIntegerAssertion,
+  negativeAssertion,
+  negativeIntegerAssertion,
+  trueAssertion,
+  falseAssertion,
+  bigintAssertion,
+  symbolAssertion,
+  functionAssertion,
+  asyncFunctionAssertion,
+  nanAssertion,
+  integerAssertion,
+  nullAssertion,
+  undefinedAssertion,
+  arrayAssertion,
+  dateAssertion,
+  classAssertion,
+  primitiveAssertion,
+  regexpAssertion,
+  truthyAssertion,
+  falsyAssertion,
+  objectAssertion,
+  recordAssertion,
+  emptyArrayAssertion,
+  emptyObjectAssertion,
+  errorAssertion,
+  emptyStringAssertion,
+  nonEmptyStringAssertion,
+  definedAssertion,
+  setAssertion,
+  weakMapAssertion,
+  weakSetAssertion,
+] as const;
+
+/**
+ * Tuple of all built-in parametric synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
+export const SyncParametricAssertions = [
+  instanceOfAssertion,
+  typeOfAssertion,
+  numberGreaterThanAssertion,
+  numberLessThanAssertion,
+  numberGreaterThanOrEqualAssertion,
+  numberLessThanOrEqualAssertion,
+  numberWithinRangeAssertion,
+  numberCloseToAssertion,
+  stringGreaterThanAssertion,
+  stringLessThanAssertion,
+  stringGreaterThanOrEqualAssertion,
+  stringLessThanOrEqualAssertion,
+  stringBeginsWithAssertion,
+  stringEndsWithAssertion,
+  oneOfAssertion,
+  functionArityAssertion,
+  errorMessageAssertion,
+  errorMessageMatchingAssertion,
+  strictEqualityAssertion,
+  objectDeepEqualAssertion,
+  arrayDeepEqualAssertion,
+  functionThrowsAssertion,
+  functionThrowsTypeAssertion,
+  functionThrowsMatchingAssertion,
+  functionThrowsTypeSatisfyingAssertion,
+  stringIncludesAssertion,
+  stringMatchesAssertion,
+  objectSatisfiesAssertion,
+  arraySatisfiesAssertion,
+] as const;
+
+/**
+ * @group Assertion Collections
+ */
+export const SyncCallbackAssertions = [
+  functionCallCallbackAssertion,
+  functionCallNodebackAssertion,
+  functionCallCallbackWithValueAssertion,
+  functionCallCallbackWithExactValueAssertion,
+  functionCallNodebackWithValueAssertion,
+  functionCallNodebackWithExactValueAssertion,
+  functionCallNodebackWithErrorAssertion,
+  functionCallNodebackWithErrorClassAssertion,
+  functionCallNodebackWithErrorPatternAssertion,
+  functionCallCallbackWithValueSatisfyingAssertion,
+  functionCallNodebackWithValueSatisfyingAssertion,
+] as const;
+
+/**
+ * @group Assertion Collections
+ */
+export const CollectionAssertions = [
+  mapContainsAssertion,
+  mapSizeAssertion,
+  emptyMapAssertion,
+  setContainsAssertion,
+  setSizeAssertion,
+  emptySetAssertion,
+  arrayContainsAssertion,
+  arraySizeAssertion,
+  arrayLengthAssertion,
+  nonEmptyArrayAssertion,
+  objectKeysAssertion,
+  objectSizeAssertion,
+  setEqualityAssertion,
+  setSubsetAssertion,
+  setSupersetAssertion,
+  setIntersectionAssertion,
+  setDisjointAssertion,
+  setUnionEqualityAssertion,
+  setIntersectionEqualityAssertion,
+  setDifferenceEqualityAssertion,
+  setSymmetricDifferenceEqualityAssertion,
+  mapKeyAssertion,
+  mapValueAssertion,
+  mapEntryAssertion,
+  mapEqualityAssertion,
+  collectionSizeGreaterThanAssertion,
+  collectionSizeLessThanAssertion,
+  collectionSizeBetweenAssertion,
+] as const;
+
+/**
+ * Tuple of all built-in synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
 export const SyncAssertions = [
   ...CollectionAssertions,
   ...BasicAssertions,
+  ...SyncParametricAssertions,
+  ...SyncCallbackAssertions,
   ...EsotericAssertions,
-  ...ParametricAssertions,
-  ...CallbackSyncAssertions,
 ] as const;
 
-export {
-  BasicAssertions,
-  CallbackSyncAssertions,
-  CollectionAssertions,
-  EsotericAssertions,
-  ParametricAssertions,
-};
+// Re-export collection tuples for compatibility
+// Re-export all individual assertions for convenience
+export * from './sync-basic.js';
+export * from './sync-collection.js';
+export * from './sync-esoteric.js';
+export * from './sync-parametric.js';

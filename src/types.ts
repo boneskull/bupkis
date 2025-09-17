@@ -723,23 +723,6 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
  */
 export type Negation<S extends string> = `not ${S}`;
 
-export type SatisfyPatternValue =
-  | bigint
-  | boolean
-  | ExpectItExecutor<any>
-  | Map<SatisfyPatternValue, SatisfyPatternValue>
-  | null
-  | number
-  | RegExp
-  | SatisfyPatternValue[]
-  | Set<SatisfyPatternValue>
-  | string
-  | symbol
-  | undefined
-  | WeakMap<Extract<SatisfyPatternValue, object>, SatisfyPatternValue>
-  | WeakSet<Extract<SatisfyPatternValue, object>>
-  | { [key: string]: SatisfyPatternValue };
-
 /**
  * Converts AssertionParts to complete function parameter types for expect
  * functions.
