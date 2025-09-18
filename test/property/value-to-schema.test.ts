@@ -14,7 +14,7 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
-import { hasKey, hasValue } from '../../src/util.js';
+import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
 import {
   valueToSchema,
   type ValueToSchemaOptions,
@@ -291,7 +291,9 @@ describe('valueToSchema property tests', () => {
       fc.property(
         fc
           .object()
-          .filter((obj) => !hasKey(obj, '__proto__') && hasValue(obj, {})),
+          .filter(
+            (obj) => !hasKeyDeep(obj, '__proto__') && hasValueDeep(obj, {}),
+          ),
         (obj) => {
           const schema = valueToSchema(obj, {
             literalEmptyObjects: true,
@@ -374,7 +376,7 @@ describe('valueToSchema property tests', () => {
       fc.property(
         fc
           .oneof(fc.object(), fc.array(fc.anything()))
-          .filter((v) => !hasKey(v, '__proto__')),
+          .filter((v) => !hasKeyDeep(v, '__proto__')),
         (obj) => {
           const schema = valueToSchema(obj);
           const result = schema.safeParse(obj);

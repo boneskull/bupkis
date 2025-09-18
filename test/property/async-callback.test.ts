@@ -5,7 +5,7 @@ import * as assertions from '../../src/assertion/impl/async-callback.js';
 import { AsyncCallbackAssertions } from '../../src/assertion/impl/async.js';
 import { expectAsync } from '../../src/bootstrap.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { hasKey, hasValue } from '../../src/util.js';
+import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
@@ -25,7 +25,9 @@ const objectFilter = fc
   .object()
   .filter(
     (o) =>
-      Object.keys(o).length > 0 && !hasKey(o, '__proto__') && !hasValue(o, {}),
+      Object.keys(o).length > 0 &&
+      !hasKeyDeep(o, '__proto__') &&
+      !hasValueDeep(o, {}),
   );
 
 const asyncTestConfigs = new Map<AnyAssertion, PropertyTestConfig>([
@@ -164,7 +166,8 @@ const asyncTestConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             fc
               .anything()
               .filter(
-                (v) => typeof v === 'object' && !!v && !hasKey(v, '__proto__'),
+                (v) =>
+                  typeof v === 'object' && !!v && !hasKeyDeep(v, '__proto__'),
               )
               .chain((expectedValue) =>
                 fc.tuple(
@@ -659,7 +662,8 @@ const asyncTestConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             fc
               .anything()
               .filter(
-                (v) => typeof v === 'object' && !!v && !hasKey(v, '__proto__'),
+                (v) =>
+                  typeof v === 'object' && !!v && !hasKeyDeep(v, '__proto__'),
               )
               .chain((expectedValue) =>
                 fc.tuple(

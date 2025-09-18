@@ -30,11 +30,13 @@
  * ```
  *
  * @packageDocumentation
- * @showGroups
+ * @groupDescription Schema
+ * Schemas for common types and validation patterns.
  */
 
 import { z } from 'zod/v4';
 
+import { KEYPATH_REGEX } from './constant.js';
 import {
   isConstructible,
   isFunction,
@@ -42,7 +44,11 @@ import {
   isPromiseLike,
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
-import { type Constructor, type MutableOrReadonly } from './types.js';
+import {
+  type Constructor,
+  type Keypath,
+  type MutableOrReadonly,
+} from './types.js';
 
 /**
  * A Zod schema that validates JavaScript constructible functions.
@@ -55,7 +61,7 @@ import { type Constructor, type MutableOrReadonly } from './types.js';
  * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
  * `ConstructibleSchema` for later reference and type checking purposes.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * class MyClass {}
@@ -69,12 +75,29 @@ import { type Constructor, type MutableOrReadonly } from './types.js';
  * ConstructibleSchema.parse({}); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { ConstructibleSchema } from 'bupkis/schema';
+ *
+ * const classAssertion = createAssertion(
+ *   [ConstructibleSchema, 'to be a subclass of Error'],
+ *   ConstructibleSchema.refine(
+ *     (subject) => subject.prototype instanceof Error,
+ *   ),
+ * );
+ *
+ * const { expect } = use([classAssertion]);
+ * expect(class MyError extends Error {}, 'to be a subclass of Error');
+ * ```
+ *
  * @group Schema
  */
 
 export const ConstructibleSchema = z
   .custom<Constructor>(isConstructible)
-  .register(BupkisRegistry, { name: 'ConstructibleSchema' })
+  .register(BupkisRegistry, { name: 'constructible' })
   .describe('Constructible Function');
 
 /**
@@ -83,10 +106,13 @@ export const ConstructibleSchema = z
  * This schema accepts a function having any signature and avoids Zod's parsing
  * overhead.
  *
+ * @remarks
+ * Zod v~4.0.0 changed how {@link z.function z.function()} worked, which made it
+ * unsuitable for validation. This was reverted in Zod v4.1.0.
  * @privateRemarks
  * The schema is registered in the {@link BupkisRegistry} with the name
  * `FunctionSchema` for later reference and type checking purposes.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * FunctionSchema.parse(function () {}); // ✓ Valid
@@ -98,14 +124,78 @@ export const ConstructibleSchema = z
  * FunctionSchema.parse({}); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { FunctionSchema } from 'bupkis/schema';
+ *
+ * const fnAssertion = createAssertion(
+ *   [FunctionSchema, 'to be a function with arity 2'],
+ *   FunctionSchema.refine((subject) => subject.length === 2),
+ * );
+ * const { expect } = use([fnAssertion]);
+ * function add(a: number, b: number) {
+ *   return a + b;
+ * }
+ * expect(add, 'to be a function with arity 2');
+ * ```
+ *
  * @group Schema
  */
 export const FunctionSchema = z
   .custom<(...args: MutableOrReadonly<unknown[]>) => unknown>(isFunction)
   .register(BupkisRegistry, {
-    name: 'FunctionSchema',
+    name: 'function',
   })
   .describe('Any function');
+
+/**
+ * A Zod schema that validates non-collection objects and functions.
+ *
+ * Accepts plain objects, functions, arrays, dates, etc. but rejects collection
+ * types like `Map`, `Set`, `WeakMap`, and `WeakSet`.
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * NonCollectionObjectSchema.parse({}); // ✓ Valid
+ * NonCollectionObjectSchema.parse({ key: 'value' }); // ✓ Valid
+ * NonCollectionObjectSchema.parse(function () {}); // ✓ Valid
+ * NonCollectionObjectSchema.parse(() => {}); // ✓ Valid
+ * NonCollectionObjectSchema.parse(new Map()); // ✗ Throws validation error
+ * NonCollectionObjectSchema.parse(new Set()); // ✗ Throws validation error
+ * NonCollectionObjectSchema.parse(null); // ✗ Throws validation error
+ * NonCollectionObjectSchema.parse(42); // ✗ Throws validation error
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { NonCollectionObjectSchema } from 'bupkis/schema';
+ *
+ * const nonCollectionAssertion = createAssertion(
+ *   [NonCollectionObjectSchema, 'to be a non-collection object'],
+ *   NonCollectionObjectSchema,
+ * );
+ * const { expect } = use([nonCollectionAssertion]);
+ * expect({ key: 'value' }, 'to be a non-collection object');
+ * ```
+ *
+ * @group Schema
+ */
+export const NonCollectionObjectSchema = z
+  .custom<((...args: any[]) => any) | Record<PropertyKey, unknown>>(
+    (v) =>
+      (isNonNullObject(v) || isFunction(v)) &&
+      !(v instanceof Map) &&
+      !(v instanceof Set) &&
+      !(v instanceof WeakMap) &&
+      !(v instanceof WeakSet),
+  )
+  .register(BupkisRegistry, { name: 'non-collection-object' })
+  .describe('Non-collection object or function');
 
 /**
  * A Zod schema that validates JavaScript property keys.
@@ -118,7 +208,7 @@ export const FunctionSchema = z
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `PropertyKeySchema` for later reference and type checking purposes.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * PropertyKeySchema.parse('stringKey'); // ✓ Valid
@@ -128,34 +218,112 @@ export const FunctionSchema = z
  * PropertyKeySchema.parse(null); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { PropertyKeySchema } from 'bupkis/schema';
+ * const unknownRecordAssertion = createAssertion(
+ *   ['to be a record of anything'],
+ *   z.record(PropertyKeySchema, z.unknown()),
+ * );
+ *
+ * const { expect } = use([unknownRecordAssertion]);
+ * expect(
+ *   { 42: pants, shirts: 'foo', [Symbol('baz')]: null },
+ *   'to be a record of anything',
+ * );
+ * ```
+ *
  * @group Schema
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
-  .describe('PropertyKey')
-  .register(BupkisRegistry, { name: 'PropertyKeySchema' });
+  .describe('Any valid object property name')
+  .register(BupkisRegistry, { name: 'property-key' });
+
+/**
+ * A Zod schema that validates a keypath, which is a string featuring dot
+ * notation or bracket notation, used to access nested object properties.
+ *
+ * Bare numbers must be wrapped in a string.
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * KeypathSchema.parse('foo.bar'); // ✓ Valid
+ * KeypathSchema.parse('arr[0].item'); // ✓ Valid
+ * KeypathSchema.parse('obj["key"].prop'); // ✓ Valid
+ * KeypathSchema.parse("obj['key'].prop"); // ✓ Valid
+ * KeypathSchema.parse('simpleKey'); // ✓ Valid
+ * KeypathSchema.parse('42'); // ✓ Valid
+ * KeypathSchema.parse('invalid keypath!'); // ✗ Throws validation error
+ * KeypathSchema.parse('foo..bar'); // ✗ Throws validation error
+ * KeypathSchema.parse('foo[bar]'); // ✗ Throws validation error
+ * KeypathSchema.parse(42); // ✗ Throws validation error
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { KeypathSchema } from 'bupkis/schema';
+ *
+ * const hasKeypathAssertion = createAssertion(
+ *   [KeypathSchema, 'to be a keypath'],
+ *   KeypathSchema,
+ * );
+ *
+ * const { expect } = use([hasKeypathAssertion]);
+ * expect('foo.bar[0]["baz"]', 'to be a keypath');
+ * ```
+ *
+ * @group Schema
+ */
+export const KeypathSchema: z.ZodType<Keypath> = z
+  .string()
+  .regex(KEYPATH_REGEX)
+  .describe('A keypath supporting dot and bracket notation')
+  .register(BupkisRegistry, { name: 'keypath' });
 
 /**
  * A Zod schema that validates "thenable" objects with a `.then()` method.
  *
  * This schema validates objects that implement the PromiseLike interface by
  * having a `.then()` method, which includes Promises and other thenable
- * objects. Unlike Zod's built-in `z.promise()`, this schema does not unwrap the
- * resolved value, meaning the result of parsing remains a Promise or thenable
- * object.
+ * objects.
+ *
+ * Unlike Zod's built-in `z.promise()`, this schema does not unwrap the resolved
+ * value, meaning the result of parsing remains a Promise or thenable object.
  *
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name
  * `WrappedPromiseLikeSchema` for later reference and type checking purposes.
  * This is useful when you need to validate that something is thenable without
  * automatically resolving it.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * WrappedPromiseLikeSchema.parse(Promise.resolve(42)); // ✓ Valid (returns Promise)
  * WrappedPromiseLikeSchema.parse({ then: () => {} }); // ✓ Valid (thenable)
  * WrappedPromiseLikeSchema.parse(42); // ✗ Throws validation error
  * WrappedPromiseLikeSchema.parse({}); // ✗ Throws validation error
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { WrappedPromiseLikeSchema } from 'bupkis/schema';
+ *
+ * const thenableAssertion = createAssertion(
+ *   [WrappedPromiseLikeSchema, 'to be a thenable'],
+ *   WrappedPromiseLikeSchema,
+ * );
+ *
+ * const { expect } = use([thenableAssertion]);
+ * // does nothing with 'pants'; await it elsewhere
+ * expect({ then: () => Promise.resolve('pants') }, 'to be a thenable');
  * ```
  *
  * @group Schema
@@ -165,7 +333,7 @@ export const WrappedPromiseLikeSchema = z
   .describe(
     'PromiseLike; unlike z.promise(), does not unwrap the resolved value',
   )
-  .register(BupkisRegistry, { name: 'WrappedPromiseLikeSchema' });
+  .register(BupkisRegistry, { name: 'promiselike' });
 
 /**
  * A Zod schema that validates plain objects with null prototypes.
@@ -184,7 +352,7 @@ export const WrappedPromiseLikeSchema = z
  *
  * Changing this to be a `ZodRecord` would be nice, but that would end up
  * blasting away the original object's prototype.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * const nullProtoObj = Object.create(null);
@@ -198,6 +366,22 @@ export const WrappedPromiseLikeSchema = z
  * NullProtoObjectSchema.parse(emptyObj); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { DictionarySchema } from 'bupkis/schema';
+ *
+ * const dictAssertion = createAssertion(
+ *   [DictionarySchema, 'to be a dictionary of numbers'],
+ *   DictionarySchema.pipe(z.record(z.number())),
+ * );
+ *
+ * const { expect } = use([dictAssertion]);
+ *
+ * expect(Object.create(null, { pants: { value: 42, enumerable: true } }),
+ * ```
+ *
  * @group Schema
  */
 export const DictionarySchema = z
@@ -205,7 +389,7 @@ export const DictionarySchema = z
     (value) => isNonNullObject(value) && Object.getPrototypeOf(value) === null,
   )
   .describe('Object with null prototype')
-  .register(BupkisRegistry, { name: 'ObjectWithNullPrototype' });
+  .register(BupkisRegistry, { name: 'dictionary' });
 
 /**
  * {@inheritDoc DictionarySchema}
@@ -222,13 +406,13 @@ export const NullProtoObjectSchema = DictionarySchema;
  * function's internal `[[ToString]]` representation to distinguish async
  * functions from regular functions that might return Promises.
  *
- * @privateRemarks
- * The schema is registered in the `BupkisRegistry` with the name
- * `AsyncFunctionSchema` for later reference and type checking purposes. This
- * schema cannot reliably detect functions that return Promises but are not
- * declared with `async`, as this determination requires static analysis that is
- * not available at runtime.
- * @example
+ * @remarks
+ * **This schema _cannot_ match a function that returns a {@link Promise} but was
+ * not declared via `async`.** Determining if a function returns a `Promise` is
+ * only possible by execution of said function (which <span
+ * class="bupkis">BUPKIS</span> avoids, naturally). This is a limitation of
+ * JavaScript itself.
+ * @example Direct Usage
  *
  * ```typescript
  * async function asyncFn() {
@@ -248,13 +432,28 @@ export const NullProtoObjectSchema = DictionarySchema;
  * AsyncFunctionSchema.parse(regularFn); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { AsyncFunctionSchema } from 'bupkis/schema';
+ *
+ * const asyncFnAssertion = createAssertion(
+ *   [AsyncFunctionSchema, 'to be an async function'],
+ *   AsyncFunctionSchema,
+ * );
+ *
+ * const { expect } = use([asyncFnAssertion]);
+ * expect(async () => {}, 'to be an async function');
+ * ```
+ *
  * @group Schema
  */
 export const AsyncFunctionSchema = FunctionSchema.refine(
   (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
 )
   .describe('Function declared with the `async` keyword')
-  .register(BupkisRegistry, { name: 'AsyncFunctionSchema' });
+  .register(BupkisRegistry, { name: 'async-function' });
 
 /**
  * A Zod schema that validates truthy JavaScript values.
@@ -267,7 +466,7 @@ export const AsyncFunctionSchema = FunctionSchema.refine(
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Truthy` and
  * indicates that it accepts anything as valid input for evaluation.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * TruthySchema.parse(true); // ✓ Valid
@@ -281,7 +480,24 @@ export const AsyncFunctionSchema = FunctionSchema.refine(
  * TruthySchema.parse(null); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { TruthySchema } from 'bupkis/schema';
+ *
+ * const somethingAssertion = createAssertion(
+ *   ['to be something'],
+ *   TruthySchema,
+ * );
+ *
+ * const { expect } = use([somethingAssertion]);
+ *
+ * expect('pants', 'to be something');
+ * ```
+ *
  * @group Schema
+ * @see {@link FalsySchema}
  */
 export const TruthySchema = z
   .any()
@@ -289,7 +505,7 @@ export const TruthySchema = z
   .refine((value) => !!value)
   .describe('Truthy value')
   .register(BupkisRegistry, {
-    name: 'Truthy',
+    name: 'truthy',
   });
 
 /**
@@ -303,7 +519,7 @@ export const TruthySchema = z
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Falsy` and
  * indicates that it accepts anything as valid input for evaluation.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * FalsySchema.parse(false); // ✓ Valid
@@ -320,14 +536,28 @@ export const TruthySchema = z
  * FalsySchema.parse({}); // ✗ Throws validation error
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { FalsySchema } from 'bupkis/schema';
+ *
+ * const falsyAssertion = createAssertion(['to be nothing'], FalsySchema);
+ *
+ * const { expect } = use([falsyAssertion]);
+ *
+ * expect('', 'to be nothing');
+ * ```
+ *
  * @group Schema
+ * @see {@link TruthySchema}
  */
 export const FalsySchema = z
   .any()
   .nullable()
   .refine((value) => !value)
   .describe('Falsy value')
-  .register(BupkisRegistry, { name: 'Falsy' });
+  .register(BupkisRegistry, { name: 'falsy' });
 
 /**
  * A Zod schema that validates primitive JavaScript values.
@@ -341,7 +571,7 @@ export const FalsySchema = z
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `Primitive`
  * and indicates that it accepts primitive values as valid input.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * PrimitiveSchema.parse('hello'); // ✓ Valid (string)
@@ -354,6 +584,22 @@ export const FalsySchema = z
  * PrimitiveSchema.parse({}); // ✗ Throws validation error (object)
  * PrimitiveSchema.parse([]); // ✗ Throws validation error (array)
  * PrimitiveSchema.parse(() => {}); // ✗ Throws validation error (function)
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { PrimitiveSchema } from 'bupkis/schema';
+ *
+ * const primitiveAssertion = createAssertion(
+ *   ['to be a primitive, Date, or RegExp'],
+ *   PrimitiveSchema.or(z.instanceof(Date)).or(z.instanceof(RegExp)),
+ * );
+ *
+ * const { expect } = use([primitiveAssertion]);
+ *
+ * expect('pants', 'to be a primitive, Date, or RegExp');
  * ```
  *
  * @group Schema
@@ -369,7 +615,7 @@ export const PrimitiveSchema = z
     z.undefined(),
   ])
   .describe('Primitive value')
-  .register(BupkisRegistry, { name: 'Primitive' });
+  .register(BupkisRegistry, { name: 'primitive' });
 
 /**
  * A Zod schema that validates array-like structures including mutable and
@@ -386,7 +632,7 @@ export const PrimitiveSchema = z
  * `ArrayLike` for later reference and type checking purposes. This schema is
  * particularly useful when you need to accept various forms of array-like data
  * without being restrictive about mutability or exact tuple structure.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * ArrayLikeSchema.parse([1, 2, 3]); // ✓ Valid (mutable array)
@@ -396,6 +642,26 @@ export const PrimitiveSchema = z
  * ArrayLikeSchema.parse('not an array'); // ✗ Throws validation error
  * ArrayLikeSchema.parse({}); // ✗ Throws validation error
  * ArrayLikeSchema.parse(null); // ✗ Throws validation error
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { ArrayLikeSchema } from 'bupkis/schema';
+ *
+ * const argsAssertion = createAssertion(
+ *   [ArrayLikeSchema, 'to be a non-array arraylike object'],
+ *   ArrayLikeSchema.refine((subject) => !Array.isArray(subject)),
+ * );
+ *
+ * const { expect } = use([argsAssertion]);
+ * expect(
+ *   (function () {
+ *     return arguments;
+ *   })(),
+ *   'to be a non-array arraylike object',
+ * );
  * ```
  *
  * @group Schema
@@ -408,7 +674,7 @@ export const ArrayLikeSchema = z
   ])
   .describe('Array-like value')
   .register(BupkisRegistry, {
-    name: 'ArrayLike',
+    name: 'arraylike',
   });
 
 /**
@@ -423,7 +689,7 @@ export const ArrayLikeSchema = z
  * @privateRemarks
  * The schema is registered in the `BupkisRegistry` with the name `RegExp` for
  * later reference and type checking purposes.
- * @example
+ * @example Direct Usage
  *
  * ```typescript
  * RegExpSchema.parse(/abc/gi); // ✓ Valid (literal syntax)
@@ -435,9 +701,25 @@ export const ArrayLikeSchema = z
  * RegExpSchema.parse({}); // ✗ Throws validation error (object)
  * ```
  *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { RegExpSchema } from 'bupkis/schema';
+ *
+ * const globalRegexAssertion = createAssertion(
+ *   [RegExpSchema, 'to be a RegExp with the global flag'],
+ *   RegExpSchema.refine((subject) => subject.flags.includes('g')),
+ * );
+ *
+ * const { expect } = use([globalRegexAssertion]);
+ *
+ * expect(/pants/g, 'to be a RegExp with the global flag');
+ * ```
+ *
  * @group Schema
  */
 export const RegExpSchema = z
   .instanceof(RegExp)
   .describe('A RegExp instance')
-  .register(BupkisRegistry, { name: 'RegExp' });
+  .register(BupkisRegistry, { name: 'regexp' });

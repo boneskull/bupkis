@@ -58,7 +58,8 @@
     "isdisjointfrom",
     "issupersetof",
     "issubsetof",
-    "commitlintrc"
+    "commitlintrc",
+    "repr"
   ],
   "words": ["bupkis", "bussin", "nevermind", "pataphysical", "inconstructible"]
 }

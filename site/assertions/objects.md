@@ -103,6 +103,105 @@ expect({ a: 1 }, 'to have keys', ['a', 'b']);
 expect({ a: 1 }, 'not to have keys', ['a', 'b']);
 ```
 
+### to have key &lt;keypath&gt;
+
+> _Aliases: `to have key <keypath>`, `to have property <keypath>`, `to have prop <keypath>`_
+
+Tests whether an object has a property at the specified keypath using dot or bracket notation. This assertion supports complex keypath traversal including nested properties, array indices, and quoted keys.
+
+Supported keypath formats:
+
+- Dot notation: `'prop.nested'`
+- Bracket notation with numbers: `'arr[0]'`
+- Bracket notation with quoted strings: `'obj["key"]'` or `"obj['key']"`
+- Mixed notation: `'data.items[1].name'`
+
+**Success**:
+
+```js
+const obj = {
+  foo: { bar: [{ baz: 'value' }] },
+  'kebab-case': 'works',
+  items: [
+    { id: 1, name: 'first' },
+    { id: 2, name: 'second' },
+  ],
+};
+
+expect(obj, 'to have key', 'foo.bar');
+expect(obj, 'to have property', 'foo.bar[0].baz');
+expect(obj, 'to have prop', 'kebab-case');
+expect(obj, 'to have key', 'items[1].name');
+expect(obj, 'to have property', 'foo["bar"][0]["baz"]');
+```
+
+**Failure**:
+
+```js
+expect(obj, 'to have key', 'nonexistent.path');
+// AssertionError: Expected object to contain keypath nonexistent.path
+
+expect(obj, 'to have property', 'foo.bar[5].missing');
+// AssertionError: Expected object to contain keypath foo.bar[5].missing
+```
+
+**Negation**:
+
+```js
+expect(obj, 'not to have key', 'nonexistent.path');
+expect(obj, 'not to have property', 'foo.bar[5].missing');
+```
+
+### to have exact key &lt;key&gt;
+
+> _Aliases: `to have exact key <key>`, `to have exact property <key>`, `to have exact prop <key>`_
+
+Tests whether an object has an exact property key without keypath traversal. This assertion checks for direct properties on the object and supports symbols and keys that would conflict with bracket/dot notation.
+
+Unlike `to have key`, this assertion:
+
+- Does not support keypath traversal (no dots or brackets are interpreted)
+- Can check for symbol keys
+- Can check for keys containing dots, brackets, or other special characters as literal property names
+- Only checks direct properties (no nested access)
+
+**Success**:
+
+```js
+const sym = Symbol('test');
+const obj = {
+  simple: 'value',
+  'key.with.dots': 'direct property',
+  'key[with]brackets': 'another direct property',
+  [sym]: 'symbol value',
+};
+
+expect(obj, 'to have exact key', 'simple');
+expect(obj, 'to have exact property', 'key.with.dots'); // literal key, not traversal
+expect(obj, 'to have exact prop', 'key[with]brackets'); // literal key, not array access
+expect(obj, 'to have exact key', sym); // symbol key
+```
+
+**Failure**:
+
+```js
+const obj = { nested: { prop: 'value' } };
+
+expect(obj, 'to have exact key', 'nested.prop');
+// AssertionError: Expected object to have exact key nested.prop
+// (This fails because 'nested.prop' is not a direct property)
+
+expect(obj, 'to have exact property', 'missing');
+// AssertionError: Expected object to have exact key missing
+```
+
+**Negation**:
+
+```js
+expect(obj, 'not to have exact key', 'missing');
+expect(obj, 'not to have exact property', 'nested.prop'); // no traversal
+```
+
 ### to have a null prototype
 
 **Success**:

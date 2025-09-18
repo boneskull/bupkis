@@ -44,4 +44,36 @@ export const kBupkisNegatedAssertionError: unique symbol = Symbol(
   'bupkis-negated-error',
 );
 
+/**
+ * Symbol used to flag a function as an `expect.it` executor.
+ *
+ * @internal
+ */
 export const kExpectIt: unique symbol = Symbol('bupkis-expect-it');
+
+/**
+ * Regular expression that matches valid keypath syntax.
+ *
+ * Matches patterns like:
+ *
+ * - Simple identifiers: `foo`
+ * - Dot notation: `foo.bar`, `foo.bar.baz`
+ * - Bracket notation with numbers: `foo[0]`, `bar[123]`
+ * - Bracket notation with quoted strings: `foo["key"]`, `bar['prop']`
+ * - Mixed notation: `foo.bar[0].baz`, `obj[0]["key"].prop`
+ *
+ * The regex breaks down as:
+ *
+ * - `^[a-zA-Z_$][a-zA-Z0-9_$]*` - Valid identifier start
+ * - `(?:` - Non-capturing group for additional segments
+ *
+ *   - `\.` - Dot followed by identifier
+ *   - `|` - OR
+ *   - `\[(?:\d+|"[^"]*"|'[^']*')\]` - Bracket notation (number or quoted string)
+ * - `)*$` - Zero or more additional segments, end of string
+ *
+ * @public
+ */
+
+export const KEYPATH_REGEX =
+  /^[a-zA-Z_$][-a-zA-Z0-9_$]*(?:(?:\.[a-zA-Z_$][-a-zA-Z0-9_$]*)|(?:\[(?:\d+|"[^"]*"|'[^']*')\]))*$/;
