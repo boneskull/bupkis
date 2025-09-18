@@ -166,11 +166,7 @@ export class BupkisAssertionFunctionSync<
     if (isZodType(result)) {
       const zodResult = result.safeParse(parsedValues[0]);
       if (!zodResult.success) {
-        throw this.translateZodError(
-          stackStartFn,
-          zodResult.error,
-          ...parsedValues,
-        );
+        throw this.fromZodError(zodResult.error, stackStartFn, parsedValues);
       }
     } else if (isBoolean(result)) {
       if (!result) {
@@ -185,7 +181,7 @@ export class BupkisAssertionFunctionSync<
         message: result.message ?? `Assertion ${this} failed`,
       });
     } else if (isError(result) && result instanceof z.ZodError) {
-      throw this.translateZodError(stackStartFn, result, ...parsedValues);
+      throw this.fromZodError(result, stackStartFn, parsedValues);
     } else if (result as unknown) {
       throw new TypeError(
         `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
@@ -233,10 +229,10 @@ export class BupkisAssertionSchemaSync<
       );
       if (!cachedValidation.success) {
         // Subject validation failed during parseValues, throw the cached error
-        throw this.translateZodError(
-          stackStartFn,
+        throw this.fromZodError(
           cachedValidation.error,
-          ...parsedValues,
+          stackStartFn,
+          parsedValues,
         );
       }
       // Subject validation passed, nothing more to do
@@ -247,7 +243,7 @@ export class BupkisAssertionSchemaSync<
     const [subject] = parsedValues;
     const result = this.impl.safeParse(subject);
     if (!result.success) {
-      throw this.translateZodError(stackStartFn, result.error, ...parsedValues);
+      throw this.fromZodError(result.error, stackStartFn, parsedValues);
     }
   }
 

@@ -13,7 +13,7 @@ import Debug from 'debug';
 import slug from 'slug';
 import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
-import { type z } from 'zod/v4';
+import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError } from '../error.js';
@@ -153,6 +153,55 @@ export abstract class BupkisAssertion<
       .join(' ')}"`;
   }
 
+  /**
+   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
+   * human-friendly message.
+   *
+   * @remarks
+   * This does not handle parameterized assertions with more than one parameter
+   * too cleanly; it's unclear how a test runner would display the expected
+   * values. This will probably need a fix in the future.
+   * @param stackStartFn The function to start the stack trace from
+   * @param zodError The original `ZodError`
+   * @param values Values which caused the error
+   * @returns New `AssertionError`
+   */
+  /**
+   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
+   * human-friendly message.
+   *
+   * @remarks
+   * This does not handle parameterized assertions with more than one parameter
+   * too cleanly; it's unclear how a test runner would display the expected
+   * values. This will probably need a fix in the future.
+   * @param stackStartFn The function to start the stack trace from
+   * @param zodError The original `ZodError`
+   * @param values Values which caused the error
+   * @returns New `AssertionError`
+   */
+  protected fromZodError<Parts extends AssertionParts>(
+    zodError: z.ZodError,
+    stackStartFn: (...args: any[]) => any,
+    values: ParsedValues<Parts>,
+  ): AssertionError {
+    const flat = z.flattenError(zodError);
+
+    let pretty = flat.formErrors.join('; ');
+    for (const [keypath, errors] of Object.entries(flat.fieldErrors)) {
+      pretty += `; ${keypath}: ${(errors as unknown[]).join('; ')}`;
+    }
+
+    const [actual, ...expected] = values as unknown as [unknown, ...unknown[]];
+
+    return new AssertionError({
+      actual,
+      expected: expected.length === 1 ? expected[0] : expected,
+      message: `Assertion ${this} failed: ${pretty}`,
+      operator: `${this}`,
+      stackStartFn,
+    });
+  }
+
   protected maybeParseValuesArgMismatch<Args extends readonly unknown[]>(
     args: Args,
   ): ParsedResult<Parts> | undefined {
@@ -201,27 +250,6 @@ export abstract class BupkisAssertion<
       return true;
     }
     return false;
-  }
-
-  /**
-   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
-   * human-friendly message.
-   *
-   * @remarks
-   * This does not handle parameterized assertions with more than one parameter
-   * too cleanly; it's unclear how a test runner would display the expected
-   * values. This will probably need a fix in the future.
-   * @param stackStartFn The function to start the stack trace from
-   * @param zodError The original `ZodError`
-   * @param values Values which caused the error
-   * @returns New `AssertionError`
-   */
-  protected translateZodError(
-    stackStartFn: (...args: any[]) => any,
-    zodError: z.ZodError,
-    ...values: ParsedValues<Parts>
-  ): AssertionError {
-    return AssertionError.fromZodError(zodError, stackStartFn, values);
   }
 
   /**

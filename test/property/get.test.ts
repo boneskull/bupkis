@@ -353,6 +353,9 @@ describe('get function property tests', () => {
           ),
           ([obj, path, defaultValue]) => {
             const result = get(obj, path, defaultValue);
+            if (Number.isNaN(defaultValue) && Number.isNaN(result)) {
+              return true;
+            }
             return result === defaultValue;
           },
         ),
@@ -412,6 +415,11 @@ describe('get function property tests', () => {
           ),
           ([obj, edgePath, defaultValue]) => {
             const result = get(obj, edgePath, defaultValue);
+
+            // Handle NaN comparison properly since NaN !== NaN
+            if (Number.isNaN(defaultValue) && Number.isNaN(result)) {
+              return true;
+            }
 
             return result === defaultValue || result === undefined;
           },
