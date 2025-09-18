@@ -89,22 +89,34 @@ export type PropertyTestConfigVariant<
 > =
   | PropertyTestConfigVariantAsyncGenerators
   | PropertyTestConfigVariantAsyncProperty<any>
-  | PropertyTestConfigVariantGenerators
   | PropertyTestConfigVariantModel<Model, Real>
-  | PropertyTestConfigVariantProperty<any>;
+  | PropertyTestConfigVariantProperty<any>
+  | PropertyTestConfigVariantSyncGenerators;
 
 export interface PropertyTestConfigVariantAsyncGenerators
-  extends PropertyTestConfigVariantGenerators {
+  extends PropertyTestConfigVariantSyncGenerators {
   async: true;
 }
 
 export interface PropertyTestConfigVariantAsyncProperty<T>
-  extends BasePropertyTestConfigVariant {
+  extends PropertyTestConfigParameters {
   asyncProperty: () => fc.IAsyncProperty<T> | fc.IAsyncPropertyWithHooks<T>;
 }
 
-export interface PropertyTestConfigVariantGenerators
-  extends BasePropertyTestConfigVariant {
+export interface PropertyTestConfigVariantModel<Model extends object, Real>
+  extends PropertyTestConfigParameters {
+  commands: fc.Arbitrary<fc.Command<Model, Real>>[];
+  commandsConstraints: fc.CommandsContraints;
+  initialState: fc.ModelRunSetup<Model, Real>;
+}
+
+export interface PropertyTestConfigVariantProperty<T>
+  extends PropertyTestConfigParameters {
+  property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
+}
+
+export interface PropertyTestConfigVariantSyncGenerators
+  extends PropertyTestConfigParameters {
   generators: readonly [
     subject: fc.Arbitrary<any>,
     phrase: fc.Arbitrary<string>,
@@ -116,23 +128,4 @@ export interface PropertyTestConfigVariantGenerators
    * callbacks that should never be called.
    */
   shouldInterrupt?: boolean;
-}
-
-export interface PropertyTestConfigVariantModel<Model extends object, Real>
-  extends BasePropertyTestConfigVariant {
-  commands: fc.Arbitrary<fc.Command<Model, Real>>[];
-  commandsConstraints: fc.CommandsContraints;
-  initialState: fc.ModelRunSetup<Model, Real>;
-}
-
-export interface PropertyTestConfigVariantProperty<T>
-  extends BasePropertyTestConfigVariant {
-  afterEach?: never;
-  beforeEach?: never;
-  property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
-}
-
-interface BasePropertyTestConfigVariant extends PropertyTestConfigParameters {
-  afterEach?: fc.AsyncPropertyHookFunction | fc.PropertyHookFunction;
-  beforeEach?: fc.AsyncPropertyHookFunction | fc.PropertyHookFunction;
 }

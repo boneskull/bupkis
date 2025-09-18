@@ -32,7 +32,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionCallCallbackAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -42,7 +42,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionCallCallbackAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -61,7 +61,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -74,7 +74,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -93,7 +93,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('string'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -106,7 +106,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('test value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -125,7 +125,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -138,7 +138,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
     },
   ],
@@ -152,7 +152,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionCallNodebackAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -164,7 +164,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionCallNodebackAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -182,7 +182,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               assertions.functionCallNodebackWithErrorAssertion,
             ),
           ),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -194,7 +194,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               assertions.functionCallNodebackWithErrorAssertion,
             ),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -213,7 +213,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(ReferenceError),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -226,7 +226,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(TypeError),
-        ] as const,
+        ],
       },
     },
   ],
@@ -245,7 +245,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -258,7 +258,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
     },
   ],
@@ -279,7 +279,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -294,7 +294,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -315,7 +315,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('string'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -330,7 +330,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('test value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -351,7 +351,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -366,7 +366,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant(/^test/),
-        ] as const,
+        ],
       },
     },
   ],

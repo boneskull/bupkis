@@ -38,7 +38,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected message'),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -50,7 +50,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -65,7 +65,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionRejectAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -76,7 +76,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionRejectAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -96,7 +96,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected message'),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -110,7 +110,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected message'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -128,7 +128,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionRejectWithTypeAssertion),
           ),
           fc.constant(ReferenceError),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -140,7 +140,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionRejectWithTypeAssertion),
           ),
           fc.constant(TypeError),
-        ] as const,
+        ],
       },
     },
   ],
@@ -157,7 +157,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionResolveAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -166,7 +166,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionResolveAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -184,7 +184,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -196,7 +196,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected value'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -209,14 +209,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: [
           fc.constant(Promise.resolve('success')),
           fc.constantFrom(...extractPhrases(assertions.promiseRejectAssertion)),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
         generators: [
           fc.constant(Promise.reject(new Error('rejection'))),
           fc.constantFrom(...extractPhrases(assertions.promiseRejectAssertion)),
-        ] as const,
+        ],
       },
     },
   ],
@@ -234,7 +234,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected message'),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -246,7 +246,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           ),
           fc.constant('expected message'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -262,7 +262,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
           ),
           fc.constant(ReferenceError),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -272,7 +272,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
           ),
           fc.constant(TypeError),
-        ] as const,
+        ],
       },
     },
   ],
@@ -287,7 +287,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.promiseResolveAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         async: true,
@@ -296,7 +296,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.promiseResolveAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
