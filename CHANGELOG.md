@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.4.0...bupkis-v0.5.0) (2025-09-18)
+
+
+### Features
+
+* **assertions:** implement "to have key" and "to have exact key" ([8bb53cc](https://github.com/boneskull/bupkis/commit/8bb53cc6c6457b52f16f9057b1287005bc9a80df))
+* more set/map assertions ([ec9e0f4](https://github.com/boneskull/bupkis/commit/ec9e0f46cd2ec0d0d097b54b3d0d9400fbb79c9d)), closes [#27](https://github.com/boneskull/bupkis/issues/27)
+* **util:** implement `get` and `has` functions (like lodash's) supporting keypaths ([8bb53cc](https://github.com/boneskull/bupkis/commit/8bb53cc6c6457b52f16f9057b1287005bc9a80df))
+
+
+### Bug Fixes
+
+* "to satisfy" now accepts any value for comparison ([ec9e0f4](https://github.com/boneskull/bupkis/commit/ec9e0f46cd2ec0d0d097b54b3d0d9400fbb79c9d))
+* **assertions:** widen allowed subjects for "to have keys" assertion ([8bb53cc](https://github.com/boneskull/bupkis/commit/8bb53cc6c6457b52f16f9057b1287005bc9a80df))
+* many edge cases ([ec9e0f4](https://github.com/boneskull/bupkis/commit/ec9e0f46cd2ec0d0d097b54b3d0d9400fbb79c9d))
+
 ## [0.4.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.3.0...bupkis-v0.4.0) (2025-09-15)
 
 
