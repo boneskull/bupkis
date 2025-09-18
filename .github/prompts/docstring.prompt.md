@@ -41,8 +41,12 @@ The rest of these instructions will assume TypeScript or JavaScript sources and 
 
 - If the selected code is an entire module, create a docstring with a summary and detailed description (as explained above), and use the `@packageDocumentation` tag as the last line of the docstring body.
 
-- Any text outside of the example code which refers to a filename or path should be contained within backticks (`` ` ``).
-
 - Text referring to a linkable symbol should wrap the text using inline `{@link ...}` tag the _first_ time only; wrap in backticks thereafter.
 
 - If a function has overloads, each overload _and_ the implementation should have its own docstring. Each docstring should be specific to the overload or implementation it describes.
+
+- Any text _within a paragraph_ that refers to another symbol (such as a type, function, class, etc.) should use the inline `{@link ...}` tag (if the symbol is in scope) and wrap in backticks otherwise. Any filenames should also be linked using `file://` URLs.
+
+- You cannot reference a symbol tagged `@internal` from the docstring of a non-`@internal` symbol _except_ within a `@privateRemarks` block tag.
+
+
