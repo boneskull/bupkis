@@ -732,8 +732,8 @@ code.tsd-tag {
   background-repeat: no-repeat;
 }
 
+.tsd-typography code:not(.typescript):not(.ts),
 :is(h1, h2, h3, h4, h5, h6) .code {
-  margin: 0;
   padding: 0;
   font-size: 0.9em;
 }
