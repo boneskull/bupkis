@@ -30,12 +30,13 @@ import {
 const debug = Debug('bupkis:assertion');
 
 /**
- * Modified charmap for {@link slug} to use underscores to replace hyphens (and
- * for hyphens to replace everything else that needs replacing).
+ * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;
+ * and for hyphens to replace everything else that needs replacing) and `<` with
+ * `_` (to distinguish type args)
  *
  * @see {@link BupkisAssertion.generateUniqueId} for usage
  */
-const SLUG_CHARMAP = { ...slug.charmap, '-': '_' };
+const SLUG_CHARMAP = { ...slug.charmap, '-': '_', '<': '_', '>': '' };
 
 export abstract class BupkisAssertion<
   Parts extends AssertionParts,
@@ -66,56 +67,90 @@ export abstract class BupkisAssertion<
    * @returns String representation
    */
   public toString(): string {
-    const expand = (zodType: z.core.$ZodType | z.ZodType): string => {
+    const expand = (
+      zodType: z.core.$ZodType | z.ZodType,
+      wrapCurlies = false,
+    ): string => {
       const def = 'def' in zodType ? zodType.def : zodType._zod.def;
-      switch (def.type) {
-        case 'custom': {
-          const meta = BupkisRegistry.get(zodType);
-          if (meta?.name) {
-            // our name
-            return `{${meta.name}}`;
-          } else if ('Class' in zodType._zod.bag) {
+      let repr = '';
+      const meta = BupkisRegistry.get(zodType);
+      if (meta?.name) {
+        // our name
+        repr = meta.name;
+      } else {
+        switch (def.type) {
+          case 'custom': {
             // internal Zod class name. will probably break.
-            return `{${(zodType._zod.bag.Class as new (...args: any[]) => any).name}}`;
-          }
-          return '{custom}';
-        }
-        case 'default':
-          return `{${expand((def as z.core.$ZodDefaultDef).innerType)}}`;
-        case 'enum':
-          return `${Object.keys((def as z.core.$ZodEnumDef<any>).entries as Record<PropertyKey, unknown>).join(' / ')}`;
-        case 'intersection':
-          return `${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).left)} & ${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).right)}`;
-        case 'literal':
-          return (def as z.core.$ZodLiteralDef<any>).values
-            .map((value) => `'${value}'`)
-            .join(' / ');
-        case 'map':
-          return `{Map<${expand((def as z.core.$ZodMapDef).keyType)}, ${expand((def as z.core.$ZodMapDef).valueType)}>`;
-        case 'nonoptional':
-          return `${expand((def as z.core.$ZodNonOptionalDef).innerType)}!`;
-        case 'nullable':
-          return `${expand((def as z.core.$ZodNullableDef).innerType)}? | null`;
-        case 'optional':
-          return `${expand((def as z.core.$ZodOptionalDef).innerType)}?`;
-        case 'record':
-          return `{Record<${expand((def as z.core.$ZodRecordDef).keyType)}, ${expand((def as z.core.$ZodRecordDef).valueType)}>`;
-        case 'set':
-          return `{Set<${expand((def as z.core.$ZodSetDef).valueType)}>`;
+            try {
+              repr =
+                'Class' in zodType._zod.bag
+                  ? `${(zodType._zod.bag.Class as new (...args: any[]) => any).name}`
+                  : 'custom';
+            } catch (err) {
+              debug(
+                `Warning: Unable to extract custom class name from Zod type(did Zod's API change?): ${err}`,
+              );
+              repr = 'custom';
+            }
 
-        case 'tuple':
-          return `[${(def as z.core.$ZodTupleDef).items.map(expand).join(', ')}]`;
-        case 'union':
-          return (
-            (def as z.core.$ZodUnionDef<any>).options as z.core.$ZodType[]
-          )
-            .map(expand)
-            .join(' | ');
-        default:
-          return `{${def.type}}`;
+            break;
+          }
+          case 'default':
+            repr = `{${expand((def as z.core.$ZodDefaultDef).innerType)}}`;
+            break;
+          case 'enum':
+            repr = `${Object.keys((def as z.core.$ZodEnumDef<any>).entries as Record<PropertyKey, unknown>).join(' / ')}`;
+            break;
+          case 'intersection':
+            repr = `${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).left)} & ${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).right)}`;
+            break;
+          case 'literal':
+            repr = (def as z.core.$ZodLiteralDef<any>).values
+              .map((value) => `'${value}'`)
+              .join(' / ');
+            break;
+          case 'map':
+            repr = `Map<${expand((def as z.core.$ZodMapDef).keyType)}, ${expand((def as z.core.$ZodMapDef).valueType)}>`;
+            break;
+          case 'nonoptional':
+            repr = `${expand((def as z.core.$ZodNonOptionalDef).innerType)}!`;
+            break;
+          case 'nullable':
+            repr = `${expand((def as z.core.$ZodNullableDef).innerType)}? | null`;
+            break;
+          case 'optional':
+            repr = `${expand((def as z.core.$ZodOptionalDef).innerType)}?`;
+            break;
+          case 'record':
+            repr = `Record<${expand((def as z.core.$ZodRecordDef).keyType)}, ${expand((def as z.core.$ZodRecordDef).valueType)}>`;
+            break;
+          case 'set':
+            repr = `Set<${expand((def as z.core.$ZodSetDef).valueType)}>`;
+            break;
+          case 'tuple':
+            repr = `[${(def as z.core.$ZodTupleDef).items.map((value) => expand(value)).join(', ')}]`;
+            break;
+          case 'union':
+            repr = (
+              (def as z.core.$ZodUnionDef<any>).options as z.core.$ZodType[]
+            )
+              .map((value) => expand(value))
+              .join(' | ');
+            break;
+          default:
+            repr = def.type;
+            break;
+        }
       }
+      return wrapCurlies ? `{${repr}}` : repr;
     };
-    return `"${this.slots.map(expand).join(' ')}"`;
+    return `"${this.slots
+      .map((slot) =>
+        Object.hasOwn(BupkisRegistry.get(slot) ?? {}, kStringLiteral)
+          ? expand(slot)
+          : expand(slot, true),
+      )
+      .join(' ')}"`;
   }
 
   protected maybeParseValuesArgMismatch<Args extends readonly unknown[]>(

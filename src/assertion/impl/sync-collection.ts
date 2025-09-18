@@ -9,10 +9,8 @@
  * @groupDescription Collection Assertions
  * Assertions for arrays, objects, Maps, Sets, and collection operations.
  *
- * @showGroups
+ * @showGroup
  */
-
-// Import es-shims as library functions (no global pollution)
 import setDifference from 'set.prototype.difference';
 import setIntersection from 'set.prototype.intersection';
 import isDisjointFrom from 'set.prototype.isdisjointfrom';
@@ -25,6 +23,12 @@ import { z } from 'zod/v4';
 import type { AssertionFailure } from '../assertion-types.js';
 
 import { isWeakKey } from '../../guards.js';
+import {
+  KeypathSchema,
+  NonCollectionObjectSchema,
+  PropertyKeySchema,
+} from '../../schema.js';
+import { has } from '../../util.js';
 import { createAssertion } from '../create.js';
 
 /**
@@ -282,14 +286,8 @@ export const arraySizeAssertion = createAssertion(
  */
 export const arrayLengthAssertion = createAssertion(
   [z.array(z.any()), 'to have length', z.number()],
-  (subject, expectedLength): AssertionFailure | boolean => {
-    if (subject.length === expectedLength) return true;
-    return {
-      actual: subject.length,
-      expected: expectedLength,
-      message: `Expected array to have length ${expectedLength}, got ${subject.length}`,
-    };
-  },
+  (_, expectedLength) =>
+    z.array(z.any()).min(expectedLength).max(expectedLength),
 );
 
 /**
@@ -329,15 +327,113 @@ export const nonEmptyArrayAssertion = createAssertion(
  *
  * @group Collection Assertions
  */
+// TODO support keypaths, maybe.
+// TODO support `undefined` values (will require moving away from Zod schema)
 export const objectKeysAssertion = createAssertion(
   [
-    z.looseObject({}),
+    NonCollectionObjectSchema,
     ['to have keys', 'to have properties', 'to have props'],
-    z.tuple([z.string()], z.string()),
+    z.array(z.string()).nonempty(),
   ],
   (_, keys) =>
-    z.looseObject(
-      Object.fromEntries(keys.map((k) => [k, z.unknown().nonoptional()])),
+    NonCollectionObjectSchema.transform((v) => ({ ...v })).pipe(
+      z.looseObject(
+        Object.fromEntries(keys.map((k) => [k, z.unknown().nonoptional()])),
+      ),
+    ),
+);
+
+/**
+ * Asserts that an object has a property at the specified keypath using dot or
+ * bracket notation. Uses the `has()` function to traverse nested properties and
+ * supports complex keypaths like 'foo.bar[0]["baz"]'.
+ *
+ * This assertion supports:
+ *
+ * - Dot notation: 'prop.nested'
+ * - Bracket notation with numbers: 'arr[0]'
+ * - Bracket notation with quoted strings: 'obj["key"]' or "obj['key']"
+ * - Mixed notation: 'data.items[1].name'
+ *
+ * @example
+ *
+ * ```ts
+ * const obj = {
+ *   foo: { bar: [{ baz: 'value' }] },
+ *   'kebab-case': 'works',
+ * };
+ *
+ * expect(obj, 'to have key', 'foo.bar'); // passes
+ * expect(obj, 'to have property', 'foo.bar[0].baz'); // passes
+ * expect(obj, 'to have prop', 'foo["kebab-case"]'); // passes
+ * expect(obj, 'to have key', 'nonexistent.path'); // fails
+ * ```
+ *
+ * @group Collection Assertions
+ */
+export const objectKeyAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    ['to have key', 'to have property', 'to have prop'],
+    KeypathSchema,
+  ],
+  (subject, keypath) => {
+    const result = has(subject, keypath);
+    if (!result) {
+      return {
+        actual: 'no such keypath',
+        expect: `to have keypath ${keypath}`,
+        message: `Expected object to contain keypath ${keypath}`,
+      };
+    }
+  },
+);
+
+/**
+ * Asserts that an object has an exact property key without keypath traversal.
+ * This assertion checks for direct properties on the object and supports
+ * symbols and keys that would conflict with bracket/dot notation.
+ *
+ * Unlike `objectKeyAssertion`, this does not use the `has()` function and
+ * therefore:
+ *
+ * - Does not support keypath traversal (no dots or brackets)
+ * - Can check for symbol keys
+ * - Can check for keys containing dots, brackets, or other special characters
+ * - Only checks direct properties (no nested access)
+ *
+ * @example
+ *
+ * ```ts
+ * const sym = Symbol('test');
+ * const obj = {
+ *   simple: 'value',
+ *   'key.with.dots': 'direct property',
+ *   'key[with]brackets': 'another direct property',
+ *   [sym]: 'symbol value',
+ * };
+ *
+ * expect(obj, 'to have exact key', 'simple'); // passes
+ * expect(obj, 'to have exact property', 'key.with.dots'); // passes (literal key)
+ * expect(obj, 'to have exact prop', 'key[with]brackets'); // passes (literal key)
+ * expect(obj, 'to have exact key', sym); // passes (symbol key)
+ *
+ * // These would fail because they're not direct properties:
+ * expect(obj, 'to have exact key', 'nested.path'); // fails (no keypath traversal)
+ * ```
+ *
+ * @group Collection Assertions
+ */
+export const objectExactKeyAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    ['to have exact key', 'to have exact property', 'to have exact prop'],
+    PropertyKeySchema,
+  ],
+  (_, key) =>
+    NonCollectionObjectSchema.transform((v) => ({ ...v })).refine(
+      (value) => Object.hasOwn(value, key),
+      { error: `Expected object to have own exact key "${String(key)}"` },
     ),
 );
 

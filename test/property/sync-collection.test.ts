@@ -601,16 +601,95 @@ const testConfigs = new Map<
   ],
 
   [
-    assertions.objectKeysAssertion,
+    assertions.objectExactKeyAssertion,
     {
       invalid: {
         generators: [
-          fc.constant({ a: 1, b: 2, c: 3 }),
-          fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),
-          fc.array(fc.constantFrom('x', 'y', 'z'), { minLength: 1 }),
+          fc.constant({
+            'key.with.dots': 'direct property',
+            'key[with]brackets': 'another direct property',
+            simple: 'value',
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.objectExactKeyAssertion),
+          ),
+          fc.constantFrom('missing', 'nested.path', 'nonexistent'),
         ],
       },
       valid: {
+        generators: [
+          fc.constant({
+            'key.with.dots': 'direct property',
+            'key[with]brackets': 'another direct property',
+            simple: 'value',
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.objectExactKeyAssertion),
+          ),
+          fc.constantFrom('key.with.dots', 'key[with]brackets', 'simple'),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.objectKeyAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant({
+            foo: { bar: [{ baz: 'value' }] },
+            items: [{ id: 1, name: 'first' }],
+            'kebab-case': 'works',
+          }),
+          fc.constantFrom(...extractPhrases(assertions.objectKeyAssertion)),
+          fc.constantFrom(
+            'foo.missing',
+            'items[5].name',
+            'missing[0]',
+            'nonexistent.path',
+          ),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.constant({
+            foo: { bar: [{ baz: 'value' }] },
+            items: [{ id: 1, name: 'first' }],
+            'kebab-case': 'works',
+          }),
+          fc.constantFrom(...extractPhrases(assertions.objectKeyAssertion)),
+          fc.constantFrom(
+            'foo.bar',
+            'foo.bar[0].baz',
+            'items[0].id',
+            'items[0].name',
+            'kebab-case',
+          ),
+        ],
+      },
+    },
+  ],
+
+  [
+    assertions.objectKeysAssertion,
+    {
+      invalid: {
+        examples: [
+          [{ foo: undefined }, 'to have keys', ['foo']],
+          [{ a: 1, b: 2, c: 3 }, 'to have keys', ['']],
+        ],
+        generators: [
+          fc.constant({ a: 1, b: 2, c: 3 }),
+          fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),
+          fc.array(
+            fc.string().filter((s) => !['a', 'b', 'c'].includes(s)),
+            { minLength: 1 },
+          ),
+        ],
+      },
+      valid: {
+        examples: [[{ '': 1 }, 'to have keys', ['']]],
         generators: [
           fc.constant({ a: 1, b: 2, c: 3 }),
           fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),

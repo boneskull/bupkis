@@ -166,7 +166,20 @@ export interface Bupkis<
   >;
 }
 
-export type * from './assertion/assertion-types.js';
+/**
+ * Type representing a dot-notation or bracket-notation keypath for accessing
+ * nested object properties. Uses recursive template literal types to validate
+ * keypath syntax.
+ *
+ * Supports paths like:
+ *
+ * - 'foo.bar'
+ * - 'foo[0]'
+ * - 'foo["bar-baz"]'
+ * - 'foo.bar[1].baz'
+ *
+ * @public
+ */
 
 /**
  * Helper type to concatenate two tuples
@@ -175,6 +188,8 @@ export type Concat<
   TupleA extends readonly unknown[],
   TupleB extends readonly unknown[],
 > = readonly [...TupleA, ...TupleB];
+
+export type * from './assertion/assertion-types.js';
 
 /**
  * A constructor based on {@link TypeFestConstructor type-fest's Constructor}
@@ -607,6 +622,27 @@ export type FilterSyncAssertions<
     ? readonly [MixedAssertion, ...FilterSyncAssertions<Rest>]
     : FilterSyncAssertions<Rest>
   : readonly [];
+
+export type Keypath<S extends string = string> =
+  S extends `${infer K}.${infer Rest}`
+    ? K extends string
+      ? Rest extends string
+        ? `${K}.${Keypath<Rest>}`
+        : never
+      : never
+    : S extends `${infer K}[${infer Index}]${infer Rest}`
+      ? K extends string
+        ? Index extends `"${string}"` | `${number}` | `'${string}'`
+          ? Rest extends ''
+            ? `${K}[${Index}]`
+            : Rest extends `.${infer RestPath}`
+              ? `${K}[${Index}].${Keypath<RestPath>}`
+              : Rest extends `[${infer NextIndex}]${infer RestPath}`
+                ? `${K}[${Index}][${NextIndex}]${RestPath extends '' ? '' : Keypath<RestPath>}`
+                : never
+          : never
+        : never
+      : S;
 
 /**
  * Maps AssertionParts to the corresponding argument types for expect and

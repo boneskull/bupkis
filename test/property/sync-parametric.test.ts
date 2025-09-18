@@ -299,7 +299,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.integer({ min: 10 }),
+          fc.integer({ min: 11 }),
           fc.constantFrom(
             ...extractPhrases(assertions.numberGreaterThanAssertion),
           ),
@@ -338,7 +338,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.integer({ min: 10 }),
+          fc.integer({ min: 11 }),
           fc.constantFrom(
             ...extractPhrases(assertions.numberLessThanAssertion),
           ),
@@ -362,7 +362,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.integer({ min: 11 }),
+          fc.integer({ min: 10 }),
           fc.constantFrom(
             ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
           ),
