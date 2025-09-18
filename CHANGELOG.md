@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.0...bupkis-v0.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **errors:** fix AssertionError output ([8fae815](https://github.com/boneskull/bupkis/commit/8fae81585121026b9869489f39ba8c5dfb834834))
+
 ## [0.5.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.4.0...bupkis-v0.5.0) (2025-09-18)
 
 
