@@ -335,12 +335,16 @@ export const objectKeysAssertion = createAssertion(
     ['to have keys', 'to have properties', 'to have props'],
     z.array(z.string()).nonempty(),
   ],
-  (_, keys) =>
-    NonCollectionObjectSchema.transform((v) => ({ ...v })).pipe(
-      z.looseObject(
-        Object.fromEntries(keys.map((k) => [k, z.unknown().nonoptional()])),
-      ),
-    ),
+  (subject, keys) => {
+    const missing = keys.filter((k) => !Object.hasOwn(subject, k));
+    if (missing.length > 0) {
+      return {
+        actual: `missing keys: ${missing.join(', ')}`,
+        expected: `to have keys: ${keys.join(', ')}`,
+        message: `Expected object to contain keys: ${keys.join(', ')}`,
+      };
+    }
+  },
 );
 
 /**
