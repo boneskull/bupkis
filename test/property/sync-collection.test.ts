@@ -676,8 +676,8 @@ const testConfigs = new Map<
     {
       invalid: {
         examples: [
-          [{ foo: undefined }, 'to have keys', ['foo']],
           [{ a: 1, b: 2, c: 3 }, 'to have keys', ['']],
+          [{ a: 1, b: 2, c: 3 }, 'to have keys', ['valueOf']],
         ],
         generators: [
           fc.constant({ a: 1, b: 2, c: 3 }),
@@ -687,9 +687,13 @@ const testConfigs = new Map<
             { minLength: 1 },
           ),
         ],
+        numRuns: process.env.WALLABY ? 10 : process.env.CI ? 100 : 1000,
       },
       valid: {
-        examples: [[{ '': 1 }, 'to have keys', ['']]],
+        examples: [
+          [{ '': 1 }, 'to have keys', ['']],
+          [{ foo: undefined }, 'to have keys', ['foo']],
+        ],
         generators: [
           fc.constant({ a: 1, b: 2, c: 3 }),
           fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),

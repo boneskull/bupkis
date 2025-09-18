@@ -637,7 +637,7 @@ function runModelTest(
   const finalParams = {
     ...globalTestConfigDefaults,
     ...testConfigDefaults,
-    ...fcParams,
+    ...(fcParams as Record<string, unknown>),
     ...propFcParams,
   };
   fc.assert(
