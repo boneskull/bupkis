@@ -397,6 +397,9 @@ export interface ExpectAsyncProps<
    * @preventExpand
    */
   assertions: AsyncAssertions;
+
+  it: ExpectItAsync<AsyncAssertions>;
+
   /**
    * {@inheritDoc UseFn}
    */
@@ -455,6 +458,51 @@ export type ExpectIt<
     [K in keyof SyncAssertions]: SyncAssertions[K] extends AnySyncAssertion
       ? SyncAssertions[K]['parts'] extends AssertionParts
         ? ExpectItFunction<SyncAssertions[K]['parts']>
+        : never
+      : never;
+  }>
+>;
+
+/**
+ * Factory type for creating async embeddable assertion executors.
+ *
+ * This type generates a union of all possible `expectAsync.it` function
+ * signatures based on the available asynchronous assertions. Each assertion
+ * contributes its own function signature to create embeddable async executors
+ * that can be used within async object patterns for complex validation
+ * scenarios.
+ *
+ * The resulting functions are designed to be used exclusively within async `'to
+ * satisfy'` assertion contexts, where they provide type-safe pattern matching
+ * for nested object structures with Promise-based validation.
+ *
+ * @example
+ *
+ * ```typescript
+ * // Create embeddable async assertion functions
+ * const isAsyncString = expectAsync.it('to be a string');
+ * const resolvesFast = expectAsync.it('to resolve quickly');
+ *
+ * // Use within async 'to satisfy' patterns
+ * await expectAsync(asyncUser, 'to satisfy', {
+ *   name: isAsyncString,
+ *   loadPromise: resolvesFast,
+ * });
+ * ```
+ *
+ * @template AsyncAssertions - Array of asynchronous assertion objects that
+ *   define the available assertion logic for the embeddable async functions
+ * @see {@link ExpectItFunctionAsync} for individual function signature generation
+ * @see {@link ExpectItExecutorAsync} for the executor function interface
+ * @see {@link ExpectIt} for the synchronous equivalent
+ */
+export type ExpectItAsync<
+  AsyncAssertions extends AnyAsyncAssertions = BuiltinAsyncAssertions,
+> = UnionToIntersection<
+  TupleToUnion<{
+    [K in keyof AsyncAssertions]: AsyncAssertions[K] extends AnyAsyncAssertion
+      ? AsyncAssertions[K]['parts'] extends AssertionParts
+        ? ExpectItFunctionAsync<AsyncAssertions[K]['parts']>
         : never
       : never;
   }>
@@ -530,9 +578,76 @@ export interface ExpectItExecutor<Subject extends z.ZodType> {
  * @see {@link TupleTail} for parameter extraction from assertion parts
  * @see {@link SlotsFromParts} for type slot generation
  */
+/**
+ * Interface for asynchronous executor functions created by `expectAsync.it()`.
+ *
+ * ExpectItExecutorAsync functions are the async equivalent of
+ * {@link ExpectItExecutor}, designed for asynchronous assertion contexts. They
+ * return Promises and are marked with the same internal symbol for
+ * identification. These executors can be embedded within `'to satisfy'`
+ * patterns for async validation scenarios.
+ *
+ * @example
+ *
+ * ```typescript
+ * const isAsyncStringExecutor = expectAsync.it('to be a string');
+ * // isAsyncStringExecutor is an ExpectItExecutorAsync<z.ZodString>
+ *
+ * // Used within async satisfy patterns
+ * await expectAsync({ name: 'Alice' }, 'to satisfy', {
+ *   name: isAsyncStringExecutor, // Async validation that name is a string
+ * });
+ * ```
+ *
+ * @template Subject - The Zod schema type that constrains the subject parameter
+ * @see {@link ExpectItFunctionAsync} for the factory function that creates async executors
+ * @see {@link ExpectItExecutor} for the synchronous equivalent
+ */
+export interface ExpectItExecutorAsync<Subject extends z.ZodType> {
+  (subject: z.infer<Subject>): Promise<void>;
+  [kExpectIt]: true;
+}
+
 export type ExpectItFunction<Parts extends AssertionParts> = (
   ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
 ) => Parts[0] extends z.ZodType ? ExpectItExecutor<Parts[0]> : never;
+
+/**
+ * Function signature for creating async ExpectItExecutorAsync instances.
+ *
+ * This type represents the factory function that creates embeddable async
+ * assertion executors from assertion parts. It takes the assertion parameters
+ * (excluding the subject) and returns an async executor function that can be
+ * embedded within async `'to satisfy'` patterns.
+ *
+ * The function signature is derived from assertion parts by removing the first
+ * part (which becomes the subject type for the executor) and using the
+ * remaining parts as parameters. This allows for natural language assertion
+ * creation that mirrors the main `expectAsync()` function but produces reusable
+ * async executor functions.
+ *
+ * @example
+ *
+ * ```typescript
+ * // For assertion parts: [z.string(), 'to match', z.instanceof(RegExp)]
+ * // Results in function: (pattern: RegExp) => ExpectItExecutorAsync<z.ZodString>
+ * const matchesPatternAsync = expectAsync.it('to match', /^[A-Z]/);
+ *
+ * await expectAsync({ code: 'ABC123' }, 'to satisfy', {
+ *   code: matchesPatternAsync, // Async validation that code matches the pattern
+ * });
+ * ```
+ *
+ * @template Parts - Tuple of assertion parts that define the function signature
+ *   and executor constraints
+ * @see {@link ExpectItExecutorAsync} for the returned async executor interface
+ * @see {@link ExpectItFunction} for the synchronous equivalent
+ * @see {@link TupleTail} for parameter extraction from assertion parts
+ * @see {@link SlotsFromParts} for type slot generation
+ */
+export type ExpectItFunctionAsync<Parts extends AssertionParts> = (
+  ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
+) => Parts[0] extends z.ZodType ? ExpectItExecutorAsync<Parts[0]> : never;
 
 /**
  * Properties of {@link expect}.
