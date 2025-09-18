@@ -116,6 +116,13 @@
       "problemMatcher": [],
       "script": "lint:spelling",
       "type": "npm"
+    },
+    {
+      "detail": "run-p build:docs:dev serve",
+      "label": "npm: docs:dev",
+      "problemMatcher": ["$tsc-watch"],
+      "script": "docs:dev",
+      "type": "npm"
     }
   ],
   "version": "2.0.0"
