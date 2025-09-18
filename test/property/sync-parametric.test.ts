@@ -33,7 +33,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.arrayDeepEqualAssertion),
           ),
           fc.constant([1, 2, 4]),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -42,7 +42,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.arrayDeepEqualAssertion),
           ),
           fc.constant([1, 2, 3]),
-        ] as const,
+        ],
       },
     },
   ],
@@ -57,7 +57,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.arraySatisfiesAssertion),
           ),
           fc.constant([1, 2, 3]), // Should be all numbers, but input has string
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -66,7 +66,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.arraySatisfiesAssertion),
           ),
           fc.constant([1, 2, 3]), // Should be all numbers, and input matches
-        ] as const,
+        ],
       },
     },
   ],
@@ -79,14 +79,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constant(new Error('hello world')),
           fc.constantFrom(...extractPhrases(assertions.errorMessageAssertion)),
           fc.constant('goodbye'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
           fc.constant(new Error('hello world')),
           fc.constantFrom(...extractPhrases(assertions.errorMessageAssertion)),
           fc.constant('hello world'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -101,7 +101,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.errorMessageMatchingAssertion),
           ),
           fc.constant(/goodbye/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -110,7 +110,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.errorMessageMatchingAssertion),
           ),
           fc.constant(/hello/),
-        ] as const,
+        ],
       },
     },
   ],
@@ -123,14 +123,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constant((a: number, b: number) => a + b),
           fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
           fc.constant(3),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
           fc.constant((a: number, b: number) => a + b),
           fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
           fc.constant(2),
-        ] as const,
+        ],
       },
     },
   ],
@@ -144,7 +144,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionThrowsAssertion),
           ),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -154,7 +154,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(
             ...extractPhrases(assertions.functionThrowsAssertion),
           ),
-        ] as const,
+        ],
       },
     },
   ],
@@ -171,7 +171,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionThrowsMatchingAssertion),
           ),
           fc.constant(/goodbye/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -182,7 +182,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionThrowsMatchingAssertion),
           ),
           fc.constant(/hello/),
-        ] as const,
+        ],
       },
     },
   ],
@@ -199,7 +199,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionThrowsTypeAssertion),
           ),
           fc.constant(TypeError),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -210,7 +210,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.functionThrowsTypeAssertion),
           ),
           fc.constant(Error),
-        ] as const,
+        ],
       },
     },
   ],
@@ -227,7 +227,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constant(TypeError), // Expect TypeError but will get Error
           fc.constant('satisfying'),
           fc.constant({ message: 'test message' }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -238,7 +238,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constant(Error), // Expect Error and will get Error
           fc.constant('satisfying'),
           fc.constant({ message: 'test message' }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -251,14 +251,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.string(),
           fc.constantFrom(...extractPhrases(assertions.instanceOfAssertion)),
           fc.constant(Error),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
           fc.constant(new Error('test')),
           fc.constantFrom(...extractPhrases(assertions.instanceOfAssertion)),
           fc.constant(Error),
-        ] as const,
+        ],
       },
     },
   ],
@@ -272,7 +272,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(...extractPhrases(assertions.numberCloseToAssertion)),
           fc.constant(5),
           fc.constant(2),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -280,7 +280,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom(...extractPhrases(assertions.numberCloseToAssertion)),
           fc.constant(5),
           fc.constant(1),
-        ] as const,
+        ],
       },
     },
   ],
@@ -295,7 +295,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberGreaterThanAssertion),
           ),
           fc.integer({ min: 10 }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -304,7 +304,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberGreaterThanAssertion),
           ),
           fc.integer({ max: 10 }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -319,7 +319,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
           ),
           fc.integer({ min: 10 }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -328,7 +328,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
           ),
           fc.integer({ max: 10 }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -343,7 +343,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberLessThanAssertion),
           ),
           fc.integer({ max: 10 }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -352,7 +352,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberLessThanAssertion),
           ),
           fc.integer({ min: 10 }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -367,7 +367,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
           ),
           fc.integer({ max: 10 }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -376,7 +376,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
           ),
           fc.integer({ min: 10 }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -392,7 +392,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
           fc.constant(5),
           fc.constant(10),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -402,7 +402,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
           fc.constant(5),
           fc.constant(10),
-        ] as const,
+        ],
       },
     },
   ],
@@ -417,7 +417,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.objectDeepEqualAssertion),
           ),
           fc.constant({ a: 1, b: 3 }),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -426,7 +426,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.objectDeepEqualAssertion),
           ),
           fc.constant({ a: 1, b: 2 }),
-        ] as const,
+        ],
       },
     },
   ],
@@ -441,7 +441,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.objectSatisfiesAssertion),
           ),
           fc.constant({ age: 25, name: 'john' }), // Should have number age, but input has string
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -450,7 +450,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.objectSatisfiesAssertion),
           ),
           fc.constant({ age: 25, name: 'john' }), // Should have number age, and input matches
-        ] as const,
+        ],
       },
     },
   ],
@@ -463,7 +463,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.string(),
           fc.constantFrom(...extractPhrases(assertions.oneOfAssertion)),
           fc.array(fc.integer()),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -474,7 +474,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
           fc.constantFrom(...extractPhrases(assertions.oneOfAssertion)),
           fc.constant(['test', 'other1', 'other2']),
-        ] as const,
+        ],
       },
     },
   ],
@@ -489,7 +489,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.strictEqualityAssertion),
           ),
           fc.integer(),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -498,7 +498,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.strictEqualityAssertion),
           ),
           fc.constant(42),
-        ] as const,
+        ],
       },
     },
   ],
@@ -513,7 +513,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringBeginsWithAssertion),
           ),
           fc.constant('goodbye'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -522,7 +522,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringBeginsWithAssertion),
           ),
           fc.constant('hello'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -537,7 +537,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringEndsWithAssertion),
           ),
           fc.constant('hello'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -546,7 +546,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringEndsWithAssertion),
           ),
           fc.constant('world'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -561,7 +561,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringGreaterThanAssertion),
           ),
           fc.constant('banana'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -570,7 +570,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringGreaterThanAssertion),
           ),
           fc.constant('apple'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -585,7 +585,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
           ),
           fc.constant('banana'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -594,7 +594,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
           ),
           fc.constant('apple'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -609,7 +609,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringIncludesAssertion),
           ),
           fc.constant('goodbye'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -618,7 +618,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringIncludesAssertion),
           ),
           fc.constant('world'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -633,7 +633,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringLessThanAssertion),
           ),
           fc.constant('apple'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -642,7 +642,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringLessThanAssertion),
           ),
           fc.constant('zebra'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -657,7 +657,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
           ),
           fc.constant('apple'),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
@@ -666,7 +666,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
           ),
           fc.constant('zebra'),
-        ] as const,
+        ],
       },
     },
   ],
@@ -679,14 +679,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constant('hello world'),
           fc.constantFrom(...extractPhrases(assertions.stringMatchesAssertion)),
           fc.constant(/goodbye/),
-        ] as const,
+        ],
       },
       valid: {
         generators: [
           fc.constant('hello world'),
           fc.constantFrom(...extractPhrases(assertions.stringMatchesAssertion)),
           fc.constant(/hello/),
-        ] as const,
+        ],
       },
     },
   ],

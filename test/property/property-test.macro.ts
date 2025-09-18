@@ -7,12 +7,10 @@
  * @packageDocumentation
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 import { inspect } from 'node:util';
 import setDifference from 'set.prototype.difference';
-import { type Entries } from 'type-fest';
 
 import { type AnyAssertion } from '../../src/assertion/assertion-types.js';
 import { expect, expectAsync } from '../../src/bootstrap.js';
@@ -26,7 +24,8 @@ import {
   type PropertyTestConfigParameters,
   type PropertyTestConfigVariant,
   type PropertyTestConfigVariantAsyncGenerators,
-  type PropertyTestConfigVariantGenerators,
+  type PropertyTestConfigVariantModel,
+  type PropertyTestConfigVariantSyncGenerators,
 } from './property-test-config.js';
 
 /**
@@ -61,13 +60,28 @@ export function assertExhaustiveTestConfigs(
   });
 }
 
+/**
+ * Global defaults for property test configurations.
+ *
+ * Adjusts the number of test runs based on the environment:
+ *
+ * - Wallaby: 10 runs (for fast feedback during development)
+ * - CI: 100 runs (balanced speed vs coverage)
+ * - Local development: 200 runs (thorough testing)
+ */
 const globalTestConfigDefaults = {
   numRuns: process.env.WALLABY ? 10 : process.env.CI ? 100 : 200,
 } as const satisfies PropertyTestConfigParameters;
 
+/**
+ * Type guard to check if a property test config variant uses generators.
+ *
+ * @param value The property test config variant to check
+ * @returns True if the variant has a `generators` array and is not async
+ */
 const isPropertyTestConfigVariantGenerators = (
   value: PropertyTestConfigVariant,
-): value is PropertyTestConfigVariantGenerators => {
+): value is PropertyTestConfigVariantSyncGenerators => {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -77,6 +91,12 @@ const isPropertyTestConfigVariantGenerators = (
   );
 };
 
+/**
+ * Type guard to check if a property test config variant uses async generators.
+ *
+ * @param value The property test config variant to check
+ * @returns True if the variant has a `generators` array and is marked as async
+ */
 const isPropertyTestConfigVariantAsyncGenerators = (
   value: PropertyTestConfigVariant,
 ): value is PropertyTestConfigVariantAsyncGenerators => {
@@ -90,6 +110,13 @@ const isPropertyTestConfigVariantAsyncGenerators = (
   );
 };
 
+/**
+ * Type guard to check if a property test config variant uses model-based
+ * testing.
+ *
+ * @param value The property test config variant to check
+ * @returns True if the variant has a `commands` array for model-based testing
+ */
 const isPropertyTestConfigVariantModel = (
   value: PropertyTestConfigVariant,
 ): value is InferPropertyTestConfigVariantModel<typeof value> => {
@@ -101,6 +128,13 @@ const isPropertyTestConfigVariantModel = (
   );
 };
 
+/**
+ * Type guard to check if a property test config variant uses a sync property
+ * function.
+ *
+ * @param value The property test config variant to check
+ * @returns True if the variant has a `property` function
+ */
 const isPropertyTestConfigVariantProperty = (
   value: PropertyTestConfigVariant,
 ): value is InferPropertyTestConfigVariantProperty<typeof value> => {
@@ -112,6 +146,13 @@ const isPropertyTestConfigVariantProperty = (
   );
 };
 
+/**
+ * Type guard to check if a property test config variant uses an async property
+ * function.
+ *
+ * @param value The property test config variant to check
+ * @returns True if the variant has an `asyncProperty` function
+ */
 const isPropertyTestConfigVariantAsyncProperty = (
   value: PropertyTestConfigVariant,
 ): value is InferPropertyTestConfigVariantProperty<typeof value> => {
@@ -123,13 +164,26 @@ const isPropertyTestConfigVariantAsyncProperty = (
   );
 };
 
-type ExpectationResult =
+/**
+ * Result type for expectation functions used in property-based tests.
+ *
+ * Represents either a successful expectation (failed: false) or a failed
+ * expectation with error details (failed: true, error: unknown).
+ */
+export type ExpectationResult =
   | { error: unknown; failed: true }
   | {
       error?: never;
       failed?: false;
     };
 
+/**
+ * Tests that a synchronous assertion should pass with the given arguments.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns ExpectationResult indicating success or failure with error details
+ */
 export const validExpectation = (
   value: unknown,
   ...args: unknown[]
@@ -142,7 +196,17 @@ export const validExpectation = (
   }
 };
 
-export const negatedValidExpectation = (
+/**
+ * Tests that a negated synchronous assertion should pass with the given
+ * arguments.
+ *
+ * Prepends "not " to the assertion phrase to test the negated form.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns ExpectationResult indicating success or failure with error details
+ */
+export const validNegatedExpectation = (
   value: unknown,
   ...args: unknown[]
 ): ExpectationResult => {
@@ -154,6 +218,18 @@ export const negatedValidExpectation = (
   }
 };
 
+/**
+ * Tests that a negated synchronous assertion should fail with the given
+ * arguments.
+ *
+ * If the negated assertion passes when it should fail, returns a
+ * FailAssertionError.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns ExpectationResult indicating success (assertion failed as expected)
+ *   or failure
+ */
 export const invalidNegatedExpectation = (
   value: unknown,
   ...args: unknown[]
@@ -173,6 +249,16 @@ export const invalidNegatedExpectation = (
   }
 };
 
+/**
+ * Tests that a synchronous assertion should fail with the given arguments.
+ *
+ * If the assertion passes when it should fail, returns a FailAssertionError.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns ExpectationResult indicating success (assertion failed as expected)
+ *   or failure
+ */
 export const invalidExpectation = (
   value: unknown,
   ...args: unknown[]
@@ -184,6 +270,109 @@ export const invalidExpectation = (
         actual: 'success',
         expected: 'failure',
         message: 'Expected assertion to fail but it passed instead',
+      }),
+      failed: true,
+    };
+  } catch {
+    return { failed: false };
+  }
+};
+
+/**
+ * Tests that an asynchronous assertion should fail with the given arguments.
+ *
+ * If the assertion passes when it should fail, returns a FailAssertionError.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns Promise<ExpectationResult> indicating success (assertion failed as
+ *   expected) or failure
+ */
+export const invalidAsyncExpectation = async (
+  value: unknown,
+  ...args: unknown[]
+): Promise<ExpectationResult> => {
+  try {
+    await expectAsync(value, ...args);
+    return {
+      error: new FailAssertionError({
+        actual: 'success',
+        expected: 'failure',
+        message: 'Expected assertion to fail but it passed instead',
+      }),
+      failed: true,
+    };
+  } catch {
+    return { failed: false };
+  }
+};
+
+/**
+ * Tests that an asynchronous assertion should pass with the given arguments.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns Promise<ExpectationResult> indicating success or failure with error
+ *   details
+ */
+export const validAsyncExpectation = async (
+  value: unknown,
+  ...args: unknown[]
+): Promise<ExpectationResult> => {
+  try {
+    await expectAsync(value, ...args);
+    return { failed: false };
+  } catch (err) {
+    return { error: err, failed: true };
+  }
+};
+
+/**
+ * Tests that a negated asynchronous assertion should pass with the given
+ * arguments.
+ *
+ * Prepends "not " to the assertion phrase to test the negated form.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns Promise<ExpectationResult> indicating success or failure with error
+ *   details
+ */
+export const validNegatedAsyncExpectation = async (
+  value: unknown,
+  ...args: unknown[]
+): Promise<ExpectationResult> => {
+  try {
+    await expectAsync(value, `not ${args[0]}`, ...args.slice(1));
+    return { failed: false };
+  } catch (err) {
+    return { error: err, failed: true };
+  }
+};
+
+/**
+ * Tests that a negated asynchronous assertion should fail with the given
+ * arguments.
+ *
+ * If the negated assertion passes when it should fail, returns a
+ * FailAssertionError.
+ *
+ * @param value The value to test
+ * @param args The assertion arguments (phrase and parameters)
+ * @returns Promise<ExpectationResult> indicating success (assertion failed as
+ *   expected) or failure
+ */
+export const invalidNegatedAsyncExpectation = async (
+  value: unknown,
+  ...args: unknown[]
+): Promise<ExpectationResult> => {
+  try {
+    await expectAsync(value, `not ${args[0]}`, ...args.slice(1));
+    return {
+      error: new FailAssertionError({
+        actual: 'success',
+        expected: 'failure',
+        message: 'Expected negated assertion to fail but it passed instead',
       }),
       failed: true,
     };
@@ -223,36 +412,9 @@ const runPropertyTest = <T extends AnyAssertion>(
     ] as const) {
       it(`should pass ${name} checks [${id}]`, async () => {
         if (isPropertyTestConfigVariantModel(variant)) {
-          const {
-            afterEach = () => {},
-            beforeEach = () => {},
-            commands,
-            commandsConstraints,
-            initialState,
-            ...propFcParams
-          } = variant;
-          const finalParams = {
-            ...globalTestConfigDefaults,
-            ...testConfigDefaults,
-            ...fcParams,
-            ...propFcParams,
-          };
-          fc.assert(
-            fc
-              .asyncProperty(
-                fc.commands(commands, commandsConstraints),
-                async (cmds) => {
-                  fc.modelRun(initialState, cmds);
-                },
-              )
-              .beforeEach(beforeEach)
-              .afterEach(afterEach),
-            finalParams,
-          );
+          runModelTest(variant, testConfigDefaults, fcParams);
         } else if (isPropertyTestConfigVariantGenerators(variant)) {
           const {
-            afterEach = () => {},
-            beforeEach = () => {},
             generators,
             shouldInterrupt = false,
             ...propFcParams
@@ -265,47 +427,44 @@ const runPropertyTest = <T extends AnyAssertion>(
           };
 
           let err: unknown;
-          const property = fc
-            .property(...generators, (value, ...part) => {
-              switch (name) {
-                case 'invalid': {
-                  const { error, failed } = invalidExpectation(value, ...part);
-                  if (failed) {
-                    throw error;
-                  }
-                  break;
+          const property = fc.property(...generators, (value, ...part) => {
+            switch (name) {
+              case 'invalid': {
+                const { error, failed } = invalidExpectation(value, ...part);
+                if (failed) {
+                  throw error;
                 }
-                case 'invalidNegated': {
-                  const { error, failed } = invalidNegatedExpectation(
-                    value,
-                    ...part,
-                  );
-                  if (failed) {
-                    throw error;
-                  }
-                  break;
-                }
-                case 'valid': {
-                  const { error, failed } = validExpectation(value, ...part);
-                  if (failed) {
-                    throw error;
-                  }
-                  break;
-                }
-                case 'validNegated': {
-                  const { error, failed } = negatedValidExpectation(
-                    value,
-                    ...part,
-                  );
-                  if (failed) {
-                    throw error;
-                  }
-                  break;
-                }
+                break;
               }
-            })
-            .beforeEach(beforeEach)
-            .afterEach(afterEach);
+              case 'invalidNegated': {
+                const { error, failed } = invalidNegatedExpectation(
+                  value,
+                  ...part,
+                );
+                if (failed) {
+                  throw error;
+                }
+                break;
+              }
+              case 'valid': {
+                const { error, failed } = validExpectation(value, ...part);
+                if (failed) {
+                  throw error;
+                }
+                break;
+              }
+              case 'validNegated': {
+                const { error, failed } = validNegatedExpectation(
+                  value,
+                  ...part,
+                );
+                if (failed) {
+                  throw error;
+                }
+                break;
+              }
+            }
+          });
 
           const result = fc.check(property, finalParams);
 
@@ -335,8 +494,6 @@ const runPropertyTest = <T extends AnyAssertion>(
           }
         } else if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
           const {
-            afterEach = () => {},
-            beforeEach = () => {},
             generators,
             shouldInterrupt = false,
             ...propFcParams
@@ -349,55 +506,51 @@ const runPropertyTest = <T extends AnyAssertion>(
           };
           let err: unknown;
 
-          const asyncProperty = fc
-            .asyncProperty(...generators, async (value, ...part) => {
+          const asyncProperty = fc.asyncProperty(
+            ...generators,
+            async (value, ...part) => {
               switch (name) {
-                case 'valid': {
-                  try {
-                    await expectAsync(value, ...part);
-                    return true;
-                  } catch (e) {
-                    err = e;
-                    return false;
-                  }
-                }
                 case 'invalid': {
-                  try {
-                    await expectAsync(value, ...part);
-                    return false;
-                  } catch {
-                    return true;
+                  const { error, failed } = await invalidAsyncExpectation(
+                    value,
+                    ...part,
+                  );
+                  if (failed) {
+                    throw error;
                   }
+                  break;
                 }
                 case 'invalidNegated': {
-                  try {
-                    await expectAsync(
-                      value,
-                      `not ${part[0]}`,
-                      ...part.slice(1),
-                    );
-                    return false;
-                  } catch {
-                    return true;
+                  const { error, failed } =
+                    await invalidNegatedAsyncExpectation(value, ...part);
+                  if (failed) {
+                    throw error;
                   }
+                  break;
+                }
+                case 'valid': {
+                  const { error, failed } = await validAsyncExpectation(
+                    value,
+                    ...part,
+                  );
+                  if (failed) {
+                    throw error;
+                  }
+                  break;
                 }
                 case 'validNegated': {
-                  try {
-                    await expectAsync(
-                      value,
-                      `not ${part[0]}`,
-                      ...part.slice(1),
-                    );
-                    return true;
-                  } catch (e) {
-                    err = e;
-                    return false;
+                  const { error, failed } = await validNegatedAsyncExpectation(
+                    value,
+                    ...part,
+                  );
+                  if (failed) {
+                    throw error;
                   }
+                  break;
                 }
               }
-            })
-            .beforeEach(beforeEach)
-            .afterEach(afterEach);
+            },
+          );
 
           const result = await fc.check(asyncProperty, finalParams);
 
@@ -474,34 +627,26 @@ export function runPropertyTests<
   }
 }
 
-/**
- * Runs property tests across four (4) sets of inputs for some subset of
- * assertions.
- *
- * - Valid (should pass)
- * - Invalid (should fail)
- * - ValidNegated (should pass)
- * - InvalidNegated (should fail)
- *
- * @param testConfigs Test configurations, keyed on ID
- * @param assertions Assertions, keyed on ID
- * @param testConfigDefaults Defaults to apply to each test variant, if any
- */
-export function runPropertyTestsById<
-  const T extends Record<string, PropertyTestConfig>,
->(
-  testConfigs: T,
-  assertions: Record<keyof T, AnyAssertion>,
-  testConfigDefaults: PropertyTestConfigParameters = {},
-): void {
-  for (const entry of Object.entries(testConfigs) as Entries<T>) {
-    const [id, testConfig] = entry;
-    const assertion = assertions[id];
-    if (!assertion) {
-      throw new ReferenceError(
-        `No assertion found for property test config with id: ${String(id)}`,
-      );
-    }
-    runPropertyTest(assertion, testConfig, testConfigDefaults);
-  }
+function runModelTest(
+  variant: PropertyTestConfigVariantModel<object, any>,
+  testConfigDefaults: PropertyTestConfigParameters,
+  fcParams: PropertyTestConfigParameters,
+) {
+  const { commands, commandsConstraints, initialState, ...propFcParams } =
+    variant;
+  const finalParams = {
+    ...globalTestConfigDefaults,
+    ...testConfigDefaults,
+    ...fcParams,
+    ...propFcParams,
+  };
+  fc.assert(
+    fc.asyncProperty(
+      fc.commands(commands, commandsConstraints),
+      async (cmds) => {
+        fc.modelRun(initialState, cmds);
+      },
+    ),
+    finalParams,
+  );
 }
