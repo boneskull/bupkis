@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.1...bupkis-v0.6.0) (2025-09-18)
+
+
+### Features
+
+* **assertions:** create expectAsync.it ([fb4db5a](https://github.com/boneskull/bupkis/commit/fb4db5afc4d2ab6e0affc073ab03c670264a3bbd))
+
 ## [0.5.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.0...bupkis-v0.5.1) (2025-09-18)
 
 
