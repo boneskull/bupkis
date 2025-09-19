@@ -347,7 +347,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.integer({ max: 10 }),
+          fc.integer({ max: 9 }),
           fc.constantFrom(
             ...extractPhrases(assertions.numberLessThanAssertion),
           ),

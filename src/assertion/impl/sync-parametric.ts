@@ -21,6 +21,7 @@ import {
   ArrayLikeSchema,
   ConstructibleSchema,
   FunctionSchema,
+  NonNegativeIntegerSchema,
   RegExpSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
@@ -72,7 +73,7 @@ const knownTypes = Object.freeze(
  * @group Parametric Assertions (Sync)
  */
 export const instanceOfAssertion = createAssertion(
-  [['to be an instance of', 'to be a'], ConstructibleSchema],
+  [['to be an instance of', 'to be a', 'to be an'], ConstructibleSchema],
   (_, ctor) => z.instanceof(ctor),
 );
 
@@ -92,7 +93,7 @@ export const instanceOfAssertion = createAssertion(
 export const typeOfAssertion = createAssertion(
   [
     z.any(),
-    ['to be a', 'to be an'],
+    ['to be a', 'to be an', 'to have type'],
     z.enum(
       [...knownTypes].flatMap((t) => [t, t.toLowerCase()]) as [
         string,
@@ -180,7 +181,7 @@ export const numberGreaterThanAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberLessThanAssertion = createAssertion(
-  [z.number(), 'to be less than', z.number()],
+  [z.number(), ['to be less than', 'to be lt'], z.number()],
   (_, other) => z.number().lt(other),
 );
 
@@ -200,7 +201,7 @@ export const numberLessThanAssertion = createAssertion(
 export const numberGreaterThanOrEqualAssertion = createAssertion(
   [
     z.number(),
-    ['to be greater than or equal to', 'to be at least'],
+    ['to be greater than or equal to', 'to be at least', 'to be gte'],
     z.number(),
   ],
   (_, other) => z.number().gte(other),
@@ -220,7 +221,11 @@ export const numberGreaterThanOrEqualAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberLessThanOrEqualAssertion = createAssertion(
-  [z.number(), ['to be less than or equal to', 'to be at most'], z.number()],
+  [
+    z.number(),
+    ['to be less than or equal to', 'to be at most', 'to be lte'],
+    z.number(),
+  ],
   (_, other) => z.number().lte(other),
 );
 
@@ -445,11 +450,11 @@ export const stringEndsWithAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const oneOfAssertion = createAssertion(
-  [z.any(), 'to be one of', z.array(z.any())],
+  ['to be one of', z.array(z.any())],
   (subject, values) => {
     if (!values.includes(subject)) {
       return {
-        actual: subject as unknown,
+        actual: subject,
         expected: `one of [${values.map((v) => inspect(v)).join(', ')}]`,
         message: `Expected ${inspect(subject)} to be one of [${values.map((v) => inspect(v)).join(', ')}]`,
       };
@@ -471,7 +476,7 @@ export const oneOfAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const functionArityAssertion = createAssertion(
-  [FunctionSchema, 'to have arity', z.number().int().nonnegative()],
+  [FunctionSchema, 'to have arity', NonNegativeIntegerSchema],
   (subject, expectedArity) => {
     if (subject.length !== expectedArity) {
       return {

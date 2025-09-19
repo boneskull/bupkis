@@ -36,7 +36,7 @@ import { createAssertion } from '../create.js';
  * @group Esoteric Assertions
  */
 export const nullPrototypeAssertion = createAssertion(
-  ['to have a null prototype'],
+  [['to have a null prototype', 'to be a dictionary']],
   DictionarySchema,
 );
 
@@ -66,8 +66,61 @@ export const nullPrototypeAssertion = createAssertion(
  * @group Esoteric Assertions
  */
 export const enumerablePropertyAssertion = createAssertion(
-  [PropertyKeySchema, 'to be an enumerable property of', z.looseObject({})],
-  (subject, obj) => !!Object.getOwnPropertyDescriptor(obj, subject)?.enumerable,
+  [
+    PropertyKeySchema,
+    'to be an enumerable property of',
+    z.unknown().nonoptional(),
+  ],
+  (subject, obj) => {
+    if (!Object.getOwnPropertyDescriptor(obj, subject)?.enumerable) {
+      return {
+        actual: false,
+        expected: true,
+        message: `Expected property ${String(subject)} to be enumerable`,
+      };
+    }
+  },
+);
+
+/**
+ * Asserts that an object has a specified property that is enumerable.
+ *
+ * This is an alternative form of {@link enumerablePropertyAssertion} with the
+ * object and property key parameters in reverse order. It checks that the given
+ * property exists on the object and has its `enumerable` descriptor set to
+ * `true` using `Object.getOwnPropertyDescriptor()`. Only own properties (not
+ * inherited ones) are considered.
+ *
+ * @example
+ *
+ * ```typescript
+ * const obj = { visible: 'value' };
+ * Object.defineProperty(obj, 'hidden', {
+ *   value: 'secret',
+ *   enumerable: false,
+ * });
+ *
+ * expect(obj, 'to have enumerable property', 'visible'); // ✓ passes
+ * expect(obj, 'to have enumerable property', 'hidden'); // ✗ fails - not enumerable
+ * expect(obj, 'to have enumerable property', 'nonexistent'); // ✗ fails - property doesn't exist
+ * ```
+ *
+ * @param subject - The object to check for the enumerable property
+ * @param key - The property key to test for enumerability
+ * @group Esoteric Assertions
+ * @see {@link enumerablePropertyAssertion} - Alternative parameter order
+ */
+export const enumerablePropertyAssertion2 = createAssertion(
+  [z.unknown().nonoptional(), 'to have enumerable property', PropertyKeySchema],
+  (subject, key) => {
+    if (!Object.getOwnPropertyDescriptor(subject, key)?.enumerable) {
+      return {
+        actual: false,
+        expected: true,
+        message: `Expected property ${String(key)} to be enumerable`,
+      };
+    }
+  },
 );
 
 /**
@@ -127,10 +180,15 @@ export const sealedAssertion = createAssertion(
  *
  * @group Esoteric Assertions
  */
-export const frozenAssertion = createAssertion(
-  ['to be frozen'],
-  z.any().refine((obj) => Object.isFrozen(obj)),
-);
+export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
+  if (!Object.isFrozen(subject)) {
+    return {
+      actual: false,
+      expected: true,
+      message: `Expected object to be frozen`,
+    };
+  }
+});
 
 /**
  * Asserts that an object is extensible using `Object.isExtensible()`.

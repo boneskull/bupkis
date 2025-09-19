@@ -11,8 +11,7 @@
     "../.wallaby.js",
     "../eslint.config.js",
     "../.commitlintrc.js",
-    "./typedoc.js",
-    "./typedoc-plugin-bupkis.js",
+    "./typedoc*.js",
     "../scripts/*"
   ]
 }

@@ -537,6 +537,8 @@ span.bupkis {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: var(--bupkis-font-family);
+  font-size: 1.1em;
 }
 
 h2 span.bupkis {
@@ -732,8 +734,19 @@ code.tsd-tag {
   background-repeat: no-repeat;
 }
 
-.tsd-typography code:not(.typescript):not(.ts),
+.tsd-typography
+  code:not(.typescript):not(.ts):not(.sh):not(.js):not(.javascript),
 :is(h1, h2, h3, h4, h5, h6) .code {
   padding: 0;
   font-size: 0.9em;
+}
+
+.tsd-typography > h2 {
+  margin-top: 3rem;
+}
+.tsd-typography > h2:first-child {
+  margin-top: 0;
+}
+.tsd-typography > h3 {
+  margin-top: 2rem;
 }

@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-esoteric.js';
-import { EsotericAssertions } from '../../src/assertion/index.js';
+import { SyncEsotericAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
 import {
   type PropertyTestConfig,
@@ -55,11 +55,42 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             return obj;
           }),
         ],
-        verbose: true,
       },
     },
   ],
-
+  [
+    assertions.enumerablePropertyAssertion2,
+    {
+      invalid: {
+        generators: [
+          fc
+            .object({})
+            .filter(
+              (obj) => !Object.getOwnPropertyDescriptor(obj, 'a')?.enumerable,
+            ),
+          fc.constantFrom(
+            ...extractPhrases(assertions.enumerablePropertyAssertion2),
+          ),
+          fc.constant('a'),
+        ],
+      },
+      valid: {
+        generators: [
+          fc.object().map((obj) => {
+            Object.defineProperty(obj, 'a', {
+              enumerable: true,
+              value: 42,
+            });
+            return obj;
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.enumerablePropertyAssertion2),
+          ),
+          fc.constant('a'),
+        ],
+      },
+    },
+  ],
   [
     assertions.extensibleAssertion,
     {
@@ -94,10 +125,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.object().map((obj) => {
-            Object.freeze(obj);
-            return obj;
-          }),
+          fc.object().map(Object.freeze),
           fc.constantFrom(...extractPhrases(assertions.frozenAssertion)),
         ],
       },
@@ -148,7 +176,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 describe('Property-Based Tests for Esoteric Assertions', () => {
   assertExhaustiveTestConfigs(
     'Esoteric Assertions',
-    EsotericAssertions,
+    SyncEsotericAssertions,
     testConfigs,
   );
   runPropertyTests(testConfigs, testConfigDefaults);

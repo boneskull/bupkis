@@ -7,9 +7,17 @@ category: Assertions
 
 These assertions test equality, identity, and value comparisons.
 
-### to equal &lt;any&gt;
+### `{unknown} to equal {any}`
 
-> _Aliases: `to equal <any>`, `to be <any>`, `equals <any>`, `is <any>`, `is equal to <any>`, `to strictly equal <any>`, `is strictly equal to <any>`_
+> ✏️ Aliases:
+>
+>     {unknown} to equal {any}
+>     {unknown} to be {any}
+>     {unknown} equals {any}
+>     {unknown} is {any}
+>     {unknown} is equal to {any}
+>     {unknown} to strictly equal {any}
+>     {unknown} is strictly equal to {any}
 
 **Success**:
 
@@ -36,9 +44,12 @@ expect(42, 'not to be', '42');
 expect({}, 'not to equal', {});
 ```
 
-### to deep equal &lt;any&gt;
+### `{unknown} to deep equal {any}`
 
-> _Aliases: `to deep equal <any>`, `to deeply equal <any>`_
+> ✏️ Aliases:
+>
+>     {unknown} to deep equal {any}
+>     {unknown} to deep equal {any}
 
 **Success**:
 
@@ -61,7 +72,7 @@ expect({ a: 1 }, 'to deep equal', { a: 1, b: 2 });
 expect({ a: 1 }, 'not to deep equal', { a: 1, b: 2 });
 ```
 
-### to be one of &lt;array&gt;
+### `{unknown} to be one of {array}`
 
 **Success**:
 
@@ -83,9 +94,13 @@ expect(5, 'to be one of', [1, 2, 3]);
 expect(5, 'not to be one of', [1, 2, 3]);
 ```
 
-### to be an instance of &lt;constructor&gt;
+### `{unknown} to be an instance of {constructor}`
 
-> _Aliases: `to be an instance of <constructor>`, `to be a <constructor>`_
+> ✏️ Aliases:
+>
+>     {unknown} to be an instance of {constructor}
+>     {unknown} to be a {constructor}
+>     {unknown} to be an {constructor}
 
 **Success**:
 
@@ -108,16 +123,23 @@ expect('hello', 'to be an instance of', Number);
 expect('hello', 'not to be an instance of', Number);
 ```
 
-### to be a &lt;constructor&gt;
+### `{unknown} to be a {intrinsic-type}`
 
-> _Aliases: `to be a <constructor>`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a {intrinsic-type}
+>     {unknown} to be an {intrinsic-type}
+>     {unknown} to have type {intrinsic-type}
+
+An _intrinsic type_ is a _case-insensitive string_ matching: `string`, `number`, `boolean`, `bigint`, `symbol`, `undefined`, `object`, `function`, `null`, `Map`, `Set`, `WeakMap`, `WeakSet`, `WeakRef`, `Date`, `Error`, `Array`, `RegExp`, `Promise`. This is a mashup of the result of `typeof` and constructor names for built-in types.
 
 **Success**:
 
 ```js
-expect(new Date(), 'to be a', Date);
-expect(new Error(), 'to be an', Error);
-expect([], 'to be an', Array);
+expect(new Date(), 'to be a', 'Date');
+expect(new Error(), 'to be an', 'Error');
+expect([], 'to be an', 'Array');
+expect(1, 'to be a', 'number');
 ```
 
 **Failure**:
