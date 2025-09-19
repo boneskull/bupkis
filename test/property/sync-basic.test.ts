@@ -4,7 +4,7 @@ import { describe } from 'node:test';
 import type { AnyAssertion } from '../../src/types.js';
 
 import * as assertions from '../../src/assertion/impl/sync-basic.js';
-import { BasicAssertions } from '../../src/assertion/index.js';
+import { SyncBasicAssertions } from '../../src/assertion/index.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
@@ -162,6 +162,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
+        examples: [[null, 'to be defined']],
         generators: [
           fc.anything().filter((v) => v !== undefined),
           fc.constantFrom(...extractPhrases(assertions.definedAssertion)),
@@ -239,24 +240,6 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: [
           fc.constant({}),
           fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
-        ],
-      },
-    },
-  ],
-
-  [
-    assertions.emptyStringAssertion,
-    {
-      invalid: {
-        generators: [
-          fc.string({ minLength: 1 }),
-          fc.constantFrom(...extractPhrases(assertions.emptyStringAssertion)),
-        ],
-      },
-      valid: {
-        generators: [
-          fc.constant(''),
-          fc.constantFrom(...extractPhrases(assertions.emptyStringAssertion)),
         ],
       },
     },
@@ -510,28 +493,6 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.integer({ max: -1 }),
           fc.constantFrom(
             ...extractPhrases(assertions.negativeIntegerAssertion),
-          ),
-        ],
-      },
-    },
-  ],
-
-  [
-    assertions.nonEmptyStringAssertion,
-    {
-      invalid: {
-        generators: [
-          fc.constant(''),
-          fc.constantFrom(
-            ...extractPhrases(assertions.nonEmptyStringAssertion),
-          ),
-        ],
-      },
-      valid: {
-        generators: [
-          fc.string({ minLength: 1 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.nonEmptyStringAssertion),
           ),
         ],
       },
@@ -945,7 +906,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 describe('Property-Based Tests for Basic (non-parametric) Assertions', () => {
   assertExhaustiveTestConfigs(
     'Basic Assertions',
-    [...BasicAssertions],
+    [...SyncBasicAssertions],
     testConfigs,
   );
   runPropertyTests(testConfigs, testConfigDefaults);

@@ -7,9 +7,12 @@ category: Assertions
 
 These assertions test Date objects and time-related values.
 
-### to be a date
+### `{unknown} to be a Date`
 
-> _Aliases: `to be a date`, `to be a Date`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a Date
+>     {unknown} to be a date
 
 **Success**:
 

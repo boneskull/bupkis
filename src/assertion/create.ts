@@ -71,14 +71,11 @@ import { z } from 'zod/v4';
 import type {
   AssertionImplAsync,
   AssertionImplSync,
+  AssertionMetadata,
   AssertionParts,
 } from './assertion-types.js';
 
 import { isFunction, isString, isZodType } from '../guards.js';
-import {
-  type CreateAssertionFn,
-  type CreateAsyncAssertionFn,
-} from '../types.js';
 import {
   BupkisAssertionFunctionAsync,
   BupkisAssertionSchemaAsync,
@@ -87,12 +84,19 @@ import {
   BupkisAssertionFunctionSync,
   BupkisAssertionSchemaSync,
 } from './assertion-sync.js';
+import {
+  AssertionMetadataSchema,
+  type CreateAssertionFn,
+  type CreateAsyncAssertionFn,
+} from './assertion-types.js';
+import { AssertionMetadataRegistry } from './assertion.js';
 import { slotify } from './slotify.js';
 
 /**
  * {@inheritDoc CreateAssertionFn}
  *
  * @throws {TypeError} Invalid assertion implementation type
+ * @group Assertion Creation
  */
 export const createAssertion: CreateAssertionFn = <
   Impl extends AssertionImplSync<Parts>,
@@ -100,6 +104,7 @@ export const createAssertion: CreateAssertionFn = <
 >(
   parts: Parts,
   impl: Impl,
+  metadata?: AssertionMetadata,
 ) => {
   if (!Array.isArray(parts)) {
     throw new TypeError('First parameter must be an array');
@@ -121,9 +126,17 @@ export const createAssertion: CreateAssertionFn = <
     const slots = slotify<Parts>(parts);
 
     if (isZodType(impl)) {
-      return new BupkisAssertionSchemaSync(parts, slots, impl);
+      const assertion = new BupkisAssertionSchemaSync(parts, slots, impl);
+      if (metadata) {
+        AssertionMetadataRegistry.set(assertion, metadata);
+      }
+      return assertion;
     } else if (isFunction(impl)) {
-      return new BupkisAssertionFunctionSync(parts, slots, impl);
+      const assertion = new BupkisAssertionFunctionSync(parts, slots, impl);
+      if (metadata) {
+        AssertionMetadataRegistry.set(assertion, metadata);
+      }
+      return assertion;
     }
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -140,6 +153,7 @@ export const createAssertion: CreateAssertionFn = <
  * {@inheritDoc CreateAsyncAssertionFn}
  *
  * @throws {TypeError} Invalid assertion implementation type
+ * @group Assertion Creation
  */
 export const createAsyncAssertion: CreateAsyncAssertionFn = <
   const Parts extends AssertionParts,
@@ -147,6 +161,7 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
 >(
   parts: Parts,
   impl: Impl,
+  metadata?: AssertionMetadata,
 ) => {
   if (!Array.isArray(parts)) {
     throw new TypeError('First parameter must be an array');
@@ -167,9 +182,23 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
   const slots = slotify<Parts>(parts);
 
   if (isZodType(impl)) {
-    return new BupkisAssertionSchemaAsync(parts, slots, impl);
+    const assertion = new BupkisAssertionSchemaAsync(parts, slots, impl);
+    if (metadata) {
+      AssertionMetadataRegistry.set(
+        assertion,
+        AssertionMetadataSchema.parse(metadata),
+      );
+    }
+    return assertion;
   } else if (isFunction(impl)) {
-    return new BupkisAssertionFunctionAsync(parts, slots, impl);
+    const assertion = new BupkisAssertionFunctionAsync(parts, slots, impl);
+    if (metadata) {
+      AssertionMetadataRegistry.set(
+        assertion,
+        AssertionMetadataSchema.parse(metadata),
+      );
+    }
+    return assertion;
   }
   throw new TypeError(
     'Assertion implementation must be a function, Zod schema or Zod schema factory',

@@ -54,19 +54,6 @@ import {
   weakSetAssertion,
 } from './sync-basic.js';
 import {
-  functionCallCallbackAssertion,
-  functionCallCallbackWithExactValueAssertion,
-  functionCallCallbackWithValueAssertion,
-  functionCallCallbackWithValueSatisfyingAssertion,
-  functionCallNodebackAssertion,
-  functionCallNodebackWithErrorAssertion,
-  functionCallNodebackWithErrorClassAssertion,
-  functionCallNodebackWithErrorPatternAssertion,
-  functionCallNodebackWithExactValueAssertion,
-  functionCallNodebackWithValueAssertion,
-  functionCallNodebackWithValueSatisfyingAssertion,
-} from './sync-callback.js';
-import {
   arrayContainsAssertion,
   arrayLengthAssertion,
   arraySizeAssertion,
@@ -100,6 +87,7 @@ import {
 } from './sync-collection.js';
 import {
   enumerablePropertyAssertion,
+  enumerablePropertyAssertion2,
   extensibleAssertion,
   frozenAssertion,
   nullPrototypeAssertion,
@@ -142,11 +130,12 @@ import {
  *
  * @group Assertion Collections
  */
-export const EsotericAssertions = [
+export const SyncEsotericAssertions = [
   nullPrototypeAssertion,
-  enumerablePropertyAssertion,
-  sealedAssertion,
   frozenAssertion,
+  enumerablePropertyAssertion,
+  enumerablePropertyAssertion2,
+  sealedAssertion,
   extensibleAssertion,
 ] as const;
 
@@ -155,43 +144,44 @@ export const EsotericAssertions = [
  *
  * @group Assertion Collections
  */
-export const BasicAssertions = [
-  stringAssertion,
-  numberAssertion,
-  infiniteAssertion,
-  positiveInfinityAssertion,
-  negativeInfinityAssertion,
-  booleanAssertion,
-  positiveAssertion,
-  positiveIntegerAssertion,
-  negativeAssertion,
-  negativeIntegerAssertion,
-  trueAssertion,
-  falseAssertion,
-  bigintAssertion,
-  symbolAssertion,
-  functionAssertion,
-  asyncFunctionAssertion,
-  nanAssertion,
-  integerAssertion,
-  nullAssertion,
-  undefinedAssertion,
+
+export const SyncBasicAssertions = [
   arrayAssertion,
-  dateAssertion,
+  asyncFunctionAssertion,
+  bigintAssertion,
+  booleanAssertion,
   classAssertion,
-  primitiveAssertion,
-  regexpAssertion,
-  truthyAssertion,
-  falsyAssertion,
-  objectAssertion,
-  recordAssertion,
+  dateAssertion,
+  definedAssertion,
   emptyArrayAssertion,
   emptyObjectAssertion,
-  errorAssertion,
   emptyStringAssertion,
+  errorAssertion,
+  falseAssertion,
+  falsyAssertion,
+  functionAssertion,
+  infiniteAssertion,
+  integerAssertion,
+  nanAssertion,
+  negativeAssertion,
+  negativeInfinityAssertion,
+  negativeIntegerAssertion,
   nonEmptyStringAssertion,
-  definedAssertion,
+  nullAssertion,
+  numberAssertion,
+  objectAssertion,
+  positiveAssertion,
+  positiveInfinityAssertion,
+  positiveIntegerAssertion,
+  primitiveAssertion,
+  recordAssertion,
+  regexpAssertion,
   setAssertion,
+  stringAssertion,
+  symbolAssertion,
+  trueAssertion,
+  truthyAssertion,
+  undefinedAssertion,
   weakMapAssertion,
   weakSetAssertion,
 ] as const;
@@ -236,24 +226,7 @@ export const SyncParametricAssertions = [
 /**
  * @group Assertion Collections
  */
-export const SyncCallbackAssertions = [
-  functionCallCallbackAssertion,
-  functionCallNodebackAssertion,
-  functionCallCallbackWithValueAssertion,
-  functionCallCallbackWithExactValueAssertion,
-  functionCallNodebackWithValueAssertion,
-  functionCallNodebackWithExactValueAssertion,
-  functionCallNodebackWithErrorAssertion,
-  functionCallNodebackWithErrorClassAssertion,
-  functionCallNodebackWithErrorPatternAssertion,
-  functionCallCallbackWithValueSatisfyingAssertion,
-  functionCallNodebackWithValueSatisfyingAssertion,
-] as const;
-
-/**
- * @group Assertion Collections
- */
-export const CollectionAssertions = [
+export const SyncCollectionAssertions = [
   mapContainsAssertion,
   mapSizeAssertion,
   emptyMapAssertion,
@@ -292,11 +265,10 @@ export const CollectionAssertions = [
  * @group Assertion Collections
  */
 export const SyncAssertions = [
-  ...CollectionAssertions,
-  ...BasicAssertions,
+  ...SyncCollectionAssertions,
+  ...SyncBasicAssertions,
   ...SyncParametricAssertions,
-  ...SyncCallbackAssertions,
-  ...EsotericAssertions,
+  ...SyncEsotericAssertions,
 ] as const;
 
 // Re-export collection tuples for compatibility

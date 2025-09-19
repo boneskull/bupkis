@@ -723,3 +723,50 @@ export const RegExpSchema = z
   .instanceof(RegExp)
   .describe('A RegExp instance')
   .register(BupkisRegistry, { name: 'regexp' });
+
+/**
+ * A Zod schema that validates non-negative integer values.
+ *
+ * This schema validates numbers that are both integers (whole numbers without
+ * decimal parts) and non-negative (greater than or equal to zero). It combines
+ * Zod's integer validation with non-negative validation to ensure the value is
+ * a valid count, index, or other non-negative discrete quantity.
+ *
+ * @privateRemarks
+ * The schema is registered in the {@link BupkisRegistry} with the name
+ * `nonnegative-integer` for later reference and type checking purposes.
+ * @example Direct Usage
+ *
+ * ```typescript
+ * NonNegativeIntegerSchema.parse(0); // ✓ Valid (zero)
+ * NonNegativeIntegerSchema.parse(42); // ✓ Valid (positive integer)
+ * NonNegativeIntegerSchema.parse(1000); // ✓ Valid (large positive integer)
+ * NonNegativeIntegerSchema.parse(-1); // ✗ Throws validation error (negative)
+ * NonNegativeIntegerSchema.parse(3.14); // ✗ Throws validation error (not integer)
+ * NonNegativeIntegerSchema.parse(-3.14); // ✗ Throws validation error (negative and not integer)
+ * NonNegativeIntegerSchema.parse('42'); // ✗ Throws validation error (string)
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { NonNegativeIntegerSchema } from 'bupkis/schema';
+ *
+ * const arrayIndexAssertion = createAssertion(
+ *   [NonNegativeIntegerSchema, 'to be a valid array index'],
+ *   NonNegativeIntegerSchema,
+ * );
+ *
+ * const { expect } = use([arrayIndexAssertion]);
+ * expect(0, 'to be a valid array index'); // Valid array index
+ * expect(5, 'to be a valid array index'); // Valid array index
+ * ```
+ *
+ * @group Schema
+ */
+export const NonNegativeIntegerSchema = z
+  .int()
+  .nonnegative()
+  .describe('A non-negative integer')
+  .register(BupkisRegistry, { name: 'nonnegative-integer' });

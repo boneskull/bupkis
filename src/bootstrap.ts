@@ -38,6 +38,7 @@ const {
    * assertions.
    *
    * @function
+   * @group Core API
    */
   expect,
   /**
@@ -45,6 +46,7 @@ const {
    * assertions.
    *
    * @function
+   * @group Core API
    */
   expectAsync,
 } = api;

@@ -3,15 +3,14 @@ title: All Assertions
 category: Assertions
 ---
 
-{@include ./primitives.md}
+{@include ./primitive.md}
 {@include ./numeric.md}
 {@include ./other.md}
-{@include ./strings.md}
-{@include ./collections.md}
-{@include ./objects.md}
-{@include ./functions.md}
+{@include ./string.md}
+{@include ./collection.md}
+{@include ./object.md}
+{@include ./function.md}
 {@include ./equality.md}
-{@include ./errors.md}
-{@include ./dates.md}
-{@include ./async.md}
-{@include ./callback.md}
+{@include ./error.md}
+{@include ./date.md}
+{@include ./promise.md}

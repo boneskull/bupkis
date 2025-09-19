@@ -26,6 +26,7 @@ import { isWeakKey } from '../../guards.js';
 import {
   KeypathSchema,
   NonCollectionObjectSchema,
+  NonNegativeIntegerSchema,
   PropertyKeySchema,
 } from '../../schema.js';
 import { has } from '../../util.js';
@@ -98,7 +99,7 @@ export const mapContainsAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const mapSizeAssertion = createAssertion(
-  [z.map(z.unknown(), z.unknown()), 'to have size', z.number()],
+  [z.map(z.unknown(), z.unknown()), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize): AssertionFailure | boolean => {
     if (subject.size === expectedSize) return true;
     return {
@@ -189,14 +190,15 @@ export const setContainsAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const setSizeAssertion = createAssertion(
-  [z.set(z.unknown()), 'to have size', z.number()],
-  (subject, expectedSize): AssertionFailure | boolean => {
-    if (subject.size === expectedSize) return true;
-    return {
-      actual: subject.size,
-      expected: expectedSize,
-      message: `Expected ${subject.constructor.name} to have size ${expectedSize}, got ${subject.size}`,
-    };
+  [z.set(z.unknown()), 'to have size', NonNegativeIntegerSchema],
+  (subject, expectedSize) => {
+    if (subject.size !== expectedSize) {
+      return {
+        actual: subject.size,
+        expected: expectedSize,
+        message: `Expected ${subject.constructor.name} to have size ${expectedSize}, got ${subject.size}`,
+      };
+    }
   },
 );
 
@@ -214,13 +216,14 @@ export const setSizeAssertion = createAssertion(
  */
 export const emptySetAssertion = createAssertion(
   [z.set(z.unknown()), 'to be empty'],
-  (subject): AssertionFailure | boolean => {
-    if (subject.size === 0) return true;
-    return {
-      actual: subject.size,
-      expected: 0,
-      message: `Expected ${subject.constructor.name} to be empty, got size ${subject.size}`,
-    };
+  (subject) => {
+    if (subject.size !== 0) {
+      return {
+        actual: subject.size,
+        expected: 0,
+        message: `Expected ${subject.constructor.name} to be empty, got size ${subject.size}`,
+      };
+    }
   },
 );
 
@@ -261,7 +264,7 @@ export const arrayContainsAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const arraySizeAssertion = createAssertion(
-  [z.array(z.any()), 'to have size', z.number()],
+  [z.array(z.any()), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize): AssertionFailure | boolean => {
     if (subject.length === expectedSize) return true;
     return {
@@ -285,9 +288,9 @@ export const arraySizeAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const arrayLengthAssertion = createAssertion(
-  [z.array(z.any()), 'to have length', z.number()],
+  [z.array(z.unknown()), 'to have length', NonNegativeIntegerSchema],
   (_, expectedLength) =>
-    z.array(z.any()).min(expectedLength).max(expectedLength),
+    z.array(z.unknown()).min(expectedLength).max(expectedLength),
 );
 
 /**
@@ -303,12 +306,12 @@ export const arrayLengthAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const nonEmptyArrayAssertion = createAssertion(
-  [z.array(z.any()), 'to be non-empty'],
+  [z.array(z.unknown()), 'to be non-empty'],
   (subject) => {
     if (subject.length === 0) {
       return {
-        actual: subject.length,
-        expected: 'non-empty array',
+        actual: `length: ${subject.length}`,
+        expected: 'length greater than 0',
         message: 'Expected array to be non-empty',
       };
     }
@@ -454,7 +457,7 @@ export const objectExactKeyAssertion = createAssertion(
  * @group Collection Assertions
  */
 export const objectSizeAssertion = createAssertion(
-  [z.looseObject({}), 'to have size', z.number().int().nonnegative()],
+  [z.looseObject({}), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize) => {
     const actual = Object.keys(subject).length;
     if (actual !== expectedSize) {
@@ -889,7 +892,7 @@ export const collectionSizeLessThanAssertion = createAssertion(
   [
     z.union([z.map(z.unknown(), z.unknown()), z.set(z.unknown())]),
     'to have size less than',
-    z.number(),
+    NonNegativeIntegerSchema,
   ],
   (collection, maxSize): AssertionFailure | boolean => {
     if (collection.size < maxSize) return true;
