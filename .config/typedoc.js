@@ -12,7 +12,7 @@ const customFooterHtml = readFileSync(
 
 /** @type {Partial<TypeDocOptions>} */
 export default {
-  blockTags: [...OptionDefaults.blockTags, '@knipignore', '@assertion'],
+  blockTags: [...OptionDefaults.blockTags, '@knipignore'],
   categoryOrder: ['Assertions', 'Guides', 'Reference', 'API', 'About'],
   cname: 'bupkis.zip',
   customCss: '../site/media/bupkis-theme.css',
@@ -50,8 +50,9 @@ export default {
     },
   },
   favicon: '../site/media/favicon.svg',
-  // @ts-expect-error for typedoc-plugin-extras
+  // @ts-expect-error from extras plugin
   footerLastModified: true,
+  groupOrder: ['Core API'],
   kindSortOrder: [
     'Reference',
     'Project',
@@ -62,6 +63,7 @@ export default {
   ],
   lightHighlightTheme: 'rose-pine-dawn',
   markdownLinkExternal: true,
+  name: 'BUPKIS',
   navigation: {
     includeCategories: true,
   },
@@ -73,12 +75,12 @@ export default {
   },
   out: '../docs',
   plugin: [
+    'typedoc-plugin-redirect',
+    './typedoc-plugin-bupkis.js',
     'typedoc-plugin-mdn-links',
     'typedoc-plugin-zod',
     'typedoc-plugin-dt-links',
     'typedoc-plugin-extras',
-    'typedoc-plugin-redirect',
-    './typedoc-plugin-bupkis.js',
   ],
   preserveWatchOutput: true,
   projectDocuments: ['../site/**/*.md'],

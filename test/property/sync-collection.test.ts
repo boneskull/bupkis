@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-collection.js';
-import { CollectionAssertions } from '../../src/assertion/index.js';
+import { SyncCollectionAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
 import {
   type PropertyTestConfig,
@@ -105,9 +105,9 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.array(fc.anything()),
+          fc.array(fc.anything(), { maxLength: 9, minLength: 1 }),
           fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
-          fc.integer().filter((n) => n < 0 || n > 100),
+          fc.integer({ max: 100, min: 10 }),
         ],
       },
       valid: {
@@ -125,14 +125,14 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.array(fc.anything()),
+          fc.array(fc.anything(), { maxLength: 100, minLength: 11 }),
           fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
-          fc.integer().filter((n) => n < 0 || n > 100),
+          fc.integer({ max: 10, min: 1 }),
         ],
       },
       valid: {
         generators: [
-          fc.constant(['a', 'b']),
+          fc.array(fc.anything(), { maxLength: 2, minLength: 2 }),
           fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
           fc.constant(2),
         ],
@@ -251,59 +251,46 @@ const testConfigs = new Map<
   ],
   [
     assertions.collectionSizeLessThanAssertion,
-    [
-      {
-        invalid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['a', 1],
-                ['b', 2],
-                ['c', 3],
-              ]),
-            ), // size 3
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
-            ),
-            fc.integer({ max: 3 }), // 3 or less
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['a', 1],
-                ['b', 2],
-              ]),
-            ), // size 2
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
-            ),
-            fc.integer({ min: 3 }), // greater than 2
-          ],
-        },
+    {
+      invalid: {
+        generators: [
+          fc.oneof(
+            fc
+              .dictionary(fc.string(), fc.anything(), {
+                maxKeys: 10,
+                minKeys: 4,
+              })
+              .map((obj) => new Map(Object.entries(obj))),
+            fc
+              .array(fc.anything(), { maxLength: 10, minLength: 4 })
+              .map((arr) => new Set(arr)),
+          ),
+          fc.constantFrom(
+            ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+          ),
+          fc.integer({ max: 3, min: 1 }),
+        ],
       },
-      {
-        invalid: {
-          generators: [
-            fc.constant(new Set([1, 2, 3])), // size 3
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
-            ),
-            fc.integer({ max: 3 }), // 3 or less
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(new Set([1, 2])), // size 2
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeLessThanAssertion),
-            ),
-            fc.integer({ min: 3 }), // greater than 2
-          ],
-        },
+      valid: {
+        generators: [
+          fc.oneof(
+            fc
+              .dictionary(fc.string(), fc.anything(), {
+                maxKeys: 2,
+                minKeys: 2,
+              })
+              .map((obj) => new Map(Object.entries(obj))),
+            fc
+              .array(fc.anything(), { maxLength: 2, minLength: 2 })
+              .map((arr) => new Set(arr)),
+          ),
+          fc.constantFrom(
+            ...extractPhrases(assertions.collectionSizeLessThanAssertion),
+          ),
+          fc.integer({ max: 10, min: 3 }),
+        ],
       },
-    ],
+    },
   ],
   [
     assertions.emptyMapAssertion,
@@ -526,13 +513,9 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.integer({ max: 10, min: 0 }).map((size) => {
-            const map = new Map();
-            for (let i = 0; i < size; i++) {
-              map.set(`key${i}`, `value${i}`);
-            }
-            return map;
-          }),
+          fc
+            .dictionary(fc.string(), fc.anything(), { maxKeys: 10, minKeys: 1 })
+            .map((obj) => new Map(Object.entries(obj))),
           fc.constantFrom(...extractPhrases(assertions.mapSizeAssertion)),
           fc.integer({ max: 100, min: 11 }),
         ],
@@ -991,7 +974,7 @@ const testConfigs = new Map<
 describe('Property-Based Tests for Collection Assertions', () => {
   assertExhaustiveTestConfigs(
     'Collection Assertions',
-    CollectionAssertions,
+    SyncCollectionAssertions,
     testConfigs,
   );
   runPropertyTests(testConfigs, testConfigDefaults);

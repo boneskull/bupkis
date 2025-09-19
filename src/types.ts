@@ -1,7 +1,8 @@
 /**
- * Types used throughout _BUPKIS_.
+ * Types used throughout <span class="bupkis">BUPKIS</span>.
  *
- * May be useful for those building on top of _BUPKIS_.
+ * May be useful for those building on top of <span
+ * class="bupkis">BUPKIS</span>.
  *
  * @example
  *
@@ -12,6 +13,8 @@
  * import type * as alsoTypes from 'bupkis/types';
  * ```
  *
+ * @groupDescription Utility Types
+ * Types used throughout <span class="bupkis">BUPKIS</span>.
  * @packageDocumentation
  */
 
@@ -31,26 +34,18 @@ import type {
   AnySyncAssertions,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Assertion,
-  AssertionFunctionAsync,
-  AssertionFunctionSync,
-  AssertionImplFnAsync,
-  AssertionImplFnSync,
-  AssertionImplSchemaAsync,
-  AssertionImplSchemaSync,
   AssertionPart,
   AssertionParts,
-  AssertionSchemaAsync,
-  AssertionSchemaSync,
   AssertionSlot,
-  AssertionSlots,
   BuiltinAsyncAssertions,
   BuiltinSyncAssertions,
+  CreateAssertionFn,
+  CreateAsyncAssertionFn,
   NoNeverTuple,
   PhraseLiteral,
   PhraseLiteralChoice,
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
-  RawAssertionImplSchemaSync,
 } from './assertion/assertion-types.js';
 
 import { type kExpectIt } from './constant.js';
@@ -92,6 +87,7 @@ export type AddNegation<Parts extends readonly AssertionPart[]> =
  * Base set of properties included in both {@link Expect} and {@link ExpectAsync}.
  *
  * @preventExpand
+ * @group Expect-Related
  */
 export interface BaseExpect {
   /**
@@ -116,15 +112,16 @@ export interface BaseExpect {
  * The main API as returned by a {@link UseFn}.
  *
  * @template BaseSyncAssertions Base set of synchronous
- *   {@link Assertion Assertions}; will be the builtin sync assertions, at
+ *   {@link Assertion | Assertions}; will be the builtin sync assertions, at
  *   minimum)
  * @template BaseAsyncAssertions Base set of asynchronous
- *   {@link Assertion Assertions}; will be the builtin async assertions, at
+ *   {@link Assertion | Assertions}; will be the builtin async assertions, at
  *   minimum)
  * @template ExtendedSyncAssertions Synchronous assertions extracted from
  *   `MixedAssertions`
  * @template ExtendedAsyncAssertions Asynchronous assertions extracted from
  *   `MixedAssertions`
+ * @group Core API
  */
 export interface Bupkis<
   BaseSyncAssertions extends AnySyncAssertions,
@@ -183,6 +180,8 @@ export interface Bupkis<
 
 /**
  * Helper type to concatenate two tuples
+ *
+ * @group Utility Types
  */
 export type Concat<
   TupleA extends readonly unknown[],
@@ -194,99 +193,13 @@ export type * from './assertion/assertion-types.js';
 /**
  * A constructor based on {@link TypeFestConstructor type-fest's Constructor}
  * with a default instance type argument.
+ *
+ * @group Utility Types
  */
 export type Constructor<
   Instance = any,
   Args extends unknown[] = any[],
 > = TypeFestConstructor<Instance, Args>;
-
-/**
- * The main factory function for creating synchronous assertions.
- */
-export interface CreateAssertionFn {
-  /**
-   * Create a synchronous `Assertion` from {@link AssertionParts parts} and a
-   * {@link z.ZodType Zod schema}.
-   *
-   * @template Parts Parts defining the shape of the assertion, including
-   *   Phrases and Zod schemas
-   * @template Impl Assertion implementation as a Zod schema
-   * @template Slots Inferred slots based on the provided `Parts`
-   * @returns New `AssertionSchemaSync` object
-   */
-  <
-    const Parts extends AssertionParts,
-    Impl extends RawAssertionImplSchemaSync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >(
-    parts: Parts,
-    impl: Impl,
-  ): AssertionSchemaSync<Parts, AssertionImplSchemaSync<Parts>, Slots>;
-
-  /**
-   * Create a synchronous `Assertion` from {@link AssertionParts parts} and an
-   * implementation function.
-   *
-   * @template Parts Parts defining the shape of the assertion, including
-   *   Phrases and Zod schemas
-   * @template Impl Assertion implementation as a function
-   * @template Slots Inferred slots based on the provided `Parts`
-   * @returns New `AssertionFunctionSync` object
-   */
-  <
-    const Parts extends AssertionParts,
-    Impl extends AssertionImplFnSync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >(
-    parts: Parts,
-    impl: Impl,
-  ): AssertionFunctionSync<Parts, Impl, Slots>;
-}
-
-/**
- * The main factory function for creating asynchronous assertions.
- */
-export interface CreateAsyncAssertionFn {
-  /**
-   * Create an async `Assertion` from {@link AssertionParts parts} and an
-   * {@link z.ZodType Zod schema}.
-   *
-   * The Zod schema need not be async itself.
-   *
-   * @template Parts Parts defining the shape of the assertion, including
-   *   Phrases and Zod schemas
-   * @template Impl Assertion implementation as a Zod schema
-   * @template Slots Inferred slots based on the provided `Parts`
-   * @returns New `AssertionSchemaAsync` object
-   */
-  <
-    const Parts extends AssertionParts,
-    Impl extends AssertionImplSchemaAsync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >(
-    parts: Parts,
-    impl: Impl,
-  ): AssertionSchemaAsync<Parts, Impl, Slots>;
-
-  /**
-   * Create an async `Assertion` from {@link AssertionParts parts} and an
-   * implementation function.
-   *
-   * @template Parts Parts defining the shape of the assertion, including
-   *   Phrases and Zod schemas
-   * @template Impl Assertion implementation as a function
-   * @template Slots Inferred slots based on the provided `Parts`
-   * @returns New `AssertionFunctionAsync` object
-   */
-  <
-    const Parts extends AssertionParts,
-    Impl extends AssertionImplFnAsync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >(
-    parts: Parts,
-    impl: Impl,
-  ): AssertionFunctionAsync<Parts, Impl, Slots>;
-}
 
 /**
  * The main synchronous assertion function.
@@ -295,8 +208,9 @@ export interface CreateAsyncAssertionFn {
  *
  * @template SyncAssertions All synchronous assertions available
  * @template AsyncAssertions All asynchronous assertions available; for use in
- *   {@link ExpectSyncProps.use}
+ *   {@link ExpectSyncProps.use} only.
  * @expandType ExpectSyncProps
+ * @group Core API
  * @see {@link expect}
  */
 export type Expect<
@@ -312,8 +226,9 @@ export type Expect<
  *
  * @template AsyncAssertions All asynchronous assertions available
  * @template SyncAssertions All synchronous assertions available; for use in
- *   {@link ExpectAsyncProps.use}
+ *   {@link ExpectAsyncProps.use} only.
  * @expandType ExpectAsyncProps
+ * @group Core API
  * @see {@link expectAsync}
  */
 export type ExpectAsync<
@@ -343,20 +258,18 @@ export type ExpectAsync<
  * await expectAsync(promise, 'to resolve with value satisfying', expectedValue);
  * ```
  *
- * @template T - Array of async assertion objects that define available
- *   assertion logic
+ * @template AsyncAssertions - Array of async assertion objects that define
+ *   available assertion logic
  * @see {@link ExpectFunction} for the synchronous equivalent
  * @see {@link SlotsFromParts} for how assertion parts are converted to function parameters
  */
 export type ExpectAsyncFunction<
-  T extends AnyAsyncAssertions = BuiltinAsyncAssertions,
+  AsyncAssertions extends AnyAsyncAssertions = BuiltinAsyncAssertions,
 > = UnionToIntersection<
   TupleToUnion<{
-    [K in keyof T]: T[K] extends AnyAsyncAssertion
-      ? (
-          ...args: MutableOrReadonly<SlotsFromParts<T[K]['parts']>>
-        ) => Promise<void>
-      : never;
+    [K in keyof AsyncAssertions]: (
+      ...args: MutableOrReadonly<SlotsFromParts<AsyncAssertions[K]['parts']>>
+    ) => Promise<void>;
   }>
 >;
 
@@ -367,7 +280,7 @@ export type ExpectAsyncFunction<
  * attached to async expect functions, extending the base expect functionality
  * with async-specific features. These properties provide access to the
  * underlying assertions and enable function composition through the
- * {@link UseFn | use} method.
+ * {@link UseFn | `use`} method.
  *
  * @example
  *
@@ -385,7 +298,8 @@ export type ExpectAsyncFunction<
  * @template AsyncAssertions - Array of async assertion objects available to
  *   this expect function
  * @template SyncAssertions - Array of sync assertion objects available for
- *   composition via {@link UseFn | use}
+ *   composition via {@link UseFn | `use`}
+ * @group Expect-Related
  */
 export interface ExpectAsyncProps<
   AsyncAssertions extends AnyAsyncAssertions,
@@ -398,6 +312,9 @@ export interface ExpectAsyncProps<
    */
   assertions: AsyncAssertions;
 
+  /**
+   * {@inheritDoc ExpectItAsync}
+   */
   it: ExpectItAsync<AsyncAssertions>;
 
   /**
@@ -406,20 +323,24 @@ export interface ExpectAsyncProps<
   use: UseFn<SyncAssertions, AsyncAssertions>;
 }
 
+/**
+ * The function part of {@link Expect}.
+ *
+ * This is an intersection of all function signatures derived from the available
+ * synchronous assertions.
+ */
 export type ExpectFunction<
   SyncAssertions extends AnySyncAssertions = BuiltinSyncAssertions,
 > = UnionToIntersection<
   TupleToUnion<{
-    [K in keyof SyncAssertions]: SyncAssertions[K] extends AnySyncAssertion
-      ? (
-          ...args: MutableOrReadonly<SlotsFromParts<SyncAssertions[K]['parts']>>
-        ) => void
-      : never;
+    [K in keyof SyncAssertions]: (
+      ...args: MutableOrReadonly<SlotsFromParts<SyncAssertions[K]['parts']>>
+    ) => void;
   }>
 >;
 
 /**
- * Creates embeddable assertion functions that can be used with `to satisfy`.
+ * Creates embeddable assertion functions that can be used with `'to satisfy'`.
  *
  * This type generates a union of all possible `expect.it` function signatures
  * based on the available synchronous assertions. Each assertion contributes its
@@ -448,6 +369,7 @@ export type ExpectFunction<
  *
  * @template SyncAssertions - Array of synchronous assertion objects that define
  *   the available assertion logic for embeddable functions
+ * @group Core API
  * @see {@link ExpectItFunction} for individual function signature generation
  * @see {@link ExpectItExecutor} for the executor function interface
  */
@@ -474,7 +396,7 @@ export type ExpectIt<
  *
  * The resulting functions are designed to be used exclusively within async `'to
  * satisfy'` assertion contexts, where they provide type-safe pattern matching
- * for nested object structures with Promise-based validation.
+ * for nested object structures with `Promise`-based validation.
  *
  * @example
  *
@@ -492,6 +414,7 @@ export type ExpectIt<
  *
  * @template AsyncAssertions - Array of asynchronous assertion objects that
  *   define the available assertion logic for the embeddable async functions
+ * @group Core API
  * @see {@link ExpectItFunctionAsync} for individual function signature generation
  * @see {@link ExpectItExecutorAsync} for the executor function interface
  * @see {@link ExpectIt} for the synchronous equivalent
@@ -511,7 +434,7 @@ export type ExpectItAsync<
 /**
  * Interface for executor functions created by `expect.it()`.
  *
- * ExpectItExecutor functions are the result of calling `expect.it()` with
+ * `ExpectItExecutor` functions are the result of calling `expect.it()` with
  * assertion parameters. They encapsulate the assertion logic and can be
  * executed later within `'to satisfy'` pattern matching contexts. These
  * functions are marked with an internal symbol to distinguish them from regular
@@ -535,6 +458,7 @@ export type ExpectItAsync<
  * ```
  *
  * @template Subject - The Zod schema type that constrains the subject parameter
+ * @group Expect-Related
  * @see {@link ExpectItFunction} for the factory function that creates executors
  */
 export interface ExpectItExecutor<Subject extends z.ZodType> {
@@ -543,7 +467,7 @@ export interface ExpectItExecutor<Subject extends z.ZodType> {
 }
 
 /**
- * Function signature for creating ExpectItExecutor instances.
+ * Function signature for creating `ExpectItExecutor` instances.
  *
  * This type represents the factory function that creates embeddable assertion
  * executors from assertion parts. It takes the assertion parameters (excluding
@@ -581,9 +505,9 @@ export interface ExpectItExecutor<Subject extends z.ZodType> {
 /**
  * Interface for asynchronous executor functions created by `expectAsync.it()`.
  *
- * ExpectItExecutorAsync functions are the async equivalent of
+ * `ExpectItExecutorAsync` functions are the async equivalent of
  * {@link ExpectItExecutor}, designed for asynchronous assertion contexts. They
- * return Promises and are marked with the same internal symbol for
+ * return `Promise`s and are marked with the same internal symbol for
  * identification. These executors can be embedded within `'to satisfy'`
  * patterns for async validation scenarios.
  *
@@ -600,20 +524,30 @@ export interface ExpectItExecutor<Subject extends z.ZodType> {
  * ```
  *
  * @template Subject - The Zod schema type that constrains the subject parameter
+ * @group Expect-Related
  * @see {@link ExpectItFunctionAsync} for the factory function that creates async executors
  * @see {@link ExpectItExecutor} for the synchronous equivalent
  */
 export interface ExpectItExecutorAsync<Subject extends z.ZodType> {
   (subject: z.infer<Subject>): Promise<void>;
+  /**
+   * Internal marker to differentiate an `ExpectItExecutorAsync` function from
+   * other functions.
+   *
+   * @internal
+   */
   [kExpectIt]: true;
 }
 
+/**
+ * The function part of {@link ExpectIt}.
+ */
 export type ExpectItFunction<Parts extends AssertionParts> = (
   ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
 ) => Parts[0] extends z.ZodType ? ExpectItExecutor<Parts[0]> : never;
 
 /**
- * Function signature for creating async ExpectItExecutorAsync instances.
+ * Function signature for creating async `ExpectItExecutorAsync` instances.
  *
  * This type represents the factory function that creates embeddable async
  * assertion executors from assertion parts. It takes the assertion parameters
@@ -651,6 +585,8 @@ export type ExpectItFunctionAsync<Parts extends AssertionParts> = (
 
 /**
  * Properties of {@link expect}.
+ *
+ * @group Expect-Related
  */
 export interface ExpectSyncProps<
   SyncAssertions extends AnySyncAssertions,
@@ -678,6 +614,7 @@ export interface ExpectSyncProps<
  * Member of {@link BaseExpect}.
  *
  * @param reason Optional reason for failure
+ * @group Core API
  * @see {@link fail}
  */
 export type FailFn = (reason?: string) => never;
@@ -738,6 +675,12 @@ export type FilterSyncAssertions<
     : FilterSyncAssertions<Rest>
   : readonly [];
 
+/**
+ * Represents a dot-notation or bracket-notation keypath for accessing nested
+ * object properties.
+ *
+ * @group Utility Types
+ */
 export type Keypath<S extends string = string> =
   S extends `${infer K}.${infer Rest}`
     ? K extends string
@@ -760,24 +703,24 @@ export type Keypath<S extends string = string> =
       : S;
 
 /**
- * Maps AssertionParts to the corresponding argument types for expect and
- * expectAsync functions.
+ * Maps `AssertionParts` to the corresponding argument types for `expect` and
+ * `expectAsync` functions.
  *
  * This utility type transforms assertion parts into the actual parameter types
  * that users provide when calling expect functions. It handles both phrase
- * literals and Zod schemas, creating appropriate TypeScript types for each
+ * literals and Zod schemas, creating appropriate `TypeScript` types for each
  * slot.
  *
  * For phrase literals, it creates union types that include both the original
- * phrase and its negated version (with "not " prefix). For Zod schemas, it
+ * phrase and its negated version (with `"not "` prefix). For Zod schemas, it
  * extracts the inferred type. This enables natural language assertions with
  * optional negation support.
  *
  * @remarks
  * This type works recursively through the parts tuple, transforming each part
  * according to its type. The resulting tuple maintains the same structure as
- * the input but with user-facing TypeScript types instead of internal assertion
- * part types.
+ * the input but with user-facing `TypeScript` types instead of internal
+ * assertion part types.
  * @example
  *
  * ```typescript
@@ -837,6 +780,7 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
  * ```
  *
  * @template Tuple - The readonly tuple type to make flexible
+ * @group Utility Types
  * @see {@link ExpectFunction} and {@link ExpectAsyncFunction} which use this for parameter flexibility
  */
 export type MutableOrReadonly<Tuple extends readonly unknown[]> =
@@ -847,12 +791,13 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
       : Tuple;
 
 /**
- * Creates a negated version of a phrase literal by prefixing "not ".
+ * Creates a negated version of a phrase literal by prefixing `"not "`.
  *
  * This utility type transforms assertion phrases into their negated
- * equivalents, enabling the natural language negation feature in Bupkis
- * assertions. When users provide phrases like "not to be a string", this type
- * helps the system understand and process the negation.
+ * equivalents, enabling the natural language negation feature in <span
+ * class="bupkis">BUPKIS</span> assertions. When users provide phrases like
+ * `"not to be a string"`, this type helps the system understand and process the
+ * negation.
  *
  * The negation is applied at the type level during assertion matching and
  * affects how the assertion logic is executed - negated assertions expect the
@@ -869,13 +814,13 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
  * ```
  *
  * @template S - The string literal phrase to be negated
- * @see {@link AddNegation} for applying negation to entire AssertionParts tuples
+ * @see {@link AddNegation} for applying negation to entire `AssertionParts` tuples
  * @see {@link MapExpectSlots} for how negation is incorporated into function signatures
  */
 export type Negation<S extends string> = `not ${S}`;
 
 /**
- * Converts AssertionParts to complete function parameter types for expect
+ * Converts `AssertionParts` to complete function parameter types for expect
  * functions.
  *
  * This utility type prepares assertion parts for use as function parameters by
@@ -883,12 +828,12 @@ export type Negation<S extends string> = `not ${S}`;
  *
  * 1. Injects an `unknown` type for the subject parameter if the first part is a
  *    phrase literal
- * 2. Maps the remaining parts to their corresponding TypeScript types via
+ * 2. Maps the remaining parts to their corresponding `TypeScript` types via
  *    {@link MapExpectSlots}
  * 3. Filters out `never` types to ensure a clean tuple structure
  *
  * The subject injection is a key feature - when assertions start with phrases
- * like "to be a string", users still need to provide the subject being tested
+ * like `"to be a string"`, users still need to provide the subject being tested
  * as the first argument to expect functions.
  *
  * @remarks
@@ -909,6 +854,7 @@ export type Negation<S extends string> = `not ${S}`;
  *
  * @template Parts - Tuple of assertion parts that define the assertion
  *   structure
+ * @group Expect-Related
  * @see {@link MapExpectSlots} for the core slot mapping logic
  * @see {@link NoNeverTuple} for never-type filtering
  */
@@ -935,6 +881,7 @@ export type SlotsFromParts<Parts extends AssertionParts> = NoNeverTuple<
  * ```
  *
  * @template T - The tuple type to get the tail of
+ * @group Utility Types
  */
 export type TupleTail<T extends readonly unknown[]> = T extends readonly [
   unknown,
@@ -945,6 +892,8 @@ export type TupleTail<T extends readonly unknown[]> = T extends readonly [
 
 /**
  * The type of a `use()` function.
+ *
+ * @group Core API
  */
 export interface UseFn<
   BaseSyncAssertions extends AnySyncAssertions,
@@ -976,10 +925,12 @@ export interface UseFn<
 }
 
 /**
- * Maps Zod `def.type` strings to their corresponding ZodType classes.
+ * Maps Zod `def.type` strings to their corresponding `ZodType` classes.
  *
- * This allows for type-safe discrimination of ZodTypes based on their internal
- * `def.type` property in Zod v4.
+ * This allows for type-safe discrimination of `ZodType`s based on their
+ * internal `def.type` property in Zod v4.
+ *
+ * @group Utility Types
  */
 export interface ZodTypeMap {
   any: z.ZodAny;

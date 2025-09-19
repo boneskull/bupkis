@@ -7,11 +7,11 @@ category: Assertions
 
 These assertions test numeric values, ranges, and mathematical relationships.
 
-### to be a number
+### `{unknown} to be a number`
 
-> 👉 See [to be a number](primitives.md#to-be-a-number)
+> 👉 See [to be a number](primitive.md#to-be-a-number)
 
-### to be infinite
+### `{unknown} to be infinite`
 
 **Success**:
 
@@ -33,7 +33,7 @@ expect(42, 'to be infinite');
 expect(42, 'not to be infinite');
 ```
 
-### to be Infinity
+### `{unknown} to be Infinity`
 
 **Success**:
 
@@ -54,7 +54,7 @@ expect(-Infinity, 'to be Infinity');
 expect(-Infinity, 'not to be Infinity');
 ```
 
-### to be -Infinity
+### `{unknown} to be -Infinity`
 
 **Success**:
 
@@ -75,9 +75,12 @@ expect(Infinity, 'to be -Infinity');
 expect(Infinity, 'not to be -Infinity');
 ```
 
-### to be positive
+### `{unknown} to be positive`
 
-> _Aliases: `to be positive`, `to be a positive number`_
+> ✏️ Aliases:
+>
+>     {unknown} to be positive
+>     {unknown} to be a positive number
 
 **Success**:
 
@@ -101,9 +104,12 @@ expect(-5, 'not to be positive');
 expect(0, 'not to be positive');
 ```
 
-### to be a positive integer
+### `{unknown} to be a positive integer`
 
-> _Aliases: `to be a positive integer`, `to be a positive int`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a positive integer
+>     {unknown} to be a positive int
 
 **Success**:
 
@@ -126,9 +132,12 @@ expect(-5, 'to be a positive integer');
 expect(3.14, 'not to be a positive integer');
 ```
 
-### to be negative
+### `{unknown} to be negative`
 
-> _Aliases: `to be negative`, `to be a negative number`_
+> ✏️ Aliases:
+>
+>     {unknown} to be negative
+>     {unknown} to be a negative number
 
 **Success**:
 
@@ -152,9 +161,12 @@ expect(5, 'not to be negative');
 expect(0, 'not to be negative');
 ```
 
-### to be a negative integer
+### `{unknown} to be a negative integer`
 
-> _Aliases: `to be a negative integer`, `to be a negative int`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a negative integer
+>     {unknown} to be a negative int
 
 **Success**:
 
@@ -177,7 +189,7 @@ expect(5, 'to be a negative integer');
 expect(-3.14, 'not to be a negative integer');
 ```
 
-### to be NaN
+### `{unknown} to be NaN`
 
 **Success**:
 
@@ -199,9 +211,14 @@ expect(42, 'to be NaN');
 expect(42, 'not to be NaN');
 ```
 
-### to be an integer
+### `{unknown} to be an integer`
 
-> _Aliases: `to be an integer`, `to be a safe integer`, `to be an int`, `to be a safe int`_
+> ✏️ Aliases:
+>
+>     {unknown} to be an integer
+>     {unknown} to be a safe integer
+>     {unknown} to be an int
+>     {unknown} to be a safe int
 
 **Success**:
 
@@ -224,7 +241,7 @@ expect(3.14, 'to be an integer');
 expect(3.14, 'not to be an integer');
 ```
 
-### to be greater than &lt;number&gt;
+### `{unknown} to be greater than {number}`
 
 **Success**:
 
@@ -246,7 +263,12 @@ expect(5, 'to be greater than', 10);
 expect(5, 'not to be greater than', 10);
 ```
 
-### to be less than &lt;number&gt;
+### `{unknown} to be less than {number}`
+
+> ✏️ Aliases:
+>
+>     {unknown} to be less than {number}
+>     {unknown} to be lt {number}
 
 **Success**:
 
@@ -268,9 +290,13 @@ expect(10, 'to be less than', 5);
 expect(10, 'not to be less than', 5);
 ```
 
-### to be greater than or equal to &lt;number&gt;
+### `{unknown} to be greater than or equal to {number}`
 
-> _Aliases: `to be greater than or equal to <number>`, `to be at least <number>`_
+> ✏️ Aliases:
+>
+>     {unknown} to be greater than or equal to {number}
+>     {unknown} to be at least {number}
+>     {unknown} to be gte {number}
 
 **Success**:
 
@@ -292,9 +318,13 @@ expect(5, 'to be greater than or equal to', 10);
 expect(5, 'not to be greater than or equal to', 10);
 ```
 
-### to be less than or equal to &lt;number&gt;
+### `{unknown} to be less than or equal to {number}`
 
-> _Aliases: `to be less than or equal to <number>`, `to be at most <number>`_
+> ✏️ Aliases:
+>
+>     {unknown} to be less than or equal to {number}
+>     {unknown} to be at most {number}
+>     {unknown} to be lte {number}
 
 **Success**:
 
@@ -316,9 +346,14 @@ expect(15, 'to be less than or equal to', 10);
 expect(15, 'not to be less than or equal to', 10);
 ```
 
-### to be within &lt;number&gt; and &lt;number&gt;
+### `{number} to be within {number} and {number}`
 
-> _Aliases: `to be within <number> and <number>`, `to be between <number> and <number>`_
+> ✏️ Aliases:
+>
+>     {number} to be within {number} and {number}
+>     {number} to be between {number} and {number}
+
+> ℹ️ This assertion is inclusive of the boundary values.
 
 **Success**:
 
@@ -340,7 +375,9 @@ expect(15, 'to be within', 1, 10);
 expect(15, 'not to be within', 1, 10);
 ```
 
-### to be close to &lt;number&gt; within &lt;number&gt;
+### `{number} to be close to {number} within {number}`
+
+> ℹ️ The first number is the _subject_, the second number is the _target_, and the third number is the _tolerance_.
 
 **Success**:
 

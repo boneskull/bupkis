@@ -8,19 +8,6 @@
  */
 
 import {
-  functionEventuallyCallCallbackAssertion,
-  functionEventuallyCallCallbackWithExactValueAssertion,
-  functionEventuallyCallCallbackWithValueAssertion,
-  functionEventuallyCallCallbackWithValueSatisfyingAssertion,
-  functionEventuallyCallNodebackAssertion,
-  functionEventuallyCallNodebackWithErrorAssertion,
-  functionEventuallyCallNodebackWithErrorClassAssertion,
-  functionEventuallyCallNodebackWithErrorPatternAssertion,
-  functionEventuallyCallNodebackWithExactValueAssertion,
-  functionEventuallyCallNodebackWithValueAssertion,
-  functionEventuallyCallNodebackWithValueSatisfyingAssertion,
-} from './async-callback.js';
-import {
   functionFulfillWithValueSatisfyingAssertion,
   functionRejectAssertion,
   functionRejectWithErrorSatisfyingAssertion,
@@ -52,30 +39,10 @@ export const AsyncParametricAssertions = [
 ] as const;
 
 /**
- * Tuple of all built-in async callback assertions.
+ * Tuple of all built-in async assertions (Promise only).
  *
  * @group Assertion Collections
  */
-export const AsyncCallbackAssertions = [
-  functionEventuallyCallCallbackAssertion,
-  functionEventuallyCallNodebackAssertion,
-  functionEventuallyCallCallbackWithValueAssertion,
-  functionEventuallyCallCallbackWithExactValueAssertion,
-  functionEventuallyCallNodebackWithValueAssertion,
-  functionEventuallyCallNodebackWithExactValueAssertion,
-  functionEventuallyCallNodebackWithErrorAssertion,
-  functionEventuallyCallNodebackWithErrorClassAssertion,
-  functionEventuallyCallNodebackWithErrorPatternAssertion,
-  functionEventuallyCallCallbackWithValueSatisfyingAssertion,
-  functionEventuallyCallNodebackWithValueSatisfyingAssertion,
-] as const;
+export const AsyncAssertions = [...AsyncParametricAssertions] as const;
 
-/**
- * Tuple of all built-in async assertions (Promise + Callback).
- *
- * @group Assertion Collections
- */
-export const AsyncAssertions = [
-  ...AsyncParametricAssertions,
-  ...AsyncCallbackAssertions,
-] as const;
+export * from './async-parametric.js';

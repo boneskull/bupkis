@@ -7,10 +7,17 @@
  * creation and execution.
  *
  * @packageDocumentation
+ *
+ * @groupDescription Assertion Types
+ * Types related to the implementation of assertions.
+ * @groupDescription Internal Assertion Interfaces
+ * Interfaces which define the structure of assertions and their components.
+ * @groupDescription Assertion Implementation
+ * Types related to the implementation of an assertion.
  */
 
 import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
-import { type z } from 'zod/v4';
+import { z } from 'zod/v4';
 
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
@@ -20,6 +27,7 @@ import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
  * This type combines all possible assertion types into a single union for cases
  * where the synchronous/asynchronous nature is not known at compile time.
  *
+ * @group Internal Assertion Types
  * @see {@link AnyAsyncAssertion} for async-specific assertions
  * @see {@link AnySyncAssertion} for sync-specific assertions
  */
@@ -31,6 +39,7 @@ export type AnyAssertion = AnyAsyncAssertion | AnySyncAssertion;
  * Used to represent collections of assertions where at least one assertion must
  * be present.
  *
+ * @group Internal Assertion Types
  * @see {@link AnyAssertion} for individual assertion types
  */
 export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
@@ -41,6 +50,7 @@ export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
  * This includes both function-based and schema-based async assertions but
  * excludes synchronous assertions to maintain type safety.
  *
+ * @group Internal Assertion Types
  * @see {@link AssertionFunctionAsync} for function-based async assertions
  * @see {@link AssertionSchemaAsync} for schema-based async assertions
  */
@@ -64,6 +74,7 @@ export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
  * This includes both function-based and schema-based sync assertions but
  * excludes asynchronous assertions to maintain type safety.
  *
+ * @group Internal Assertion Types
  * @see {@link AssertionFunctionSync} for function-based sync assertions
  * @see {@link AssertionSchemaSync} for schema-based sync assertions
  */
@@ -77,6 +88,7 @@ export type AnySyncAssertion =
  * Used to represent collections of sync assertions where at least one assertion
  * must be present.
  *
+ * @group Internal Assertion Types
  * @see {@link AnySyncAssertion} for individual sync assertion types
  */
 export type AnySyncAssertions = NonEmptyTuple<AnySyncAssertion>;
@@ -87,6 +99,8 @@ export type AnySyncAssertions = NonEmptyTuple<AnySyncAssertion>;
  * This interface defines the contract for assertion instances, including
  * properties for assertion parts, implementation, slots, and methods for
  * parsing and executing assertions both synchronously and asynchronously.
+ *
+ * @group Internal Assertion Interfaces
  */
 export interface Assertion<
   Parts extends AssertionParts,
@@ -118,6 +132,11 @@ export interface Assertion<
   toString(): string;
 }
 
+/**
+ * Type for an object which represents a discrete asynchronous assertion.
+ *
+ * @group Internal Assertion Interfaces
+ */
 export interface AssertionAsync<
   Parts extends AssertionParts = AssertionParts,
   Impl extends AssertionImplAsync<Parts> = AssertionImplAsync<Parts>,
@@ -150,6 +169,12 @@ export interface AssertionAsync<
   ): Promise<ParsedResult<Parts>>;
 }
 
+/**
+ * Object which may be returned from assertion function implementations to
+ * provide better failure reporting to the end-user.
+ *
+ * @group Assertion Creation
+ */
 export interface AssertionFailure {
   /**
    * The actual value or condition that was encountered
@@ -167,6 +192,8 @@ export interface AssertionFailure {
 
 /**
  * An async assertion with a function implementation.
+ *
+ * @group Internal Assertion Interfaces
  */
 export interface AssertionFunctionAsync<
   Parts extends AssertionParts,
@@ -178,6 +205,8 @@ export interface AssertionFunctionAsync<
 
 /**
  * A synchronous assertion with a function implementation.
+ *
+ * @group Internal Assertion Interfaces
  */
 export interface AssertionFunctionSync<
   Parts extends AssertionParts,
@@ -189,6 +218,8 @@ export interface AssertionFunctionSync<
 
 /**
  * Any type of assertion implementation.
+ *
+ * @group Assertion Implementation
  */
 export type AssertionImpl<Parts extends AssertionParts> =
   | AssertionImplAsync<Parts>
@@ -202,6 +233,7 @@ export type AssertionImpl<Parts extends AssertionParts> =
  * logic.
  *
  * @template Parts - The assertion parts defining the structure
+ * @group Assertion Implementation
  * @see {@link AssertionImplFnAsync} for function-based async implementations
  * @see {@link AssertionImplSchemaAsync} for schema-based async implementations
  */
@@ -222,6 +254,7 @@ export type AssertionImplAsync<Parts extends AssertionParts> =
  * @returns Promise resolving to boolean indicating pass/fail, void for success,
  *   ZodType for dynamic validation, or AssertionFailure object for detailed
  *   error information
+ * @group Assertion Implementation
  * @see {@link AssertionImplFnSync} for sync function implementations
  * @see {@link ParsedValues} for the input parameter structure
  */
@@ -233,6 +266,8 @@ export type AssertionImplFnAsync<Parts extends AssertionParts> = (
 
 /**
  * The return type of an assertion implementation function.
+ *
+ * @group Assertion Implementation
  */
 export type AssertionImplFnReturnType<Parts extends AssertionParts> =
   | AssertionFailure
@@ -253,6 +288,7 @@ export type AssertionImplFnReturnType<Parts extends AssertionParts> =
  * @param values - The parsed values corresponding to assertion parts
  * @returns Boolean indicating pass/fail, void for success, ZodType for dynamic
  *   validation, or AssertionFailure object for detailed error information
+ * @group Assertion Implementation
  * @see {@link AssertionImplFnAsync} for async function implementations
  * @see {@link ParsedValues} for the input parameter structure
  */
@@ -264,6 +300,8 @@ export type AssertionImplFnSync<Parts extends AssertionParts> = (
  * Maps an {@link AssertionPart} to a parameter to an {@link AssertionImpl}.
  *
  * This omits {@link Phrase} parts, which are not received by the implementation.
+ *
+ * @group Assertion Implementation
  */
 export type AssertionImplPart<Part extends AssertionPart> = Part extends
   | PhraseLiteral
@@ -275,6 +313,8 @@ export type AssertionImplPart<Part extends AssertionPart> = Part extends
 
 /**
  * Maps {@link AssertionParts} to their corresponding {@link AssertionImplPart}.
+ *
+ * @group Assertion Implementation
  */
 export type AssertionImplParts<Parts extends readonly AssertionPart[]> =
   Parts extends readonly [
@@ -297,6 +337,7 @@ export type AssertionImplParts<Parts extends readonly AssertionPart[]> =
  * safety.
  *
  * @template Parts - The assertion parts tuple defining the assertion structure
+ * @group Assertion Implementation
  * @see {@link AssertionImplSchemaSync} for synchronous schema implementations
  * @see {@link AssertionImplFnAsync} for function-based async implementations
  * @see {@link ParsedSubject} for subject type derivation
@@ -313,6 +354,7 @@ export type AssertionImplSchemaAsync<Parts extends AssertionParts> =
  * safety.
  *
  * @template Parts - The assertion parts tuple defining the assertion structure
+ * @group Assertion Implementation
  * @see {@link AssertionImplSchemaAsync} for asynchronous schema implementations
  * @see {@link AssertionImplFnSync} for function-based sync implementations
  * @see {@link ParsedSubject} for subject type derivation
@@ -328,18 +370,7 @@ export type AssertionImplSchemaSync<Parts extends AssertionParts> =
  * logic, while schema implementations use Zod schemas for validation.
  *
  * @template Parts - The assertion parts tuple defining the assertion structure
- * @see {@link AssertionImplFnSync} for function-based implementations
- * @see {@link AssertionImplSchemaSync} for schema-based implementations
- * @see {@link AssertionImplAsync} for async implementation unions
- */
-/**
- * Union type for all synchronous assertion implementations.
- *
- * This represents either a function-based or schema-based implementation for
- * synchronous assertions. Function implementations provide custom validation
- * logic, while schema implementations use Zod schemas for validation.
- *
- * @template Parts - The assertion parts tuple defining the assertion structure
+ * @group Assertion Implementation
  * @see {@link AssertionImplFnSync} for function-based implementations
  * @see {@link AssertionImplSchemaSync} for schema-based implementations
  * @see {@link AssertionImplAsync} for async implementation unions
@@ -368,6 +399,7 @@ export type AssertionImplSync<Parts extends AssertionParts> =
  * type Part3 = z.ZodString;
  * ```
  *
+ * @group Internal Assertion Types
  * @see {@link Phrase} for phrase-based parts
  * @see {@link AssertionParts} for complete assertion structure
  * @see {@link AssertionSlot} for compiled slot representation
@@ -396,6 +428,7 @@ export type AssertionPart = Phrase | z.ZodType;
  * ```
  *
  * @template Parts - Extends the base AssertionPart array with tuple constraints
+ * @group Internal Assertion Types
  * @see {@link AssertionPart} for individual part types
  * @see {@link AssertionSlots} for compiled slot representation
  * @see {@link createAssertion} for assertion creation from parts
@@ -422,6 +455,7 @@ export type AssertionParts = NonEmptyTuple<AssertionPart>;
  * ```
  *
  * @template Parts - The readonly array of assertion parts to process
+ * @group Internal Assertion Types
  * @see {@link AssertionSlot} for individual slot type mapping
  * @see {@link AssertionSlots} for filtered and properly typed slot tuples
  * @see {@link NoNeverTuple} for filtering never entries
@@ -434,6 +468,11 @@ export type AssertionPartsToSlots<Parts extends readonly AssertionPart[]> =
     ? readonly [AssertionSlot<First>, ...AssertionPartsToSlots<Rest>]
     : readonly [];
 
+/**
+ * An async assertion which is implemented using a Zod schema.
+ *
+ * @group Internal Assertion Interfaces
+ */
 export interface AssertionSchemaAsync<
   Parts extends AssertionParts,
   Impl extends AssertionImplSchemaAsync<Parts>,
@@ -442,6 +481,11 @@ export interface AssertionSchemaAsync<
   impl: Impl;
 }
 
+/**
+ * A synchronous assertion which is implemented using a Zod schema.
+ *
+ * @group Internal Assertion Interfaces
+ */
 export interface AssertionSchemaSync<
   Parts extends AssertionParts,
   Impl extends AssertionImplSchemaSync<Parts>,
@@ -476,6 +520,7 @@ export interface AssertionSchemaSync<
  * ```
  *
  * @template Part - The assertion part to convert to a slot
+ * @group Internal Assertion Types
  * @see {@link PhraseLiteralSlot} for string literal slots
  * @see {@link PhraseLiteralChoiceSlot} for choice-based slots
  * @see {@link AssertionSlots} for complete slot tuples
@@ -519,6 +564,7 @@ export type AssertionSlot<Part extends AssertionPart> = Part extends string
  * ```
  *
  * @template Parts - The assertion parts to convert to slots
+ * @group Internal Assertion Types
  * @see {@link AssertionSlot} for individual slot mapping
  * @see {@link AssertionPartsToSlots} for the underlying mapping logic
  * @see {@link NoNeverTuple} for never filtering
@@ -533,6 +579,11 @@ export type AssertionSlots<Parts extends AssertionParts = AssertionParts> =
       : NoNeverTuple<AssertionPartsToSlots<Parts>>
     : never;
 
+/**
+ * A synchronous assertion of no specific implementation type.
+ *
+ * @group Internal Assertion Interfaces
+ */
 export interface AssertionSync<
   Parts extends AssertionParts = AssertionParts,
   Impl extends AssertionImplSync<Parts> = AssertionImplSync<Parts>,
@@ -565,6 +616,8 @@ export interface AssertionSync<
 
 /**
  * The base structure for parsed assertion results.
+ *
+ * @group Internal Assertion Types
  */
 export interface BaseParsedResult<Parts extends AssertionParts> {
   /**
@@ -593,6 +646,7 @@ export interface BaseParsedResult<Parts extends AssertionParts> {
  * providing a union of all available async assertion types in the framework.
  *
  * @internal
+ * @group Builtin Assertions
  * @see {@link BuiltinAsyncAssertions} for the full array type
  * @see {@link AsyncAssertions} for the actual assertion implementations
  */
@@ -606,6 +660,7 @@ export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
  * in the framework by default.
  *
  * @internal
+ * @group Builtin Assertions
  * @see {@link AsyncAssertions} for the actual assertion implementations
  * @see {@link BuiltinAsyncAssertion} for individual assertion types
  */
@@ -619,6 +674,7 @@ export type BuiltinAsyncAssertions = typeof AsyncAssertions;
  * framework.
  *
  * @internal
+ * @group Builtin Assertions
  * @see {@link BuiltinSyncAssertions} for the full array type
  * @see {@link SyncAssertions} for the actual assertion implementations
  */
@@ -632,11 +688,107 @@ export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
  * included in the framework by default.
  *
  * @internal
+ * @group Builtin Assertions
  * @see {@link SyncAssertions} for the actual assertion implementations
  * @see {@link BuiltinSyncAssertion} for individual assertion types
  */
 export type BuiltinSyncAssertions = typeof SyncAssertions;
 
+/**
+ * The main factory function for creating synchronous assertions.
+ *
+ * @group Core API
+ */
+export interface CreateAssertionFn {
+  /**
+   * Create a synchronous `Assertion` from {@link AssertionParts | parts} and a
+   * {@link z.ZodType | Zod schema}.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a Zod schema
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionSchemaSync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends RawAssertionImplSchemaSync<Parts>,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+    metadata?: AssertionMetadata,
+  ): AssertionSchemaSync<Parts, AssertionImplSchemaSync<Parts>, Slots>;
+
+  /**
+   * Create a synchronous `Assertion` from {@link AssertionParts | parts} and an
+   * implementation function.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a function
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionFunctionSync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends AssertionImplFnSync<Parts>,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+    metadata?: AssertionMetadata,
+  ): AssertionFunctionSync<Parts, Impl, Slots>;
+}
+
+/**
+ * The main factory function for creating asynchronous assertions.
+ *
+ * @group Core API
+ */
+export interface CreateAsyncAssertionFn {
+  /**
+   * Create an async {@link Assertion} from {@link AssertionParts | parts} and an
+   * {@link z.ZodType | Zod schema}.
+   *
+   * The Zod schema need not be async itself.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a Zod schema
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionSchemaAsync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends RawAssertionImplSchemaAsync<Parts>,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+    metadata?: AssertionMetadata,
+  ): AssertionSchemaAsync<Parts, AssertionImplSchemaAsync<Parts>, Slots>;
+
+  /**
+   * Create an async `Assertion` from {@link AssertionParts | parts} and an
+   * implementation function.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a function
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionFunctionAsync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends AssertionImplFnAsync<Parts>,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+    metadata?: AssertionMetadata,
+  ): AssertionFunctionAsync<Parts, Impl, Slots>;
+}
 /**
  * Utility type for parsed values that may be empty.
  *
@@ -646,6 +798,7 @@ export type BuiltinSyncAssertions = typeof SyncAssertions;
  * during the recursive processing.
  *
  * @template Parts - The assertion parts to process
+ * @group Internal Assertion Types
  * @see {@link ParsedValues} for the standard parsed values type
  * @see {@link NoNeverTuple} for never-type filtering
  */
@@ -684,6 +837,7 @@ export type MaybeEmptyParsedValues<Parts extends readonly AssertionPart[]> =
  * ```
  *
  * @template T - The readonly tuple type to filter
+ * @group Utility Types
  * @see {@link AssertionPartsToSlots} for usage in slot processing
  * @see {@link AssertionSlots} for filtered slot tuples
  */
@@ -695,6 +849,7 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
     ? readonly [...NoNeverTuple<Rest>]
     : readonly [First, ...NoNeverTuple<Rest>]
   : readonly [];
+
 /**
  * Union type representing the result of parsing assertion arguments.
  *
@@ -720,6 +875,7 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
  * ```
  *
  * @template Parts - The assertion parts tuple defining expected structure
+ * @group Internal Assertion Types
  * @see {@link ParsedResultSuccess} for successful parse results
  * @see {@link ParsedResultFailure} for failed parse results
  * @see {@link AssertionSync.parseValues} and {@link AssertionAsync.parseValuesAsync} for usage context
@@ -736,6 +892,7 @@ export type ParsedResult<Parts extends AssertionParts = AssertionParts> =
  * returns this interface. The assertion cannot be executed with the provided
  * arguments.
  *
+ * @group Internal Assertion Types
  * @see {@link ParsedResultSuccess} for successful parsing results
  * @see {@link BaseParsedResult} for shared result properties
  */
@@ -753,6 +910,7 @@ export interface ParsedResultFailure extends BaseParsedResult<never> {
  * quality. The assertion can be executed using the `parsedValues`.
  *
  * @template Parts - The assertion parts tuple defining the expected structure
+ * @group Internal Assertion Types
  * @see {@link ParsedResultFailure} for failed parsing results
  * @see {@link BaseParsedResult} for shared result properties
  */
@@ -795,6 +953,7 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
  * ```
  *
  * @template Parts - The assertion parts tuple defining the assertion structure
+ * @group Internal Assertion Types
  * @see {@link ParsedValues} for the complete parsed values tuple
  * @see {@link AssertionImpl} for how subjects are used in implementations
  */
@@ -822,6 +981,7 @@ export type ParsedSubject<Parts extends AssertionParts> =
  * ```
  *
  * @template Parts - The assertion parts tuple defining the expected structure
+ * @group Internal Assertion Types
  * @see {@link ParsedSubject} for extracting just the subject
  * @see {@link MaybeEmptyParsedValues} for the underlying value processing
  * @see {@link AssertionImpl} for how these values are consumed
@@ -848,6 +1008,7 @@ export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
  * type Phrase2 = PhraseLiteralChoice; // ["to be", "to equal"]
  * ```
  *
+ * @group Assertion Creation
  * @see {@link PhraseLiteral} for single string phrases
  * @see {@link PhraseLiteralChoice} for choice-based phrases
  * @see {@link AssertionPart} for how phrases fit into assertion structure
@@ -877,12 +1038,12 @@ export type Phrase = PhraseLiteral | PhraseLiteralChoice;
  * // expect(value, 'to be a string') ✓
  * ```
  *
+ * @group Assertion Creation
  * @see {@link PhraseLiteralChoice} for multi-option phrases
  * @see {@link PhraseLiteralSlot} for compiled slot representation
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type PhraseLiteral = string;
-
 /**
  * Type representing a choice between multiple phrase literals.
  *
@@ -907,6 +1068,7 @@ export type PhraseLiteral = string;
  * // expect(value, 'to equal', expected) ✓
  * ```
  *
+ * @group Assertion Creation
  * @see {@link PhraseLiteral} for single phrase options
  * @see {@link PhraseLiteralChoiceSlot} for compiled slot representation
  * @see {@link AssertionPart} for how phrases fit into assertion structure
@@ -925,6 +1087,7 @@ export type PhraseLiteralChoice = NonEmptyTuple<string>;
  * from the ZodLiteral metadata, but it provides type-level access to the
  * choices.
  * @template H - The readonly tuple of string choices
+ * @group Internal Assertion Types
  * @see {@link PhraseLiteralChoice} for the source type
  * @see {@link PhraseLiteralSlot} for single phrase slots
  * @see {@link AssertionSlot} for slot type mapping
@@ -933,6 +1096,7 @@ export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
   };
+
 /**
  * Branded Zod type representing a compiled phrase literal slot.
  *
@@ -945,6 +1109,7 @@ export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
  * ZodLiteral's value property, but it provides type-level access to the
  * literal.
  * @template T - The string literal type
+ * @group Internal Assertion Types
  * @see {@link PhraseLiteral} for the source type
  * @see {@link PhraseLiteralChoiceSlot} for choice phrase slots
  * @see {@link AssertionSlot} for slot type mapping
@@ -953,6 +1118,23 @@ export type PhraseLiteralSlot<T extends string> = z.core.$ZodBranded<
   z.ZodLiteral<T>,
   'string-literal'
 >;
+
+/**
+ * Type for a raw (unbranded) asynchronous schema assertion implementation.
+ *
+ * This represents a standard Zod schema without branding that validates the
+ * assertion subject synchronously. Unlike {@link AssertionImplSchemaAsync}, this
+ * type is not branded and represents the underlying schema before it is
+ * processed by the assertion creation system.
+ *
+ * @template Parts The tuple defining the assertion structure
+ * @useDeclaredType
+ * @group Assertion Implementation
+ * @see {@link AssertionImplSchemaAsync} for the branded version
+ * @see {@link ParsedSubject} for subject type derivation
+ */
+export type RawAssertionImplSchemaAsync<Parts extends AssertionParts> =
+  z.ZodType<ParsedSubject<Parts>>;
 
 /**
  * Type for a raw (unbranded) synchronous schema assertion implementation.
@@ -964,8 +1146,29 @@ export type PhraseLiteralSlot<T extends string> = z.core.$ZodBranded<
  *
  * @template Parts The tuple defining the assertion structure
  * @useDeclaredType
+ * @group Assertion Implementation
  * @see {@link AssertionImplSchemaSync} for the branded version
  * @see {@link ParsedSubject} for subject type derivation
  */
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;
+
+export const AssertionMetadataSchema = z.looseObject({
+  anchor: z.string(),
+  category: z.enum([
+    'collections',
+    'date',
+    'equality',
+    'error',
+    'function',
+    'numeric',
+    'object',
+    'other',
+    'primitives',
+    'promise',
+    'strings',
+  ]),
+  redirectName: z.string().optional(),
+});
+
+export type AssertionMetadata = z.infer<typeof AssertionMetadataSchema>;

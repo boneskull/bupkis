@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test functions, their behavior, and properties.
 
-### to be a function
+### `{unknown} to be a function`
 
 **Success**:
 
@@ -52,9 +52,13 @@ expect(function () {}, 'to be an async function');
 expect(function () {}, 'not to be an async function');
 ```
 
-### to be a constructor
+### `{unknown} to be a constructor`
 
-> _Aliases: `to be a constructor`, `to be constructible`, `to be a class`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a constructor
+>     {unknown} to be constructible
+>     {unknown} to be a class
 
 > ⚠️ Warning!
 >
@@ -84,7 +88,7 @@ expect(fn, 'to be a class');
 expect(fn, 'not to be a class');
 ```
 
-### to have arity &lt;nonnegative-integer&gt;
+### `{function} to have arity {nonnegative-integer}`
 
 **Success**:
 
@@ -114,13 +118,16 @@ expect(greet, 'to have arity', 2);
 expect(greet, 'not to have arity', 2);
 ```
 
-### to throw [any]
+### `{function} to throw [{any}]`
 
-> _Aliases: `to throw`, `to throw an error satisfying`_
+> ✏️ Aliases:
 >
-> This assertion _optionally_ accepts a parameter using the ["to satisfy"](objects.md#to-satisfy-) semantics.
+>     {function} to throw [{any}]
+>     {function} to throw an error satisfying {any}
+>
+> ℹ️ The `to throw` form of this assertion _optionally_ accepts a parameter using the ["to satisfy"](object.md#to-satisfy-) semantics. The `to throw an error satisfying` form _requires_ this parameter.
 
-> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
+> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
 
 **Success**:
 
@@ -195,9 +202,12 @@ expect(
 );
 ```
 
-### to throw a &lt;constructor&gt;
+### `{function} to throw a {constructor}`
 
-> _Aliases: `to throw a <constructor>`, `to throw an <constructor>`_
+> ✏️ Aliases:
+>
+>     {function} to throw a {constructor}
+>     {function} to throw an {constructor}
 
 **Success**:
 
@@ -244,13 +254,16 @@ expect(
 );
 ```
 
-### to throw an &lt;error&gt; satisfying &lt;any&gt;
+### `{function} to throw a {constructor} satisfying {any}`
 
-> _Aliases: `to throw a <error> satisfying <any>`, `to throw an <error> satisfying <any>`_
+> ✏️ Aliases:
+>
+>     {function} to throw a {constructor} satisfying {any}
+>     {function} to throw an {constructor} satisfying {any}
 
-> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
+> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
 
-This assertion is a combination of ["to throw a"](#to-throw-a-constructor) and ["to throw"](#to-throw-).
+This assertion is a combination of ["to throw a"](#function-to-throw-a-constructor) and ["to throw"](#function-to-throw-any).
 
 **Success**:
 

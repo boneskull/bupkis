@@ -6,14 +6,12 @@
  *
  * - `all` (default)
  * - `sync` - maps to `SyncAssertions`
- * - `sync-basic` - maps to `BasicAssertions`
+ * - `sync-basic` - maps to `SyncBasicAssertions`
  * - `sync-parametric` - maps to `SyncParametricAssertions`
- * - `sync-collection` - maps to `CollectionAssertions`
- * - `sync-esoteric` - maps to `EsotericAssertions`
+ * - `sync-collection` - maps to `SyncCollectionAssertions`
+ * - `sync-esoteric` - maps to `SyncEsotericAssertions`
  * - `async` - maps to `AsyncAssertions`
  * - `async-parametric` - maps to `AsyncSyncParametricAssertions`
- * - `async-callback` - maps to `AsyncCallbackAssertions`
- * - `sync-callback` - maps to `SyncCallbackAssertions`
  *
  * This script uses `parseArgs` from `node:util` and dumps values using
  * `console.dir()`.
@@ -37,15 +35,12 @@ import { parseArgs } from 'node:util';
 // Import assertion collections
 import {
   AsyncAssertions,
-  AsyncCallbackAssertions,
   AsyncParametricAssertions,
 } from '../src/assertion/impl/async.js';
 import {
-  BasicAssertions,
-  CollectionAssertions,
-  EsotericAssertions,
   SyncAssertions,
-  SyncCallbackAssertions,
+  SyncCollectionAssertions,
+  SyncEsotericAssertions,
   SyncParametricAssertions,
 } from '../src/assertion/impl/sync.js';
 
@@ -53,13 +48,10 @@ import {
 const collections = /** @type {const} */ {
   all: [...SyncAssertions, ...AsyncAssertions],
   async: AsyncAssertions,
-  'async-callback': AsyncCallbackAssertions,
   'async-parametric': AsyncParametricAssertions,
   sync: SyncAssertions,
-  'sync-basic': BasicAssertions,
-  'sync-callback': SyncCallbackAssertions,
-  'sync-collection': CollectionAssertions,
-  'sync-esoteric': EsotericAssertions,
+  'sync-collection': SyncCollectionAssertions,
+  'sync-esoteric': SyncEsotericAssertions,
   'sync-parametric': SyncParametricAssertions,
 };
 

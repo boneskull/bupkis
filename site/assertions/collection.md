@@ -7,9 +7,12 @@ category: Assertions
 
 These assertions test collections like arrays, Maps, Sets, and their properties.
 
-### to be an array
+### `{unknown} to be an array`
 
-> _Aliases: `to be an array`, `to be array`_
+> ✏️ Aliases:
+>
+>     {unknown} to be an array
+>     {unknown} to be array
 
 **Success**:
 
@@ -32,7 +35,7 @@ expect('hello', 'to be an array');
 expect('hello', 'not to be an array');
 ```
 
-### &lt;array&gt; to be empty
+### `{arraylike} to be empty`
 
 **Success**:
 
@@ -53,7 +56,7 @@ expect([1, 2, 3], 'to be empty');
 expect([1, 2, 3], 'not to be empty');
 ```
 
-### &lt;array&gt; to have length &lt;nonnegative-integer&gt;
+### `{array} to have length {nonnegative-integer}`
 
 **Success**:
 
@@ -75,7 +78,9 @@ expect([1, 2], 'to have length', 3);
 expect([1, 2], 'not to have length', 3);
 ```
 
-### &lt;array&gt; to be non-empty
+### `{arraylike} to be non-empty`
+
+Functionally equivalent to [`not to be empty`](#arraylike-to-be-empty).
 
 **Success**:
 
@@ -97,9 +102,12 @@ expect([], 'to be non-empty');
 expect([], 'not to be non-empty');
 ```
 
-### &lt;array&gt; to contain &lt;any&gt;
+### `{array} to contain {any}`
 
-> _Aliases: `to contain <any>`_
+> ✏️ Aliases:
+>
+>     {array} to contain {any}
+>     {array} to include {any}
 
 **Success**:
 
@@ -121,9 +129,12 @@ expect([1, 2, 3], 'to contain', 5);
 expect([1, 2, 3], 'not to contain', 5);
 ```
 
-### &lt;Map&gt; to contain &lt;any&gt;
+### `{Map} to contain {any}`
 
-> _Aliases: `to contain <any>`_
+> ✏️ Aliases:
+>
+>     {Map} to contain {any}
+>     {Map} to include {any}
 
 **Success**:
 
@@ -150,7 +161,7 @@ expect(map, 'to contain', 'key3');
 expect(map, 'not to contain', 'key3');
 ```
 
-### &lt;Map&gt; to have size &lt;nonnegative-integer&gt;
+### `{Map} to have size {nonnegative-integer}`
 
 **Success**:
 
@@ -176,7 +187,7 @@ expect(map, 'to have size', 2);
 expect(map, 'not to have size', 2);
 ```
 
-### &lt;Map&gt; to be empty
+### `{Map} to be empty`
 
 **Success**:
 
@@ -198,9 +209,12 @@ expect(map, 'to be empty');
 expect(map, 'not to be empty');
 ```
 
-### &lt;Set&gt; to contain &lt;any&gt;
+### `{Set} to contain {any}`
 
-> _Aliases: `to contain <any>`_
+> ✏️ Aliases:
+>
+>     {Set} to contain {any}
+>     {Set} to include {any}
 
 **Success**:
 
@@ -224,7 +238,7 @@ expect(set, 'to contain', 5);
 expect(set, 'not to contain', 5);
 ```
 
-### &lt;Set&gt; to have size &lt;nonnegative-integer&gt;
+### `{Set} to have size {nonnegative-integer}`
 
 **Success**:
 
@@ -247,7 +261,7 @@ expect(set, 'to have size', 3);
 expect(set, 'not to have size', 3);
 ```
 
-### &lt;Set&gt; to be empty
+### `{Set} to be empty`
 
 **Success**:
 
@@ -269,7 +283,7 @@ expect(set, 'to be empty');
 expect(set, 'not to be empty');
 ```
 
-### to be a Set
+### `{unknown} to be a Set`
 
 **Success**:
 
@@ -291,9 +305,12 @@ expect([1, 2, 3], 'to be a Set');
 expect([1, 2, 3], 'not to be a Set');
 ```
 
-### &lt;WeakMap&gt; to contain &lt;any&gt;
+### `{WeakMap} to contain {object | symbol}`
 
-> _Aliases: `to contain <any>`_
+> ✏️ Aliases:
+>
+>     {WeakMap} to contain {object | symbol}
+>     {WeakMap} to include {object | symbol}
 
 **Success**:
 
@@ -319,7 +336,7 @@ expect(wm, 'to contain', obj2);
 expect(wm, 'not to contain', obj2);
 ```
 
-### to be a WeakMap
+### `{unknown} to be a WeakMap`
 
 **Success**:
 
@@ -340,9 +357,12 @@ expect(new Map(), 'to be a WeakMap');
 expect(new Map(), 'not to be a WeakMap');
 ```
 
-### &lt;WeakSet&gt; to contain &lt;any&gt;
+### `{WeakSet} to contain {object | symbol}`
 
-> _Aliases: `to contain <any>`_
+> ✏️ Aliases:
+>
+>     {WeakSet} to contain {object | symbol}
+>     {WeakSet} to include {object | symbol}
 
 **Success**:
 
@@ -368,7 +388,7 @@ expect(ws, 'to contain', obj2);
 expect(ws, 'not to contain', obj2);
 ```
 
-### to be a WeakSet
+### `{unknown} to be a WeakSet`
 
 **Success**:
 

@@ -16,6 +16,7 @@ import { z } from 'zod/v4';
 
 import { BupkisRegistry } from '../../metadata.js';
 import {
+  ArrayLikeSchema,
   AsyncFunctionSchema,
   ConstructibleSchema,
   FalsySchema,
@@ -544,8 +545,16 @@ export const recordAssertion = createAssertion(
  * @group Basic Assertions
  */
 export const emptyArrayAssertion = createAssertion(
-  [z.array(z.any()), 'to be empty'],
-  z.array(z.any()).max(0),
+  [ArrayLikeSchema, 'to be empty'],
+  (subject) => {
+    if (subject.length !== 0) {
+      return {
+        actual: subject.length,
+        expected: 0,
+        message: `Expected array-like to have length 0, but had length ${subject.length}`,
+      };
+    }
+  },
 );
 
 /**
@@ -580,7 +589,7 @@ export const emptyObjectAssertion = createAssertion(
  * @group Basic Assertions
  */
 export const errorAssertion = createAssertion(
-  ['to be an Error'],
+  [['to be an Error', 'to be a Error']],
   z.instanceof(Error),
 );
 
