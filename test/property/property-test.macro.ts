@@ -70,7 +70,13 @@ export function assertExhaustiveTestConfigs(
  * - Local development: 200 runs (thorough testing)
  */
 const globalTestConfigDefaults = {
-  numRuns: process.env.WALLABY ? 10 : process.env.CI ? 100 : 200,
+  numRuns: process.env.WALLABY
+    ? 10
+    : process.env.CI
+      ? 100
+      : process.env.NUM_RUNS
+        ? Number.parseInt(process.env.NUM_RUNS, 10)
+        : 200,
 } as const satisfies PropertyTestConfigParameters;
 
 /**

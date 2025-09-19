@@ -10,7 +10,6 @@
  * @packageDocumentation
  */
 
-export * from './async-callback.js';
 export * from './async-parametric.js';
 export * from './async.js';
 export * from './sync-basic.js';

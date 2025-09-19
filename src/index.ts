@@ -12,8 +12,6 @@
  * ```ts
  * import { expect, expectAsync, z, createAssertion } from 'bupkis';
  * ```
- *
- * @showGroups
  */
 
 import { z } from 'zod/v4';
@@ -45,6 +43,7 @@ export { z };
  * @primaryExport
  */
 export type {
+  AssertionFailure,
   Bupkis,
   CreateAssertionFn,
   CreateAsyncAssertionFn,
@@ -52,11 +51,9 @@ export type {
   ExpectAsync,
   ExpectIt,
   ExpectItAsync,
-  ExpectItExecutor,
-  ExpectItExecutorAsync,
   FailFn,
+  Keypath,
   UseFn,
-  ZodTypeMap,
 } from './types.js';
 export { createAssertion, createAsyncAssertion, fail, use };
 const {
@@ -67,6 +64,8 @@ const {
    * {@link ExpectAsync}.
    *
    * @function
+   * @primaryExport
+   * @group Core API
    */
   createAssertion,
   /**
@@ -76,18 +75,24 @@ const {
    * {@link ExpectAsync}.
    *
    * @function
+   * @primaryExport
+   * @group Core API
    */
   createAsyncAssertion,
   /**
    * {@inheritDoc FailFn}
    *
    * @function
+   * @primaryExport
+   * @group Core API
    */
   fail,
   /**
    * {@inheritDoc UseFn}
    *
    * @function
+   * @primaryExport
+   * @group Core API
    */
   use,
   ..._rest

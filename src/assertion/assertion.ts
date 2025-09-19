@@ -21,6 +21,7 @@ import { BupkisRegistry } from '../metadata.js';
 import {
   type Assertion,
   type AssertionImpl,
+  type AssertionMetadata,
   type AssertionParts,
   type AssertionSlots,
   type ParsedResult,
@@ -38,6 +39,17 @@ const debug = Debug('bupkis:assertion');
  */
 const SLUG_CHARMAP = { ...slug.charmap, '-': '_', '<': '_', '>': '' };
 
+/**
+ * Registry of assertion metadata.
+ */
+export const AssertionMetadataRegistry = new WeakMap<
+  BupkisAssertion<any, any, any>,
+  AssertionMetadata
+>();
+
+/**
+ * Base abstract class for ALL assertions.
+ */
 export abstract class BupkisAssertion<
   Parts extends AssertionParts,
   Impl extends AssertionImpl<Parts>,
@@ -55,13 +67,9 @@ export abstract class BupkisAssertion<
     debug('Created assertion %s', this);
   }
 
-  /**
-   * Parses raw arguments synchronously against this `Assertion`'s Slots to
-   * determine if they match this `Assertion`.
-   *
-   * @param args Raw arguments provided to `expect()`
-   * @returns Result of parsing attempt
-   */
+  public metadata(): AssertionMetadata | undefined {
+    return AssertionMetadataRegistry.get(this);
+  }
 
   /**
    * @returns String representation

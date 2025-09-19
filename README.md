@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/>
+  <a href="/"><img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/></a>
   <h1 align="center"><span class="bupkis">⁓ BUPKIS ⁓<span></h1>
   <p align="center">
-    Uncommonly extensible assertions for the beautiful people
+    <em>“Uncommonly Extensible Assertions for The Beautiful People”</em>
     <br/>
     <small>by <a href="https://github.com/boneskull" title="@boneskull on GitHub">@boneskull</a></small>
   </p>
@@ -23,7 +23,7 @@
 
 Look, we're ~~old~~ ~~wizened~~ ~~experienced~~ knowledgeable and we've written a lot of tests. We've used a lot of assertion libraries. There are ones we prefer and ones we don't.
 
-But none of them do quite what _BUPKIS_ does. We want an assertion library that prioritizes:
+But none of them do quite what **BUPKIS** does. We want an assertion library that prioritizes:
 
 - Type safety
 - Uncompromisable extensibility
@@ -33,7 +33,7 @@ We can think of several that tick two-thirds of those boxes! But _we demand the 
 
 > ⚠️ **Caution!**
 >
-> Assertion libraries tend come in two flavors: chainable or stiff & traditional. But because these styles are likely _familiar_ to you, you may hate _BUPKIS_.
+> Assertion libraries tend come in two flavors: chainable or stiff & traditional. But because these styles are likely _familiar_ to you, you may hate **BUPKIS**.
 >
 > We _want_ you to like it, yes. But if you don't, we're content with just making our point and asking the following favor of the reader:
 >
@@ -43,9 +43,9 @@ The following is a brief overview of the design choices we made to serve these g
 
 ### Natural Language Assertions
 
-In _BUPKIS_, "natural language" is the means to the end of "a small API surface".
+In **BUPKIS**, "natural language" is the means to the end of "a small API surface".
 
-When you're using _BUPKIS_, you **don't** write this:
+When you're using **BUPKIS**, you **don't** write this:
 
 ```js
 expect(actual).toEqual(expected);
@@ -73,7 +73,7 @@ If another assertion library wants you to write:
 expect(actual).to.be.a('string');
 ```
 
-Then _BUPKIS_ wants you to write:
+Then **BUPKIS** wants you to write:
 
 ```js
 expect(actual, 'to be a string');
@@ -81,7 +81,7 @@ expect(actual, 'to be a string');
 expect(actual, 'to be an string');
 ```
 
-Can't remember the phrase? Did you forget a word or make a typo? Maybe you also forgot **_BUPKIS_ is type-safe?!** You'll get a nice squiggly for your trouble.
+Can't remember the phrase? Did you forget a word or make a typo? Maybe you also forgot \***\*BUPKIS** is type-safe?!\*\* You'll get a nice squiggly for your trouble.
 
 This isn't black magic. It ain't no _cauldron_. We're not just _throwing rat tails and `string`s into a function and stirring that shit up._
 
@@ -95,9 +95,9 @@ You may wonder how this could this be anything _but_ loosey-goosey _senselessnes
 
 To formalize the conventions at a high level:
 
-- The first parameter to a _BUPKIS_ assertion is always the _subject_ ([def.](https://bupkis.zip/documents/Reference.Glossary_of_Terms#subject)).
+- The first parameter to a **BUPKIS** assertion is always the _subject_ ([def.](https://bupkis.zip/documents/Reference.Glossary_of_Terms#subject)).
 
-- The "string" part of a _BUPKIS_ assertion is known as a _phrase_. Every expectation will contain _at minimum_ one (1) phrase. As you can see from the above "to be a string" example, phrases often have aliases.
+- The "string" part of a **BUPKIS** assertion is known as a _phrase_. Every expectation will contain _at minimum_ one (1) phrase. As you can see from the above "to be a string" example, phrases often have aliases.
 
 - Assertions may have multiple phrases or parameters, but the simplest assertions always look like this:
 
@@ -155,7 +155,7 @@ To formalize the conventions at a high level:
 
 ### Custom Assertions Built With Zod
 
-[Zod][] is a popular object validation library which does some heavy lifting for _BUPKIS_—most of the built-in assertions are implemented using Zod schemas. And so _BUPKIS_ extends this capability to you.
+[Zod][] is a popular object validation library which does some heavy lifting for **BUPKIS**—most of the built-in assertions are implemented using Zod schemas. And so **BUPKIS** extends this capability to you.
 
 An example will be illuminating. What follows is a ~~stupid~~ ~~quick~~ _stupid_ example of a creating and "registering" a basic assertion _which can be invoked using two different phrases_:
 
@@ -189,7 +189,7 @@ expect('skiball lavatory', 'to be a string');
 
 ### Excruciating Type Safety
 
-We have tried to make _BUPKIS_ is as type-safe as possible. To be clear, _that is pretty damn possible_. This means:
+We have tried to make **BUPKIS** is as type-safe as possible. To be clear, _that is pretty damn possible_. This means:
 
 - Every built-in assertion is fully type-safe and is declared as an overload for `expect()` or `expectAsync()`.
 - Every _custom_ assertion is _also_ fully type-safe and is declared as an overload for `expect()` or `expectAsync()` (as returned from `use()`)
@@ -201,15 +201,15 @@ We have tried to make _BUPKIS_ is as type-safe as possible. To be clear, _that i
 
 **Node.js**: ^20.19.0, ^22.12.0, >=23
 
-_BUPKIS_ has a peer dependency on [Zod][] v4+, but will install it as an optional dependency if you are not already using it.
+**BUPKIS** has a peer dependency on [Zod][] v4+, but will install it as an optional dependency if you are not already using it.
 
-_BUPKIS_ ships as a dual CJS/ESM package.
+**BUPKIS** ships as a dual CJS/ESM package.
 
-> Disclaimer: _BUPKIS_ has been designed to run on Node.js in a development environment. Anyone attempting to deploy _BUPKIS_ to some server somewhere will get what is coming to them.
+> Disclaimer: **BUPKIS** has been designed to run on Node.js in a development environment. Anyone attempting to deploy **BUPKIS** to some server somewhere will get what is coming to them.
 
 ## Installation
 
-```bash
+```sh
 npm install bupkis -D
 ```
 
@@ -221,14 +221,14 @@ npm install bupkis -D
 
 ## Acknowledgements
 
-- [Unexpected][] is the main inspiration for _BUPKIS_. However, creating types for this library was exceedingly difficult (and was in fact the first thing we tried). Despite that drawback, we found it exquisitely usable.
-- [Zod][] is a popular object validation library upon which _BUPKIS_ builds many of its own assertions.
+- [Unexpected][] is the main inspiration for **BUPKIS**. However, creating types for this library was exceedingly difficult (and was in fact the first thing we tried). Despite that drawback, we found it exquisitely usable.
+- [Zod][] is a popular object validation library upon which **BUPKIS** builds many of its own assertions.
 - [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, we mean. How about _in addition to_ itself? Yes. Thank you!
 - [tshy][] from Isaac Schlueter. Thanks for making dual ESM/CJS packages easy and not too fancy.
 - [TypeDoc][] it really documents the hell out of TypeScript projects.
 - [@cjihrig](https://github.com/cjihrig) and other Node.js contributors for the thoughtfulness put into [`node:test`](https://nodejs.org/api/test.html) that make it my current test-runner-of-choice.
 
-## Why is it called _BUPKIS_?
+## Why is it called **BUPKIS**?
 
 TODO: think of good reason and fill in later
 

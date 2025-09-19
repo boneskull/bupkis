@@ -7,13 +7,17 @@ category: Assertions
 
 These assertions test strings, regular expressions, and pattern matching.
 
-### to be a string
+### `{unknown} to be a string`
 
-> 👉 See [to be a string](primitives.md#to-be-a-string)
+> 👉 See [to be a string](primitive.md#unknown-to-be-a-string)
 
-### to be a RegExp
+### `{unknown} to be a RegExp`
 
-> _Aliases: `to be a RegExp`, `to be a regex`, `to be a regexp`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a RegExp
+>     {unknown} to be a regex
+>     {unknown} to be a regexp
 
 **Success**:
 
@@ -36,9 +40,12 @@ expect('hello', 'to be a RegExp');
 expect('hello', 'not to be a RegExp');
 ```
 
-### to begin with &lt;string&gt;
+### `{string} to begin with {string}`
 
-> _Aliases: `to begin with <string>`, `to start with <string>`_
+> ✏️ Aliases:
+>
+>     {string} to begin with {string}
+>     {string} to start with {string}
 
 **Success**:
 
@@ -60,7 +67,7 @@ expect('hello world', 'to begin with', 'world');
 expect('hello world', 'not to begin with', 'world');
 ```
 
-### to end with &lt;string&gt;
+### `{string} to end with {string}`
 
 **Success**:
 
@@ -82,7 +89,7 @@ expect('hello world', 'to end with', 'hello');
 expect('hello world', 'not to end with', 'hello');
 ```
 
-### to match &lt;RegExp&gt;
+### `{string} to match {RegExp}`
 
 **Success**:
 
@@ -105,7 +112,7 @@ expect('hello', 'to match', /\d+/);
 expect('hello', 'not to match', /\d+/);
 ```
 
-### to be empty
+### `{string} to be empty`
 
 **Success**:
 
@@ -126,7 +133,9 @@ expect('hello', 'to be empty');
 expect('hello', 'not to be empty');
 ```
 
-### to be non-empty
+### `{string} to be non-empty`
+
+Functionally identical to ["not to be empty"](#string-to-be-empty).
 
 **Success**:
 
@@ -144,15 +153,18 @@ expect('', 'to be non-empty');
 
 **Negation**:
 
-> **PRO TIP**: Use ["to be empty"](#to-be-empty) instead.
+> **PRO TIP**: Use ["to be empty"](#string-to-be-empty) instead.
 
 ```js
 expect('', 'not to be non-empty');
 ```
 
-### includes &lt;string&gt;
+### `{string} includes {string}`
 
-> _Aliases: `includes <string>`_
+> ✏️ Aliases:
+>
+>     {string} includes {string}
+>     {string} contains {string}
 
 **Success**:
 

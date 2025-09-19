@@ -18,6 +18,8 @@ import { isA } from './guards.js';
 /**
  * _BUPKIS_' s custom `AssertionError` class, which is just a thin wrapper
  * around Node.js' {@link NodeAssertionError AssertionError}.
+ *
+ * @group Core API
  */
 export class AssertionError extends NodeAssertionError {
   /**

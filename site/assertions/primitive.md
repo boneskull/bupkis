@@ -7,7 +7,7 @@ category: Assertions
 
 These are the most basic expectations about the _type_ of a subject.
 
-### to be a string
+### `{unknown} to be a string`
 
 **Success**:
 
@@ -28,9 +28,13 @@ expect(42, 'to be a string');
 expect(42, 'not to be a string');
 ```
 
-### to be a boolean
+### `{unknown} to be a boolean`
 
-> _Aliases: `to be a boolean`, `to be a bool`, `to be boolean`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a boolean
+>     {unknown} to be a bool
+>     {unknown} to be boolean
 
 **Success**:
 
@@ -52,9 +56,12 @@ expect(0, 'to be a boolean');
 expect(0, 'not to be a boolean');
 ```
 
-### to be a number
+### `{unknown} to be a number`
 
-> _Aliases: `to be a number`, `to be finite`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a number
+>     {unknown} to be finite
 
 The definition of "number" is that of Zod v4's; only _finite_ numbers are considered valid.
 
@@ -81,7 +88,7 @@ expect(NaN, 'not to be a number');
 expect(Infinity, 'not to be a number');
 ```
 
-### to be a bigint
+### `{unknown} to be a bigint`
 
 **Success**:
 
@@ -102,7 +109,7 @@ expect(42, 'to be a bigint');
 expect(42, 'not to be a bigint');
 ```
 
-### to be a symbol
+### `{unknown} to be a symbol`
 
 **Success**:
 
@@ -123,7 +130,7 @@ expect('foo', 'to be a symbol');
 expect('foo', 'not to be a symbol');
 ```
 
-### to be null
+### `{unknown} to be null`
 
 **Success**:
 
@@ -144,7 +151,7 @@ expect(undefined, 'to be null');
 expect(undefined, 'not to be null');
 ```
 
-### to be undefined
+### `{unknown} to be undefined`
 
 **Success**:
 
@@ -165,7 +172,7 @@ expect(null, 'to be undefined');
 expect(null, 'not to be undefined');
 ```
 
-### to be a primitive
+### `{unknown} to be a primitive`
 
 **Success**:
 

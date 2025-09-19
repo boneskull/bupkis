@@ -1,15 +1,18 @@
 ---
-title: Async Assertions
+title: Promise Assertions
 category: Assertions
 ---
 
-## Async Assertions
+## Promise Assertions
 
-These assertions test Promises and asynchronous operations. Use `expectAsync()` for these assertions.
+These assertions all expect a `Promise` subject. Use `expectAsync()` for these assertions.
 
-### to resolve
+### `{Promise} to resolve`
 
-> _Aliases: `to resolve`, `to fulfill`_
+> ✏️ Aliases:
+>
+>     {Promise} to resolve
+>     {Promise} to fulfill
 
 **Success**:
 
@@ -34,7 +37,7 @@ await expectAsync(Promise.reject('error'), 'to resolve');
 await expectAsync(Promise.reject('error'), 'not to resolve');
 ```
 
-### to reject
+### `{Promise} to reject`
 
 **Success**:
 
@@ -61,9 +64,12 @@ await expectAsync(Promise.resolve(42), 'to reject');
 await expectAsync(Promise.resolve(42), 'not to reject');
 ```
 
-### to reject with a &lt;constructor&gt;
+### `{Promise} to reject with a {constructor}`
 
-> _Aliases: `to reject with a <constructor>`_
+> ✏️ Aliases:
+>
+>     {Promise} to reject with a {constructor}
+>     {Promise} to reject with an {constructor}
 
 **Success**:
 
@@ -102,9 +108,9 @@ await expectAsync(
 );
 ```
 
-### to reject with error satisfying &lt;any&gt;
+### `{Promise} to reject with error satisfying {any}`
 
-> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
+> _See also: [`{object} to satisfy {any}`](object.md#to-satisfy-)_
 
 **Success**:
 
@@ -152,11 +158,14 @@ await expectAsync(
 );
 ```
 
-### to fulfill with value satisfying &lt;any&gt;
+### `{Promise} to fulfill with value satisfying {any}`
 
-> _Aliases: `to fulfill with value satisfying <any>`, `to resolve to value satisfying <any>`_
+> ✏️ Aliases:
+>
+>     {Promise} to fulfill with value satisfying {any}
+>     {Promise} to resolve with value satisfying {any}
 
-> _See also: [`to satisfy <any>`](objects.md#to-satisfy-)_
+> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
 
 **Success**:
 

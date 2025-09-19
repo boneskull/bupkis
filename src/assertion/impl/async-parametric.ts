@@ -54,6 +54,10 @@ export const functionResolveAssertion = createAsyncAssertion(
       };
     }
   },
+  {
+    anchor: 'to-resolve',
+    category: 'promise',
+  },
 );
 
 /**

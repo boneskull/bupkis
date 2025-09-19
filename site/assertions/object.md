@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test objects, their properties, and object-specific behaviors.
 
-### to be an object
+### `{unknown} to be an object`
 
 **Success**:
 
@@ -33,9 +33,12 @@ expect('hello', 'not to be an object');
 expect(null, 'not to be an object');
 ```
 
-### to be a record
+### `{unknown} to be a record`
 
-> _Aliases: `to be a record`, `to be a plain object`_
+> ✏️ Aliases:
+>
+>     {unknown} to be a record
+>     {unknown} to be a plain object
 
 **Success**:
 
@@ -79,9 +82,13 @@ expect({ a: 1 }, 'to be empty');
 expect({ a: 1 }, 'not to be empty');
 ```
 
-### to have keys &lt;array&gt;
+### `{object} to have keys {array}`
 
-> _Aliases: `to have keys <array>`, `to have properties <array>`, `to have props <array>`_
+> ✏️ Aliases:
+>
+>     {object} to have keys {array}
+>     {object} to have properties {array}
+>     {object} to have props {array}
 
 **Success**:
 
@@ -103,11 +110,15 @@ expect({ a: 1 }, 'to have keys', ['a', 'b']);
 expect({ a: 1 }, 'not to have keys', ['a', 'b']);
 ```
 
-### to have key &lt;keypath&gt;
+### {object} to have key {keypath}
 
-> _Aliases: `to have key <keypath>`, `to have property <keypath>`, `to have prop <keypath>`_
+> ✏️ Aliases:
+>
+>     {object} to have key {keypath}
+>     {object} to have property {keypath}
+>     {object} to have prop {keypath}
 
-Tests whether an object has a property at the specified keypath using dot or bracket notation. This assertion supports complex keypath traversal including nested properties, array indices, and quoted keys.
+Tests whether an object has a property at the specified keypath using dot or bracket notation. This assertion supports complex _keypath_ traversal including nested properties, array indices, and quoted keys.
 
 Supported keypath formats:
 
@@ -152,9 +163,13 @@ expect(obj, 'not to have key', 'nonexistent.path');
 expect(obj, 'not to have property', 'foo.bar[5].missing');
 ```
 
-### to have exact key &lt;key&gt;
+### {object} to have exact key {string | number | symbol}
 
-> _Aliases: `to have exact key <key>`, `to have exact property <key>`, `to have exact prop <key>`_
+> ✏️ Aliases:
+>
+>     {object} to have exact key {string | number | symbol}
+>     {object} to have exact property {string | number | symbol}
+>     {object} to have exact prop {string | number | symbol}
 
 Tests whether an object has an exact property key without keypath traversal. This assertion checks for direct properties on the object and supports symbols and keys that would conflict with bracket/dot notation.
 
@@ -202,7 +217,12 @@ expect(obj, 'not to have exact key', 'missing');
 expect(obj, 'not to have exact property', 'nested.prop'); // no traversal
 ```
 
-### to have a null prototype
+### `{object} to have a null prototype`
+
+> ✏️ Aliases:
+>
+>     {object} to have a null prototype
+>     {object} to be a dictionary
 
 **Success**:
 
@@ -224,7 +244,14 @@ expect({}, 'to have a null prototype');
 expect({}, 'not to have a null prototype');
 ```
 
-### to be an enumerable property of &lt;object&gt;
+### `{string | number | symbol} to be an enumerable property of {non-null}`
+
+> ✏️ Aliases:
+>
+>     {string | number | symbol} to be an enumerable property of {non-null}
+>     {non-null} to have enumerable property {string | number | symbol}
+
+This accepts any non-`null`, non-`undefined` value as the second parameter.
 
 **Success**:
 
@@ -248,7 +275,7 @@ expect('b', 'to be an enumerable property of', obj);
 expect('b', 'not to be an enumerable property of', obj);
 ```
 
-### to be sealed
+### `{unknown} to be sealed`
 
 **Success**:
 
@@ -271,7 +298,7 @@ expect({}, 'to be sealed');
 expect({}, 'not to be sealed');
 ```
 
-### to be frozen
+### {`unknown} to be frozen`
 
 **Success**:
 
@@ -294,7 +321,7 @@ expect({}, 'to be frozen');
 expect({}, 'not to be frozen');
 ```
 
-### to be extensible
+### `{unknown} to be extensible`
 
 **Success**:
 
@@ -317,9 +344,12 @@ expect(obj, 'to be extensible');
 expect(obj, 'not to be extensible');
 ```
 
-### to satisfy &lt;any&gt;
+### `{object} to satisfy {any}`
 
-> _Aliases: `to satisfy <any>`, `to be like <any>`_
+> ✏️ Aliases:
+>
+>     {object} to satisfy {any}
+>     {object} to be like {any}
 
 "To satisfy" is a ~~wonky~~ _special_ loose "deep equal" assertion. It is similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual object contains _at least_ the properties and values specified in the expected object. It ignores any additional properties.
 
