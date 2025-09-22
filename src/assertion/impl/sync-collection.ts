@@ -462,7 +462,7 @@ export const objectSizeAssertion = createAssertion(
     const actual = Object.keys(subject).length;
     if (actual !== expectedSize) {
       return {
-        actual: actual,
+        actual,
         expected: expectedSize,
         message: `Expected object to have ${expectedSize} keys, but it has ${actual} keys`,
       };

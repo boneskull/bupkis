@@ -9,7 +9,7 @@
  * @packageDocumentation
  */
 
-import Debug from 'debug';
+import createDebug from 'debug';
 import slug from 'slug';
 import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
@@ -28,7 +28,7 @@ import {
   type ParsedValues,
 } from './assertion-types.js';
 
-const debug = Debug('bupkis:assertion');
+const debug = createDebug('bupkis:assertion');
 
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;

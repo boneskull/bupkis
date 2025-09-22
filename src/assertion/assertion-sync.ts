@@ -6,7 +6,7 @@
  * @see {@link AssertionSchemaSync} for schema-based assertions
  */
 
-import Debug from 'debug';
+import createDebug from 'debug';
 import { inspect } from 'util';
 import { z } from 'zod/v4';
 
@@ -36,7 +36,7 @@ import {
 } from './assertion-types.js';
 import { BupkisAssertion } from './assertion.js';
 
-const debug = Debug('bupkis:assertion:sync');
+const debug = createDebug('bupkis:assertion:sync');
 
 /**
  * Abstract class for synchronous assertions.

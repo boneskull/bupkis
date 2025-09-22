@@ -40,9 +40,7 @@ export default defineConfig(
           beforeBlockComment: false, // conflicts with perfectionist if enabled
         },
       ],
-
       '@stylistic/lines-between-class-members': ['error', 'always'],
-
       '@stylistic/semi': 'error',
 
       '@typescript-eslint/consistent-type-exports': [
@@ -80,6 +78,7 @@ export default defineConfig(
       '@typescript-eslint/no-unnecessary-condition': 'off',
 
       '@typescript-eslint/no-unsafe-assignment': 'warn',
+
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -93,7 +92,6 @@ export default defineConfig(
 
       // these 6 bytes add up
       '@typescript-eslint/require-await': 'off',
-
       // I like my template expressions, tyvm
       '@typescript-eslint/restrict-template-expressions': 'off',
 
@@ -104,8 +102,11 @@ export default defineConfig(
         },
       ],
 
-      'no-empty': ['error', { allowEmptyCatch: true }],
+      'new-cap': ['error', { capIsNew: true, newIsCap: true }],
 
+      'no-constructor-return': 'error',
+
+      'no-empty': ['error', { allowEmptyCatch: true }],
       'no-restricted-syntax': [
         'error',
         {
@@ -115,6 +116,9 @@ export default defineConfig(
             'CallExpression[callee.type="MemberExpression"][callee.property.name="readonly"]',
         },
       ],
+      'no-self-compare': 'error',
+      'object-shorthand': ['error', 'always'],
+      semi: 'error',
     },
   },
   {

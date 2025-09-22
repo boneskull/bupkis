@@ -1,4 +1,4 @@
-import Debug from 'debug';
+import createDebug from 'debug';
 import { inspect } from 'util';
 import z from 'zod/v4';
 
@@ -26,7 +26,7 @@ import {
   type ParsedValues,
 } from './assertion-types.js';
 import { BupkisAssertion } from './assertion.js';
-const debug = Debug('bupkis:assertion:async');
+const debug = createDebug('bupkis:assertion:async');
 
 export abstract class BupkisAssertionAsync<
     Parts extends AssertionParts,
