@@ -4,7 +4,7 @@ import { expect } from '../src/index.js';
 import { hasKeyDeep, hasValueDeep } from '../src/util.js';
 
 describe('util', () => {
-  describe('hasKeyDeep', () => {
+  describe('hasKeyDeep()', () => {
     describe('should return true when key exists', () => {
       it('should find key in top-level object', () => {
         const obj = { a: 1, b: 2 };
@@ -154,7 +154,7 @@ describe('util', () => {
     });
   });
 
-  describe('hasValueDeep', () => {
+  describe('hasValueDeep()', () => {
     describe('should return true when value exists', () => {
       it('should find value in top-level object', () => {
         const obj = { a: 1, b: 'hello' };

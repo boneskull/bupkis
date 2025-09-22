@@ -1,0 +1,336 @@
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size between' {[number, number]}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-between-number-number-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 4,
+  "expected": "size between 1 and 3 (inclusive)",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size greater than' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-greater-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 1,
+  "expected": "size greater than 2",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size less than' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-less-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 3,
+  "expected": "size less than 2",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | WeakMap} 'to contain' / 'to include' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "missing",
+  "expected": "key to exist in Map",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | WeakMap} 'to have entry' {[unknown, unknown]}\" > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-have-entry-unknown-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    "key",
+    "value"
+  ],
+  "expected": [
+    "key",
+    "wrong"
+  ],
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to be empty'\" > should throw a consistent AssertionError [map_unknown-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to equal' {Map<unknown, unknown>}\" > should throw a consistent AssertionError [map_unknown-unknown-to-equal-map_unknown-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    "b",
+    3
+  ],
+  "expected": [
+    "b",
+    2
+  ],
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have key' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-key-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    "key"
+  ],
+  "expected": "missing",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 2,
+  "expected": 3,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have value' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-value-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    "value"
+  ],
+  "expected": "missing",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown> | WeakSet} 'to contain' / 'to include' {any}\" > should throw a consistent AssertionError [set_unknown-weakset-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "c",
+  "expected": "value to exist in Set",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be a subset of' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-a-subset-of-set_unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be a superset of' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-a-superset-of-set_unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be disjoint from' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-disjoint-from-set_unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be empty'\" > should throw a consistent AssertionError [set_unknown-to-be-empty-2s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 1,
+  "expected": 0,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to equal' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-equal-set_unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have difference' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have intersection' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-intersection-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [set_unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 2,
+  "expected": 3,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have symmetric difference' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-symmetric-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have union' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-union-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{Set<unknown>} 'to intersect with' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-intersect-with-set_unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{array} 'to be non-empty'\" > should throw a consistent AssertionError [array-to-be-non_empty-2s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "length: 0",
+  "expected": "length greater than 0",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{array} 'to contain' / 'to include' {any}\" > should throw a consistent AssertionError [array-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": "array containing 4",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{array} 'to have length' {nonnegative-integer}\" > should throw a consistent AssertionError [array-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": 5,
+  "operator": "\\"{array} 'to have length' {nonnegative-integer}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{array} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [array-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 3,
+  "expected": 5,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\" > should throw a consistent AssertionError [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "foo": "bar"
+  },
+  "expected": "missing",
+  "operator": "\\"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{non-collection-object} 'to have key' / 'to have property' / 'to have prop' {keypath}\" > should throw a consistent AssertionError [non_collection_object-to-have-key-to-have-property-to-have-prop-keypath-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "no such keypath",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{non-collection-object} 'to have keys' / 'to have properties' / 'to have props' {array}\" > should throw a consistent AssertionError [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "missing keys: b",
+  "expected": "to have keys: a, b",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-collection error snapshots > \"{object} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [object-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 1,
+  "expected": 3,
+  "diff": "simple"
+}
+`;

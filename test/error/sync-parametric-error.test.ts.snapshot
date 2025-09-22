@@ -1,0 +1,329 @@
+exports[`sync-parametric error snapshots > \"{Error} 'to have message matching' {regexp}\" > should throw a consistent AssertionError [error-to-have-message-matching-regexp-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "wrong message",
+  "expected": "message matching /expected/",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{Error} 'to have message' {string}\" > should throw a consistent AssertionError [error-to-have-message-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "wrong message",
+  "expected": "expected message",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\" > should throw a consistent AssertionError [any-to-be-a-to-be-an-to-have-type-string-number-boolean-undefined-null-bigint-bigint-symbol-symbol-object-object-function-function-array-array-date-date-map-map-set-set-weakmap-weakmap-weakset-weakset-regexp-regexp-promise-promise-error-error-weakref-weakref-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": "number",
+  "operator": "\\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{arraylike} 'to deep equal' / 'to deeply equal' {any}\" > should throw a consistent AssertionError [arraylike-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": [
+    1,
+    2,
+    4
+  ],
+  "operator": "\\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{arraylike} 'to satisfy' / 'to be like' {any}\" > should throw a consistent AssertionError [arraylike-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": [
+    1,
+    2,
+    4
+  ],
+  "operator": "\\"{arraylike} 'to satisfy' / 'to be like' {any}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{function} 'to have arity' {nonnegative-integer}\" > should throw a consistent AssertionError [function-to-have-arity-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 2,
+  "expected": 3,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{function} 'to throw a' / 'to throw an' {constructible} 'satisfying' {any}\" > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-parametric error snapshots > \"{function} 'to throw a' / 'to throw an' {constructible}\" > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{function} 'to throw' / 'to throw error satisfying' {any}\" > should throw a consistent AssertionError [function-to-throw-to-throw-error-satisfying-any-3s3p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-parametric error snapshots > \"{function} 'to throw'\" > should throw a consistent AssertionError [function-to-throw-2s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be close to' {number} {number?}\" > should throw a consistent AssertionError [number-to-be-close-to-number-number-4s4p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 10,
+  "expected": 5,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\" > should throw a consistent AssertionError [number-to-be-greater-than-or-equal-to-to-be-at-least-to-be-gte-number-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": 10,
+  "operator": "\\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be greater than' {number}\" > should throw a consistent AssertionError [number-to-be-greater-than-number-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": 10,
+  "operator": "\\"{number} 'to be greater than' {number}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\" > should throw a consistent AssertionError [number-to-be-less-than-or-equal-to-to-be-at-most-to-be-lte-number-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 10,
+  "expected": 5,
+  "operator": "\\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be less than' / 'to be lt' {number}\" > should throw a consistent AssertionError [number-to-be-less-than-to-be-lt-number-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 10,
+  "expected": 5,
+  "operator": "\\"{number} 'to be less than' / 'to be lt' {number}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{number} 'to be within' / 'to be between' {number} {number}\" > should throw a consistent AssertionError [number-to-be-within-to-be-between-number-number-4s4p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-parametric error snapshots > \"{object!} 'to satisfy' / 'to be like' {any}\" > should throw a consistent AssertionError [object-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "a": 1,
+    "b": 2
+  },
+  "expected": {
+    "a": 1,
+    "b": 3
+  },
+  "operator": "\\"{object!} 'to satisfy' / 'to be like' {any}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{object} 'to deep equal' / 'to deeply equal' {any}\" > should throw a consistent AssertionError [object-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "a": 1,
+    "b": 2
+  },
+  "expected": {
+    "a": 1,
+    "b": 3
+  },
+  "operator": "\\"{object} 'to deep equal' / 'to deeply equal' {any}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'includes' / 'contains' / 'to include' / 'to contain' {string}\" > should throw a consistent AssertionError [string-includes-contains-to-include-to-contain-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello world",
+  "expected": "string including \\"universe\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to be greater than or equal to' {string}\" > should throw a consistent AssertionError [string-to-be-greater-than-or-equal-to-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "apple",
+  "expected": "string greater than or equal to \\"zebra\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to be greater than' {string}\" > should throw a consistent AssertionError [string-to-be-greater-than-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "apple",
+  "expected": "string greater than \\"zebra\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to be less than or equal to' {string}\" > should throw a consistent AssertionError [string-to-be-less-than-or-equal-to-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "zebra",
+  "expected": "string less than or equal to \\"apple\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to be less than' {string}\" > should throw a consistent AssertionError [string-to-be-less-than-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "zebra",
+  "expected": "string less than \\"apple\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to begin with' / 'to start with' {string}\" > should throw a consistent AssertionError [string-to-begin-with-to-start-with-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello world",
+  "expected": "string beginning with \\"goodbye\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to end with' {string}\" > should throw a consistent AssertionError [string-to-end-with-string-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello world",
+  "expected": "string ending with \\"universe\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{string} 'to match' {regexp}\" > should throw a consistent AssertionError [string-to-match-regexp-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\" > should throw a consistent AssertionError [unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "operator": "\\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{unknown} 'to be one of' {array}\" > should throw a consistent AssertionError [unknown-to-be-one-of-array-3s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": "one of [1, 2, 3]",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-parametric error snapshots > \"{unknown} 'to be' / 'to equal' / 'equals' / 'is' / 'is equal to' / 'to strictly equal' / 'is strictly equal to' {unknown}\" > should throw a consistent AssertionError [unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {},
+  "diff": "simple"
+}
+`;

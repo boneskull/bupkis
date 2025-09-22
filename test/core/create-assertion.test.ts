@@ -11,7 +11,7 @@ import {
 } from '../../src/assertion/assertion-sync.js';
 import { expect } from '../../src/bootstrap.js';
 
-describe('Assertion creation functions', () => {
+describe('core API', () => {
   describe('createAssertion()', () => {
     describe('with Zod schema implementation', () => {
       it('should create a BupkisAssertionSchemaSync instance', () => {
