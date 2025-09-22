@@ -274,7 +274,7 @@ export const numberCloseToAssertion = createAssertion(
     if (diff > tolerance) {
       return {
         actual: subject,
-        expected: expected,
+        expected,
         message: `Expected ${subject} to be close to ${expected} (within ${tolerance}), but difference was ${diff}`,
       };
     }

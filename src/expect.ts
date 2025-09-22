@@ -1,4 +1,4 @@
-import Debug from 'debug';
+import createDebug from 'debug';
 import { inspect } from 'util';
 
 import {
@@ -35,7 +35,7 @@ import {
 } from './types.js';
 import { createUse } from './use.js';
 
-const debug = Debug('bupkis:expect');
+const debug = createDebug('bupkis:expect');
 
 /**
  * Creates an asynchronous expect function by extending a parent expectAsync
