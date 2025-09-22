@@ -1153,22 +1153,44 @@ export type RawAssertionImplSchemaAsync<Parts extends AssertionParts> =
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;
 
-export const AssertionMetadataSchema = z.looseObject({
-  anchor: z.string(),
-  category: z.enum([
-    'collections',
-    'date',
-    'equality',
-    'error',
-    'function',
-    'numeric',
-    'object',
-    'other',
-    'primitives',
-    'promise',
-    'strings',
-  ]),
-  redirectName: z.string().optional(),
-});
+/**
+ * Metadata associated with an assertion, for internal use by documentation
+ * tooling.
+ *
+ * @private
+ */
+export const AssertionMetadataSchema = z
+  .looseObject({
+    anchor: z.string().describe('Anchor ID for linking to this assertion.'),
+    category: z
+      .enum([
+        'collections',
+        'date',
+        'equality',
+        'error',
+        'function',
+        'numeric',
+        'object',
+        'other',
+        'primitives',
+        'promise',
+        'strings',
+      ])
+      .describe('Category to map to page of logically grouped assertions'),
+    redirectName: z
+      .string()
+      .optional()
+      .describe(
+        'Redirect for assertion to its documentation page, including anchor',
+      ),
+  })
+  .describe(
+    'Metadata associated with an assertion, for internal use by documentation tooling.',
+  );
 
+/**
+ * {@inheritDoc AssertionMetadataSchema}
+ *
+ * @private
+ */
 export type AssertionMetadata = z.infer<typeof AssertionMetadataSchema>;
