@@ -69,7 +69,10 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
  * manner, with variant-specific first, then config-level, then finally defaults
  * (defined elsewhere).
  */
-export type PropertyTestConfigParameters = Parameters<any>;
+export interface PropertyTestConfigParameters extends Parameters<any> {
+  numRuns?: never;
+  runSize?: 'large' | 'medium' | 'small';
+}
 
 /**
  * Configuration for a specific variant of an assertion in property-based tests.
@@ -117,11 +120,13 @@ export interface PropertyTestConfigVariantProperty<T>
 
 export interface PropertyTestConfigVariantSyncGenerators
   extends PropertyTestConfigParameters {
-  generators: readonly [
-    subject: fc.Arbitrary<any>,
-    phrase: fc.Arbitrary<string>,
-    ...fc.Arbitrary<any>[],
-  ];
+  generators:
+    | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
+    | readonly [
+        subject: fc.Arbitrary<any>,
+        phrase: fc.Arbitrary<string>,
+        ...fc.Arbitrary<any>[],
+      ];
   /**
    * If true, this variant expects fast-check to timeout/interrupt the test.
    * Used for async callback tests where the assertion waits indefinitely for
