@@ -897,8 +897,17 @@ export const stringMatchesAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const objectSatisfiesAssertion = createAssertion(
-  [z.looseObject({}).nonoptional(), ['to satisfy', 'to be like'], z.any()],
+  [
+    z.looseObject({}).nonoptional(),
+    ['to satisfy', 'to be like', 'satisfies'],
+    z.any(),
+  ],
   (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
+  {
+    anchor: 'object-to-satisfy-any',
+    category: 'object',
+    redirect: 'satisfies',
+  },
 );
 
 /**

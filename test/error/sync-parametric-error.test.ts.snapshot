@@ -202,7 +202,7 @@ exports[`sync-parametric error snapshots > \"{number} 'to be within' / 'to be be
 }
 `;
 
-exports[`sync-parametric error snapshots > \"{object!} 'to satisfy' / 'to be like' {any}\" > should throw a consistent AssertionError [object-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
+exports[`sync-parametric error snapshots > \"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\" > should throw a consistent AssertionError [object-to-satisfy-to-be-like-satisfies-any-3s3p] <snapshot> 1`] = `
 {
   "generatedMessage": false,
   "name": "AssertionError",
@@ -215,7 +215,7 @@ exports[`sync-parametric error snapshots > \"{object!} 'to satisfy' / 'to be lik
     "a": 1,
     "b": 3
   },
-  "operator": "\\"{object!} 'to satisfy' / 'to be like' {any}\\"",
+  "operator": "\\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\"",
   "diff": "simple"
 }
 `;
