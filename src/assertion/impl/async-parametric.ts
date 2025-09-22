@@ -385,7 +385,7 @@ export const promiseFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
     } catch (err) {
       return {
         actual: err,
-        expect: 'promise to not reject',
+        expect: 'promise to fulfill',
         message: `Expected promise to not reject, but it rejected with ${inspect(
           err,
         )}`,

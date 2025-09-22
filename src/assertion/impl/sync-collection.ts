@@ -864,7 +864,7 @@ export const collectionSizeGreaterThanAssertion = createAssertion(
   [
     z.union([z.map(z.unknown(), z.unknown()), z.set(z.unknown())]),
     'to have size greater than',
-    z.number(),
+    NonNegativeIntegerSchema,
   ],
   (collection, minSize): AssertionFailure | boolean => {
     if (collection.size > minSize) return true;
