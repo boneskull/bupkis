@@ -151,3 +151,7 @@ docs
 .tshy-build
 
 .profiles
+
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
