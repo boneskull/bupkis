@@ -4,6 +4,8 @@
  * @packageDocumentation
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import fc from 'fast-check';
 import { z } from 'zod/v4';
 
 import type {
@@ -59,3 +61,38 @@ export const valueToSchemaFilter = (value: unknown) =>
  */
 export const safeRegexStringFilter = (str: string) =>
   str.replace(/[[\](){}^$*+?.\\|]/g, '');
+
+/**
+ * Predefined run sizes for property-based tests.
+ */
+const RUN_SIZES = Object.freeze({
+  large: 500,
+  medium: 250,
+  small: 50,
+} as const);
+
+/**
+ * Calculates the number of runs for property-based tests based on the
+ * environment and the desired run size.
+ *
+ * The resulting value will be set as the {@link Parameters.numRuns} parameter to
+ * {@link fc.assert} or {@link fc.check}.
+ *
+ * @param runSize One of 'small', 'medium', or 'large' to indicate the desired
+ *   number of runs
+ * @returns The calculated number of runs
+ */
+export const calculateNumRuns = (
+  runSize: keyof typeof RUN_SIZES = 'medium',
+) => {
+  if (process.env.WALLABY) {
+    return Math.floor(RUN_SIZES[runSize] / 10);
+  }
+  if (process.env.CI) {
+    return Math.floor(RUN_SIZES[runSize] / 5);
+  }
+  if (process.env.NUM_RUNS) {
+    return Number.parseInt(process.env.NUM_RUNS, 10);
+  }
+  return RUN_SIZES[runSize];
+};

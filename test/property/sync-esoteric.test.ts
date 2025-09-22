@@ -4,15 +4,13 @@ import { describe } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-esoteric.js';
 import { SyncEsotericAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
 import { extractPhrases } from './property-test-util.js';
-import {
-  assertExhaustiveTestConfigs,
-  runPropertyTests,
-} from './property-test.macro.js';
+import { runPropertyTests } from './property-test.macro.js';
 
 /**
  * Test config defaults
@@ -174,7 +172,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Esoteric Assertions', () => {
-  assertExhaustiveTestConfigs(
+  expectExhaustiveAssertionTests(
     'Esoteric Assertions',
     SyncEsotericAssertions,
     testConfigs,

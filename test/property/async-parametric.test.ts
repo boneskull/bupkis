@@ -5,15 +5,14 @@ import { describe } from 'node:test';
 import * as assertions from '../../src/assertion/impl/async-parametric.js';
 import { AsyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
 import { extractPhrases } from './property-test-util.js';
-import {
-  assertExhaustiveTestConfigs,
-  runPropertyTests,
-} from './property-test.macro.js';
+import { runPropertyTests } from './property-test.macro.js';
+
 /**
  * Test config defaults
  */
@@ -304,11 +303,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         async: true,
         generators: [
-          fc.constant(
-            (async () => {
-              throw new Error('rejection');
-            })(),
-          ),
+          fc.constant({
+            then(
+              _resolve: (value: any) => void,
+              reject: (reason: any) => void,
+            ) {
+              reject(new Error('rejection'));
+            },
+          }),
           fc.constantFrom(...extractPhrases(assertions.promiseRejectAssertion)),
         ],
       },
@@ -326,11 +328,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             .filter((actualMessage) => actualMessage !== expectedMessage)
             .chain((actualMessage) =>
               fc.tuple(
-                fc.constant(
-                  (async () => {
-                    throw new Error(actualMessage);
-                  })(),
-                ),
+                fc.constant({
+                  then(
+                    _resolve: (value: any) => void,
+                    reject: (reason: any) => void,
+                  ) {
+                    reject(new Error(actualMessage));
+                  },
+                }),
                 fc.constantFrom(
                   ...extractPhrases(
                     assertions.promiseRejectWithErrorSatisfyingAssertion,
@@ -345,11 +350,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         async: true,
         generators: fc.string().chain((message) =>
           fc.tuple(
-            fc.constant(
-              (async () => {
-                throw new Error(message);
-              })(),
-            ),
+            fc.constant({
+              then(
+                _resolve: (value: any) => void,
+                reject: (reason: any) => void,
+              ) {
+                reject(new Error(message));
+              },
+            }),
             fc.constantFrom(
               ...extractPhrases(
                 assertions.promiseRejectWithErrorSatisfyingAssertion,
@@ -375,11 +383,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               .filter((ExpectedCtor) => ExpectedCtor !== ActualCtor)
               .chain((ExpectedCtor) =>
                 fc.tuple(
-                  fc.constant(
-                    (async () => {
-                      throw new ActualCtor('error');
-                    })(),
-                  ),
+                  fc.constant({
+                    then(
+                      _resolve: (value: any) => void,
+                      reject: (reason: any) => void,
+                    ) {
+                      reject(new ActualCtor('error'));
+                    },
+                  }),
                   fc.constantFrom(
                     ...extractPhrases(
                       assertions.promiseRejectWithTypeAssertion,
@@ -396,11 +407,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
           .chain((ExpectedCtor) =>
             fc.tuple(
-              fc.constant(
-                (async () => {
-                  throw new ExpectedCtor('error');
-                })(),
-              ),
+              fc.constant({
+                then(
+                  _resolve: (value: any) => void,
+                  reject: (reason: any) => void,
+                ) {
+                  reject(new ExpectedCtor('error'));
+                },
+              }),
               fc.constantFrom(
                 ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
               ),
@@ -417,11 +431,14 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         async: true,
         generators: [
-          fc.constant(
-            (async () => {
-              throw new Error('rejection');
-            })(),
-          ),
+          fc.constant({
+            then(
+              _resolve: (value: any) => void,
+              reject: (reason: any) => void,
+            ) {
+              reject(new Error('rejection'));
+            },
+          }),
           fc.constantFrom(
             ...extractPhrases(assertions.promiseResolveAssertion),
           ),
@@ -441,7 +458,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Async Parametric Assertions', () => {
-  assertExhaustiveTestConfigs(
+  expectExhaustiveAssertionTests(
     'Async Parametric Assertions',
     AsyncParametricAssertions,
     testConfigs,

@@ -5,15 +5,13 @@ import type { AnyAssertion } from '../../src/types.js';
 
 import * as assertions from '../../src/assertion/impl/sync-basic.js';
 import { SyncBasicAssertions } from '../../src/assertion/index.js';
+import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
 import { extractPhrases } from './property-test-util.js';
-import {
-  assertExhaustiveTestConfigs,
-  runPropertyTests,
-} from './property-test.macro.js';
+import { runPropertyTests } from './property-test.macro.js';
 
 /**
  * Test config defaults
@@ -904,7 +902,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Basic (non-parametric) Assertions', () => {
-  assertExhaustiveTestConfigs(
+  expectExhaustiveAssertionTests(
     'Basic Assertions',
     [...SyncBasicAssertions],
     testConfigs,
