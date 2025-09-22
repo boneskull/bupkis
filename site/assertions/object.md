@@ -355,6 +355,8 @@ expect(obj, 'not to be extensible');
 
 In addition, any _regular expression_ in a property value position will be used to match the corresponding actual value (which will be coerced into a string). This makes it easy to assert that a string property contains a substring, starts with a prefix, or matches some other pattern.
 
+> Note: The parameter in this assertion and others supporting the "to satisfy" semantics are not strongly typed, even though regular expressions and `expect.it()` have special meaning. This is because the parameter can accept _literally any value_.
+
 **Success**:
 
 ```js
