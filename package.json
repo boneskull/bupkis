@@ -108,11 +108,10 @@
   "scripts": {
     "build": "tshy",
     "build:dev": "tshy --watch",
-    "build:docs": "typedoc --cleanOutputDir --treatWarningsAsErrors",
-    "build:docs:dev": "run-s \"build:docs -- --watch\"",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
     "docs:build": "typedoc --cleanOutputDir --treatWarningsAsErrors",
     "docs:dev": "run-p build:docs:dev serve",
+    "docs:serve": "serve docs",
     "lint": "run-p lint:eslint lint:types lint:knip lint:markdown lint:spelling",
     "lint:commit": "commitlint",
     "lint:eslint": "eslint .",
@@ -125,14 +124,14 @@
     "lint:types:dev": "run-s \"lint:types -- --watch\"",
     "prepare": "husky; run-s build",
     "prepublishOnly": "run-s build",
-    "serve": "serve docs",
-    "test": "run-s \"test:base -- test/**/*.test.ts\"",
+    "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
-    "test:dev": "node --test --import tsx --watch --test-reporter=spec \"test/**/*.test.ts\"",
-    "test:profile": "node --cpu-prof --cpu-prof-dir=.profiles --test --import tsx --test-reporter=spec \"test/**/*.test.ts\"",
-    "test:property": "node --test --import tsx --test-reporter=spec \"test/property/*.test.ts\"",
-    "test:property:dev": "node --test --import tsx --test-reporter=spec --watch \"test/property/*.test.ts\""
+    "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
+    "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",
+    "test:property": "run-s \"test:base -- \\\"test/property/*.test.ts\\\"\"",
+    "test:property:dev": "run-s \"test:base -- --watch \\\"test/property/*.test.ts\\\"\"",
+    "test:update-snapshots": "run-s \"test:base -- --test-update-snapshots --test-name-pattern=\\\"<snapshot>\\\" \\\"test/**/*.test.ts\\\"\""
   },
   "peerDependencies": {
     "zod": "^4.1.5"
@@ -250,11 +249,6 @@
     ],
     "singleQuote": true,
     "tsdoc": true
-  },
-  "testConfig": {
-    "test_flags": "--import tsx --test --test-reporter=spec",
-    "test_pattern_all": "test/**/*.ts",
-    "test_pattern_property": "test/property/**/*.test.ts"
   },
   "tshy": {
     "exports": {
