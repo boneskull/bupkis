@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.0...bupkis-v0.7.0) (2025-09-22)
+
+
+### Bug Fixes
+
+* **release:** release 0.7.0 ([488f0dc](https://github.com/boneskull/bupkis/commit/488f0dc6f74a8c83fd97ec6ea1bd937bf2df0032))
+
 ## [0.7.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.6.0...bupkis-v0.7.0) (2025-09-22)
 
 
