@@ -125,9 +125,9 @@ expect(greet, 'not to have arity', 2);
 >     {function} to throw [{any}]
 >     {function} to throw an error satisfying {any}
 >
-> ℹ️ The `to throw` form of this assertion _optionally_ accepts a parameter using the ["to satisfy"](object.md#to-satisfy-) semantics. The `to throw an error satisfying` form _requires_ this parameter.
+> ℹ️ The `to throw` form of this assertion _optionally_ accepts a parameter using the ["to satisfy"](object.md#object-to-satisfy-any) semantics. The `to throw an error satisfying` form _requires_ this parameter.
 
-> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
+> 👉 See [`to satisfy <any>`](object.md#object-to-satisfy-any)
 
 **Success**:
 
@@ -261,7 +261,7 @@ expect(
 >     {function} to throw a {constructor} satisfying {any}
 >     {function} to throw an {constructor} satisfying {any}
 
-> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
+> 👉 See [`{object} to satisfy {any}`](object.md#object-to-satisfy-any)
 
 This assertion is a combination of ["to throw a"](#function-to-throw-a-constructor) and ["to throw"](#function-to-throw-any).
 

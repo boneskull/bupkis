@@ -9,7 +9,7 @@ These assertions test numeric values, ranges, and mathematical relationships.
 
 ### `{unknown} to be a number`
 
-> 👉 See [to be a number](primitive.md#to-be-a-number)
+> 👉 See [to be a number](primitive.md#unknown-to-be-a-number)
 
 ### `{unknown} to be infinite`
 
