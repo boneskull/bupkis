@@ -198,7 +198,8 @@
   "knip": {
     "ignoreDependencies": [
       "@types/wallabyjs",
-      "markdownlint-cli2-formatter-pretty"
+      "markdownlint-cli2-formatter-pretty",
+      "typedoc-plugin-dt-links"
     ],
     "ignore": [
       ".wallaby.js",
