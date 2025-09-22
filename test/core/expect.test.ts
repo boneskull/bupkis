@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 
+import { UnknownAssertionError } from '../../src/error.js';
 import { type Expect, expect, expectAsync, z } from '../../src/index.js';
 import { type AnySyncAssertions } from '../../src/types.js';
 
@@ -144,13 +145,13 @@ describe('core API', () => {
         expect(() => expect(7, 'to be less than', 5), 'to throw');
       });
 
-      it('should throw TypeError for unknown assertions', () => {
+      it('should throw UnknownAssertionError for unknown assertions', () => {
         expect(
           () => {
             expect(42, 'to do something impossible');
           },
           'to throw a',
-          TypeError,
+          UnknownAssertionError,
           'satisfying',
           /Invalid arguments. No assertion matched.+42.+to do something impossible/,
         );

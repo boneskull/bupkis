@@ -3,7 +3,7 @@ import { inspect } from 'util';
 import z from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
-import { AssertionError } from '../error.js';
+import { AssertionError, AssertionImplementationError } from '../error.js';
 import {
   isA,
   isAssertionFailure,
@@ -143,8 +143,9 @@ export class BupkisAssertionFunctionAsync<
     } else if (isError(result) && result instanceof z.ZodError) {
       throw this.fromZodError(result, stackStartFn, parsedValues);
     } else if (result as unknown) {
-      throw new TypeError(
+      throw new AssertionImplementationError(
         `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
+        { result },
       );
     }
   }

@@ -16,6 +16,7 @@
 import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
+import { BupkisError, InvalidSchemaError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   ArrayLikeSchema,
@@ -146,7 +147,7 @@ export const typeOfAssertion = createAssertion(
         return z.instanceof(WeakSet);
       // c8 ignore next 2
       default:
-        throw new TypeError(`Unknown type: "${type}"`);
+        throw new BupkisError(`Unknown "type": "${type}"`);
     }
   },
 );
@@ -748,7 +749,10 @@ export const functionThrowsMatchingAssertion = createAssertion(
       const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       return schema.safeParse(error).success;
     } else {
-      throw new TypeError(`Invalid parameter schema: ${inspect(param)}`);
+      throw new InvalidSchemaError(
+        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        { schema: param },
+      );
     }
   },
 );
@@ -819,8 +823,9 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     }
     if (!schema) {
-      throw new TypeError(
+      throw new InvalidSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        { schema: param },
       );
     }
 

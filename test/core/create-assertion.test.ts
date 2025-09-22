@@ -10,6 +10,7 @@ import {
   BupkisAssertionSchemaSync,
 } from '../../src/assertion/assertion-sync.js';
 import { expect } from '../../src/bootstrap.js';
+import { AssertionImplementationError } from '../../src/error.js';
 
 describe('core API', () => {
   describe('createAssertion()', () => {
@@ -92,34 +93,34 @@ describe('core API', () => {
     });
 
     describe('error handling', () => {
-      it('should throw TypeError for empty parts array', () => {
+      it('should throw AssertionImplementationError for empty parts array', () => {
         expect(
           // @ts-expect-error Testing invalid input
           () => expect.createAssertion([], z.string()),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
-      it('should throw TypeError for null parts', () => {
+      it('should throw AssertionImplementationError for null parts', () => {
         expect(
           // @ts-expect-error Testing invalid input
           () => expect.createAssertion(null, z.string()),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
-      it('should throw TypeError for undefined parts', () => {
+      it('should throw AssertionImplementationError for undefined parts', () => {
         expect(
           // @ts-expect-error Testing invalid input
           () => expect.createAssertion(undefined, z.string()),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
-      it('should throw TypeError for invalid implementation type', () => {
+      it('should throw AssertionImplementationError for invalid implementation type', () => {
         expect(
           () =>
             expect.createAssertion(
@@ -128,25 +129,25 @@ describe('core API', () => {
               'not a function or schema',
             ),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
-      it('should throw TypeError for null implementation', () => {
+      it('should throw AssertionImplementationError for null implementation', () => {
         expect(
           // @ts-expect-error Testing invalid input
           () => expect.createAssertion(['to be something'], null),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
-      it('should throw TypeError for undefined implementation', () => {
+      it('should throw AssertionImplementationError for undefined implementation', () => {
         expect(
           // @ts-expect-error Testing invalid input
           () => expect.createAssertion(['to be something'], undefined),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
 
@@ -157,7 +158,7 @@ describe('core API', () => {
             // @ts-expect-error Testing invalid input
             expect.createAssertion([42], z.string()),
           'to throw a',
-          TypeError,
+          AssertionImplementationError,
         );
       });
     });

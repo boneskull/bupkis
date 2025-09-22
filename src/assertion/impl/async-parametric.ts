@@ -16,6 +16,7 @@
 import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
+import { InvalidSchemaError } from '../../error.js';
 import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ConstructibleSchema,
@@ -266,8 +267,9 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
     }
     /* c8 ignore next 5 */
     if (!schema) {
-      throw new TypeError(
+      throw new InvalidSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        { schema: param },
       );
     }
 
@@ -334,8 +336,9 @@ export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
     }
     /* c8 ignore next 5 */
     if (!schema) {
-      throw new TypeError(
+      throw new InvalidSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        { schema: param },
       );
     }
 
@@ -391,30 +394,8 @@ export const promiseFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
         )}`,
       };
     }
-    let schema: undefined | z.ZodType;
-    // TODO: can valueToSchema handle the first two conditional branches?
-    if (isString(param)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)));
-    } else if (isA(param, RegExp)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param));
-    } else if (isNonNullObject(param)) {
-      schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    }
-    /* c8 ignore next 5 */
-    if (!schema) {
-      throw new TypeError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-      );
-    }
 
+    const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     const result = schema.safeParse(value);
     if (!result.success) {
       return result.error;
@@ -468,30 +449,7 @@ export const functionFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
       };
     }
 
-    let schema: undefined | z.ZodType;
-    // TODO: can valueToSchema handle the first two conditional branches?
-    if (isString(param)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)));
-    } else if (isA(param, RegExp)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param));
-    } else if (isNonNullObject(param)) {
-      schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    }
-    /* c8 ignore next 5 */
-    if (!schema) {
-      throw new TypeError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-      );
-    }
-
+    const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     const result = schema.safeParse(value);
     if (!result.success) {
       return result.error;

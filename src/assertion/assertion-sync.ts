@@ -11,13 +11,16 @@ import { inspect } from 'util';
 import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
-import { AssertionError } from '../error.js';
+import {
+  AssertionError,
+  AssertionImplementationError,
+  UnexpectedAsyncError,
+} from '../error.js';
 import {
   isAssertionFailure,
   isBoolean,
   isError,
   isPromiseLike,
-  isZodPromise,
   isZodType,
 } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
@@ -111,12 +114,7 @@ export abstract class BupkisAssertionSync<
         exactMatch = false;
         continue;
       }
-      // low-effort check
-      if (isZodPromise(slot)) {
-        throw new TypeError(
-          `${this} expects a Promise for slot ${i}; use expectAsync() instead of expect()`,
-        );
-      }
+
       const result = slot.safeParse(arg);
       if (!result.success) {
         return {
@@ -159,7 +157,7 @@ export class BupkisAssertionFunctionSync<
         debug(`Ate unhandled rejection from assertion %s: %O`, this, err);
       });
 
-      throw new TypeError(
+      throw new UnexpectedAsyncError(
         `Assertion ${this} returned a Promise; use expectAsync() instead of expect()`,
       );
     }
@@ -183,8 +181,9 @@ export class BupkisAssertionFunctionSync<
     } else if (isError(result) && result instanceof z.ZodError) {
       throw this.fromZodError(result, stackStartFn, parsedValues);
     } else if (result as unknown) {
-      throw new TypeError(
+      throw new AssertionImplementationError(
         `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,
+        { result },
       );
     }
   }
@@ -299,11 +298,6 @@ export class BupkisAssertionSchemaSync<
         continue;
       }
 
-      if (isZodPromise(slot)) {
-        throw new TypeError(
-          `${this} expects a Promise for slot ${i}; use expectAsync() instead of expect()`,
-        );
-      }
       const result = slot.safeParse(arg);
       if (!result.success) {
         return {

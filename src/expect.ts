@@ -20,6 +20,7 @@ import {
   AssertionError,
   FailAssertionError,
   NegatedAssertionError,
+  UnknownAssertionError,
 } from './error.js';
 import { isAssertionFailure, isString } from './guards.js';
 import {
@@ -550,8 +551,9 @@ const maybeProcessNegation = (
 const throwInvalidParametersError = (args: readonly unknown[]): never => {
   const inspectedArgs = inspect(args, { depth: 1 });
   debug(`Invalid arguments. No assertion matched: ${inspectedArgs}`);
-  throw new TypeError(
+  throw new UnknownAssertionError(
     `Invalid arguments. No assertion matched: ${inspectedArgs}`,
+    { args },
   );
 };
 
