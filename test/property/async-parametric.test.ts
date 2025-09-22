@@ -237,41 +237,44 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         async: true,
         generators: fc
-          .string({ maxLength: 5, minLength: 2 })
+          .string({ maxLength: 20, minLength: 10 })
           .chain((expected) =>
-            fc.string({ maxLength: 10, minLength: 6 }).chain((actual) =>
-              fc.tuple(
-                fc.oneof(
-                  fc.constant(Promise.resolve(actual)),
-                  // Use a thenable object instead of Promise.reject() to avoid
-                  // unhandled rejection warnings during test setup. The rejection
-                  // only occurs when the assertion uses `await` on this object
-                  fc.constant({
-                    then(
-                      _resolve: (value: any) => void,
-                      reject: (reason: any) => void,
-                    ) {
-                      reject(new Error('rejection'));
-                    },
-                  }),
-                ),
-                fc.constantFrom(
-                  ...extractPhrases(
-                    assertions.promiseFulfillWithValueSatisfyingAssertion,
+            fc
+              .string({ maxLength: 30, minLength: 21 })
+              .filter((actual) => !expected.includes(actual))
+              .chain((actual) =>
+                fc.tuple(
+                  fc.oneof(
+                    fc.constant(Promise.resolve(actual)),
+                    // Use a thenable object instead of Promise.reject() to avoid
+                    // unhandled rejection warnings during test setup. The rejection
+                    // only occurs when the assertion uses `await` on this object
+                    fc.constant({
+                      then(
+                        _resolve: (value: any) => void,
+                        reject: (reason: any) => void,
+                      ) {
+                        reject(new Error('rejection'));
+                      },
+                    }),
+                  ),
+                  fc.constantFrom(
+                    ...extractPhrases(
+                      assertions.promiseFulfillWithValueSatisfyingAssertion,
+                    ),
+                  ),
+                  fc.oneof(
+                    fc.constant(expected),
+                    fc.constant(new RegExp(escapeStringRegexp(expected))),
                   ),
                 ),
-                fc.oneof(
-                  fc.constant(expected),
-                  fc.constant(new RegExp(escapeStringRegexp(expected))),
-                ),
               ),
-            ),
           ),
       },
       valid: {
         async: true,
         generators: fc
-          .string({ maxLength: 5, minLength: 2 })
+          .string({ maxLength: 20, minLength: 10 })
           .chain((expected) =>
             fc.tuple(
               fc.constant(Promise.resolve(expected)),
