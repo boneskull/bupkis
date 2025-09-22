@@ -1,0 +1,70 @@
+exports[`sync-esoteric error snapshots > \"{property-key} 'to be an enumerable property of' {unknown!}\" > should throw a consistent AssertionError [property_key-to-be-an-enumerable-property-of-unknown-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": false,
+  "expected": true,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-esoteric error snapshots > \"{unknown!} 'to have enumerable property' {property-key}\" > should throw a consistent AssertionError [unknown-to-have-enumerable-property-property_key-3s3p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": false,
+  "expected": true,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-esoteric error snapshots > \"{unknown} 'to be extensible'\" > should throw a consistent AssertionError [unknown-to-be-extensible-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": [],
+  "operator": "\\"{unknown} 'to be extensible'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-esoteric error snapshots > \"{unknown} 'to be frozen'\" > should throw a consistent AssertionError [unknown-to-be-frozen-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": false,
+  "expected": true,
+  "diff": "simple"
+}
+`;
+
+exports[`sync-esoteric error snapshots > \"{unknown} 'to be sealed'\" > should throw a consistent AssertionError [unknown-to-be-sealed-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "prop": "value"
+  },
+  "expected": [],
+  "operator": "\\"{unknown} 'to be sealed'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-esoteric error snapshots > \"{unknown} 'to have a null prototype' / 'to be a dictionary'\" > should throw a consistent AssertionError [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": [],
+  "operator": "\\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\"",
+  "diff": "simple"
+}
+`;

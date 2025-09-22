@@ -1,8 +1,7 @@
 import { expect } from 'bupkis';
-import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-describe('usage.md examples', () => {
+describe('examples from usage.md', () => {
   describe('Embeddable assertions', () => {
     it('should create reusable assertion functions within satisfy patterns', () => {
       const isString = expect.it('to be a string');
@@ -126,8 +125,9 @@ describe('usage.md examples', () => {
     it('should support "to be one of" assertion', () => {
       expect('red', 'to be one of', ['red', 'green', 'blue']);
       expect(42, 'to be one of', [1, 2, 3, 42, 100]);
-      assert.throws(() =>
-        expect('yellow', 'to be one of', ['red', 'green', 'blue']),
+      expect(
+        () => expect('yellow', 'to be one of', ['red', 'green', 'blue']),
+        'to throw',
       );
       expect('purple', 'not to be one of', ['red', 'green', 'blue']);
     });

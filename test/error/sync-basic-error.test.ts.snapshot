@@ -1,0 +1,396 @@
+exports[`sync-basic error snapshots > \"{Record<any, unknown>} 'to be empty'\" > should throw a consistent AssertionError [record_any-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{arraylike} 'to be empty'\" > should throw a consistent AssertionError [arraylike-to-be-empty-2s2p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{string} 'to be empty'\" > should throw a consistent AssertionError [string-to-be-empty-2s2p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{string} 'to be non-empty'\" > should throw a consistent AssertionError [string-to-be-non_empty-2s2p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be -Infinity'\" > should throw a consistent AssertionError [unknown-to-be-_infinity-2s1p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be Infinity'\" > should throw a consistent AssertionError [unknown-to-be-infinity-2s1p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be NaN'\" > should throw a consistent AssertionError [unknown-to-be-nan-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 42,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be NaN'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\" > should throw a consistent AssertionError [unknown-to-be-a-regexp-to-be-a-regex-to-be-a-regexp-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a Set'\" > should throw a consistent AssertionError [unknown-to-be-a-set-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a Set'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a WeakMap'\" > should throw a consistent AssertionError [unknown-to-be-a-weakmap-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a WeakMap'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a WeakSet'\" > should throw a consistent AssertionError [unknown-to-be-a-weakset-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a WeakSet'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a bigint' / 'to be a BigInt'\" > should throw a consistent AssertionError [unknown-to-be-a-bigint-to-be-a-bigint-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 42,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a bigint' / 'to be a BigInt'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\" > should throw a consistent AssertionError [unknown-to-be-a-boolean-to-be-boolean-to-be-a-bool-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\" > should throw a consistent AssertionError [unknown-to-be-a-class-to-be-a-constructor-to-be-constructible-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a date' / 'to be a Date'\" > should throw a consistent AssertionError [unknown-to-be-a-date-to-be-a-date-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a date' / 'to be a Date'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a function'\" > should throw a consistent AssertionError [unknown-to-be-a-function-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a function'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a negative integer' / 'to be a negative int'\" > should throw a consistent AssertionError [unknown-to-be-a-negative-integer-to-be-a-negative-int-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a negative integer' / 'to be a negative int'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a number' / 'to be finite'\" > should throw a consistent AssertionError [unknown-to-be-a-number-to-be-finite-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a number' / 'to be finite'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a positive integer' / 'to be a positive int'\" > should throw a consistent AssertionError [unknown-to-be-a-positive-integer-to-be-a-positive-int-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": -5,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a positive integer' / 'to be a positive int'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a primitive'\" > should throw a consistent AssertionError [unknown-to-be-a-primitive-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a primitive'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a record' / 'to be a plain object'\" > should throw a consistent AssertionError [unknown-to-be-a-record-to-be-a-plain-object-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [],
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a record' / 'to be a plain object'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a string'\" > should throw a consistent AssertionError [unknown-to-be-a-string-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 42,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a string'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be a symbol' / 'to be a Symbol'\" > should throw a consistent AssertionError [unknown-to-be-a-symbol-to-be-a-symbol-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be a symbol' / 'to be a Symbol'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be an Error' / 'to be a Error'\" > should throw a consistent AssertionError [unknown-to-be-an-error-to-be-a-error-2s1p] <snapshot> 1`] = `
+{}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be an array' / 'to be array'\" > should throw a consistent AssertionError [unknown-to-be-an-array-to-be-array-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 42,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be an array' / 'to be array'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be an async function'\" > should throw a consistent AssertionError [unknown-to-be-an-async-function-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be an async function'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\" > should throw a consistent AssertionError [unknown-to-be-an-integer-to-be-a-safe-integer-to-be-an-int-to-be-a-safe-int-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 3.14,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be an object'\" > should throw a consistent AssertionError [unknown-to-be-an-object-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be an object'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be defined'\" > should throw a consistent AssertionError [unknown-to-be-defined-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be defined'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be false'\" > should throw a consistent AssertionError [unknown-to-be-false-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": true,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be false'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be falsy'\" > should throw a consistent AssertionError [unknown-to-be-falsy-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 1,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be falsy'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be infinite'\" > should throw a consistent AssertionError [unknown-to-be-infinite-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 42,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be infinite'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be negative' / 'to be a negative number'\" > should throw a consistent AssertionError [unknown-to-be-negative-to-be-a-negative-number-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be negative' / 'to be a negative number'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be null'\" > should throw a consistent AssertionError [unknown-to-be-null-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "expected": [],
+  "operator": "\\"{unknown} 'to be null'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be positive' / 'to be a positive number'\" > should throw a consistent AssertionError [unknown-to-be-positive-to-be-a-positive-number-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": -5,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be positive' / 'to be a positive number'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be true'\" > should throw a consistent AssertionError [unknown-to-be-true-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": false,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be true'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\" > should throw a consistent AssertionError [unknown-to-be-truthy-to-exist-to-be-ok-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 0,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\\"",
+  "diff": "simple"
+}
+`;
+
+exports[`sync-basic error snapshots > \"{unknown} 'to be undefined'\" > should throw a consistent AssertionError [unknown-to-be-undefined-2s1p] <snapshot> 1`] = `
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": null,
+  "expected": [],
+  "operator": "\\"{unknown} 'to be undefined'\\"",
+  "diff": "simple"
+}
+`;
