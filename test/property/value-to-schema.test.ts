@@ -79,7 +79,7 @@ const generators = {
   }),
 };
 
-describe('valueToSchema property tests', () => {
+describe('valueToSchema() property tests', () => {
   it('should handle simple primitive values', () => {
     fc.assert(
       fc.property(generators.primitive, (value) => {

@@ -10,13 +10,11 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 import { inspect } from 'node:util';
-import setDifference from 'set.prototype.difference';
 
 import { type AnyAssertion } from '../../src/assertion/assertion-types.js';
 import { expect, expectAsync } from '../../src/bootstrap.js';
-import { AssertionError, FailAssertionError } from '../../src/error.js';
+import { FailAssertionError } from '../../src/error.js';
 import { isError, isFunction } from '../../src/guards.js';
-import { keyBy } from '../../src/util.js';
 import {
   type InferPropertyTestConfigVariantModel,
   type InferPropertyTestConfigVariantProperty,
@@ -29,57 +27,7 @@ import {
   type PropertyTestConfigVariantProperty,
   type PropertyTestConfigVariantSyncGenerators,
 } from './property-test-config.js';
-
-/**
- * Checks that all `assertions` have an corresponding entry in `testConfigs`.
- *
- * @param collectionName Name of the collection being tested; used in error
- *   message
- * @param assertions Assertions to check
- * @param testConfigs Config to check
- */
-export function assertExhaustiveTestConfigs(
-  collectionName: string,
-  assertions: readonly AnyAssertion[],
-  testConfigs: Map<AnyAssertion, any>,
-): void {
-  it(`should test all available assertions in ${collectionName}`, () => {
-    const assertionsById = keyBy(assertions, 'id');
-    const allCollectionIds = new Set(Object.keys(assertionsById));
-    const testedIds = new Set([...testConfigs.keys()].map(({ id }) => id));
-    const diff = setDifference(allCollectionIds, testedIds);
-    try {
-      expect(diff, 'to be empty');
-    } catch {
-      throw new AssertionError({
-        message: `Some assertions in collection "${collectionName}" are missing property test configurations:\n${[
-          ...diff,
-        ]
-          .map((id) => `  ❌ ${assertionsById[id]} [${id}]`)
-          .join('\n')}`,
-      });
-    }
-  });
-}
-
-const RUN_SIZES = Object.freeze({
-  large: 500,
-  medium: 250,
-  small: 50,
-} as const);
-
-const calculateNumRuns = (runSize: keyof typeof RUN_SIZES = 'medium') => {
-  if (process.env.WALLABY) {
-    return Math.floor(RUN_SIZES[runSize] / 10);
-  }
-  if (process.env.CI) {
-    return Math.floor(RUN_SIZES[runSize] / 5);
-  }
-  if (process.env.NUM_RUNS) {
-    return Number.parseInt(process.env.NUM_RUNS, 10);
-  }
-  return RUN_SIZES[runSize];
-};
+import { calculateNumRuns } from './property-test-util.js';
 
 /**
  * Global defaults for property test configurations.
@@ -606,7 +554,7 @@ async function runAsyncGeneratorsTest(
   fcParams: PropertyTestConfigParameters,
   name: string,
 ) {
-  const { generators, shouldInterrupt = false, ...propFcParams } = variant;
+  const { generators, ...propFcParams } = variant;
   const finalParams = {
     ...globalTestConfigDefaults,
     ...testConfigDefaults,
@@ -633,20 +581,7 @@ async function runAsyncGeneratorsTest(
     result = await fc.check(asyncProperty, { ...finalParams, numRuns });
   }
 
-  if (shouldInterrupt) {
-    // Check if the failure was due to a timeout
-    const isTimeout =
-      result.failed &&
-      isError(result.errorInstance) &&
-      result.errorInstance.message.includes('Property timeout: exceeded limit');
-    if (!isTimeout) {
-      let message = `Expected test to timeout/interrupt, but it failed for another reason: ${inspect(result)}`;
-      if (isError(err)) {
-        message += `\nUnderlying error: ${err.message}`;
-      }
-      expect.fail(message);
-    }
-  } else if (result.failed) {
+  if (result.failed) {
     let message = `Expected test to pass, but it failed: ${inspect(result)}`;
     if (isError(err)) {
       message += `\nUnderlying error: ${err.message}`;
@@ -687,7 +622,7 @@ function runSyncGeneratorsTest(
   fcParams: PropertyTestConfigParameters,
   name: string,
 ): void {
-  const { generators, shouldInterrupt = false, ...propFcParams } = variant;
+  const { generators, ...propFcParams } = variant;
   const finalParams = {
     ...globalTestConfigDefaults,
     ...testConfigDefaults,
@@ -708,24 +643,7 @@ function runSyncGeneratorsTest(
     result = fc.check(property, { ...finalParams, numRuns });
   }
 
-  // TODO: there are some flags to control fc's timeout behavior
-  // that we could use instead of inspecting the error message
-  if (shouldInterrupt) {
-    // Check if the failure was due to a timeout
-    const isTimeout =
-      result.failed &&
-      isError(result.errorInstance) &&
-      result.errorInstance.message.includes('Property timeout: exceeded limit');
-    if (!isTimeout) {
-      let message = `Expected test to timeout/interrupt, but it failed for another reason:`;
-      message += `\n👉 CAUSE: ${inspect(result)}`;
-      if (finalParams.verbose) {
-        message += `\n\n❌ FAILURES:\n${inspect(result.failures.slice(0, 3), { depth: null })}`;
-      }
-
-      expect.fail(message);
-    }
-  } else if (result.failed) {
+  if (result.failed) {
     let message = `Expected test to pass, but it failed:`;
     message += `\n👉 CAUSE: ${inspect(result)}`;
     if (finalParams.verbose) {

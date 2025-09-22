@@ -5,6 +5,7 @@ import { describe } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-parametric.js';
 import { SyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
@@ -14,10 +15,7 @@ import {
   safeRegexStringFilter,
   valueToSchemaFilter,
 } from './property-test-util.js';
-import {
-  assertExhaustiveTestConfigs,
-  runPropertyTests,
-} from './property-test.macro.js';
+import { runPropertyTests } from './property-test.macro.js';
 
 /**
  * Test config defaults
@@ -1116,7 +1114,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Sync Parametric Assertions', () => {
-  assertExhaustiveTestConfigs(
+  expectExhaustiveAssertionTests(
     'Sync Parametric Assertions',
     SyncParametricAssertions,
     testConfigs,

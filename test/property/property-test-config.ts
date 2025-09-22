@@ -127,10 +127,4 @@ export interface PropertyTestConfigVariantSyncGenerators
         phrase: fc.Arbitrary<string>,
         ...fc.Arbitrary<any>[],
       ];
-  /**
-   * If true, this variant expects fast-check to timeout/interrupt the test.
-   * Used for async callback tests where the assertion waits indefinitely for
-   * callbacks that should never be called.
-   */
-  shouldInterrupt?: boolean;
 }

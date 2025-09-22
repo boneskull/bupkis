@@ -4,15 +4,13 @@ import { describe } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-collection.js';
 import { SyncCollectionAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
 import { extractPhrases } from './property-test-util.js';
-import {
-  assertExhaustiveTestConfigs,
-  runPropertyTests,
-} from './property-test.macro.js';
+import { runPropertyTests } from './property-test.macro.js';
 
 /**
  * Shared state for WeakMap/WeakSet testing
@@ -972,7 +970,7 @@ const testConfigs = new Map<
 ]);
 
 describe('Property-Based Tests for Collection Assertions', () => {
-  assertExhaustiveTestConfigs(
+  expectExhaustiveAssertionTests(
     'Collection Assertions',
     SyncCollectionAssertions,
     testConfigs,
