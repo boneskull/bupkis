@@ -111,6 +111,7 @@
     "build:docs": "typedoc --cleanOutputDir --treatWarningsAsErrors",
     "build:docs:dev": "run-s \"build:docs -- --watch\"",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
+    "docs:build": "typedoc --cleanOutputDir --treatWarningsAsErrors",
     "docs:dev": "run-p build:docs:dev serve",
     "lint": "run-p lint:eslint lint:types lint:knip lint:markdown lint:spelling",
     "lint:commit": "commitlint",
