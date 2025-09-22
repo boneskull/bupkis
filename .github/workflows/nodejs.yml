@@ -16,16 +16,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      - uses: ./.github/actions/prepare
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install & Build
-        uses: bahmutov/npm-install@e5fe105da2400070b5345aeb71fcb1ef5d4b2d1f # v1.11.0
-        with:
-          install-command: npm ci --foreground-scripts
-      - name: Lint
-        run: npm run lint
       - name: Test w/ Coverage
         if: matrix.node-version == '^24.0.0'
         run: npm run test:coverage
