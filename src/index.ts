@@ -20,6 +20,7 @@ import { expect as sacrificialExpect } from './bootstrap.js';
 export * as assertions from './assertion/impl/index.js';
 export { expect, expectAsync } from './bootstrap.js';
 export * from './error.js';
+export * as schema from './schema.js';
 
 /**
  * Re-export of most (all?) types defined within <span
