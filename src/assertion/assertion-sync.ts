@@ -109,7 +109,6 @@ export abstract class BupkisAssertionSync<
       // unknown/any accept anything
       // IMPORTANT: do not use a type guard here
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
-        // debug('Skipping unknown/any slot validation for arg', arg);
         parsedValues.push(arg);
         exactMatch = false;
         continue;
@@ -154,7 +153,7 @@ export class BupkisAssertionFunctionSync<
     if (isPromiseLike(result)) {
       // Avoid unhandled promise rejection
       Promise.resolve(result).catch((err) => {
-        debug(`Ate unhandled rejection from assertion %s: %O`, this, err);
+        debug(`⚠️ Ate unhandled rejection from assertion %s: %O`, this, err);
       });
 
       throw new UnexpectedAsyncError(
@@ -222,10 +221,6 @@ export class BupkisAssertionSchemaSync<
       : undefined;
 
     if (cachedValidation) {
-      debug(
-        'Using cached subject validation result from parseValues for %s',
-        this,
-      );
       if (!cachedValidation.success) {
         // Subject validation failed during parseValues, throw the cached error
         throw this.fromZodError(
@@ -292,7 +287,6 @@ export class BupkisAssertionSchemaSync<
 
       // Standard slot processing for non-optimized cases
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
-        debug('Skipping unknown/any slot validation for arg', arg);
         parsedValues.push(arg);
         exactMatch = false;
         continue;
