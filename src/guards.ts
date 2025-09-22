@@ -97,7 +97,10 @@ export const isZodPromise = (value: unknown): value is z.ZodPromise =>
  * @returns `true` if the value is promise-like, `false` otherwise
  */
 export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
-  isObject(value) && 'then' in value && isFunction(value.then);
+  isObject(value) &&
+  'then' in value &&
+  isFunction(value.then) &&
+  value.then.length > 0;
 
 /**
  * Returns `true` if the given value is a constructable function (i.e., a
