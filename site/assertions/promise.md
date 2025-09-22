@@ -110,7 +110,7 @@ await expectAsync(
 
 ### `{Promise} to reject with error satisfying {any}`
 
-> _See also: [`{object} to satisfy {any}`](object.md#to-satisfy-)_
+> 👉 See [`{object} to satisfy {any}`](object.md#object-to-satisfy-any)
 
 **Success**:
 
@@ -165,7 +165,7 @@ await expectAsync(
 >     {Promise} to fulfill with value satisfying {any}
 >     {Promise} to resolve with value satisfying {any}
 
-> _See also: [`to satisfy <any>`](object.md#to-satisfy-)_
+👉 See [`{object} to satisfy {any}}`](object.md#object-to-satisfy-any)
 
 **Success**:
 
