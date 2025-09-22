@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.1...bupkis-v0.7.2) (2025-09-22)
+
+
+### Bug Fixes
+
+* **release:** revert change to publish action ([5342626](https://github.com/boneskull/bupkis/commit/5342626daa65b75994bd9681f356f24fef7a25ba))
+
 ## [0.7.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.0...bupkis-v0.7.1) (2025-09-22)
 
 
