@@ -65,30 +65,30 @@
     {
       "detail": "typedoc",
       "group": "build",
-      "label": "npm: build:docs",
+      "label": "npm: docs:build",
       "problemMatcher": [],
-      "script": "build:docs",
+      "script": "docs:build",
       "type": "npm"
     },
     {
-      "detail": "npm run --silent build:docs -- --watch",
+      "detail": "npm run --silent docs:build -- --watch",
       "group": "build",
       "isBackground": true,
-      "label": "npm: build:docs:watch",
+      "label": "npm: docs:build:watch",
       "problemMatcher": [],
-      "script": "build:docs:watch",
+      "script": "docs:build:watch",
       "type": "npm"
     },
     {
       "detail": "serve docs",
       "isBackground": true,
-      "label": "npm: serve",
+      "label": "npm: docs:serve",
       "problemMatcher": [],
-      "script": "serve",
+      "script": "docs:serve",
       "type": "npm"
     },
     {
-      "dependsOn": ["npm: build:docs", "npm: serve"],
+      "dependsOn": ["npm: docs:build", "npm: serve"],
       "isBackground": true,
       "label": "docs: start",
       "problemMatcher": []
@@ -118,7 +118,7 @@
       "type": "npm"
     },
     {
-      "detail": "run-p build:docs:dev serve",
+      "detail": "run-p docs:build:dev serve",
       "label": "npm: docs:dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "docs:dev",
