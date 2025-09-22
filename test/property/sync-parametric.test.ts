@@ -1,3 +1,4 @@
+import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 import { describe } from 'node:test';
 
@@ -8,7 +9,11 @@ import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { extractPhrases } from './property-test-util.js';
+import {
+  extractPhrases,
+  safeRegexStringFilter,
+  valueToSchemaFilter,
+} from './property-test-util.js';
 import {
   assertExhaustiveTestConfigs,
   runPropertyTests,
@@ -27,22 +32,41 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.arrayDeepEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant([1, 2, 3]),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arrayDeepEqualAssertion),
+        generators: fc
+          .array(fc.anything(), { minLength: 1, size: 'small' })
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .array(fc.anything(), {
+                  minLength: 1,
+                  size: 'small',
+                })
+                .filter(valueToSchemaFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arrayDeepEqualAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant([1, 2, 4]),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant([1, 2, 3]),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arrayDeepEqualAssertion),
+        generators: fc
+          .array(fc.anything(), { minLength: 1, size: 'small' })
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(structuredClone(expected)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arrayDeepEqualAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant([1, 2, 3]),
-        ],
       },
     },
   ],
@@ -51,22 +75,41 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.arraySatisfiesAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant([1, 2, 'hello']),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arraySatisfiesAssertion),
+        generators: fc
+          .array(fc.anything(), { minLength: 1, size: 'small' })
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .array(fc.anything(), {
+                  minLength: 1,
+                  size: 'small',
+                })
+                .filter(valueToSchemaFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arraySatisfiesAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant([1, 2, 3]), // Should be all numbers, but input has string
-        ],
       },
       valid: {
-        generators: [
-          fc.constant([1, 2, 3]),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arraySatisfiesAssertion),
+        generators: fc
+          .array(fc.anything(), { minLength: 1, size: 'small' })
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(structuredClone(expected)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arraySatisfiesAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant([1, 2, 3]), // Should be all numbers, and input matches
-        ],
       },
     },
   ],
@@ -75,18 +118,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.errorMessageAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant(new Error('hello world')),
-          fc.constantFrom(...extractPhrases(assertions.errorMessageAssertion)),
-          fc.constant('goodbye'),
-        ],
+        generators: fc.string({ size: 'medium' }).chain((actualMessage) =>
+          fc.tuple(
+            fc.constant(new Error(actualMessage)),
+            fc.constantFrom(
+              ...extractPhrases(assertions.errorMessageAssertion),
+            ),
+            fc
+              .string()
+              .filter((expectedMessage) => expectedMessage !== actualMessage),
+          ),
+        ),
       },
       valid: {
-        generators: [
-          fc.constant(new Error('hello world')),
-          fc.constantFrom(...extractPhrases(assertions.errorMessageAssertion)),
-          fc.constant('hello world'),
-        ],
+        generators: fc
+          .string()
+          .chain((expectedMessage) =>
+            fc.tuple(
+              fc.constant(new Error(expectedMessage)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.errorMessageAssertion),
+              ),
+              fc.constant(expectedMessage),
+            ),
+          ),
       },
     },
   ],
@@ -95,22 +150,36 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.errorMessageMatchingAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant(new Error('hello world')),
-          fc.constantFrom(
-            ...extractPhrases(assertions.errorMessageMatchingAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((actualMessage) =>
+            fc.tuple(
+              fc.constant(new Error(actualMessage)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.errorMessageMatchingAssertion),
+              ),
+              fc
+                .string({ maxLength: 15, minLength: 10 })
+                .map(safeRegexStringFilter)
+                .filter((pattern) => pattern.length > actualMessage.length)
+                .map((pattern) => new RegExp(escapeStringRegexp(pattern))),
+            ),
           ),
-          fc.constant(/goodbye/),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant(new Error('hello world')),
-          fc.constantFrom(
-            ...extractPhrases(assertions.errorMessageMatchingAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .map(safeRegexStringFilter)
+          .filter((message) => !!message.length)
+          .chain((message) =>
+            fc.tuple(
+              fc.constant(new Error(message)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.errorMessageMatchingAssertion),
+              ),
+              fc.constant(new RegExp(escapeStringRegexp(message))),
+            ),
           ),
-          fc.constant(/hello/),
-        ],
       },
     },
   ],
@@ -119,18 +188,76 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.functionArityAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant((a: number, b: number) => a + b),
-          fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
-          fc.constant(3),
-        ],
+        generators: fc.integer({ max: 5, min: 0 }).chain((actualArity) =>
+          fc.tuple(
+            fc.func(fc.anything()).map(() => {
+              switch (actualArity) {
+                case 0:
+                  return () => 0;
+                case 1:
+                  return (a: unknown) => a;
+                case 2:
+                  return (a: unknown, b: unknown) => String(a) + String(b);
+                case 3:
+                  return (a: unknown, b: unknown, c: unknown) =>
+                    String(a) + String(b) + String(c);
+                case 4:
+                  return (a: unknown, b: unknown, c: unknown, d: unknown) =>
+                    String(a) + String(b) + String(c) + String(d);
+                default:
+                  return (
+                    a: unknown,
+                    b: unknown,
+                    c: unknown,
+                    d: unknown,
+                    e: unknown,
+                  ) =>
+                    String(a) + String(b) + String(c) + String(d) + String(e);
+              }
+            }),
+            fc.constantFrom(
+              ...extractPhrases(assertions.functionArityAssertion),
+            ),
+            fc
+              .integer({ max: 5, min: 0 })
+              .filter((wrongArity) => wrongArity !== actualArity),
+          ),
+        ),
       },
       valid: {
-        generators: [
-          fc.constant((a: number, b: number) => a + b),
-          fc.constantFrom(...extractPhrases(assertions.functionArityAssertion)),
-          fc.constant(2),
-        ],
+        generators: fc.integer({ max: 5, min: 0 }).chain((arity) =>
+          fc.tuple(
+            fc.func(fc.anything()).map(() => {
+              switch (arity) {
+                case 0:
+                  return () => 0;
+                case 1:
+                  return (a: unknown) => a;
+                case 2:
+                  return (a: unknown, b: unknown) => String(a) + String(b);
+                case 3:
+                  return (a: unknown, b: unknown, c: unknown) =>
+                    String(a) + String(b) + String(c);
+                case 4:
+                  return (a: unknown, b: unknown, c: unknown, d: unknown) =>
+                    String(a) + String(b) + String(c) + String(d);
+                default:
+                  return (
+                    a: unknown,
+                    b: unknown,
+                    c: unknown,
+                    d: unknown,
+                    e: unknown,
+                  ) =>
+                    String(a) + String(b) + String(c) + String(d) + String(e);
+              }
+            }),
+            fc.constantFrom(
+              ...extractPhrases(assertions.functionArityAssertion),
+            ),
+            fc.constant(arity),
+          ),
+        ),
       },
     },
   ],
@@ -267,20 +394,38 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberCloseToAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant(10),
-          fc.constantFrom(...extractPhrases(assertions.numberCloseToAssertion)),
-          fc.constant(5),
-          fc.constant(2),
-        ],
+        generators: fc.integer({ max: 100, min: -100 }).chain((target) =>
+          fc.integer({ max: 10, min: 1 }).chain((tolerance) =>
+            fc.tuple(
+              fc.oneof(
+                fc.integer({ max: target - tolerance - 1 }), // Too far below
+                fc.integer({ min: target + tolerance + 1 }), // Too far above
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberCloseToAssertion),
+              ),
+              fc.constant(target),
+              fc.constant(tolerance),
+            ),
+          ),
+        ),
       },
       valid: {
-        generators: [
-          fc.constant(5.5),
-          fc.constantFrom(...extractPhrases(assertions.numberCloseToAssertion)),
-          fc.constant(5),
-          fc.constant(1),
-        ],
+        generators: fc.integer({ max: 100, min: -100 }).chain((target) =>
+          fc.integer({ max: 10, min: 1 }).chain((tolerance) =>
+            fc.tuple(
+              fc.integer({
+                max: target + tolerance,
+                min: target - tolerance,
+              }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberCloseToAssertion),
+              ),
+              fc.constant(target),
+              fc.constant(tolerance),
+            ),
+          ),
+        ),
       },
     },
   ],
@@ -289,22 +434,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberGreaterThanAssertion,
     {
       invalid: {
-        generators: [
-          fc.integer({ max: 10 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberGreaterThanAssertion),
+        generators: fc
+          .integer({ max: 10, min: 6 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ max: 5, min: 1 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberGreaterThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ min: 10 }),
-        ],
       },
       valid: {
-        generators: [
-          fc.integer({ min: 11 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberGreaterThanAssertion),
+        generators: fc
+          .integer({ max: 5, min: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ max: 10, min: 6 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberGreaterThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ max: 10 }),
-        ],
       },
     },
   ],
@@ -313,22 +466,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberGreaterThanOrEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.integer({ max: 9 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ max: threshold - 1 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ min: 10 }),
-        ],
       },
       valid: {
-        generators: [
-          fc.integer({ min: 10 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ min: threshold }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ max: 10 }),
-        ],
       },
     },
   ],
@@ -337,22 +498,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberLessThanAssertion,
     {
       invalid: {
-        generators: [
-          fc.integer({ min: 11 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberLessThanAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ min: threshold }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberLessThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ max: 10 }),
-        ],
       },
       valid: {
-        generators: [
-          fc.integer({ max: 9 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberLessThanAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ max: threshold - 1 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberLessThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ min: 10 }),
-        ],
       },
     },
   ],
@@ -361,22 +530,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberLessThanOrEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.integer({ min: 10 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ min: threshold + 1 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ max: 10 }),
-        ],
       },
       valid: {
-        generators: [
-          fc.integer({ max: 10 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
+        generators: fc
+          .integer({ max: 50, min: -50 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.integer({ max: threshold }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.integer({ min: 10 }),
-        ],
       },
     },
   ],
@@ -385,24 +562,35 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.numberWithinRangeAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant(15),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberWithinRangeAssertion),
+        generators: fc.integer({ max: 50, min: 0 }).chain((min) =>
+          fc.integer({ max: 100, min: min + 5 }).chain((max) =>
+            fc.tuple(
+              fc.oneof(
+                fc.integer({ max: min - 1 }), // Below range
+                fc.integer({ min: max + 1 }), // Above range
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberWithinRangeAssertion),
+              ),
+              fc.constant(min),
+              fc.constant(max),
+            ),
           ),
-          fc.constant(5),
-          fc.constant(10),
-        ],
+        ),
       },
       valid: {
-        generators: [
-          fc.constant(7),
-          fc.constantFrom(
-            ...extractPhrases(assertions.numberWithinRangeAssertion),
+        generators: fc.integer({ max: 50, min: 0 }).chain((min) =>
+          fc.integer({ max: 100, min: min + 5 }).chain((max) =>
+            fc.tuple(
+              fc.integer({ max, min }), // Within range
+              fc.constantFrom(
+                ...extractPhrases(assertions.numberWithinRangeAssertion),
+              ),
+              fc.constant(min),
+              fc.constant(max),
+            ),
           ),
-          fc.constant(5),
-          fc.constant(10),
-        ],
+        ),
       },
     },
   ],
@@ -411,22 +599,39 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.objectDeepEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant({ a: 1, b: 2 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectDeepEqualAssertion),
+        generators: fc
+          .object()
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .object()
+                .filter(valueToSchemaFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectDeepEqualAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant({ a: 1, b: 3 }),
-        ],
+        verbose: true,
       },
       valid: {
-        generators: [
-          fc.constant({ a: 1, b: 2 }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectDeepEqualAssertion),
+        generators: fc
+          .object()
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(structuredClone(expected)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectDeepEqualAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant({ a: 1, b: 2 }),
-        ],
       },
     },
   ],
@@ -435,22 +640,39 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.objectSatisfiesAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant({ age: 'old', name: 'john' }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectSatisfiesAssertion),
+        generators: fc
+          .object()
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .object({ depthSize: 'medium' })
+                .filter(valueToSchemaFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectSatisfiesAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant({ age: 25, name: 'john' }), // Should have number age, but input has string
-        ],
+        verbose: true,
       },
       valid: {
-        generators: [
-          fc.constant({ age: 25, name: 'john' }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectSatisfiesAssertion),
+        generators: fc
+          .object({ depthSize: 'small' })
+          .filter(valueToSchemaFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(structuredClone(expected)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectSatisfiesAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.constant({ age: 25, name: 'john' }), // Should have number age, and input matches
-        ],
       },
     },
   ],
@@ -483,22 +705,32 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.strictEqualityAssertion,
     {
       invalid: {
-        generators: [
-          fc.string(),
-          fc.constantFrom(
-            ...extractPhrases(assertions.strictEqualityAssertion),
+        generators: fc
+          .anything()
+          .filter((v) => !Number.isNaN(v))
+          .chain((expected) =>
+            fc.tuple(
+              fc.anything().filter((actual) => actual !== expected),
+              fc.constantFrom(
+                ...extractPhrases(assertions.strictEqualityAssertion),
+              ),
+              fc.constant(expected),
+            ),
           ),
-          fc.integer(),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant(42),
-          fc.constantFrom(
-            ...extractPhrases(assertions.strictEqualityAssertion),
+        generators: fc
+          .anything()
+          .filter((v) => !Number.isNaN(v))
+          .chain((value) =>
+            fc.tuple(
+              fc.constant(value),
+              fc.constantFrom(
+                ...extractPhrases(assertions.strictEqualityAssertion),
+              ),
+              fc.constant(value),
+            ),
           ),
-          fc.constant(42),
-        ],
       },
     },
   ],
@@ -507,22 +739,34 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringBeginsWithAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringBeginsWithAssertion),
+        generators: fc.string({ minLength: 3 }).chain((str) =>
+          fc.tuple(
+            fc.constant(str),
+            fc.constantFrom(
+              ...extractPhrases(assertions.stringBeginsWithAssertion),
+            ),
+            fc
+              .string({ minLength: 1 })
+              .filter((prefix) => !str.startsWith(prefix)),
           ),
-          fc.constant('goodbye'),
-        ],
+        ),
       },
       valid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringBeginsWithAssertion),
+        generators: fc
+          .string({ minLength: 2 })
+          .chain((str) =>
+            fc
+              .integer({ max: str.length, min: 1 })
+              .chain((prefixLength) =>
+                fc.tuple(
+                  fc.constant(str),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.stringBeginsWithAssertion),
+                  ),
+                  fc.constant(str.substring(0, prefixLength)),
+                ),
+              ),
           ),
-          fc.constant('hello'),
-        ],
       },
     },
   ],
@@ -531,22 +775,34 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringEndsWithAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringEndsWithAssertion),
+        generators: fc.string({ minLength: 3 }).chain((str) =>
+          fc.tuple(
+            fc.constant(str),
+            fc.constantFrom(
+              ...extractPhrases(assertions.stringEndsWithAssertion),
+            ),
+            fc
+              .string({ minLength: 1 })
+              .filter((suffix) => !str.endsWith(suffix)),
           ),
-          fc.constant('hello'),
-        ],
+        ),
       },
       valid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringEndsWithAssertion),
+        generators: fc
+          .string({ minLength: 2 })
+          .chain((str) =>
+            fc
+              .integer({ max: str.length, min: 1 })
+              .chain((suffixLength) =>
+                fc.tuple(
+                  fc.constant(str),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.stringEndsWithAssertion),
+                  ),
+                  fc.constant(str.substring(str.length - suffixLength)),
+                ),
+              ),
           ),
-          fc.constant('world'),
-        ],
       },
     },
   ],
@@ -555,22 +811,32 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringGreaterThanAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('apple'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringGreaterThanAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc
+                .string({ maxLength: 5, minLength: 1 })
+                .filter((str) => str <= threshold),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringGreaterThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('banana'),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant('zebra'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringGreaterThanAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.constant(threshold + 'a'), // Simple: append 'a' to make it greater
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringGreaterThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('apple'),
-        ],
       },
     },
   ],
@@ -579,22 +845,38 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringGreaterThanOrEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('apple'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              // Generate string guaranteed to be less than threshold
+              fc.constant(
+                threshold.length > 0 && threshold.charCodeAt(0) > 32
+                  ? ' '.repeat(threshold.length)
+                  : '',
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('banana'),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant('zebra'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.oneof(
+                fc.constant(threshold), // Equal case
+                fc.constant(threshold + 'a'), // Greater case: append 'a'
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('apple'),
-        ],
       },
     },
   ],
@@ -603,22 +885,40 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringIncludesAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringIncludesAssertion),
+        generators: fc.string({ minLength: 3 }).chain((str) =>
+          fc.tuple(
+            fc.constant(str),
+            fc.constantFrom(
+              ...extractPhrases(assertions.stringIncludesAssertion),
+            ),
+            fc
+              .string({ minLength: 1 })
+              .filter((substring) => !str.includes(substring)),
           ),
-          fc.constant('goodbye'),
-        ],
+        ),
       },
       valid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringIncludesAssertion),
+        generators: fc
+          .string({ minLength: 3 })
+          .chain((str) =>
+            fc
+              .integer({ max: str.length - 1, min: 1 })
+              .chain((startIndex) =>
+                fc
+                  .integer({ max: str.length - startIndex, min: 1 })
+                  .chain((length) =>
+                    fc.tuple(
+                      fc.constant(str),
+                      fc.constantFrom(
+                        ...extractPhrases(assertions.stringIncludesAssertion),
+                      ),
+                      fc.constant(
+                        str.substring(startIndex, startIndex + length),
+                      ),
+                    ),
+                  ),
+              ),
           ),
-          fc.constant('world'),
-        ],
       },
     },
   ],
@@ -627,22 +927,38 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringLessThanAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('zebra'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringLessThanAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.oneof(
+                fc.constant(threshold), // Equal case
+                fc.constant(threshold + 'a'), // Greater case
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringLessThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('apple'),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant('apple'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringLessThanAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              // Generate string guaranteed to be less than threshold
+              fc.constant(
+                threshold.length > 0 && threshold.charCodeAt(0) > 32
+                  ? ' '.repeat(threshold.length)
+                  : '',
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringLessThanAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('zebra'),
-        ],
       },
     },
   ],
@@ -651,22 +967,39 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringLessThanOrEqualAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('zebra'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.constant(threshold + 'a'), // Simple: append 'a' to make it greater
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('apple'),
-        ],
       },
       valid: {
-        generators: [
-          fc.constant('apple'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((threshold) =>
+            fc.tuple(
+              fc.oneof(
+                fc.constant(threshold), // Equal case
+                // Less case: if threshold starts with a character > space, replace with space
+                // Otherwise use empty string (which is always < any non-empty string)
+                fc.constant(
+                  threshold.length > 0 && threshold.charCodeAt(0) > 32
+                    ? ' '.repeat(threshold.length)
+                    : '',
+                ),
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
+              ),
+              fc.constant(threshold),
+            ),
           ),
-          fc.constant('zebra'),
-        ],
       },
     },
   ],
@@ -675,18 +1008,36 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.stringMatchesAssertion,
     {
       invalid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(...extractPhrases(assertions.stringMatchesAssertion)),
-          fc.constant(/goodbye/),
-        ],
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .chain((actualString) =>
+            fc.tuple(
+              fc.constant(actualString),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringMatchesAssertion),
+              ),
+              fc
+                .string({ maxLength: 15, minLength: 10 })
+                .map(safeRegexStringFilter)
+                .filter((pattern) => pattern.length > actualString.length)
+                .map((pattern) => new RegExp(escapeStringRegexp(pattern))),
+            ),
+          ),
       },
       valid: {
-        generators: [
-          fc.constant('hello world'),
-          fc.constantFrom(...extractPhrases(assertions.stringMatchesAssertion)),
-          fc.constant(/hello/),
-        ],
+        generators: fc
+          .string({ maxLength: 5, minLength: 1 })
+          .map(safeRegexStringFilter)
+          .filter((str) => !!str.length)
+          .chain((str) =>
+            fc.tuple(
+              fc.constant(str),
+              fc.constantFrom(
+                ...extractPhrases(assertions.stringMatchesAssertion),
+              ),
+              fc.constant(new RegExp(escapeStringRegexp(str))),
+            ),
+          ),
       },
     },
   ],
@@ -695,18 +1046,70 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.typeOfAssertion,
     {
       invalid: {
-        generators: [
-          fc.string(),
-          fc.constantFrom(...extractPhrases(assertions.typeOfAssertion)),
-          fc.constant('number'),
-        ],
+        generators: fc
+          .oneof(
+            // Generate value-type pairs where value doesn't match the type
+            fc.constant(['string', 'number']), // string value, expect number
+            fc.constant([42, 'string']), // number value, expect string
+            fc.constant([true, 'string']), // boolean value, expect string
+            fc.constant([undefined, 'string']), // undefined value, expect string
+            fc.constant([null, 'string']), // null value, expect string
+            fc.constant([BigInt(1), 'string']), // bigint value, expect string
+            fc.constant([Symbol('test'), 'string']), // symbol value, expect string
+            fc.constant([{}, 'string']), // object value, expect string
+            fc.constant([() => {}, 'string']), // function value, expect string
+            fc.constant([[], 'string']), // array value, expect string
+            fc.constant([new Date(), 'string']), // date value, expect string
+            fc.constant([new Map(), 'string']), // map value, expect string
+            fc.constant([new Set(), 'string']), // set value, expect string
+            fc.constant([new WeakMap(), 'string']), // weakmap value, expect string
+            fc.constant([new WeakSet(), 'string']), // weakset value, expect string
+            fc.constant([/test/, 'string']), // regexp value, expect string
+            fc.constant([Promise.resolve(), 'string']), // promise value, expect string
+            fc.constant([new Error(), 'string']), // error value, expect string
+            fc.constant([new WeakRef({}), 'string']), // weakref value, expect string
+          )
+          .chain(([value, wrongType]) =>
+            fc.tuple(
+              fc.constant(value),
+              fc.constantFrom(...extractPhrases(assertions.typeOfAssertion)),
+              fc.constant(wrongType),
+            ),
+          ),
       },
       valid: {
-        generators: [
-          fc.string(),
-          fc.constantFrom(...extractPhrases(assertions.typeOfAssertion)),
-          fc.constant('string'),
-        ],
+        generators: fc
+          .oneof(
+            // Generate value-type pairs where value matches the type
+            fc.constant([fc.string(), 'string']),
+            fc.constant([fc.float(), 'number']),
+            fc.constant([fc.boolean(), 'boolean']),
+            fc.constant([fc.constant(undefined), 'undefined']),
+            fc.constant([fc.constant(null), 'null']),
+            fc.constant([fc.constant(BigInt(1)), 'bigint']),
+            fc.constant([fc.constant(Symbol('test')), 'symbol']),
+            fc.constant([fc.object(), 'object']),
+            fc.constant([fc.func(fc.anything()), 'function']),
+            fc.constant([fc.array(fc.anything()), 'array']),
+            fc.constant([fc.constant(new Date()), 'date']),
+            fc.constant([fc.constant(new Map()), 'map']),
+            fc.constant([fc.constant(new Set()), 'set']),
+            fc.constant([fc.constant(new WeakMap()), 'weakmap']),
+            fc.constant([fc.constant(new WeakSet()), 'weakset']),
+            fc.constant([fc.constant(/test/), 'regexp']),
+            fc.constant([fc.constant(Promise.resolve()), 'promise']),
+            fc.constant([fc.constant(new Error()), 'error']),
+            fc.constant([fc.constant(new WeakRef({})), 'weakref']),
+          )
+          .chain(([valueGen, typeString]) =>
+            valueGen.chain((value) =>
+              fc.tuple(
+                fc.constant(value),
+                fc.constantFrom(...extractPhrases(assertions.typeOfAssertion)),
+                fc.constant(typeString), // Only use lowercase
+              ),
+            ),
+          ),
       },
     },
   ],

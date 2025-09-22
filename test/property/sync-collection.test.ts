@@ -64,7 +64,7 @@ const testConfigDefaults = {} satisfies PropertyTestConfigParameters;
 const helperGenerators = {
   primitive: fc.oneof(
     fc.string(),
-    fc.integer(),
+    fc.integer({ max: 100, min: -100 }),
     fc.boolean(),
     fc.constant(null),
     fc.constant(undefined),
@@ -87,7 +87,7 @@ const testConfigs = new Map<
         generators: [
           fc.array(fc.string()),
           fc.constantFrom(...extractPhrases(assertions.arrayContainsAssertion)),
-          fc.integer(),
+          fc.integer({ max: 100, min: 0 }),
         ],
       },
       valid: {
@@ -208,7 +208,7 @@ const testConfigs = new Map<
             fc.constantFrom(
               ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
             ),
-            fc.integer({ min: 2 }), // 2 or greater
+            fc.integer({ max: 10, min: 2 }), // 2 or greater
           ],
         },
         valid: {
@@ -223,7 +223,7 @@ const testConfigs = new Map<
             fc.constantFrom(
               ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
             ),
-            fc.integer({ max: 2 }), // less than 3
+            fc.integer({ max: 2, min: 0 }), // 0 to 2 (less than 3)
           ],
         },
       },
@@ -234,7 +234,7 @@ const testConfigs = new Map<
             fc.constantFrom(
               ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
             ),
-            fc.integer({ min: 2 }), // 2 or greater
+            fc.integer({ max: 10, min: 2 }), // 2 or greater
           ],
         },
         valid: {
@@ -243,7 +243,7 @@ const testConfigs = new Map<
             fc.constantFrom(
               ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
             ),
-            fc.integer({ max: 2 }), // less than 3
+            fc.integer({ max: 2, min: 0 }), // 0 to 2 (less than 3)
           ],
         },
       },
@@ -670,7 +670,7 @@ const testConfigs = new Map<
             { minLength: 1 },
           ),
         ],
-        numRuns: process.env.WALLABY ? 10 : process.env.CI ? 100 : 1000,
+        runSize: 'large',
       },
       valid: {
         examples: [
@@ -693,7 +693,7 @@ const testConfigs = new Map<
         generators: [
           fc.constant({ a: 1, b: 2, c: 3 }),
           fc.constantFrom(...extractPhrases(assertions.objectSizeAssertion)),
-          fc.integer({ min: 0 }).filter((n) => n !== 3),
+          fc.integer({ max: 10, min: 0 }).filter((n) => n !== 3),
         ],
       },
       valid: {

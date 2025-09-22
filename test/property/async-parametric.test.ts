@@ -1,3 +1,4 @@
+import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 import { describe } from 'node:test';
 
@@ -13,7 +14,6 @@ import {
   assertExhaustiveTestConfigs,
   runPropertyTests,
 } from './property-test.macro.js';
-
 /**
  * Test config defaults
  */
@@ -28,29 +28,43 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new Error('Generated error');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.functionFulfillWithValueSatisfyingAssertion,
+        generators: fc.string().chain((expected) =>
+          fc
+            .string()
+            .filter((str) => str !== expected)
+            .chain((actual) =>
+              fc.tuple(
+                fc.oneof(
+                  // wrong value
+                  fc.constant(async () => actual),
+                  // rejects instead of fulfilling
+                  fc.constant(async () => {
+                    throw new Error(expected);
+                  }),
+                ),
+                fc.constantFrom(
+                  ...extractPhrases(
+                    assertions.functionFulfillWithValueSatisfyingAssertion,
+                  ),
+                ),
+                fc.constant(expected),
+              ),
             ),
-          ),
-          fc.constant('expected message'),
-        ],
+        ),
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(async () => 'expected value'),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.functionFulfillWithValueSatisfyingAssertion,
+        generators: fc.string().chain((str) =>
+          fc.tuple(
+            fc.constant(async () => str),
+            fc.constantFrom(
+              ...extractPhrases(
+                assertions.functionFulfillWithValueSatisfyingAssertion,
+              ),
             ),
+            fc.constant(str),
           ),
-          fc.constant('expected value'),
-        ],
+        ),
       },
     },
   ],
@@ -61,7 +75,10 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         async: true,
         generators: [
-          fc.constant(async () => 'success'),
+          fc.oneof(
+            fc.string().map((str) => async () => str),
+            fc.string().map((str) => () => str),
+          ),
           fc.constantFrom(
             ...extractPhrases(assertions.functionRejectAssertion),
           ),
@@ -69,14 +86,16 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new Error('Generated error');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionRejectAssertion),
+        generators: fc.string().chain((expected) =>
+          fc.tuple(
+            fc.constant(async () => {
+              throw new Error(expected);
+            }),
+            fc.constantFrom(
+              ...extractPhrases(assertions.functionRejectAssertion),
+            ),
           ),
-        ],
+        ),
       },
     },
   ],
@@ -86,31 +105,58 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new Error('wrong message');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.functionRejectWithErrorSatisfyingAssertion,
+        generators: fc
+          .string({ maxLength: 5, minLength: 2 })
+          .chain((expected) =>
+            fc.string({ maxLength: 10, minLength: 6 }).chain((actual) =>
+              fc.tuple(
+                fc.oneof(
+                  fc.constant(async () => {
+                    throw new Error(actual);
+                  }),
+                  fc.constant(async () => expected),
+                ),
+                fc.constantFrom(
+                  ...extractPhrases(
+                    assertions.functionRejectWithErrorSatisfyingAssertion,
+                  ),
+                ),
+                fc.oneof(
+                  fc.constant(expected),
+                  fc.constant(new RegExp(escapeStringRegexp(expected))),
+                  fc.constant({ message: expected }),
+                  fc.constant({
+                    message: new RegExp(escapeStringRegexp(expected)),
+                  }),
+                ),
+              ),
             ),
           ),
-          fc.constant('expected message'),
-        ],
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new Error('expected message');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.functionRejectWithErrorSatisfyingAssertion,
+        generators: fc
+          .string({ maxLength: 5, minLength: 2 })
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(async () => {
+                throw new Error(expected);
+              }),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.functionRejectWithErrorSatisfyingAssertion,
+                ),
+              ),
+              fc.oneof(
+                fc.constant(expected),
+                fc.constant(new RegExp(escapeStringRegexp(expected))),
+                fc.constant({ message: expected }),
+                fc.constant({
+                  message: new RegExp(escapeStringRegexp(expected)),
+                }),
+              ),
             ),
           ),
-          fc.constant('expected message'),
-        ],
       },
     },
   ],
@@ -120,27 +166,42 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new TypeError('type error');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionRejectWithTypeAssertion),
+        generators: fc
+          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+          .chain((ActualCtor) =>
+            fc
+              .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+              .filter((ExpectedCtor) => ExpectedCtor !== ActualCtor)
+              .chain((ExpectedCtor) =>
+                fc.tuple(
+                  fc.constant(async () => {
+                    throw new ActualCtor('error');
+                  }),
+                  fc.constantFrom(
+                    ...extractPhrases(
+                      assertions.functionRejectWithTypeAssertion,
+                    ),
+                  ),
+                  fc.constant(ExpectedCtor),
+                ),
+              ),
           ),
-          fc.constant(ReferenceError),
-        ],
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(async () => {
-            throw new TypeError('type error');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionRejectWithTypeAssertion),
+        generators: fc
+          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+          .chain((ErrorCtor) =>
+            fc.tuple(
+              fc.constant(async () => {
+                throw new ErrorCtor('error');
+              }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.functionRejectWithTypeAssertion),
+              ),
+              fc.constant(ErrorCtor),
+            ),
           ),
-          fc.constant(TypeError),
-        ],
       },
     },
   ],
@@ -176,27 +237,56 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(Promise.reject(new Error('rejection'))),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.promiseFulfillWithValueSatisfyingAssertion,
+        generators: fc
+          .string({ maxLength: 5, minLength: 2 })
+          .chain((expected) =>
+            fc.string({ maxLength: 10, minLength: 6 }).chain((actual) =>
+              fc.tuple(
+                fc.oneof(
+                  fc.constant(Promise.resolve(actual)),
+                  // Use a thenable object instead of Promise.reject() to avoid
+                  // unhandled rejection warnings during test setup. The rejection
+                  // only occurs when the assertion uses `await` on this object
+                  fc.constant({
+                    then(
+                      _resolve: (value: any) => void,
+                      reject: (reason: any) => void,
+                    ) {
+                      reject(new Error('rejection'));
+                    },
+                  }),
+                ),
+                fc.constantFrom(
+                  ...extractPhrases(
+                    assertions.promiseFulfillWithValueSatisfyingAssertion,
+                  ),
+                ),
+                fc.oneof(
+                  fc.constant(expected),
+                  fc.constant(new RegExp(escapeStringRegexp(expected))),
+                ),
+              ),
             ),
           ),
-          fc.constant('expected value'),
-        ],
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(Promise.resolve('expected value')),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.promiseFulfillWithValueSatisfyingAssertion,
+        generators: fc
+          .string({ maxLength: 5, minLength: 2 })
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(Promise.resolve(expected)),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.promiseFulfillWithValueSatisfyingAssertion,
+                ),
+              ),
+              fc.oneof(
+                fc.constant(expected),
+                fc.constant(new RegExp(escapeStringRegexp(expected))),
+              ),
             ),
           ),
-          fc.constant('expected value'),
-        ],
       },
     },
   ],
@@ -214,7 +304,11 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         async: true,
         generators: [
-          fc.constant(Promise.reject(new Error('rejection'))),
+          fc.constant(
+            (async () => {
+              throw new Error('rejection');
+            })(),
+          ),
           fc.constantFrom(...extractPhrases(assertions.promiseRejectAssertion)),
         ],
       },
@@ -226,27 +320,44 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(Promise.reject(new Error('wrong message'))),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.promiseRejectWithErrorSatisfyingAssertion,
+        generators: fc.string().chain((expectedMessage) =>
+          fc
+            .string()
+            .filter((actualMessage) => actualMessage !== expectedMessage)
+            .chain((actualMessage) =>
+              fc.tuple(
+                fc.constant(
+                  (async () => {
+                    throw new Error(actualMessage);
+                  })(),
+                ),
+                fc.constantFrom(
+                  ...extractPhrases(
+                    assertions.promiseRejectWithErrorSatisfyingAssertion,
+                  ),
+                ),
+                fc.constant(expectedMessage),
+              ),
             ),
-          ),
-          fc.constant('expected message'),
-        ],
+        ),
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(Promise.reject(new Error('expected message'))),
-          fc.constantFrom(
-            ...extractPhrases(
-              assertions.promiseRejectWithErrorSatisfyingAssertion,
+        generators: fc.string().chain((message) =>
+          fc.tuple(
+            fc.constant(
+              (async () => {
+                throw new Error(message);
+              })(),
             ),
+            fc.constantFrom(
+              ...extractPhrases(
+                assertions.promiseRejectWithErrorSatisfyingAssertion,
+              ),
+            ),
+            fc.constant(message),
           ),
-          fc.constant('expected message'),
-        ],
+        ),
       },
     },
   ],
@@ -256,23 +367,46 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         async: true,
-        generators: [
-          fc.constant(Promise.reject(new TypeError('type error'))),
-          fc.constantFrom(
-            ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
+        generators: fc
+          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+          .chain((ActualCtor) =>
+            fc
+              .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+              .filter((ExpectedCtor) => ExpectedCtor !== ActualCtor)
+              .chain((ExpectedCtor) =>
+                fc.tuple(
+                  fc.constant(
+                    (async () => {
+                      throw new ActualCtor('error');
+                    })(),
+                  ),
+                  fc.constantFrom(
+                    ...extractPhrases(
+                      assertions.promiseRejectWithTypeAssertion,
+                    ),
+                  ),
+                  fc.constant(ExpectedCtor),
+                ),
+              ),
           ),
-          fc.constant(ReferenceError),
-        ],
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(Promise.reject(new TypeError('type error'))),
-          fc.constantFrom(
-            ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
+        generators: fc
+          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
+          .chain((ExpectedCtor) =>
+            fc.tuple(
+              fc.constant(
+                (async () => {
+                  throw new ExpectedCtor('error');
+                })(),
+              ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
+              ),
+              fc.constant(ExpectedCtor),
+            ),
           ),
-          fc.constant(TypeError),
-        ],
       },
     },
   ],
@@ -283,7 +417,11 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         async: true,
         generators: [
-          fc.constant(Promise.reject(new Error('rejection'))),
+          fc.constant(
+            (async () => {
+              throw new Error('rejection');
+            })(),
+          ),
           fc.constantFrom(
             ...extractPhrases(assertions.promiseResolveAssertion),
           ),

@@ -197,3 +197,11 @@ node --import tsx --test test/property/sync-basic.test.ts
 ```
 
 This systematic approach ensures comprehensive testing coverage while maintaining the natural language expressiveness that makes Bupkis unique.
+
+## Run Count
+
+The run count is dependent on several environment variables, _in order of precedence_:
+
+- `WALLABY`: If set, will decrease the number of runs drastically to speed up responsiveness in WallabyJS.
+- `CI`: If set, will decrease the number of runs to avoid execessive resource usage.
+- `NUM_RUNS`: If set, this integer value will determine the number of runs.

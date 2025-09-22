@@ -11,6 +11,8 @@ import type {
   AssertionParts,
 } from '../../src/assertion/assertion-types.js';
 
+import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
+
 /**
  * Extracts phrase literals from {@link Assertion.parts AssertionParts}.
  *
@@ -31,3 +33,29 @@ export const extractPhrases = (
     .flatMap((part) =>
       Array.isArray(part) ? part : [part],
     ) as unknown as readonly [string, ...string[]];
+
+/**
+ * Filters objects for use with "deep equal"-or-"satisfies"-based assertions.
+ *
+ * @param value Arbitrary value
+ * @returns `true` if the array does not have `__proto__` key somewhere deep
+ *   within it
+ */
+export const valueToSchemaFilter = (value: unknown) =>
+  // these two seem to break Zod parsing
+  !hasKeyDeep(value, '__proto__') &&
+  !hasKeyDeep(value, 'valueOf') &&
+  // empty loose objects match any object
+  !hasValueDeep(value, {}) &&
+  // https://github.com/colinhacks/zod/issues/5265
+  !hasKeyDeep(value, 'toString');
+
+/**
+ * Filters strings to remove characters that could cause regex syntax errors.
+ * Removes: [ ] ( ) { } ^ $ * + ? . \ |
+ *
+ * @param str Input string
+ * @returns String with problematic regex characters removed
+ */
+export const safeRegexStringFilter = (str: string) =>
+  str.replace(/[[\](){}^$*+?.\\|]/g, '');
