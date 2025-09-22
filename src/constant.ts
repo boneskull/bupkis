@@ -77,3 +77,10 @@ export const kExpectIt: unique symbol = Symbol('bupkis-expect-it');
 
 export const KEYPATH_REGEX =
   /^[a-zA-Z_$][-a-zA-Z0-9_$]*(?:(?:\.[a-zA-Z_$][-a-zA-Z0-9_$]*)|(?:\[(?:\d+|"[^"]*"|'[^']*')\]))*$/;
+
+/**
+ * Symbol used to flag a function as a Bupkis-thrown error.
+ *
+ * @internal
+ */
+export const kBupkisError: unique symbol = Symbol('bupkis-error');

@@ -14,13 +14,15 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
+import { ValueToSchemaError } from '../../src/error.js';
 import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
 import {
   valueToSchema,
   type ValueToSchemaOptions,
 } from '../../src/value-to-schema.js';
+import { calculateNumRuns } from './property-test-util.js';
 
-const defaultNumRuns = process.env.WALLABY ? 10 : process.env.CI ? 100 : 500;
+const numRuns = calculateNumRuns();
 
 /**
  * Generators for various types of values to test with valueToSchema
@@ -92,7 +94,7 @@ describe('valueToSchema() property tests', () => {
           return true;
         }
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -103,7 +105,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(value);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -127,7 +129,7 @@ describe('valueToSchema() property tests', () => {
           return !result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -149,7 +151,7 @@ describe('valueToSchema() property tests', () => {
         // Should fail because string schema won't accept number
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -160,7 +162,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(regexp);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -171,7 +173,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse('not a regexp');
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -212,7 +214,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(obj);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -224,7 +226,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(wrongObj);
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -246,7 +248,7 @@ describe('valueToSchema() property tests', () => {
           return result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -264,7 +266,7 @@ describe('valueToSchema() property tests', () => {
           return result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -282,7 +284,7 @@ describe('valueToSchema() property tests', () => {
           return !result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -307,7 +309,7 @@ describe('valueToSchema() property tests', () => {
           if (!validResult.success) return false;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -332,7 +334,7 @@ describe('valueToSchema() property tests', () => {
           return !invalidResult.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -343,7 +345,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(obj);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -355,7 +357,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(objWithExtra);
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -367,7 +369,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(objWithExtra);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -393,7 +395,7 @@ describe('valueToSchema() property tests', () => {
           [{ '': ['', undefined] }],
           [{ '': [{ '': ['', undefined] }] }],
         ],
-        numRuns: defaultNumRuns,
+        numRuns,
       },
     );
   });
@@ -420,7 +422,7 @@ describe('valueToSchema() property tests', () => {
           return result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -442,7 +444,7 @@ describe('valueToSchema() property tests', () => {
           return result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -453,7 +455,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(string);
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -464,7 +466,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse(fn);
         return result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -475,7 +477,7 @@ describe('valueToSchema() property tests', () => {
         const result = schema.safeParse('not a function');
         return !result.success;
       }),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -505,7 +507,7 @@ describe('valueToSchema() property tests', () => {
           return result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -534,7 +536,7 @@ describe('valueToSchema() property tests', () => {
           }
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -562,11 +564,11 @@ describe('valueToSchema() property tests', () => {
           return !result.success;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
-  it('should throw TypeError for objects with own __proto__ property', () => {
+  it('should throw ValueToSchemaError for objects with own __proto__ property', () => {
     fc.assert(
       fc.property(
         // Use fc.chain to compose the generator
@@ -611,7 +613,7 @@ describe('valueToSchema() property tests', () => {
             valueToSchema(objWithProto);
           } catch (error) {
             errorThrown = true;
-            if (error instanceof TypeError) {
+            if (error instanceof ValueToSchemaError) {
               errorMessage = error.message;
             }
           }
@@ -635,7 +637,7 @@ describe('valueToSchema() property tests', () => {
           return true;
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 
@@ -671,7 +673,7 @@ describe('valueToSchema() property tests', () => {
           }
         },
       ),
-      { numRuns: defaultNumRuns },
+      { numRuns },
     );
   });
 

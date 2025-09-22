@@ -75,6 +75,7 @@ import type {
   AssertionParts,
 } from './assertion-types.js';
 
+import { AssertionImplementationError } from '../error.js';
 import { isFunction, isString, isZodType } from '../guards.js';
 import {
   BupkisAssertionFunctionAsync,
@@ -107,20 +108,26 @@ export const createAssertion: CreateAssertionFn = <
   metadata?: AssertionMetadata,
 ) => {
   if (!Array.isArray(parts)) {
-    throw new TypeError('First parameter must be an array');
+    throw new AssertionImplementationError('First parameter must be an array');
   }
   if (parts.length === 0) {
-    throw new TypeError('At least one value is required for an assertion');
+    throw new AssertionImplementationError(
+      'At least one value is required for an assertion',
+    );
   }
   if (
     !parts.every(
       (part) => isString(part) || Array.isArray(part) || isZodType(part),
     )
   ) {
-    throw new TypeError('All assertion parts must be strings or Zod schemas');
+    throw new AssertionImplementationError(
+      'All assertion parts must be strings or Zod schemas',
+    );
   }
   if (!impl) {
-    throw new TypeError('An assertion implementation is required');
+    throw new AssertionImplementationError(
+      'An assertion implementation is required',
+    );
   }
   try {
     const slots = slotify<Parts>(parts);
@@ -140,11 +147,17 @@ export const createAssertion: CreateAssertionFn = <
     }
   } catch (err) {
     if (err instanceof z.ZodError) {
-      throw new TypeError(z.prettifyError(err));
+      throw new AssertionImplementationError(
+        `Failed to slotify assertion parts: ${z.prettifyError(err)}`,
+        { cause: err },
+      );
     }
-    throw err;
+    throw new AssertionImplementationError(
+      `Failed to slotify assertion parts: ${err}`,
+      { cause: err },
+    );
   }
-  throw new TypeError(
+  throw new AssertionImplementationError(
     'Assertion implementation must be a function, Zod schema or Zod schema factory',
   );
 };
@@ -164,20 +177,26 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
   metadata?: AssertionMetadata,
 ) => {
   if (!Array.isArray(parts)) {
-    throw new TypeError('First parameter must be an array');
+    throw new AssertionImplementationError('First parameter must be an array');
   }
   if (parts.length === 0) {
-    throw new TypeError('At least one value is required for an assertion');
+    throw new AssertionImplementationError(
+      'At least one value is required for an assertion',
+    );
   }
   if (
     !parts.every(
       (part) => isString(part) || Array.isArray(part) || isZodType(part),
     )
   ) {
-    throw new TypeError('All assertion parts must be strings or Zod schemas');
+    throw new AssertionImplementationError(
+      'All assertion parts must be strings or Zod schemas',
+    );
   }
   if (!impl) {
-    throw new TypeError('An assertion implementation is required');
+    throw new AssertionImplementationError(
+      'An assertion implementation is required',
+    );
   }
   const slots = slotify<Parts>(parts);
 
@@ -200,7 +219,7 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
     }
     return assertion;
   }
-  throw new TypeError(
+  throw new AssertionImplementationError(
     'Assertion implementation must be a function, Zod schema or Zod schema factory',
   );
 };

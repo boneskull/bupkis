@@ -19,7 +19,7 @@ import { z } from 'zod/v4';
 import { expect as sacrificialExpect } from './bootstrap.js';
 export * as assertions from './assertion/impl/index.js';
 export { expect, expectAsync } from './bootstrap.js';
-export { AssertionError } from './error.js';
+export * from './error.js';
 
 /**
  * Re-export of most (all?) types defined within <span

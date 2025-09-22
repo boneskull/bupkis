@@ -14,6 +14,7 @@ import { z } from 'zod/v4';
 import type { AssertionParts, AssertionSlots } from './assertion-types.js';
 
 import { kStringLiteral } from '../constant.js';
+import { AssertionImplementationError } from '../error.js';
 import {
   isPhraseLiteral,
   isPhraseLiteralChoice,
@@ -43,7 +44,7 @@ export const slotify = <const Parts extends AssertionParts>(
 
     if (isPhraseLiteralChoice(part)) {
       if (part.some((p) => p.startsWith('not '))) {
-        throw new TypeError(
+        throw new AssertionImplementationError(
           `PhraseLiteralChoice at parts[${index}] must not include phrases starting with "not ": ${inspect(
             part,
           )}`,
@@ -60,7 +61,7 @@ export const slotify = <const Parts extends AssertionParts>(
       );
     } else if (isPhraseLiteral(part)) {
       if (part.startsWith('not ')) {
-        throw new TypeError(
+        throw new AssertionImplementationError(
           `PhraseLiteral at parts[${index}] must not start with "not ": ${inspect(
             part,
           )}`,
@@ -77,7 +78,7 @@ export const slotify = <const Parts extends AssertionParts>(
       );
     } else {
       if (!isZodType(part)) {
-        throw new TypeError(
+        throw new AssertionImplementationError(
           `Expected Zod schema, phrase literal, or phrase literal choice at parts[${index}] but received ${inspect(
             part,
           )} (${typeof part})`,

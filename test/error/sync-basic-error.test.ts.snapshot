@@ -1,25 +1,73 @@
 exports[`sync-basic error snapshots > \"{Record<any, unknown>} 'to be empty'\" > should throw a consistent AssertionError [record_any-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    {
+      "foo": "bar"
+    },
+    "to be an empty object"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{arraylike} 'to be empty'\" > should throw a consistent AssertionError [arraylike-to-be-empty-2s2p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    [
+      1,
+      2,
+      3
+    ],
+    "to be an empty array"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{string} 'to be empty'\" > should throw a consistent AssertionError [string-to-be-empty-2s2p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    "hello",
+    "to be an empty string"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{string} 'to be non-empty'\" > should throw a consistent AssertionError [string-to-be-non_empty-2s2p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    "",
+    "to be a non empty string"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{unknown} 'to be -Infinity'\" > should throw a consistent AssertionError [unknown-to-be-_infinity-2s1p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    null,
+    "to be negative infinity"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{unknown} 'to be Infinity'\" > should throw a consistent AssertionError [unknown-to-be-infinity-2s1p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    null,
+    "to be positive infinity"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{unknown} 'to be NaN'\" > should throw a consistent AssertionError [unknown-to-be-nan-2s1p] <snapshot> 1`] = `
@@ -227,7 +275,14 @@ exports[`sync-basic error snapshots > \"{unknown} 'to be a symbol' / 'to be a Sy
 `;
 
 exports[`sync-basic error snapshots > \"{unknown} 'to be an Error' / 'to be a Error'\" > should throw a consistent AssertionError [unknown-to-be-an-error-to-be-a-error-2s1p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    "hello",
+    "to be an error"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-basic error snapshots > \"{unknown} 'to be an array' / 'to be array'\" > should throw a consistent AssertionError [unknown-to-be-an-array-to-be-array-2s1p] <snapshot> 1`] = `

@@ -1,5 +1,10 @@
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" > should throw a consistent AssertionError [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
-{}
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' {constructible}\" > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
@@ -43,7 +48,12 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' 
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" > should throw a consistent AssertionError [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
-{}
+{
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
+}
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\" > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `

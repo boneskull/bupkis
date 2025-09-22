@@ -16,7 +16,7 @@ import { inspect } from 'util';
 import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
-import { AssertionError } from '../error.js';
+import { AssertionError, InvalidMetadataError } from '../error.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
   type Assertion,
@@ -251,8 +251,9 @@ export abstract class BupkisAssertion<
         }
       } else {
         /* c8 ignore next */
-        throw new TypeError(
+        throw new InvalidMetadataError(
           `Invalid metadata for slot ${slotIndex} with value ${inspect(rawArg)}`,
+          { metadata: meta },
         );
       }
       return true;

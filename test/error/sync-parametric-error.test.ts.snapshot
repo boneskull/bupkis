@@ -84,7 +84,17 @@ exports[`sync-parametric error snapshots > \"{function} 'to have arity' {nonnega
 `;
 
 exports[`sync-parametric error snapshots > \"{function} 'to throw a' / 'to throw an' {constructible} 'satisfying' {any}\" > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    null,
+    "to throw satisfying",
+    {
+      "message": "expected message"
+    }
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-parametric error snapshots > \"{function} 'to throw a' / 'to throw an' {constructible}\" > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-3s3p] <snapshot> 1`] = `
@@ -98,7 +108,15 @@ exports[`sync-parametric error snapshots > \"{function} 'to throw a' / 'to throw
 `;
 
 exports[`sync-parametric error snapshots > \"{function} 'to throw' / 'to throw error satisfying' {any}\" > should throw a consistent AssertionError [function-to-throw-to-throw-error-satisfying-any-3s3p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    null,
+    "to throw matching",
+    {}
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-parametric error snapshots > \"{function} 'to throw'\" > should throw a consistent AssertionError [function-to-throw-2s2p] <snapshot> 1`] = `
@@ -170,7 +188,18 @@ exports[`sync-parametric error snapshots > \"{number} 'to be less than' / 'to be
 `;
 
 exports[`sync-parametric error snapshots > \"{number} 'to be within' / 'to be between' {number} {number}\" > should throw a consistent AssertionError [number-to-be-within-to-be-between-number-number-4s4p] <snapshot> 1`] = `
-{}
+{
+  "name": "UnknownAssertionError",
+  "args": [
+    15,
+    "to be within range",
+    [
+      1,
+      10
+    ]
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
 `;
 
 exports[`sync-parametric error snapshots > \"{object!} 'to satisfy' / 'to be like' {any}\" > should throw a consistent AssertionError [object-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
