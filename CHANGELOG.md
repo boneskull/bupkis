@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.6.0...bupkis-v0.7.0) (2025-09-22)
+
+
+### Features
+
+* add proper errors, codes ([1f3b149](https://github.com/boneskull/bupkis/commit/1f3b149e1aa42f90469b96244224fe6736175c25))
+
+
+### Bug Fixes
+
+* **guards:** thenable.then must have at least one parameter ([41a987e](https://github.com/boneskull/bupkis/commit/41a987e5ec131b780124bf6459b900bf15643987))
+* re-export schema namespace ([497bad7](https://github.com/boneskull/bupkis/commit/497bad7104b6ee5195f5c4d566837e8e34a1d744))
+
 ## [0.6.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.1...bupkis-v0.6.0) (2025-09-22)
 
 
