@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.1...bupkis-v0.6.0) (2025-09-22)
+
+
+### Features
+
+* **assertions:** create expectAsync.it ([fb4db5a](https://github.com/boneskull/bupkis/commit/fb4db5afc4d2ab6e0affc073ab03c670264a3bbd))
+
+
+### Bug Fixes
+
+* **assertions:** "map/set to have size greater than" now expects nonnegative int size ([2355ba0](https://github.com/boneskull/bupkis/commit/2355ba0494baeb5050024e6fadd8a28a900f5dcc))
+* **assertions:** narrow some schemas ([fc0b708](https://github.com/boneskull/bupkis/commit/fc0b7086ba898a43f3c9558aff6ede30723e38c6))
+
 ## [0.5.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.5.0...bupkis-v0.5.1) (2025-09-18)
 
 
