@@ -29,6 +29,10 @@
   --bupkis-gray-dark: #515151;
   --bupkis-gray-medium: #808080;
   --bupkis-gray-warm: #b3b3b3;
+  --bupkis-white-smoke: #f4f4f4;
+  --bupkis-gray-light: #dcdcdc;
+  --bupkis-gray-darker: #2a2a2a;
+  --bupkis-gray-darkest: #040404;
 
   /* Light theme - BUPKIS colors */
   --light-color-background: var(--bupkis-white);
@@ -140,7 +144,7 @@
     'Helvetica Neue', Arial, sans-serif;
   --bupkis-font-weight: bold;
   --bupkis-caps-transform: uppercase;
-  --bupkis-caps-spacing: 0.05em;
+  --bupkis-caps-spacing: 0.04em;
 }
 
 body {
@@ -538,6 +542,7 @@ span.bupkis {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
   font-size: 1.1em;
 }
 
@@ -749,4 +754,83 @@ code.tsd-tag {
 }
 .tsd-typography > h3 {
   margin-top: 2rem;
+}
+
+.tsd-typography ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tsd-typography ul > li {
+  position: relative;
+  padding: 0 0 0 1.25em;
+}
+
+.tsd-typography ul > li::before {
+  content: '⬢';
+  position: absolute;
+  left: 0;
+  top: -0.1em;
+  font-size: 0.9em;
+}
+
+@media (prefers-color-scheme: light) {
+  .tsd-typography ul > li::before {
+    color: var(--bupkis-gray-darker);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tsd-typography ul > li::before {
+    color: var(--bupkis-gray-warm);
+  }
+}
+
+:root[data-theme='dark'] .tsd-typography ul > li::before {
+  color: var(--bupkis-gray-warm);
+}
+
+:root[data-theme='light'] .tsd-typography ul > li::before {
+  color: var(--bupkis-gray-darker);
+}
+
+.tsd-typography blockquote {
+  margin: 1.5em;
+  padding: 0.5em 1.5em 0.5em 1.5em;
+  border-left: 4px solid var(--bupkis-gray-light);
+  background-color: var(--bupkis-white-smoke);
+}
+
+@media (prefers-color-scheme: light) {
+  .tsd-typography blockquote {
+    border-left: 4px solid var(--bupkis-gray-light);
+    background-color: var(--bupkis-white-smoke);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .tsd-typography blockquote {
+    border-left: 4px solid var(--bupkis-gray-darker);
+    background-color: var(--bupkis-gray-darkest);
+  }
+}
+
+:root[data-theme='light'] .tsd-typography blockquote {
+  border-left: 4px solid var(--bupkis-gray-light);
+  background-color: var(--bupkis-white-smoke);
+}
+
+:root[data-theme='dark'] .tsd-typography blockquote {
+  background-color: var(--bupkis-gray-darkest);
+}
+
+small {
+  font-size: 0.9em;
+}
+
+.tsd-typography {
+  line-height: 1.5em;
+}
+
+.tsd-typography li > ul {
+  margin: 0.25em 0 0.25em 0;
 }
