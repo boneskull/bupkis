@@ -229,7 +229,7 @@
       "prettier --write",
       "cspell"
     ],
-    "**/!(package-lock|.vscode/*).json": [
+    "**/!(package-lock).json": [
       "eslint --fix",
       "prettier --write",
       "cspell"
