@@ -64,7 +64,7 @@ export abstract class BupkisAssertion<
     readonly impl: Impl,
   ) {
     this.id = this.generateAssertionId();
-    debug('Created assertion %s', this);
+    debug('ℹ Created assertion %s', this);
   }
 
   public metadata(): AssertionMetadata | undefined {
@@ -96,7 +96,7 @@ export abstract class BupkisAssertion<
                   : 'custom';
             } catch (err) {
               debug(
-                `Warning: Unable to extract custom class name from Zod type(did Zod's API change?): ${err}`,
+                `⚠️ WARNING: Unable to extract custom class name from Zod type(did Zod's API change?): ${err}`,
               );
               repr = 'custom';
             }

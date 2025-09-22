@@ -176,7 +176,9 @@ export function createExpectAsyncFunction<
   U extends ExpectAsync<AnyAsyncAssertions>,
 >(assertions: T, expect?: U) {
   debug(
-    'Creating expectAsync function with %d assertions',
+    'ℹ Creating expectAsync function with %d new assertions and %d existing assertions (%d total)',
+    assertions.length,
+    expect?.assertions.length ?? 0,
     assertions.length + (expect?.assertions.length ?? 0),
   );
   const expectAsyncFunction = async (...args: readonly unknown[]) => {
@@ -352,7 +354,9 @@ export function createExpectSyncFunction<
   ParentExpect extends Expect<AnySyncAssertions>,
 >(assertions: Assertions, expect?: ParentExpect) {
   debug(
-    'Creating expect function with %d assertions',
+    'ℹ Creating expect function with %d new assertions and %d existing assertions (%d total)',
+    assertions.length,
+    expect?.assertions.length ?? 0,
     assertions.length + (expect?.assertions.length ?? 0),
   );
   const expectFunction = (...args: readonly unknown[]) => {
@@ -425,7 +429,6 @@ const execute = <
   }
 
   try {
-    debug('Executing negated assertion: %s', assertion);
     const result = assertion.execute(
       parsedValues,
       args,
@@ -499,7 +502,6 @@ const executeAsync = async <
   }
 
   try {
-    debug('Executing negated async assertion: %s', assertion);
     await assertion.executeAsync(parsedValues, args, stackStartFn, parseResult);
     // If we reach here, the assertion passed but we expected it to fail
     throw new NegatedAssertionError({
@@ -527,6 +529,10 @@ const executeAsync = async <
 };
 
 /**
+ * Processes negation keywords in the arguments and returns whether negation is
+ * requested along with arguments stripped of the leading negation (to enable
+ * assertion matching).
+ *
  * @internal
  */
 const maybeProcessNegation = (
@@ -546,11 +552,15 @@ const maybeProcessNegation = (
 };
 
 /**
+ * Throws an error indicating that no valid assertion could be found for the
+ * provided arguments.
+ *
+ * @param args The arguments that were passed to the expect function
  * @internal
  */
 const throwInvalidParametersError = (args: readonly unknown[]): never => {
   const inspectedArgs = inspect(args, { depth: 1 });
-  debug(`Invalid arguments. No assertion matched: ${inspectedArgs}`);
+  debug('Invalid arguments. No assertion matched: %s', inspectedArgs);
   throw new UnknownAssertionError(
     `Invalid arguments. No assertion matched: ${inspectedArgs}`,
     { args },
@@ -583,22 +593,31 @@ const detectNegation = (
   };
 };
 
+/**
+ * {@inheritdoc FailFn}
+ */
 const fail: FailFn = (reason?: string): never => {
   throw new FailAssertionError({ message: reason });
 };
 
 /**
- * Used by a {@link UseFn} to create base properties of the {@link Expect} and
- * {@link ExpectAsync} functions.
+ * Used by a {@link UseFn} to create base properties of {@link Expect}.
  */
 export function createBaseExpect<
   T extends AnySyncAssertions,
   U extends AnyAsyncAssertions,
 >(syncAssertions: T, asyncAssertions: U, type: 'sync'): ExpectSyncProps<T, U>;
+/**
+ * Used by a {@link UseFn} to create base properties of {@link ExpectAsync}.
+ */
 export function createBaseExpect<
   T extends AnySyncAssertions,
   U extends AnyAsyncAssertions,
 >(syncAssertions: T, asyncAssertions: U, type: 'async'): ExpectAsyncProps<U, T>;
+/**
+ * Used by a {@link UseFn} to create base properties of {@link Expect} or
+ * {@link ExpectAsync}.
+ */
 export function createBaseExpect<
   T extends AnySyncAssertions,
   U extends AnyAsyncAssertions,

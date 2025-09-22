@@ -1,4 +1,3 @@
-import createDebug from 'debug';
 import { inspect } from 'util';
 import z from 'zod/v4';
 
@@ -26,7 +25,6 @@ import {
   type ParsedValues,
 } from './assertion-types.js';
 import { BupkisAssertion } from './assertion.js';
-const debug = createDebug('bupkis:assertion:async');
 
 export abstract class BupkisAssertionAsync<
     Parts extends AssertionParts,
@@ -68,7 +66,6 @@ export abstract class BupkisAssertionAsync<
       // unknown/any accept anything
       // IMPORTANT: do not use a type guard here; it will break inference
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
-        debug('Skipping unknown/any slot validation for arg', arg);
         parsedValues.push(arg);
         exactMatch = false;
         continue;
@@ -183,19 +180,13 @@ export class BupkisAssertionSchemaAsync<
       ? parseResult.subjectValidationResult
       : undefined;
 
-    if (cachedValidation) {
-      debug(
-        'Using cached subject validation result from parseValuesAsync for %s',
-        this,
+    if (cachedValidation && !cachedValidation.success) {
+      // Subject validation failed during parseValuesAsync, throw the cached error
+      throw this.fromZodError(
+        cachedValidation.error,
+        stackStartFn,
+        parsedValues,
       );
-      if (!cachedValidation.success) {
-        // Subject validation failed during parseValuesAsync, throw the cached error
-        throw this.fromZodError(
-          cachedValidation.error,
-          stackStartFn,
-          parsedValues,
-        );
-      }
     }
 
     // Fall back to standard validation if no cached result
@@ -259,7 +250,6 @@ export class BupkisAssertionSchemaAsync<
 
       // Standard slot processing for non-optimized cases
       if (slot.def.type === 'unknown' || slot.def.type === 'any') {
-        debug('Skipping unknown/any slot validation for arg', arg);
         parsedValues.push(arg);
         exactMatch = false;
         continue;
