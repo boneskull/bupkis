@@ -13,14 +13,13 @@ In no particular order, here are some things We want to implement:
   - ✅ Random convenience like `is frozen`, `is sealed`, `is extensible`
   - ✅ Deep equality / partial equality, strict and loose
   - ✅ Callbacks & async callbacks
-  - Whatever else. There's always room for more, within reason!
 - Custom assertion improvements
   - Custom diffs
   - ✅ Custom error messages (via Zod)
   - ✅ Custom error metadata (via Zod)
   - ✅ Type safety for custom assertions (may require a significant refactor)
 - ✅ Lean on Zod more for builtin assertion implementations and use its error-reporting facilities
-- Keypaths / property drilling
+- ✅ Keypaths / property drilling
 - Boolean logic syntax (`and`, `or`, `not`) while still avoiding chainable APIs. Though I might convince myself that chainable APIs are OK for this and this only.
 
 ## Maybe Later
