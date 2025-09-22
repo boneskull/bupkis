@@ -20,7 +20,7 @@
       - `sync-collection.ts` - Array and object assertions (to contain, to have length, etc.)
       - `sync-esoteric.ts` - Advanced assertions (instanceof, satisfies, etc.)
       - `sync-parametric.ts` - Parameterized assertions (greater than, matches, etc.)
-      - `async.ts` - Promise-based assertions (to resolve, to reject, etc.)
+      - `async-parametric.ts` - Promise-based assertions (to resolve, to reject, etc.)
   - `expect.ts` - Main entry points (`expect`, `expectAsync`)
   - `bootstrap.ts` - Factory functions for creating assertion engines
   - `guards.ts` - Runtime type guards and validation utilities
@@ -34,12 +34,13 @@
 
 - **`test/`**: Comprehensive test suite
   - **`property/`**: Property-based testing with fast-check
-    - `async.test.ts` - Property tests for async assertions (8 assertions)
+    - `async-*.test.ts` - Property tests for async assertions (8 assertions)
     - `sync-*.test.ts` - Property tests for sync assertions by category
     - `property-test.macro.ts` - Macros for running property tests (`runPropertyTests`, `runPropertyTestsAsync`)
     - `config.ts` - Shared configuration and utilities
   - **`assertion/`**: Unit tests for individual assertion implementations
   - Individual test files for core functionality (`expect.test.ts`, `use.test.ts`, etc.)
+- See `test/README.md` for detailed information on the test structure and approach.
 
 **Build & Distribution**:
 
@@ -77,7 +78,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 - `npm run build` - Production build using `tshy` for dual CJS/ESM output
 - `npm run dev` - Watch mode build for development
-- `npm run build:docs` - Generate API documentation with TypeDoc
+- `npm run docs:build` - Generate API documentation with TypeDoc
 
 **Testing**:
 
@@ -193,7 +194,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 **Recent Optimizations**: Async property tests have been optimized to minimize `fc.constant()` usage by using dynamic generators like `fc.anything().map()`, `fc.string().map()`, and `fc.func().map()` for broader test coverage
 
-**Linting Errors**: If there are linting errors, always run the "ESLint: Fix all auto-fixable problems" command from the Command Palette first. If there are still errors, they must be fixed manually
+**Linting Errors**: If there are linting errors, always run the "ESLint: Fix all auto-fixable problems" command from the Command Palette first. If there are still errors, they must be fixed manually.
 
 **Type Validation**: Run `npm: lint:types` task to validate all TypeScript types across the project.
 
@@ -219,7 +220,8 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - **Slot Validation**: Arguments must match assertion "slots" exactly; check `DEBUG=bupkis*` output for validation details
 - **Use Wallaby MCP**, if installed. It will execute any code found in a temporary test file matching the glob pattern `test/**/*.test.ts`. These will be run automatically by Wallaby. You can create a temporary test file here to gather feedback about specific issues, put breakpoints to log values and/or query runtime values, and also query Wallaby for test results.
   - If Wallaby MCP is installed and you are able to Start Wallaby, do so.
-  - If the Wallaby extension is installed and you are able to Start Wallaby, do so.
+  - If the Wallaby Extension is installed and you are able to Start Wallaby, do so.
+  - If the Wallaby MCP server is not available in the toolset and the Wallaby Extension _is_ available, use the Wallaby Extension in the same manner.
 - If you need to create and run a temporary file, **always** put the file in `.tmp/`. If the directory does not exist, create it. `.tmp` is ignored by Git.
 - **Temporary Scripts**: Always use ESM syntax (`import`/`export`) in temporary scripts, never CommonJS (`require`). Files should use `.mjs` extension for ESM or be placed in `.tmp/` directory.
 
@@ -266,7 +268,7 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 **Test Debugging Workflow**:
 
-1. Run specific failing test: `npm test -- --test-name-pattern='test-id'`
+1. Run specific failing test: `npm run test:base -- --test-name-pattern='test-id'`
 2. Check assertion implementation for schema vs boolean return bugs
 3. Verify property test configuration uses correct assertion ID
 4. Use `valueToSchema` with appropriate options for the matching strategy needed
@@ -277,5 +279,11 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 - Property test files should import `createPhraseExtractor` not `extractPhrases`
 - The pattern is: `const extractPhrases = createPhraseExtractor(assertions);`
 - Avoid importing non-existent functions that cause TypeScript errors
+
+## Coding Style & Linting
+
+- Style is enforced by ESLint and Prettier. Linting is enforced by ESLint, markdownlint, and cspell.
+- Many linting issues can be resolved simply by running the "ESLint: Fix all auto-fixable problems" command from VS Code's Command Palette. This is also available as an npm script: `npm run lint:fix` or `npm run lint:fix -- <glob-pattern>`.
+- IMPORTANT! When writing code, avoid comments describing what the code is doing. Instead, use descriptive function and variable names so the code is self-documenting. Comments should only be used to explain _why_ something is done a certain way, not _what_ is being done; in other words, its _intent_.
 
 [fast-check]: https://fast-check.dev
