@@ -12,6 +12,7 @@
     "../eslint.config.js",
     "../.commitlintrc.js",
     "./typedoc*.js",
-    "../scripts/*"
+    "../scripts/*",
+    "./eslint-rules/*.js"
   ]
 }
