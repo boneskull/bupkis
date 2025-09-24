@@ -18,7 +18,6 @@ export default {
     '!.tshy-build/**',
     { instrument: false, pattern: 'test/fixture/**' },
     '!src/node_modules/bupkis/**',
-    '!test/**/*.macro.ts',
     { instrument: false, pattern: 'test/**/*.test.ts.snapshot' },
   ],
   filesWithNoCoverageCalculated: ['.tmp/**/*.test.ts'],
@@ -26,7 +25,6 @@ export default {
   runMode: 'onsave',
   tests: [
     '.tmp/**/*.test.ts',
-    'test/property/property-test.macro.ts',
     'test/**/*.test.ts',
     '!test/error/**/*',
     '!.tshy-build/**',
