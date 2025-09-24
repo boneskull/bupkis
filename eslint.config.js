@@ -6,6 +6,9 @@ import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+import requireFunctionTagInArrowFunctions from './.config/eslint-rules/require-function-tag-in-arrow-functions.js';
+import requireIntrinsicDestructuring from './.config/eslint-rules/require-intrinsic-destructuring.js';
+
 // TODO: setup eslint-plugin-n
 export default defineConfig(
   jsPlugin.configs.recommended,
@@ -18,6 +21,49 @@ export default defineConfig(
         project: './.config/tsconfig.eslint.json',
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  {
+    files: ['src/**/*.ts'],
+    plugins: {
+      custom: {
+        rules: {
+          'require-function-tag-in-arrow-functions': /** @type {any} */ (
+            requireFunctionTagInArrowFunctions
+          ),
+          'require-intrinsic-destructuring': /** @type {any} */ (
+            requireIntrinsicDestructuring
+          ),
+        },
+      },
+    },
+    rules: {
+      'custom/require-function-tag-in-arrow-functions': [
+        'error',
+        {
+          requireForAnonymous: false,
+          requireForNamed: true,
+        },
+      ],
+      'custom/require-intrinsic-destructuring': [
+        'error',
+        {
+          allowConsole: true,
+          intrinsics: [
+            'Array',
+            'Object',
+            'Number',
+            'String',
+            'Math',
+            'Date',
+            'JSON',
+            'Symbol',
+            'Reflect',
+            'WeakMap',
+            'WeakSet',
+          ],
+        },
+      ],
     },
   },
   {
@@ -102,6 +148,10 @@ export default defineConfig(
         },
       ],
 
+      curly: 'error',
+
+      'func-style': ['error', 'expression'],
+
       'new-cap': ['error', { capIsNew: true, newIsCap: true }],
 
       'no-constructor-return': 'error',
@@ -118,6 +168,7 @@ export default defineConfig(
       ],
       'no-self-compare': 'error',
       'object-shorthand': ['error', 'always'],
+      'prefer-arrow-callback': 'error',
       semi: 'error',
     },
   },
