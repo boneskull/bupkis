@@ -1,4 +1,5 @@
 import { describe, it } from 'node:test';
+import { stripVTControlCharacters } from 'node:util';
 
 import { UnknownAssertionError } from '../../src/error.js';
 import { type Expect, expect, expectAsync, z } from '../../src/index.js';
@@ -104,7 +105,7 @@ describe('core API', () => {
     });
 
     describe('Error handling', () => {
-      it('should provide schema-based error messages', () => {
+      it('should provide nice error messages', () => {
         // Test that schema-based assertions provide readable error messages
         let error: Error | undefined;
         expect(() => {
@@ -115,11 +116,11 @@ describe('core API', () => {
             throw err;
           }
         }, 'to throw');
-        expect(error, 'to be a', 'object');
+        expect(error, 'to be an Error');
         expect(
-          error!.message,
-          'to include',
-          'expected string, received number',
+          stripVTControlCharacters(error!.message),
+          'to match',
+          /expected string but received number/i,
         );
 
         // Test another schema-based assertion
@@ -132,7 +133,11 @@ describe('core API', () => {
             throw err;
           }
         }, 'to throw');
-        expect(error2!.message, 'to match', /expected number, received string/);
+        expect(
+          stripVTControlCharacters(error2!.message),
+          'to match',
+          /expected number but received string/i,
+        );
       });
 
       it('should work with parameterized schema factory', () => {

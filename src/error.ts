@@ -16,6 +16,8 @@ import {
 } from './constant.js';
 import { isA } from './guards.js';
 
+const { hasOwn } = Object;
+
 /**
  * Options for {@link AssertionImplementationError}
  *
@@ -88,9 +90,18 @@ export class AssertionError extends NodeAssertionError {
    */
   static isAssertionError(value: unknown): value is AssertionError {
     return (
-      isA(value, NodeAssertionError) &&
-      Object.hasOwn(value, kBupkisAssertionError)
+      isA(value, NodeAssertionError) && hasOwn(value, kBupkisAssertionError)
     );
+  }
+
+  toJSON() {
+    return {
+      actual: this.actual,
+      expected: this.expected,
+      message: this.message,
+      name: this.name,
+      stack: this.stack,
+    };
   }
 }
 
@@ -108,7 +119,7 @@ export class BupkisError extends Error {
   override name = 'BupkisError';
 
   static isBupkisError(err: unknown): err is BupkisError {
-    return isA(err, Error) && Object.hasOwn(err, kBupkisError);
+    return isA(err, Error) && hasOwn(err, kBupkisError);
   }
 }
 
@@ -151,8 +162,7 @@ export class FailAssertionError extends AssertionError {
 
   static isFailAssertionError(err: unknown): err is FailAssertionError {
     return (
-      isA(err, FailAssertionError) &&
-      Object.hasOwn(err, kBupkisFailAssertionError)
+      isA(err, FailAssertionError) && hasOwn(err, kBupkisFailAssertionError)
     );
   }
 }
@@ -211,8 +221,7 @@ export class NegatedAssertionError extends AssertionError {
 
   static isNegatedAssertionError(err: unknown): err is NegatedAssertionError {
     return (
-      isA(err, AssertionError) &&
-      Object.hasOwn(err, kBupkisNegatedAssertionError)
+      isA(err, AssertionError) && hasOwn(err, kBupkisNegatedAssertionError)
     );
   }
 }

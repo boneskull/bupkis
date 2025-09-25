@@ -30,6 +30,7 @@ import { BupkisRegistry } from '../metadata.js';
  * processing string literals and Zod schemas, registering metadata for runtime
  * introspection, and handling validation constraints such as preventing "not "
  * prefixes in string literal parts.
+ * @function
  * @param parts Assertion parts
  * @returns Slots
  */

@@ -1,70 +1,71 @@
-exports[`sync-esoteric error snapshots > \"{property-key} 'to be an enumerable property of' {unknown!}\" > should throw a consistent AssertionError [property_key-to-be-an-enumerable-property-of-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{property-key} 'to be an enumerable property of' {unknown!}\" [property_key-to-be-an-enumerable-property-of-unknown-3s3p] > should throw a consistent AssertionError [property_key-to-be-an-enumerable-property-of-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": false,
   "expected": true,
-  "diff": "simple"
+  "message": "Expected property hidden to be enumerable",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected property hidden to be enumerable\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at obj.visible (./test/error/sync-esoteric-error.test.ts:25:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-esoteric error snapshots > \"{unknown!} 'to have enumerable property' {property-key}\" > should throw a consistent AssertionError [unknown-to-have-enumerable-property-property_key-3s3p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown!} 'to have enumerable property' {property-key}\" [unknown-to-have-enumerable-property-property_key-3s3p] > should throw a consistent AssertionError [unknown-to-have-enumerable-property-property_key-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "actual": {
+    "visible": "value"
+  },
+  "expected": {
+    "visible": "value"
+  },
+  "message": "Assertion \\"{unknown!} 'to have enumerable property' {property-key}\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": false,
-  "expected": true,
-  "diff": "simple"
+  "operator": "\\"{unknown!} 'to have enumerable property' {property-key}\\"",
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown!} 'to have enumerable property' {property-key}\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at obj (./test/error/sync-esoteric-error.test.ts:36:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;
 
-exports[`sync-esoteric error snapshots > \"{unknown} 'to be extensible'\" > should throw a consistent AssertionError [unknown-to-be-extensible-2s1p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be extensible'\" [unknown-to-be-extensible-2s1p] > should throw a consistent AssertionError [unknown-to-be-extensible-2s1p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": {},
-  "expected": [],
+  "expected": {},
+  "message": "Assertion \\"{unknown} 'to be extensible'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "name": "AssertionError",
   "operator": "\\"{unknown} 'to be extensible'\\"",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be extensible'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at obj.prop (./test/error/sync-esoteric-error.test.ts:44:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;
 
-exports[`sync-esoteric error snapshots > \"{unknown} 'to be frozen'\" > should throw a consistent AssertionError [unknown-to-be-frozen-2s1p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be frozen'\" [unknown-to-be-frozen-2s1p] > should throw a consistent AssertionError [unknown-to-be-frozen-2s1p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": false,
   "expected": true,
-  "diff": "simple"
+  "message": "Expected object to be frozen",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected object to be frozen\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at obj (./test/error/sync-esoteric-error.test.ts:51:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-esoteric error snapshots > \"{unknown} 'to be sealed'\" > should throw a consistent AssertionError [unknown-to-be-sealed-2s1p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be sealed'\" [unknown-to-be-sealed-2s1p] > should throw a consistent AssertionError [unknown-to-be-sealed-2s1p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": {
     "prop": "value"
   },
-  "expected": [],
+  "expected": {
+    "prop": "value"
+  },
+  "message": "Assertion \\"{unknown} 'to be sealed'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "name": "AssertionError",
   "operator": "\\"{unknown} 'to be sealed'\\"",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be sealed'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at <anonymous> (./test/error/sync-esoteric-error.test.ts:65:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;
 
-exports[`sync-esoteric error snapshots > \"{unknown} 'to have a null prototype' / 'to be a dictionary'\" > should throw a consistent AssertionError [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] <snapshot> 1`] = `
+exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to have a null prototype' / 'to be a dictionary'\" [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] > should throw a consistent AssertionError [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": {},
-  "expected": [],
+  "expected": {},
+  "message": "Assertion \\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "name": "AssertionError",
   "operator": "\\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\"",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at obj.prop (./test/error/sync-esoteric-error.test.ts:58:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;

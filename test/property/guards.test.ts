@@ -1,9 +1,15 @@
+/* eslint-disable func-style */
+/* eslint-disable prefer-arrow-callback */
 import * as fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { expect } from '../../src/bootstrap.js';
 import { isConstructible } from '../../src/guards.js';
-import { calculateNumRuns } from './property-test-util.js';
+import {
+  calculateNumRuns,
+  filteredAnything,
+  filteredObject,
+} from './property-test-util.js';
 
 const numRuns = calculateNumRuns();
 
@@ -58,7 +64,7 @@ describe('type guard property tests', () => {
               expect.fail('Should not have been called');
             },
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            async function asyncFunction() {
+            async () => {
               expect.fail('Should not have been called');
             },
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -85,8 +91,8 @@ describe('type guard property tests', () => {
             fc.float(),
             fc.boolean(),
             fc.constantFrom(null, undefined),
-            fc.object(),
-            fc.array(fc.anything()),
+            filteredObject,
+            fc.array(filteredAnything),
             fc.bigInt(),
             fc.string().map(Symbol),
             fc.constantFrom(Symbol),
@@ -107,14 +113,14 @@ describe('type guard property tests', () => {
             function BoundTest() {}.bind(null),
 
             // Functions with modified prototype
-            (() => {
+            (function () {
               function Modified() {}
               Modified.prototype = null;
               return Modified;
             })(),
 
             // Functions with custom constructor property
-            (() => {
+            (function () {
               const fn = function () {};
               fn.constructor = class {};
               return fn;
@@ -196,7 +202,7 @@ describe('type guard property tests', () => {
 
     it('should be idempotent', () => {
       fc.assert(
-        fc.property(fc.anything(), (value) => {
+        fc.property(filteredAnything, (value) => {
           const result1 = isConstructible(value);
           const result2 = isConstructible(value);
           const result3 = isConstructible(value);

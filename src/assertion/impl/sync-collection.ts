@@ -32,6 +32,8 @@ import {
 import { has } from '../../util.js';
 import { createAssertion } from '../create.js';
 
+const { hasOwn, keys } = Object;
+
 /**
  * Asserts that a Map or WeakMap contains a specific key. For WeakMap, the key
  * must be an object.
@@ -101,7 +103,9 @@ export const mapContainsAssertion = createAssertion(
 export const mapSizeAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize): AssertionFailure | boolean => {
-    if (subject.size === expectedSize) return true;
+    if (subject.size === expectedSize) {
+      return true;
+    }
     return {
       actual: subject.size,
       expected: expectedSize,
@@ -242,7 +246,9 @@ export const emptySetAssertion = createAssertion(
 export const arrayContainsAssertion = createAssertion(
   [z.array(z.any()), ['to contain', 'to include'], z.any()],
   (subject, value): AssertionFailure | boolean => {
-    if (subject.includes(value)) return true;
+    if (subject.includes(value)) {
+      return true;
+    }
     return {
       actual: subject,
       expected: `array containing ${String(value)}`,
@@ -266,7 +272,9 @@ export const arrayContainsAssertion = createAssertion(
 export const arraySizeAssertion = createAssertion(
   [z.array(z.any()), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize): AssertionFailure | boolean => {
-    if (subject.length === expectedSize) return true;
+    if (subject.length === expectedSize) {
+      return true;
+    }
     return {
       actual: subject.length,
       expected: expectedSize,
@@ -339,7 +347,7 @@ export const objectKeysAssertion = createAssertion(
     z.array(z.string()).nonempty(),
   ],
   (subject, keys) => {
-    const missing = keys.filter((k) => !Object.hasOwn(subject, k));
+    const missing = keys.filter((k) => !hasOwn(subject, k));
     if (missing.length > 0) {
       return {
         actual: `missing keys: ${missing.join(', ')}`,
@@ -439,7 +447,7 @@ export const objectExactKeyAssertion = createAssertion(
   ],
   (_, key) =>
     NonCollectionObjectSchema.transform((v) => ({ ...v })).refine(
-      (value) => Object.hasOwn(value, key),
+      (value) => hasOwn(value, key),
       { error: `Expected object to have own exact key "${String(key)}"` },
     ),
 );
@@ -459,7 +467,7 @@ export const objectExactKeyAssertion = createAssertion(
 export const objectSizeAssertion = createAssertion(
   [z.looseObject({}), 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize) => {
-    const actual = Object.keys(subject).length;
+    const actual = keys(subject).length;
     if (actual !== expectedSize) {
       return {
         actual,
@@ -713,9 +721,11 @@ export const setSymmetricDifferenceEqualityAssertion = createAssertion(
 export const mapKeyAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have key', z.unknown()],
   (map, key): AssertionFailure | boolean => {
-    if (map.has(key)) return true;
+    if (map.has(key)) {
+      return true;
+    }
     return {
-      actual: Array.from(map.keys()),
+      actual: [...map.keys()],
       expected: key,
       message: `Expected Map to have key`,
     };
@@ -739,10 +749,12 @@ export const mapValueAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have value', z.unknown()],
   (map, value): AssertionFailure | boolean => {
     for (const mapValue of map.values()) {
-      if (mapValue === value) return true;
+      if (mapValue === value) {
+        return true;
+      }
     }
     return {
-      actual: Array.from(map.values()),
+      actual: [...map.values()],
       expected: value,
       message: `Expected Map to have value`,
     };
@@ -781,7 +793,9 @@ export const mapEntryAssertion = createAssertion(
     // At this point, if it's a WeakMap, we know key is a WeakKey
     const actualValue =
       map instanceof WeakMap ? map.get(key as WeakKey) : map.get(key);
-    if (actualValue === value) return true;
+    if (actualValue === value) {
+      return true;
+    }
 
     const hasKey =
       map instanceof WeakMap ? map.has(key as WeakKey) : map.has(key);
@@ -867,7 +881,9 @@ export const collectionSizeGreaterThanAssertion = createAssertion(
     NonNegativeIntegerSchema,
   ],
   (collection, minSize): AssertionFailure | boolean => {
-    if (collection.size > minSize) return true;
+    if (collection.size > minSize) {
+      return true;
+    }
     return {
       actual: collection.size,
       expected: `size greater than ${minSize}`,
@@ -895,7 +911,9 @@ export const collectionSizeLessThanAssertion = createAssertion(
     NonNegativeIntegerSchema,
   ],
   (collection, maxSize): AssertionFailure | boolean => {
-    if (collection.size < maxSize) return true;
+    if (collection.size < maxSize) {
+      return true;
+    }
     return {
       actual: collection.size,
       expected: `size less than ${maxSize}`,
@@ -924,7 +942,9 @@ export const collectionSizeBetweenAssertion = createAssertion(
   ],
   (collection, [min, max]): AssertionFailure | boolean => {
     const size = collection.size;
-    if (size >= min && size <= max) return true;
+    if (size >= min && size <= max) {
+      return true;
+    }
     return {
       actual: size,
       expected: `size between ${min} and ${max} (inclusive)`,

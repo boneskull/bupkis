@@ -34,10 +34,13 @@ import {
 import { createAssertion } from '../create.js';
 import { trapError } from './assertion-util.js';
 
+const { freeze } = Object;
+const { abs } = Math;
+
 /**
  * For {@link typeOfAssertion}
  */
-const knownTypes = Object.freeze(
+const knownTypes = freeze(
   new Set([
     'string',
     'number',
@@ -271,7 +274,7 @@ export const numberWithinRangeAssertion = createAssertion(
 export const numberCloseToAssertion = createAssertion(
   [z.number(), 'to be close to', z.number(), z.number().optional()],
   (subject, expected, tolerance = 1e-9) => {
-    const diff = Math.abs(subject - expected);
+    const diff = abs(subject - expected);
     if (diff > tolerance) {
       return {
         actual: subject,

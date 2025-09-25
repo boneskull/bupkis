@@ -5,14 +5,13 @@
  * consistent error messages across versions.
  */
 
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-parametric.js';
 import { SyncParametricAssertions } from '../../src/assertion/index.js';
-import { expect } from '../../src/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
-import { runErrorSnapshotTests } from './error-snapshot.macro.js';
+import { expect } from '../custom-assertions.js';
+import { takeErrorSnapshot } from './error-snapshot-util.js';
 
 const failingAssertions = new Map<AnyAssertion, () => void>([
   [
@@ -44,6 +43,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.functionArityAssertion,
     () => {
+      /**
+       * @function
+       */
       const fn = (a: number, b: number) => a + b;
       expect(fn, 'to have arity', 3);
     },
@@ -51,6 +53,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.functionThrowsAssertion,
     () => {
+      /**
+       * @function
+       */
       const fn = () => 'no error';
       expect(fn, 'to throw');
     },
@@ -58,6 +63,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.functionThrowsMatchingAssertion,
     () => {
+      /**
+       * @function
+       */
       const fn = () => {
         throw new Error('wrong message');
       };
@@ -67,6 +75,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.functionThrowsTypeAssertion,
     () => {
+      /**
+       * @function
+       */
       const fn = () => {
         throw new Error('message');
       };
@@ -76,6 +87,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.functionThrowsTypeSatisfyingAssertion,
     () => {
+      /**
+       * @function
+       */
       const fn = () => {
         throw new Error('wrong message');
       };
@@ -204,12 +218,26 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   ],
 ]);
 
-describe('sync-parametric error snapshots', () => {
-  expectExhaustiveAssertionTests(
-    'sync-parametric',
-    SyncParametricAssertions,
-    failingAssertions,
-  );
+describe('Sync Parametric Assertion Error Snapshots', () => {
+  it(`should test all available assertions in SyncParametricAssertions`, () => {
+    expect(
+      failingAssertions,
+      'to exhaustively test collection',
+      'SyncParametricAssertions',
+      'from',
+      SyncParametricAssertions,
+    );
+  });
 
-  runErrorSnapshotTests(assertions, failingAssertions);
+  for (const assertion of Object.values(assertions)) {
+    const { id } = assertion;
+    describe(`${assertion} [${id}]`, () => {
+      const failingAssertion = failingAssertions.get(assertion)!;
+
+      it(
+        `should throw a consistent AssertionError [${assertion.id}] <snapshot>`,
+        takeErrorSnapshot(failingAssertion),
+      );
+    });
+  }
 });

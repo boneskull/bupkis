@@ -11,6 +11,10 @@ import {
 } from './guards.js';
 import { RegExpSchema, WrappedPromiseLikeSchema } from './schema.js';
 
+const { isNaN } = Number;
+const { entries, freeze, hasOwn, keys } = Object;
+const { isArray } = Array;
+
 /**
  * Recursively converts an arbitrary value to a Zod v4 schema that would
  * validate values with the same structure.
@@ -41,6 +45,7 @@ import { RegExpSchema, WrappedPromiseLikeSchema } from './schema.js';
  * // z.object({ users: z.array(z.object({ name: z.string() })) })
  * ```
  *
+ * @function
  * @param value - The value to convert to a schema
  * @param options - Configuration options for schema generation
  * @param visited - Internal WeakSet for circular reference detection
@@ -82,7 +87,7 @@ export const valueToSchema = (
         })
       : z.undefined();
   }
-  if (Number.isNaN(value as number)) {
+  if (isNaN(value as number)) {
     return z.nan();
   }
   if (value === Infinity || value === -Infinity) {
@@ -142,7 +147,7 @@ export const valueToSchema = (
 
     try {
       // Check for objects with own __proto__ property - these can cause unexpected behavior
-      if (Object.hasOwn(value, '__proto__')) {
+      if (hasOwn(value, '__proto__')) {
         throw new ValueToSchemaError(
           'Objects with an own "__proto__" property are not supported by valueToSchema',
         );
@@ -195,7 +200,7 @@ export const valueToSchema = (
       }
 
       // Handle arrays
-      if (Array.isArray(value)) {
+      if (isArray(value)) {
         // For arrays, we need to preserve undefined values while allowing
         // other elements to use the original literalPrimitives setting
         const filteredValue = value; // Always process all elements
@@ -232,6 +237,9 @@ export const valueToSchema = (
 
         if (!noMixedArrays) {
           // Helper function to generate structural keys for schemas
+          /**
+           * @function
+           */
           const getSchemaKey = <T extends z.core.SomeType | z.ZodType>(
             zodType: T,
           ): string => {
@@ -253,7 +261,7 @@ export const valueToSchema = (
                 string,
                 z.ZodType
               >;
-              const shapeKeys = Object.keys(shape)
+              const shapeKeys = keys(shape)
                 .sort()
                 .map((key) => {
                   const propSchema = shape[key]!;
@@ -304,7 +312,7 @@ export const valueToSchema = (
         const schemaShape: Record<string, z.ZodType<any>> = {};
         const undefinedKeys: string[] = [];
 
-        for (const [key, val] of Object.entries(value)) {
+        for (const [key, val] of entries(value)) {
           if (isString(key)) {
             // Skip undefined values unless we're in literalPrimitives mode
             // This prevents objects with only undefined values from matching any object
@@ -347,7 +355,7 @@ export const valueToSchema = (
 
             const obj = data as Record<string, unknown>;
             for (const key of undefinedKeys) {
-              if (!Object.hasOwn(obj, key)) {
+              if (!hasOwn(obj, key)) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: `Expected property "${key}" to exist with value undefined`,
@@ -359,10 +367,10 @@ export const valueToSchema = (
         }
 
         // Check if this is an empty object and literalEmptyObjects is enabled
-        if (Object.keys(schemaShape).length === 0 && literalEmptyObjects) {
+        if (keys(schemaShape).length === 0 && literalEmptyObjects) {
           // Create a schema that only matches empty objects
           return z.custom<Record<string, never>>(
-            (val) => isObject(val) && Object.keys(val).length === 0,
+            (val) => isObject(val) && keys(val).length === 0,
             {
               message: 'Expected an empty object with no own properties',
             },
@@ -461,7 +469,7 @@ export interface ValueToSchemaOptions {
  * Uses literal primitives and tuples for exact matching while allowing extra
  * properties.
  */
-export const valueToSchemaOptionsForSatisfies = Object.freeze({
+export const valueToSchemaOptionsForSatisfies = freeze({
   literalEmptyObjects: true,
   literalPrimitives: true,
   literalRegExp: false,
@@ -476,7 +484,7 @@ export const valueToSchemaOptionsForSatisfies = Object.freeze({
  * Uses literal primitives, regexp, and tuples with strict validation for exact
  * matching.
  */
-export const valueToSchemaOptionsForDeepEqual = Object.freeze({
+export const valueToSchemaOptionsForDeepEqual = freeze({
   literalEmptyObjects: true,
   literalPrimitives: true,
   literalRegExp: true,

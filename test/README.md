@@ -75,7 +75,11 @@ Contains utility functions for property-based test setup and data extraction.
 
 **Key exports:**
 
-- **`extractPhrases(assertion)`** - Extracts phrase literals from assertion parts for use with `fc.constantFrom()`. This function processes the assertion's natural language components (like `'to be a string'`) and returns them as an array of valid phrases that can be used in property tests.
+- **`getVariants(assertions, createExtractPhrases)`** - Creates test variants for property-based testing. Returns an array of test configurations for each assertion, including generators and metadata for valid/invalid cases.
+
+- **`runVariant(variant, isNegated)`** - Executes a single property test variant. Handles both sync and async assertions, validating that they pass/fail as expected.
+
+- **`createPhraseExtractor(assertions)`** - Creates a phrase extraction function for a given assertion collection. Returns a function that can extract valid phrases from assertion IDs.
 
 - **`valueToSchemaFilter(value)`** - Filters objects for use with "deep equal" or "satisfies"-based assertions. Returns `true` if the value doesn't contain problematic properties like `__proto__`, `valueOf`, `toString`, or empty objects that could interfere with Zod parsing.
 
@@ -86,10 +90,16 @@ Contains utility functions for property-based test setup and data extraction.
 **Usage examples:**
 
 ```typescript
+// Create test variants for assertion collection
+const variants = getVariants(assertions, createPhraseExtractor);
+
+// Run individual test variant
+await runVariant(variant, false);
+
 // Extract phrases for assertion testing
-const phrases = extractPhrases(assertions['to-be-a-string']);
+const extractPhrases = createPhraseExtractor(assertions);
+const phrases = extractPhrases('to-be-a-string');
 // Returns: ['to be a string']
-fc.constantFrom(...extractPhrases(assertion));
 
 // Filter problematic objects for schema generation
 fc.object().filter(valueToSchemaFilter);
@@ -103,21 +113,35 @@ const numRuns = calculateNumRuns('large'); // 500 runs (or reduced in CI/Wallaby
 
 These utilities are essential for generating valid assertion phrases and safe test inputs in property tests, ensuring robust testing while avoiding problematic edge cases.
 
-#### `property-test.macro.ts`
+#### `custom-assertions.ts`
 
-Contains the core "macro" functions that generate and execute property-based test suites.
+Contains custom assertions for testing, including assertions specific to the test suite itself.
 
 **Key exports:**
 
-- **`runPropertyTests(testConfigs, assertions, testConfigDefaults?)`** - Generates property-based tests for synchronous assertions using `fc.property()`
-- **`assertExhaustiveTestConfig(assertions, testConfigs)`** - Validates that all assertions have corresponding test configurations
+- **`exhaustiveAssertionTestAssertion`** - Custom assertion `"to exhaustively test collection"` that validates test configurations cover all assertions in a collection
+- Uses set difference logic to identify missing test coverage
+- Integrates with property-based testing to ensure comprehensive test coverage
+
+**Testing Pattern**:
+
+Property tests now use the custom exhaustive testing assertion instead of macro functions:
+
+```typescript
+describe('Parametric assertions', () => {
+  it('should exhaustively test collection', () => {
+    const variants = getVariants(assertions, createPhraseExtractor);
+    expect(variants, 'to exhaustively test collection', assertions);
+  });
+});
+```
 
 **How it works:**
 
-1. **Test Generation**: For each assertion in the config, generates 4 test cases (valid, invalid, validNegated, invalidNegated)
-2. **Input Generation**: Uses fast-check generators to create diverse test inputs
-3. **Assertion Execution**: Runs `expect()` or `expectAsync()` with generated inputs
-4. **Result Validation**: Verifies that assertions pass/fail as expected
+1. **Variant Generation**: Uses `getVariants()` to create test configurations for each assertion
+2. **Coverage Validation**: The custom assertion verifies all assertions have corresponding test variants
+3. **Individual Testing**: Each variant is tested using `runVariant()` function
+4. **Wallaby Compatibility**: Structure avoids `describe`/`it` blocks in utility files for better Wallaby integration
 
 **Example test structure generated:**
 
@@ -197,7 +221,7 @@ node --import tsx --test test/property/sync-basic.test.ts
 node --import tsx --test test/property/async-parametric.test.ts
 ```
 
-**Note**: Property-based tests cannot be executed through the Wallaby MCP server and must be run from the command line.
+**Note**: Property-based tests integrate with Wallaby through the restructured utility functions and custom assertions. The new structure avoids `describe`/`it` blocks in utility files for better Wallaby compatibility.
 
 ### Configuration Examples
 

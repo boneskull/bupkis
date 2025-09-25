@@ -1,21 +1,24 @@
 import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-parametric.js';
 import { SyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
+import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
 import {
   extractPhrases,
+  filteredAnything,
+  filteredObject,
+  getVariants,
+  objectFilter,
+  runVariant,
   safeRegexStringFilter,
-  valueToSchemaFilter,
 } from './property-test-util.js';
-import { runPropertyTests } from './property-test.macro.js';
 
 /**
  * Test config defaults
@@ -31,16 +34,16 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: fc
-          .array(fc.anything(), { minLength: 1, size: 'small' })
-          .filter(valueToSchemaFilter)
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc
-                .array(fc.anything(), {
+                .array(filteredAnything, {
                   minLength: 1,
                   size: 'small',
                 })
-                .filter(valueToSchemaFilter)
+                .filter(objectFilter)
                 .filter(
                   (actual) =>
                     JSON.stringify(actual) !== JSON.stringify(expected),
@@ -54,8 +57,8 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: fc
-          .array(fc.anything(), { minLength: 1, size: 'small' })
-          .filter(valueToSchemaFilter)
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc.constant(structuredClone(expected)),
@@ -74,16 +77,16 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: fc
-          .array(fc.anything(), { minLength: 1, size: 'small' })
-          .filter(valueToSchemaFilter)
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc
-                .array(fc.anything(), {
+                .array(filteredAnything, {
                   minLength: 1,
                   size: 'small',
                 })
-                .filter(valueToSchemaFilter)
+                .filter(objectFilter)
                 .filter(
                   (actual) =>
                     JSON.stringify(actual) !== JSON.stringify(expected),
@@ -97,8 +100,8 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: fc
-          .array(fc.anything(), { minLength: 1, size: 'small' })
-          .filter(valueToSchemaFilter)
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc.constant(structuredClone(expected)),
@@ -188,7 +191,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: fc.integer({ max: 5, min: 0 }).chain((actualArity) =>
           fc.tuple(
-            fc.func(fc.anything()).map(() => {
+            fc.func(filteredAnything).map(() => {
               switch (actualArity) {
                 case 0:
                   return () => 0;
@@ -225,7 +228,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         generators: fc.integer({ max: 5, min: 0 }).chain((arity) =>
           fc.tuple(
-            fc.func(fc.anything()).map(() => {
+            fc.func(filteredAnything).map(() => {
               switch (arity) {
                 case 0:
                   return () => 0;
@@ -599,12 +602,12 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: fc
           .object()
-          .filter(valueToSchemaFilter)
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc
                 .object()
-                .filter(valueToSchemaFilter)
+                .filter(objectFilter)
                 .filter(
                   (actual) =>
                     JSON.stringify(actual) !== JSON.stringify(expected),
@@ -620,7 +623,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         generators: fc
           .object()
-          .filter(valueToSchemaFilter)
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc.constant(structuredClone(expected)),
@@ -640,12 +643,12 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: fc
           .object()
-          .filter(valueToSchemaFilter)
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc
                 .object({ depthSize: 'medium' })
-                .filter(valueToSchemaFilter)
+                .filter(objectFilter)
                 .filter(
                   (actual) =>
                     JSON.stringify(actual) !== JSON.stringify(expected),
@@ -661,7 +664,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         generators: fc
           .object({ depthSize: 'small' })
-          .filter(valueToSchemaFilter)
+          .filter(objectFilter)
           .chain((expected) =>
             fc.tuple(
               fc.constant(structuredClone(expected)),
@@ -708,7 +711,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .filter((v) => !Number.isNaN(v))
           .chain((expected) =>
             fc.tuple(
-              fc.anything().filter((actual) => actual !== expected),
+              filteredAnything.filter((actual) => actual !== expected),
               fc.constantFrom(
                 ...extractPhrases(assertions.strictEqualityAssertion),
               ),
@@ -1086,9 +1089,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             fc.constant([fc.constant(null), 'null']),
             fc.constant([fc.constant(BigInt(1)), 'bigint']),
             fc.constant([fc.constant(Symbol('test')), 'symbol']),
-            fc.constant([fc.object(), 'object']),
-            fc.constant([fc.func(fc.anything()), 'function']),
-            fc.constant([fc.array(fc.anything()), 'array']),
+            fc.constant([filteredObject, 'object']),
+            fc.constant([fc.func(filteredAnything), 'function']),
+            fc.constant([fc.array(filteredAnything), 'array']),
             fc.constant([fc.constant(new Date()), 'date']),
             fc.constant([fc.constant(new Map()), 'map']),
             fc.constant([fc.constant(new Set()), 'set']),
@@ -1114,10 +1117,31 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Sync Parametric Assertions', () => {
-  expectExhaustiveAssertionTests(
-    'Sync Parametric Assertions',
-    SyncParametricAssertions,
-    testConfigs,
-  );
-  runPropertyTests(testConfigs, testConfigDefaults);
+  it(`should test all available assertions in SyncParametricAssertions`, () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'SyncParametricAssertions',
+      'from',
+      SyncParametricAssertions,
+    );
+  });
+
+  for (const [assertion, testConfig] of testConfigs) {
+    const { id } = assertion;
+    describe(`Assertion: ${assertion} [${id}]`, () => {
+      const runVariants = (configs: PropertyTestConfig[]) => {
+        for (const config of configs) {
+          const { params, variants } = getVariants(config);
+          for (const [name, variant] of variants) {
+            it(`should pass ${name} checks [${id}]`, async () => {
+              await runVariant(variant, testConfigDefaults, params, name);
+            });
+          }
+        }
+      };
+
+      runVariants(Array.isArray(testConfig) ? testConfig : [testConfig]);
+    });
+  }
 });

@@ -16,7 +16,6 @@
  * @packageDocumentation
  */
 
-import { type Primitive } from 'type-fest';
 import { z } from 'zod/v4';
 
 import type {
@@ -27,6 +26,8 @@ import type {
 import type { Constructor, ExpectItExecutor, ZodTypeMap } from './types.js';
 
 import { kExpectIt } from './constant.js';
+
+const { isArray } = Array;
 
 /**
  * Returns `true` if the given value looks like a Zod v4 schema, determined by
@@ -43,6 +44,7 @@ export function isZodType<T extends keyof ZodTypeMap>(
   value: unknown,
   type: T,
 ): value is ZodTypeMap[T];
+
 /**
  * Returns `true` if the given value looks like a Zod v4 schema, determined by
  * the presence of an internal {@link z.core.$ZodTypeDef} field.
@@ -65,8 +67,12 @@ export function isZodType<T extends keyof ZodTypeMap>(
     typeof value.def === 'object' &&
     'type' in value.def;
 
-  if (!isValid) return false;
-  if (type === undefined) return true;
+  if (!isValid) {
+    return false;
+  }
+  if (type === undefined) {
+    return true;
+  }
 
   return (value as z.ZodType).def.type === type;
 }
@@ -74,16 +80,18 @@ export function isZodType<T extends keyof ZodTypeMap>(
 /**
  * Type guard for a plain object.
  *
+ * @function
  * @param value Value to test
  * @returns `true` if the value is a plain object, `false` otherwise
  */
 export const isObject = (value: unknown): value is NonNullable<object> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !isArray(value);
 };
 
 /**
  * Returns `true` if the given value is a {@link z.ZodPromise} schema.
  *
+ * @function
  * @param value - Value to test
  * @returns `true` if the value is a `ZodPromise` schema; `false` otherwise
  */
@@ -93,6 +101,7 @@ export const isZodPromise = (value: unknown): value is z.ZodPromise =>
 /**
  * Checks if a value is "promise-like", meaning it is a "thenable" object.
  *
+ * @function
  * @param value - Value to test
  * @returns `true` if the value is promise-like, `false` otherwise
  */
@@ -114,6 +123,7 @@ export const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
  * This may be the only way we can determine, at runtime, if a function is a
  * constructor without actually calling it. I am unsure if this only works for
  * classes.
+ * @function
  * @param fn - Function to test
  * @returns Whether the function is constructable
  */
@@ -123,7 +133,7 @@ export const isConstructible = (fn: unknown): fn is Constructor => {
   }
   try {
     // this will throw if there is no `[[construct]]` slot.. or so I've heard.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, custom/require-function-tag-in-arrow-functions
     new new Proxy(fn as any, { construct: () => ({}) })();
     return true;
   } catch {
@@ -134,6 +144,7 @@ export const isConstructible = (fn: unknown): fn is Constructor => {
 /**
  * Type guard for a boolean value
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is a boolean, `false` otherwise
  */
@@ -143,6 +154,7 @@ export const isBoolean = (value: unknown): value is boolean =>
 /**
  * Type guard for a function value
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is a function, `false` otherwise
  */
@@ -169,6 +181,7 @@ const AssertionFailureSchema: z.ZodType<AssertionFailure> = z.object({
 /**
  * Type guard for a {@link AssertionFailure} object
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is an `AssertionFailure`, `false` otherwise
  * @internal
@@ -179,6 +192,7 @@ export const isAssertionFailure = (value: unknown): value is AssertionFailure =>
 /**
  * Type guard for a string value
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is a string, `false` otherwise
  */
@@ -188,6 +202,7 @@ export const isString = (value: unknown): value is string =>
 /**
  * Type guard for a non-null object value
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is an object and not null, `false` otherwise
  */
@@ -195,20 +210,12 @@ export const isNonNullObject = (value: unknown): value is object =>
   typeof value === 'object' && value !== null;
 
 /**
- * Type guard for a null or non-object value
- *
- * @param value Value to check
- * @returns `true` if the value is null or not an object, `false` otherwise
- */
-export const isNullOrNonObject = (value: unknown): value is null | Primitive =>
-  typeof value !== 'object' || value === null;
-
-/**
  * Type guard for a valid WeakKey (object, function, or symbol).
  *
  * WeakMaps and WeakSets can only use objects (including functions) or symbols
  * as keys, not primitives like strings, numbers, booleans, null, or undefined.
  *
+ * @function
  * @param value Value to check
  * @returns `true` if the value is a valid WeakKey (object, function, or
  *   symbol), `false` otherwise
@@ -221,6 +228,7 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
 /**
  * Type guard for a {@link PhraseLiteralChoice}, which is a tuple of strings.
  *
+ * @function
  * @param value Assertion part to check
  * @returns `true` if the part is a `PhraseLiteralChoice`, `false` otherwise
  * @internal
@@ -228,12 +236,13 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
 export const isPhraseLiteralChoice = (
   value: AssertionPart,
 ): value is PhraseLiteralChoice =>
-  Array.isArray(value) && value.every(isPhraseLiteral);
+  isArray(value) && value.every(isPhraseLiteral);
 
 /**
  * Type guard for a {@link PhraseLiteral}, which is just a string that does not
  * begin with `not `.
  *
+ * @function
  * @param value Assertion part to check
  * @returns `true` if the part is a `PhraseLiteral`, `false` otherwise
  * @internal
@@ -260,6 +269,7 @@ export const isPhraseLiteral = (value: AssertionPart): value is string =>
  * ```
  *
  * @template T - The constructor type to check against
+ * @function
  * @param value - Value to test
  * @param ctor - Constructor function to check instanceof
  * @returns `true` if the value is an instance of the constructor, `false`
@@ -292,6 +302,7 @@ export const isA = <T extends Constructor>(
  * }
  * ```
  *
+ * @function
  * @param value - Value to test
  * @returns `true` if the value is an Error instance, `false` otherwise
  */
@@ -318,6 +329,7 @@ export const isError = (value: unknown): value is Error => isA(value, Error);
  * ```
  *
  * @template Subject - The subject type that the executor function operates on
+ * @function
  * @param value - Value to test
  * @returns `true` if the value is an ExpectItExecutor function, `false`
  *   otherwise

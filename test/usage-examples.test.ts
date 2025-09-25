@@ -1,5 +1,6 @@
-import { expect } from 'bupkis';
 import { describe, it } from 'node:test';
+
+import { expect } from '../src/index.js';
 
 describe('examples from usage.md', () => {
   describe('Embeddable assertions', () => {

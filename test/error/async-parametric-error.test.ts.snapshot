@@ -1,97 +1,87 @@
-exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" > should throw a consistent AssertionError [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async expectAsync.message (./test/error/async-parametric-error.test.ts:20:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Promise.all (index 1)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' {constructible}\" > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' {constructible}\" [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{function} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  [AsyncFunction (anonymous)],\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{function} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  [AsyncFunction (anonymous)],\\n  'to reject with a',\\n  [Function: TypeError]\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:128:15)\\n    at async <anonymous> (./test/error/async-parametric-error.test.ts:48:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with error satisfying' {any}\" > should throw a consistent AssertionError [function-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with error satisfying' {any}\" [function-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async <anonymous> (./test/error/async-parametric-error.test.ts:36:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\" > should throw a consistent AssertionError [function-to-reject-2s2p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\" [function-to-reject-2s2p] > should throw a consistent AssertionError [function-to-reject-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
   "expected": "function to reject",
-  "diff": "simple"
+  "message": "Expected function to reject, but it fulfilled instead",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to reject, but it fulfilled instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async expectAsync.message (./test/error/async-parametric-error.test.ts:30:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' / 'to fulfill'\" > should throw a consistent AssertionError [function-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' / 'to fulfill'\" [function-to-resolve-to-fulfill-2s2p] > should throw a consistent AssertionError [function-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "function rejected",
   "expected": "function to fulfill",
-  "diff": "simple"
+  "message": "Expected function to fulfill, but it rejected instead",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to fulfill, but it rejected instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async <anonymous> (./test/error/async-parametric-error.test.ts:60:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" > should throw a consistent AssertionError [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async <anonymous> (./test/error/async-parametric-error.test.ts:68:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\" > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\" [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  { then: [Function: then] },\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  { then: [Function: then] },\\n  'to reject with a',\\n  [Function: TypeError]\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:128:15)\\n    at async rejectingThenable.then (./test/error/async-parametric-error.test.ts:104:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' {any}\" > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' {any}\" [promiselike-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async rejectingThenable.then (./test/error/async-parametric-error.test.ts:90:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject'\" > should throw a consistent AssertionError [promiselike-to-reject-2s2p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject'\" [promiselike-to-reject-2s2p] > should throw a consistent AssertionError [promiselike-to-reject-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
   "expected": "function to reject",
-  "diff": "simple"
+  "message": "Expected function to reject, but it fulfilled instead",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to reject, but it fulfilled instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async rejectingThenable.then (./test/error/async-parametric-error.test.ts:78:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolve' / 'to fulfill'\" > should throw a consistent AssertionError [promiselike-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolve' / 'to fulfill'\" [promiselike-to-resolve-to-fulfill-2s2p] > should throw a consistent AssertionError [promiselike-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "promise rejected",
   "expected": "promise to not reject",
-  "diff": "simple"
+  "message": "Expected promise to fulfill, but it rejected instead",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected promise to fulfill, but it rejected instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionAsync.executeAsync (./src/assertion/assertion-async.ts:133:13)\\n    at async <anonymous> (./test/error/async-parametric-error.test.ts:116:7)\\n    at async Test.run (node:internal/test_runner/test:1113:7)\\n    at async Promise.all (index 0)\\n    at async Suite.run (node:internal/test_runner/test:1516:7)\\n    at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)"
 }
 `;

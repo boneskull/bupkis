@@ -44,6 +44,8 @@ import {
   SyncParametricAssertions,
 } from '../src/assertion/impl/sync.js';
 
+const { fromEntries, keys } = Object;
+
 // Define collection mappings
 const collections = /** @type {const} */ {
   all: [...SyncAssertions, ...AsyncAssertions],
@@ -71,7 +73,7 @@ const { collection } = values;
 // Validate collection parameter
 if (!(collection in collections)) {
   console.error(
-    `Error: Unknown collection "${collection}". Valid collections are: ${Object.keys(collections).join(', ')}`,
+    `Error: Unknown collection "${collection}". Valid collections are: ${keys(collections).join(', ')}`,
   );
   process.exit(1);
 }
@@ -80,7 +82,7 @@ if (!(collection in collections)) {
 const assertions = collections[collection as keyof typeof collections];
 
 // Extract IDs and dump them
-const ids = Object.fromEntries(
+const ids = fromEntries(
   assertions.map(
     (assertion: (typeof collections)[keyof typeof collections][number]) => [
       assertion.id,

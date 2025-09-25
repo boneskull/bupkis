@@ -27,6 +27,8 @@ import {
   type UseFn,
 } from './types.js';
 
+const { assign } = Object;
+
 /**
  * Creates an `expect.it()` factory function for generating embeddable assertion
  * executors.
@@ -60,6 +62,7 @@ import {
  *
  * @template SyncAssertions - Array of synchronous assertion objects that define
  *   the available assertion logic for the embeddable functions
+ * @function
  * @param expect - The underlying expect function that will execute the
  *   assertions when the returned executors are called
  * @returns A factory function that creates {@link ExpectItExecutor} instances
@@ -72,8 +75,11 @@ import {
 const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
   expect: any,
 ): ExpectIt<SyncAssertions> => {
+  /**
+   * @function
+   */
   const expectIt = (...args: readonly unknown[]) => {
-    const func = Object.assign(
+    const func = assign(
       (subject: unknown) => {
         const allArgs = [subject, ...args];
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -121,6 +127,7 @@ const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
  *
  * @template AsyncAssertions - Array of asynchronous assertion objects that
  *   define the available assertion logic for the embeddable async functions
+ * @function
  * @param expectAsync - The underlying expectAsync function that will execute
  *   the assertions when the returned executors are called
  * @returns A factory function that creates {@link ExpectItExecutorAsync}
@@ -134,8 +141,11 @@ const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
 const createExpectItAsync = <AsyncAssertions extends AnyAsyncAssertions>(
   expectAsync: any,
 ): ExpectItAsync<AsyncAssertions> => {
+  /**
+   * @function
+   */
   const expectItAsync = (...args: readonly unknown[]) => {
-    const func = Object.assign(
+    const func = assign(
       async (subject: unknown) => {
         const allArgs = [subject, ...args];
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -210,6 +220,7 @@ const createExpectItAsync = <AsyncAssertions extends AnyAsyncAssertions>(
  *   available in the composed functions
  * @template AsyncAssertions - Array of base asynchronous assertions that will
  *   be available in the composed functions
+ * @function
  * @param syncAssertions - Base synchronous assertions to include in all
  *   composed expect functions
  * @param asyncAssertions - Base asynchronous assertions to include in all
@@ -223,15 +234,18 @@ const createExpectItAsync = <AsyncAssertions extends AnyAsyncAssertions>(
  * @see {@link FilterAsyncAssertions} for how async assertions are extracted
  * @see {@link Concat} for how assertion arrays are combined
  */
-export function createUse<
+export const createUse = <
   const SyncAssertions extends AnySyncAssertions,
   const AsyncAssertions extends AnyAsyncAssertions,
 >(
   syncAssertions: SyncAssertions,
   asyncAssertions: AsyncAssertions,
-): UseFn<SyncAssertions, AsyncAssertions> {
+): UseFn<SyncAssertions, AsyncAssertions> => {
   const syncAssertionsIn = syncAssertions ?? [];
   const asyncAssertionsIn = asyncAssertions ?? [];
+  /**
+   * @function
+   */
   const use: UseFn<SyncAssertions, AsyncAssertions> = <
     AllAssertions extends readonly AnyAssertion[],
     FilteredSyncAssertions extends FilterSyncAssertions<AllAssertions>,
@@ -256,12 +270,12 @@ export function createUse<
     const expectFunction = createExpectSyncFunction(allSyncAssertions);
     const expectAsyncFunction = createExpectAsyncFunction(allAsyncAssertions);
 
-    const expect = Object.assign(
+    const expect = assign(
       expectFunction,
       createBaseExpect(allSyncAssertions, allAsyncAssertions, 'sync'),
       { it: createExpectIt(expectFunction) },
     );
-    const expectAsync = Object.assign(
+    const expectAsync = assign(
       expectAsyncFunction,
       createBaseExpect(allSyncAssertions, allAsyncAssertions, 'async'),
       { it: createExpectItAsync(expectAsyncFunction) },
@@ -276,4 +290,4 @@ export function createUse<
     };
   };
   return use;
-}
+};

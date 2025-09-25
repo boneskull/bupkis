@@ -17,7 +17,7 @@ import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { get } from '../../src/util.js';
-import { calculateNumRuns } from './property-test-util.js';
+import { calculateNumRuns, filteredAnything } from './property-test-util.js';
 
 const numRuns = calculateNumRuns();
 
@@ -99,7 +99,7 @@ describe('util property tests', () => {
                 fc.tuple(
                   fc.constant(obj),
                   fc.constantFrom('a', 'b', 'c'),
-                  fc.anything(),
+                  filteredAnything,
                 ),
               ),
             ([obj, key, defaultValue]) => {
@@ -124,7 +124,7 @@ describe('util property tests', () => {
               fc.tuple(
                 fc.constant(obj),
                 fc.constantFrom('level1.level2.value', 'simple'),
-                fc.anything(),
+                filteredAnything,
               ),
             ),
             ([obj, path, _defaultValue]) => {
@@ -169,14 +169,16 @@ describe('util property tests', () => {
               return fc.tuple(
                 fc.constant(obj),
                 fc.constantFrom(...validIndices.map((i) => `data[${i}]`)),
-                fc.anything(),
+                filteredAnything,
               );
             }),
             ([obj, path, defaultValue]) => {
               const result = get(obj, path, defaultValue);
               const match = path.match(/\[(\d+)\]/);
 
-              if (!match || !match[1]) return false;
+              if (!match || !match[1]) {
+                return false;
+              }
 
               const index = parseInt(match[1], 10);
 
@@ -218,16 +220,21 @@ describe('util property tests', () => {
                     'users[1].profile.age',
                     '["complex-key"]["another-complex"]',
                   ),
-                  fc.anything(),
+                  filteredAnything,
                 ),
               ),
             ([obj, path, _defaultValue]) => {
               const result = get(obj, path);
 
-              if (path === 'users[0].name') return result === 'Alice';
-              if (path === 'users[1].profile.age') return result === 25;
-              if (path === '["complex-key"]["another-complex"]')
+              if (path === 'users[0].name') {
+                return result === 'Alice';
+              }
+              if (path === 'users[1].profile.age') {
+                return result === 25;
+              }
+              if (path === '["complex-key"]["another-complex"]') {
                 return result === 'value';
+              }
 
               return true;
             },
@@ -254,7 +261,7 @@ describe('util property tests', () => {
       it('should return default value when path does not exist', () => {
         fc.assert(
           fc.property(
-            fc.tuple(simpleNestedObject, invalidKeypaths, fc.anything()),
+            fc.tuple(simpleNestedObject, invalidKeypaths, filteredAnything),
             ([obj, invalidPath, defaultValue]) => {
               const result = get(obj, invalidPath, defaultValue);
 
@@ -275,7 +282,7 @@ describe('util property tests', () => {
             fc.tuple(
               fc.constantFrom(null, undefined),
               fc.string({ minLength: 1 }),
-              fc.anything(),
+              filteredAnything,
             ),
             ([obj, path, defaultValue]) => {
               const result = get(obj, path, defaultValue);
@@ -298,7 +305,7 @@ describe('util property tests', () => {
                 fc.integer().map(String),
                 fc.constantFrom(null, undefined, 123, true, {}, []),
               ),
-              fc.anything(),
+              filteredAnything,
             ),
             ([obj, invalidKeypath, defaultValue]) => {
               const result = get(obj, invalidKeypath as string, defaultValue);
@@ -335,7 +342,7 @@ describe('util property tests', () => {
             fc.tuple(
               primitiveValue,
               fc.string({ minLength: 1 }),
-              fc.anything(),
+              filteredAnything,
             ),
             ([primitive, path, defaultValue]) => {
               const result = get(primitive, path, defaultValue);
@@ -355,7 +362,7 @@ describe('util property tests', () => {
             fc.tuple(
               fc.constant({ a: { b: null, c: undefined } }),
               fc.constantFrom('a.b.deep', 'a.c.deep', 'a.d.deep'),
-              fc.anything(),
+              filteredAnything,
             ),
             ([obj, path, defaultValue]) => {
               const result = get(obj, path, defaultValue);
@@ -397,12 +404,24 @@ describe('util property tests', () => {
             ([obj, path]) => {
               const result = get(obj, path);
 
-              if (path === '["key-with-dashes"]') return result === 'value1';
-              if (path === "['key with spaces']") return result === 'value2';
-              if (path === '["123numeric"]') return result === 'value3';
-              if (path === 'data[0]') return result === 'item0';
-              if (path === 'data[1]') return result === 'item1';
-              if (path === 'data[2]') return result === 'item2';
+              if (path === '["key-with-dashes"]') {
+                return result === 'value1';
+              }
+              if (path === "['key with spaces']") {
+                return result === 'value2';
+              }
+              if (path === '["123numeric"]') {
+                return result === 'value3';
+              }
+              if (path === 'data[0]') {
+                return result === 'item0';
+              }
+              if (path === 'data[1]') {
+                return result === 'item1';
+              }
+              if (path === 'data[2]') {
+                return result === 'item2';
+              }
 
               return true;
             },
@@ -417,7 +436,7 @@ describe('util property tests', () => {
             fc.tuple(
               simpleNestedObject,
               fc.constantFrom('', '.', '..', '[', ']', '[""]', "['']"),
-              fc.anything(),
+              filteredAnything,
             ),
             ([obj, edgePath, defaultValue]) => {
               const result = get(obj, edgePath, defaultValue);
@@ -473,7 +492,7 @@ describe('util property tests', () => {
                 return fc.tuple(
                   fc.constant(obj),
                   fc.constant(keys.join('.')),
-                  fc.anything(),
+                  filteredAnything,
                 );
               }),
             ([obj, path, _defaultValue]) => {

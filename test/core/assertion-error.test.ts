@@ -294,15 +294,24 @@ describe('NegatedAssertionError', () => {
       // from the function specified, excluding that function and any functions
       // called after it in the call chain.
 
-      function outerFunction() {
+      /**
+       * @function
+       */
+      const outerFunction = () => {
         return innerFunction();
-      }
+      };
 
-      function innerFunction() {
+      /**
+       * @function
+       */
+      const innerFunction = () => {
         return createErrorWithStackStart();
-      }
+      };
 
-      function createErrorWithStackStart() {
+      /**
+       * @function
+       */
+      const createErrorWithStackStart = () => {
         // Create error without stackStartFn - should include this function in stack
         const errorWithoutStackStart = new AssertionError({
           message: 'without stackStartFn',
@@ -316,7 +325,7 @@ describe('NegatedAssertionError', () => {
         });
 
         return { errorWithoutStackStart, errorWithStackStart };
-      }
+      };
 
       const { errorWithoutStackStart, errorWithStackStart } = outerFunction();
 

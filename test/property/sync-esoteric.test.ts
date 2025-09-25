@@ -1,16 +1,20 @@
 import fc from 'fast-check';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-esoteric.js';
 import { SyncEsotericAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
+import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { extractPhrases } from './property-test-util.js';
-import { runPropertyTests } from './property-test.macro.js';
+import {
+  extractPhrases,
+  filteredObject,
+  getVariants,
+  runVariant,
+} from './property-test-util.js';
 
 /**
  * Test config defaults
@@ -74,7 +78,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.object().map((obj) => {
+          filteredObject.map((obj) => {
             Object.defineProperty(obj, 'a', {
               enumerable: true,
               value: 42,
@@ -95,7 +99,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: [
           fc.oneof(
-            fc.object().map((obj) => {
+            filteredObject.map((obj) => {
               Object.preventExtensions(obj);
               return obj;
             }),
@@ -105,7 +109,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.object(),
+          filteredObject,
           fc.constantFrom(...extractPhrases(assertions.extensibleAssertion)),
         ],
       },
@@ -117,13 +121,13 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.object().filter((v) => !Object.isFrozen(v)),
+          filteredObject.filter((v) => !Object.isFrozen(v)),
           fc.constantFrom(...extractPhrases(assertions.frozenAssertion)),
         ],
       },
       valid: {
         generators: [
-          fc.object().map(Object.freeze),
+          filteredObject.map(Object.freeze),
           fc.constantFrom(...extractPhrases(assertions.frozenAssertion)),
         ],
       },
@@ -136,7 +140,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.object(),
+          filteredObject,
           fc.constantFrom(...extractPhrases(assertions.nullPrototypeAssertion)),
         ],
       },
@@ -154,13 +158,13 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.oneof(fc.object().filter((v) => !Object.isSealed(v))),
+          fc.oneof(filteredObject.filter((v) => !Object.isSealed(v))),
           fc.constantFrom(...extractPhrases(assertions.sealedAssertion)),
         ],
       },
       valid: {
         generators: [
-          fc.object().map((obj) => {
+          filteredObject.map((obj) => {
             Object.seal(obj);
             return obj;
           }),
@@ -172,10 +176,25 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Esoteric Assertions', () => {
-  expectExhaustiveAssertionTests(
-    'Esoteric Assertions',
-    SyncEsotericAssertions,
-    testConfigs,
-  );
-  runPropertyTests(testConfigs, testConfigDefaults);
+  it(`should test all available assertions in SyncEsotericAssertions`, () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'SyncEsotericAssertions',
+      'from',
+      SyncEsotericAssertions,
+    );
+  });
+
+  for (const [assertion, testConfig] of testConfigs) {
+    const { id } = assertion;
+    const { params, variants } = getVariants(testConfig);
+    describe(`Assertion: ${assertion} [${id}]`, () => {
+      for (const [name, variant] of variants) {
+        it(`should pass ${name} checks [${id}]`, async () => {
+          await runVariant(variant, testConfigDefaults, params, name);
+        });
+      }
+    });
+  }
 });

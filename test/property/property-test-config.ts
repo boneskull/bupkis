@@ -12,13 +12,15 @@
 import type fc from 'fast-check';
 import type { Parameters } from 'fast-check';
 
+import { z } from 'zod/v4';
+
 export type InferPropertyTestConfigVariantAsyncProperty<T> =
   T extends PropertyTestConfigVariantAsyncProperty<infer U>
     ? PropertyTestConfigVariantAsyncProperty<U>
     : never;
 
 export type InferPropertyTestConfigVariantModel<
-  T extends PropertyTestConfigVariant<any, any>,
+  T extends PropertyTestConfigVariant,
 > =
   T extends PropertyTestConfigVariantModel<infer M, infer R>
     ? PropertyTestConfigVariantModel<M, R>
@@ -49,7 +51,7 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
    * Generator for invalid input in negated form (should fail the negated
    * assertion)
    */
-  invalidNegated?: PropertyTestConfigVariant;
+  invalidNegated?: PropertyTestConfigVariant | undefined;
   /**
    * Generator for valid input (should pass the assertion)
    */
@@ -58,7 +60,7 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
    * Generator for valid input in negated form (should pass the negated
    * assertion)
    */
-  validNegated?: PropertyTestConfigVariant;
+  validNegated?: PropertyTestConfigVariant | undefined;
 }
 
 /**
@@ -71,7 +73,7 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
  */
 export interface PropertyTestConfigParameters extends Parameters<any> {
   numRuns?: never;
-  runSize?: 'large' | 'medium' | 'small';
+  runSize?: 'large' | 'medium' | 'small' | undefined;
 }
 
 /**
@@ -86,13 +88,9 @@ export interface PropertyTestConfigParameters extends Parameters<any> {
  * For parameterized assertions, the "rest" of the tuple contains generators for
  * the parameter and extra phrase literals / parameters that may follow.
  */
-export type PropertyTestConfigVariant<
-  Model extends object = object,
-  Real = any,
-> =
+export type PropertyTestConfigVariant =
   | PropertyTestConfigVariantAsyncGenerators
   | PropertyTestConfigVariantAsyncProperty<any>
-  | PropertyTestConfigVariantModel<Model, Real>
   | PropertyTestConfigVariantProperty<any>
   | PropertyTestConfigVariantSyncGenerators;
 
@@ -101,7 +99,7 @@ export interface PropertyTestConfigVariantAsyncGenerators
   async: true;
 }
 
-export interface PropertyTestConfigVariantAsyncProperty<T>
+export interface PropertyTestConfigVariantAsyncProperty<T = any>
   extends PropertyTestConfigParameters {
   asyncProperty: () => fc.IAsyncProperty<T> | fc.IAsyncPropertyWithHooks<T>;
 }
@@ -113,7 +111,7 @@ export interface PropertyTestConfigVariantModel<Model extends object, Real>
   initialState: fc.ModelRunSetup<Model, Real>;
 }
 
-export interface PropertyTestConfigVariantProperty<T>
+export interface PropertyTestConfigVariantProperty<T = any>
   extends PropertyTestConfigParameters {
   property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
 }
@@ -128,3 +126,59 @@ export interface PropertyTestConfigVariantSyncGenerators
         ...fc.Arbitrary<any>[],
       ];
 }
+
+// Shared schema for PropertyTestConfigParameters
+const PropertyTestConfigParametersSchema = z.looseObject({
+  runSize: z.enum(['small', 'medium', 'large']).optional(),
+});
+
+/**
+ * Zod schema for {@link PropertyTestConfigVariant}
+ */
+export const PropertyTestConfigVariantSchema = z.union([
+  // PropertyTestConfigVariantSyncGenerators
+  z.object({
+    ...PropertyTestConfigParametersSchema.shape,
+    generators: z.union([
+      z.any(), // fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
+      z.array(z.any()), // readonly [subject: fc.Arbitrary<any>, phrase: fc.Arbitrary<string>, ...fc.Arbitrary<any>[]]
+    ]),
+  }),
+  // PropertyTestConfigVariantAsyncGenerators
+  z.object({
+    ...PropertyTestConfigParametersSchema.shape,
+    async: z.literal(true),
+    generators: z.union([z.any(), z.array(z.any())]),
+  }),
+  // PropertyTestConfigVariantProperty<T>
+  z.object({
+    ...PropertyTestConfigParametersSchema.shape,
+    property: z.function({
+      input: [],
+      output: z.custom<fc.IProperty<any> | fc.IPropertyWithHooks<any>>(),
+    }),
+  }),
+  // PropertyTestConfigVariantAsyncProperty<T>
+  z.object({
+    ...PropertyTestConfigParametersSchema.shape,
+    asyncProperty: z.function({
+      input: [],
+      output: z.custom<
+        fc.IAsyncProperty<any> | fc.IAsyncPropertyWithHooks<any>
+      >(),
+    }),
+  }),
+]);
+
+/**
+ * Zod schema for {@link PropertyTestConfig}
+ */
+const PropertyTestConfigSchema: z.ZodType<PropertyTestConfig> =
+  PropertyTestConfigParametersSchema.extend({
+    invalid: z.lazy(() => PropertyTestConfigVariantSchema),
+    invalidNegated: z.lazy(() => PropertyTestConfigVariantSchema).optional(),
+    valid: z.lazy(() => PropertyTestConfigVariantSchema),
+    validNegated: z.lazy(() => PropertyTestConfigVariantSchema).optional(),
+  });
+
+export { PropertyTestConfigSchema };

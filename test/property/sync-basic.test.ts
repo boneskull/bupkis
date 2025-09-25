@@ -1,17 +1,22 @@
 import fc from 'fast-check';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import type { AnyAssertion } from '../../src/types.js';
 
 import * as assertions from '../../src/assertion/impl/sync-basic.js';
 import { SyncBasicAssertions } from '../../src/assertion/index.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
+import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { extractPhrases } from './property-test-util.js';
-import { runPropertyTests } from './property-test.macro.js';
+import {
+  extractPhrases,
+  filteredAnything,
+  filteredObject,
+  getVariants,
+  runVariant,
+} from './property-test-util.js';
 
 /**
  * Test config defaults
@@ -31,13 +36,13 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !Array.isArray(v)),
+          filteredAnything.filter((v) => !Array.isArray(v)),
           fc.constantFrom(...extractPhrases(assertions.arrayAssertion)),
         ],
       },
       valid: {
         generators: [
-          fc.array(fc.anything()),
+          fc.array(filteredAnything),
           fc.constantFrom(...extractPhrases(assertions.arrayAssertion)),
         ],
       },
@@ -63,7 +68,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: [
           fc.oneof(
             fc.constant(async () => {}),
-            fc.constant(async function () {}),
+            fc.constant(async () => {}),
           ),
           fc.constantFrom(...extractPhrases(assertions.asyncFunctionAssertion)),
         ],
@@ -76,7 +81,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'bigint'),
+          filteredAnything.filter((v) => typeof v !== 'bigint'),
           fc.constantFrom(...extractPhrases(assertions.bigintAssertion)),
         ],
       },
@@ -94,7 +99,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'boolean'),
+          filteredAnything.filter((v) => typeof v !== 'boolean'),
           fc.constantFrom(...extractPhrases(assertions.booleanAssertion)),
         ],
       },
@@ -137,7 +142,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof Date)),
+          filteredAnything.filter((v) => !(v instanceof Date)),
           fc.constantFrom(...extractPhrases(assertions.dateAssertion)),
         ],
       },
@@ -162,7 +167,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       valid: {
         examples: [[null, 'to be defined']],
         generators: [
-          fc.anything().filter((v) => v !== undefined),
+          filteredAnything.filter((v) => v !== undefined),
           fc.constantFrom(...extractPhrases(assertions.definedAssertion)),
         ],
       },
@@ -174,7 +179,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.array(fc.anything(), { minLength: 1 }),
+          fc.array(filteredAnything, { minLength: 1 }),
           fc.constantFrom(...extractPhrases(assertions.emptyArrayAssertion)),
         ],
       },
@@ -192,7 +197,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.array(fc.anything(), { minLength: 1 }),
+          fc.array(filteredAnything, { minLength: 1 }),
           fc.constantFrom(...extractPhrases(assertions.emptyArrayAssertion)),
         ],
       },
@@ -211,7 +216,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: [
           fc
-            .dictionary(fc.string(), fc.anything())
+            .dictionary(fc.string(), filteredAnything)
             .filter((obj) => Object.keys(obj).length > 0),
           fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
         ],
@@ -230,7 +235,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.object().filter((obj) => Object.keys(obj).length > 0),
+          filteredObject.filter((obj) => Object.keys(obj).length > 0),
           fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
         ],
       },
@@ -266,7 +271,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof Error)),
+          filteredAnything.filter((v) => !(v instanceof Error)),
           fc.constantFrom(...extractPhrases(assertions.errorAssertion)),
         ],
       },
@@ -289,7 +294,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== false),
+          filteredAnything.filter((v) => v !== false),
           fc.constantFrom(...extractPhrases(assertions.falseAssertion)),
         ],
       },
@@ -336,18 +341,18 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'function'),
+          filteredAnything.filter((v) => typeof v !== 'function'),
           fc.constantFrom(...extractPhrases(assertions.functionAssertion)),
         ],
       },
       valid: {
         generators: [
           fc.oneof(
-            fc.func(fc.anything()),
+            fc.func(filteredAnything),
             fc.constant(() => {}),
-            fc.constant(function () {}),
+            fc.constant(() => {}),
             fc.constant(async () => {}),
-            fc.constant(async function () {}),
+            fc.constant(async () => {}),
           ),
           fc.constantFrom(...extractPhrases(assertions.functionAssertion)),
         ],
@@ -408,7 +413,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !Number.isNaN(v)),
+          filteredAnything.filter((v) => !Number.isNaN(v)),
           fc.constantFrom(...extractPhrases(assertions.nanAssertion)),
         ],
       },
@@ -450,7 +455,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== -Infinity),
+          filteredAnything.filter((v) => v !== -Infinity),
           fc.constantFrom(
             ...extractPhrases(assertions.negativeInfinityAssertion),
           ),
@@ -524,7 +529,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== null),
+          filteredAnything.filter((v) => v !== null),
           fc.constantFrom(...extractPhrases(assertions.nullAssertion)),
         ],
       },
@@ -562,15 +567,15 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'object' || v === null),
+          filteredAnything.filter((v) => typeof v !== 'object' || v === null),
           fc.constantFrom(...extractPhrases(assertions.objectAssertion)),
         ],
       },
       valid: {
         generators: [
           fc.oneof(
-            fc.object(),
-            fc.array(fc.anything()),
+            filteredObject,
+            fc.array(filteredAnything),
             fc.date(),
             fc.constant(/test/),
             fc.constant(new Map()),
@@ -611,7 +616,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== Infinity),
+          filteredAnything.filter((v) => v !== Infinity),
           fc.constantFrom(
             ...extractPhrases(assertions.positiveInfinityAssertion),
           ),
@@ -711,7 +716,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: [
-          fc.object(),
+          filteredObject,
           fc.constantFrom(...extractPhrases(assertions.recordAssertion)),
         ],
       },
@@ -723,7 +728,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof RegExp)),
+          filteredAnything.filter((v) => !(v instanceof RegExp)),
           fc.constantFrom(...extractPhrases(assertions.regexpAssertion)),
         ],
       },
@@ -747,7 +752,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof Set)),
+          filteredAnything.filter((v) => !(v instanceof Set)),
           fc.constantFrom(...extractPhrases(assertions.setAssertion)),
         ],
       },
@@ -755,7 +760,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: [
           fc.oneof(
             fc.constant(new Set()),
-            fc.array(fc.anything()).map((arr) => new Set(arr)),
+            fc.array(filteredAnything).map((arr) => new Set(arr)),
           ),
           fc.constantFrom(...extractPhrases(assertions.setAssertion)),
         ],
@@ -768,7 +773,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'string'),
+          filteredAnything.filter((v) => typeof v !== 'string'),
           fc.constantFrom(...extractPhrases(assertions.stringAssertion)),
         ],
       },
@@ -786,7 +791,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => typeof v !== 'symbol'),
+          filteredAnything.filter((v) => typeof v !== 'symbol'),
           fc.constantFrom(...extractPhrases(assertions.symbolAssertion)),
         ],
       },
@@ -804,7 +809,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== true),
+          filteredAnything.filter((v) => v !== true),
           fc.constantFrom(...extractPhrases(assertions.trueAssertion)),
         ],
       },
@@ -851,7 +856,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => v !== undefined),
+          filteredAnything.filter((v) => v !== undefined),
           fc.constantFrom(...extractPhrases(assertions.undefinedAssertion)),
         ],
       },
@@ -869,7 +874,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof WeakMap)),
+          filteredAnything.filter((v) => !(v instanceof WeakMap)),
           fc.constantFrom(...extractPhrases(assertions.weakMapAssertion)),
         ],
       },
@@ -887,7 +892,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     {
       invalid: {
         generators: [
-          fc.anything().filter((v) => !(v instanceof WeakSet)),
+          filteredAnything.filter((v) => !(v instanceof WeakSet)),
           fc.constantFrom(...extractPhrases(assertions.weakSetAssertion)),
         ],
       },
@@ -902,10 +907,25 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Basic (non-parametric) Assertions', () => {
-  expectExhaustiveAssertionTests(
-    'Basic Assertions',
-    [...SyncBasicAssertions],
-    testConfigs,
-  );
-  runPropertyTests(testConfigs, testConfigDefaults);
+  it(`should test all available assertions in SyncBasicAssertions`, () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'SyncBasicAssertions',
+      'from',
+      SyncBasicAssertions,
+    );
+  });
+
+  for (const [assertion, testConfig] of testConfigs) {
+    const { id } = assertion;
+    const { params, variants } = getVariants(testConfig);
+    describe(`Assertion: ${assertion} [${id}]`, () => {
+      for (const [name, variant] of variants) {
+        it(`should pass ${name} checks [${id}]`, async () => {
+          await runVariant(variant, testConfigDefaults, params, name);
+        });
+      }
+    });
+  }
 });

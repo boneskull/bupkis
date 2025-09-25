@@ -93,9 +93,12 @@ import {
 import { AssertionMetadataRegistry } from './assertion.js';
 import { slotify } from './slotify.js';
 
+const { isArray } = Array;
+
 /**
  * {@inheritDoc CreateAssertionFn}
  *
+ * @function
  * @throws {TypeError} Invalid assertion implementation type
  * @group Assertion Creation
  */
@@ -107,7 +110,7 @@ export const createAssertion: CreateAssertionFn = <
   impl: Impl,
   metadata?: AssertionMetadata,
 ) => {
-  if (!Array.isArray(parts)) {
+  if (!isArray(parts)) {
     throw new AssertionImplementationError('First parameter must be an array');
   }
   if (parts.length === 0) {
@@ -116,9 +119,7 @@ export const createAssertion: CreateAssertionFn = <
     );
   }
   if (
-    !parts.every(
-      (part) => isString(part) || Array.isArray(part) || isZodType(part),
-    )
+    !parts.every((part) => isString(part) || isArray(part) || isZodType(part))
   ) {
     throw new AssertionImplementationError(
       'All assertion parts must be strings or Zod schemas',
@@ -165,6 +166,7 @@ export const createAssertion: CreateAssertionFn = <
 /**
  * {@inheritDoc CreateAsyncAssertionFn}
  *
+ * @function
  * @throws {TypeError} Invalid assertion implementation type
  * @group Assertion Creation
  */
@@ -176,7 +178,7 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
   impl: Impl,
   metadata?: AssertionMetadata,
 ) => {
-  if (!Array.isArray(parts)) {
+  if (!isArray(parts)) {
     throw new AssertionImplementationError('First parameter must be an array');
   }
   if (parts.length === 0) {
@@ -185,9 +187,7 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
     );
   }
   if (
-    !parts.every(
-      (part) => isString(part) || Array.isArray(part) || isZodType(part),
-    )
+    !parts.every((part) => isString(part) || isArray(part) || isZodType(part))
   ) {
     throw new AssertionImplementationError(
       'All assertion parts must be strings or Zod schemas',

@@ -36,9 +36,10 @@
   - **`property/`**: Property-based testing with fast-check
     - `async-*.test.ts` - Property tests for async assertions (8 assertions)
     - `sync-*.test.ts` - Property tests for sync assertions by category
-    - `property-test.macro.ts` - Macros for running property tests (`runPropertyTests`, `runPropertyTestsAsync`)
-    - `config.ts` - Shared configuration and utilities
+    - `property-test-util.ts` - Utility functions for property testing (`getVariants`, `runVariant`, `createPhraseExtractor`)
+    - `property-test-config.ts` - Configuration types and interfaces
   - **`assertion/`**: Unit tests for individual assertion implementations
+  - `custom-assertions.ts` - Custom test assertions including `"to exhaustively test collection"`
   - Individual test files for core functionality (`expect.test.ts`, `use.test.ts`, etc.)
 - See `test/README.md` for detailed information on the test structure and approach.
 
@@ -184,13 +185,15 @@ createAssertion([z.number(), 'is even'], (n) => n % 2 === 0);
 
 **Property-Based Testing**: All tests in `test/property/` use [fast-check][] for property-based tests.
 
-**Test Structure**: Property tests are organized by assertion category (sync-basic, sync-collection, sync-esoteric, sync-parametric, async)
+**Test Structure**: Property tests are organized by assertion category (sync-basic, sync-collection, sync-esoteric, sync-parametric, async) using `getVariants()` and `runVariant()` functions
 
 **Fast-Check Integration**: Uses `fc.property()` and `fc.asyncProperty()` for comprehensive input generation
 
 **Dynamic Function Generation**: Leverages `fc.func()` instead of `fc.constant()` for better test coverage where possible
 
 **Coordinated Generators**: Complex assertion tests use coordinated generators to ensure valid input combinations
+
+**Wallaby Integration**: Property tests use custom assertions and utility functions (not macro files) for better Wallaby compatibility. Test files use `"to exhaustively test collection"` assertion with `getVariants()` to generate test configurations
 
 **Recent Optimizations**: Async property tests have been optimized to minimize `fc.constant()` usage by using dynamic generators like `fc.anything().map()`, `fc.string().map()`, and `fc.func().map()` for broader test coverage
 

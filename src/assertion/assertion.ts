@@ -16,6 +16,11 @@ import { inspect } from 'util';
 import { z } from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
+import {
+  extractDiffValues,
+  generateDiff,
+  shouldGenerateDiff,
+} from '../diff.js';
 import { AssertionError, InvalidMetadataError } from '../error.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
@@ -29,6 +34,7 @@ import {
 } from './assertion-types.js';
 
 const debug = createDebug('bupkis:assertion');
+const { hasOwn, keys } = Object;
 
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;
@@ -75,6 +81,14 @@ export abstract class BupkisAssertion<
    * @returns String representation
    */
   public toString(): string {
+    /**
+     * Expands a Zod type into a human-readable string representation.
+     *
+     * @function
+     * @param zodType The Zod type to expand
+     * @param wrapCurlies Whether to wrap the result in curly braces
+     * @returns String representation of the Zod type
+     */
     const expand = (
       zodType: z.core.$ZodType | z.ZodType,
       wrapCurlies = false,
@@ -107,7 +121,7 @@ export abstract class BupkisAssertion<
             repr = `{${expand((def as z.core.$ZodDefaultDef).innerType)}}`;
             break;
           case 'enum':
-            repr = `${Object.keys((def as z.core.$ZodEnumDef<any>).entries as Record<PropertyKey, unknown>).join(' / ')}`;
+            repr = `${keys((def as z.core.$ZodEnumDef<any>).entries as Record<PropertyKey, unknown>).join(' / ')}`;
             break;
           case 'intersection':
             repr = `${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).left)} & ${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).right)}`;
@@ -154,7 +168,7 @@ export abstract class BupkisAssertion<
     };
     return `"${this.slots
       .map((slot) =>
-        Object.hasOwn(BupkisRegistry.get(slot) ?? {}, kStringLiteral)
+        hasOwn(BupkisRegistry.get(slot) ?? {}, kStringLiteral)
           ? expand(slot)
           : expand(slot, true),
       )
@@ -174,40 +188,45 @@ export abstract class BupkisAssertion<
    * @param values Values which caused the error
    * @returns New `AssertionError`
    */
-  /**
-   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
-   * human-friendly message.
-   *
-   * @remarks
-   * This does not handle parameterized assertions with more than one parameter
-   * too cleanly; it's unclear how a test runner would display the expected
-   * values. This will probably need a fix in the future.
-   * @param stackStartFn The function to start the stack trace from
-   * @param zodError The original `ZodError`
-   * @param values Values which caused the error
-   * @returns New `AssertionError`
-   */
   protected fromZodError<Parts extends AssertionParts>(
     zodError: z.ZodError,
     stackStartFn: (...args: any[]) => any,
     values: ParsedValues<Parts>,
   ): AssertionError {
-    const flat = z.flattenError(zodError);
+    // Extract the subject (first value) from parsed values for diff generation
+    const subject = values.length > 0 ? values[0] : undefined;
 
-    let pretty = flat.formErrors.join('; ');
-    for (const [keypath, errors] of Object.entries(flat.fieldErrors)) {
-      pretty += `; ${keypath}: ${(errors as unknown[]).join('; ')}`;
+    // Try to extract meaningful actual/expected values for Node.js diff
+    const { actual, expected } = extractDiffValues(zodError, subject);
+
+    // Only use custom message if we could extract diff values
+    if (shouldGenerateDiff(actual, expected)) {
+      // Use jest-diff to generate rich, colored diff output
+      const diffOutput = generateDiff(expected, actual, {
+        aAnnotation: 'Expected',
+        bAnnotation: 'Received',
+        expand: false,
+        includeChangeCounts: true,
+      });
+
+      const message = diffOutput
+        ? `Assertion ${this} failed:\n${diffOutput}`
+        : `Assertion ${this} failed: values are not equal`;
+
+      return new AssertionError({
+        actual,
+        expected,
+        message,
+        stackStartFn,
+      });
+    } else {
+      // Fall back to Zod's prettified error message
+      const pretty = z.prettifyError(zodError).slice(2);
+      return new AssertionError({
+        message: `Assertion ${this} failed:\n${pretty}`,
+        stackStartFn,
+      });
     }
-
-    const [actual, ...expected] = values as unknown as [unknown, ...unknown[]];
-
-    return new AssertionError({
-      actual,
-      expected: expected.length === 1 ? expected[0] : expected,
-      message: `Assertion ${this} failed: ${pretty}`,
-      operator: `${this}`,
-      stackStartFn,
-    });
   }
 
   protected maybeParseValuesArgMismatch<Args extends readonly unknown[]>(

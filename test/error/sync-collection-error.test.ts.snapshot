@@ -1,52 +1,45 @@
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size between' {[number, number]}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-between-number-number-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size between' {[number, number]}\" [map_unknown-unknown-set_unknown-to-have-size-between-number-number-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-between-number-number-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 4,
   "expected": "size between 1 and 3 (inclusive)",
-  "diff": "simple"
+  "message": "Expected Set to have size between 1 and 3, got 4",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to have size between 1 and 3, got 4\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:38:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size greater than' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-greater-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size greater than' {nonnegative-integer}\" [map_unknown-unknown-set_unknown-to-have-size-greater-than-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-greater-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": "size greater than 2",
-  "diff": "simple"
+  "message": "Expected Set to have size greater than 2, got 1",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to have size greater than 2, got 1\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:44:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size less than' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-less-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | Set<unknown>} 'to have size less than' {nonnegative-integer}\" [map_unknown-unknown-set_unknown-to-have-size-less-than-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-set_unknown-to-have-size-less-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 3,
   "expected": "size less than 2",
-  "diff": "simple"
+  "message": "Expected Set to have size less than 2, got 3",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to have size less than 2, got 3\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:50:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | WeakMap} 'to contain' / 'to include' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | WeakMap} 'to contain' / 'to include' {unknown}\" [map_unknown-unknown-weakmap-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "missing",
   "expected": "key to exist in Map",
-  "diff": "simple"
+  "message": "Expected Map to contain key",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Map to contain key\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:68:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | WeakMap} 'to have entry' {[unknown, unknown]}\" > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-have-entry-unknown-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | WeakMap} 'to have entry' {[unknown, unknown]}\" [map_unknown-unknown-weakmap-to-have-entry-unknown-unknown-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-weakmap-to-have-entry-unknown-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     "key",
     "value"
@@ -55,24 +48,22 @@ exports[`sync-collection error snapshots > \"{Map<unknown, unknown> | WeakMap} '
     "key",
     "wrong"
   ],
-  "diff": "simple"
+  "message": "Expected Map entry [key, value] to equal [key, wrong]",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Map entry [key, value] to equal [key, wrong]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:74:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to be empty'\" > should throw a consistent AssertionError [map_unknown-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} 'to be empty'\" [map_unknown-unknown-to-be-empty-2s2p] > should throw a consistent AssertionError [map_unknown-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Map<unknown, unknown>} 'to be empty'\\" failed for arguments: [ Map(1) { 'key' => 'value' }, 'to be empty' ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Map<unknown, unknown>} 'to be empty'\\" failed for arguments: [ Map(1) { 'key' => 'value' }, 'to be empty' ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:56:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to equal' {Map<unknown, unknown>}\" > should throw a consistent AssertionError [map_unknown-unknown-to-equal-map_unknown-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} 'to equal' {Map<unknown, unknown>}\" [map_unknown-unknown-to-equal-map_unknown-unknown-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-to-equal-map_unknown-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     "b",
     3
@@ -81,256 +72,243 @@ exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to equal' 
     "b",
     2
   ],
-  "diff": "simple"
+  "message": "Expected Maps to have equal value for key b",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Maps to have equal value for key b\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:80:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have key' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-key-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} 'to have key' {unknown}\" [map_unknown-unknown-to-have-key-unknown-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-to-have-key-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     "key"
   ],
   "expected": "missing",
-  "diff": "simple"
+  "message": "Expected Map to have key",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Map to have key\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:96:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} 'to have size' {nonnegative-integer}\" [map_unknown-unknown-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 2,
   "expected": 3,
-  "diff": "simple"
+  "message": "Expected Map to have size 3, got 2",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Map to have size 3, got 2\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:102:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Map<unknown, unknown>} 'to have value' {unknown}\" > should throw a consistent AssertionError [map_unknown-unknown-to-have-value-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} 'to have value' {unknown}\" [map_unknown-unknown-to-have-value-unknown-3s3p] > should throw a consistent AssertionError [map_unknown-unknown-to-have-value-unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     "value"
   ],
   "expected": "missing",
-  "diff": "simple"
+  "message": "Expected Map to have value",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Map to have value\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:115:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown> | WeakSet} 'to contain' / 'to include' {any}\" > should throw a consistent AssertionError [set_unknown-weakset-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown> | WeakSet} 'to contain' / 'to include' {any}\" [set_unknown-weakset-to-contain-to-include-any-3s3p] > should throw a consistent AssertionError [set_unknown-weakset-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "c",
   "expected": "value to exist in Set",
-  "diff": "simple"
+  "message": "Expected Set to contain value",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to contain value\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:151:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be a subset of' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-a-subset-of-set_unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be a subset of' {Set<unknown>}\" [set_unknown-to-be-a-subset-of-set_unknown-3s3p] > should throw a consistent AssertionError [set_unknown-to-be-a-subset-of-set_unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to be a subset of' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 4 }, 'to be a subset of', Set(3) { 1, 2, 3 } ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to be a subset of' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 4 }, 'to be a subset of', Set(3) { 1, 2, 3 } ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:205:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be a superset of' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-a-superset-of-set_unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be a superset of' {Set<unknown>}\" [set_unknown-to-be-a-superset-of-set_unknown-3s3p] > should throw a consistent AssertionError [set_unknown-to-be-a-superset-of-set_unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to be a superset of' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to be a superset of', Set(3) { 1, 2, 3 } ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to be a superset of' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to be a superset of', Set(3) { 1, 2, 3 } ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:211:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be disjoint from' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-be-disjoint-from-set_unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be disjoint from' {Set<unknown>}\" [set_unknown-to-be-disjoint-from-set_unknown-3s3p] > should throw a consistent AssertionError [set_unknown-to-be-disjoint-from-set_unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to be disjoint from' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to be disjoint from', Set(2) { 2, 3 } ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to be disjoint from' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to be disjoint from', Set(2) { 2, 3 } ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:169:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to be empty'\" > should throw a consistent AssertionError [set_unknown-to-be-empty-2s2p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be empty'\" [set_unknown-to-be-empty-2s2p] > should throw a consistent AssertionError [set_unknown-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": 0,
-  "diff": "simple"
+  "message": "Expected Set to be empty, got size 1",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to be empty, got size 1\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:62:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to equal' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-equal-set_unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to equal' {Set<unknown>}\" [set_unknown-to-equal-set_unknown-3s3p] > should throw a consistent AssertionError [set_unknown-to-equal-set_unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to equal' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to equal', Set(2) { 1, 3 } ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to equal' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to equal', Set(2) { 1, 3 } ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:175:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have difference' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have difference' {Set<unknown>} 'equal to' {Set<unknown>}\" [set_unknown-to-have-difference-set_unknown-equal-to-set_unknown-5s5p] > should throw a consistent AssertionError [set_unknown-to-have-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to have difference' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(3) { 1, 2, 3 },\\n  'to have difference',\\n  Set(2) { 2, 4 },\\n  'equal to',\\n  Set(2) { 1, 2 }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to have difference' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(3) { 1, 2, 3 },\\n  'to have difference',\\n  Set(2) { 2, 4 },\\n  'equal to',\\n  Set(2) { 1, 2 }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:157:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have intersection' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-intersection-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have intersection' {Set<unknown>} 'equal to' {Set<unknown>}\" [set_unknown-to-have-intersection-set_unknown-equal-to-set_unknown-5s5p] > should throw a consistent AssertionError [set_unknown-to-have-intersection-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to have intersection' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(3) { 1, 2, 3 },\\n  'to have intersection',\\n  Set(3) { 2, 3, 4 },\\n  'equal to',\\n  Set(3) { 2, 3, 4 }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to have intersection' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(3) { 1, 2, 3 },\\n  'to have intersection',\\n  Set(3) { 2, 3, 4 },\\n  'equal to',\\n  Set(3) { 2, 3, 4 }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:187:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [set_unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have size' {nonnegative-integer}\" [set_unknown-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [set_unknown-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 2,
   "expected": 3,
-  "diff": "simple"
+  "message": "Expected Set to have size 3, got 2",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected Set to have size 3, got 2\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:199:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have symmetric difference' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-symmetric-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have symmetric difference' {Set<unknown>} 'equal to' {Set<unknown>}\" [set_unknown-to-have-symmetric-difference-set_unknown-equal-to-set_unknown-5s5p] > should throw a consistent AssertionError [set_unknown-to-have-symmetric-difference-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to have symmetric difference' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(2) { 1, 2 },\\n  'to have symmetric difference',\\n  Set(2) { 2, 3 },\\n  'equal to',\\n  Set(2) { 1, 2 }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to have symmetric difference' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(2) { 1, 2 },\\n  'to have symmetric difference',\\n  Set(2) { 2, 3 },\\n  'equal to',\\n  Set(2) { 1, 2 }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:217:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to have union' {Set<unknown>} 'equal to' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-have-union-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have union' {Set<unknown>} 'equal to' {Set<unknown>}\" [set_unknown-to-have-union-set_unknown-equal-to-set_unknown-5s5p] > should throw a consistent AssertionError [set_unknown-to-have-union-set_unknown-equal-to-set_unknown-5s5p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to have union' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(2) { 1, 2 },\\n  'to have union',\\n  Set(1) { 3 },\\n  'equal to',\\n  Set(3) { 1, 2, 4 }\\n]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to have union' {Set<unknown>} 'equal to' {Set<unknown>}\\" failed for arguments: [\\n  Set(2) { 1, 2 },\\n  'to have union',\\n  Set(1) { 3 },\\n  'equal to',\\n  Set(3) { 1, 2, 4 }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:229:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{Set<unknown>} 'to intersect with' {Set<unknown>}\" > should throw a consistent AssertionError [set_unknown-to-intersect-with-set_unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to intersect with' {Set<unknown>}\" [set_unknown-to-intersect-with-set_unknown-3s3p] > should throw a consistent AssertionError [set_unknown-to-intersect-with-set_unknown-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
+  "message": "Assertion \\"{Set<unknown>} 'to intersect with' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to intersect with', Set(2) { 3, 4 } ]",
   "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{Set<unknown>} 'to intersect with' {Set<unknown>}\\" failed for arguments: [ Set(2) { 1, 2 }, 'to intersect with', Set(2) { 3, 4 } ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:181:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{array} 'to be non-empty'\" > should throw a consistent AssertionError [array-to-be-non_empty-2s2p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to be non-empty'\" [array-to-be-non_empty-2s2p] > should throw a consistent AssertionError [array-to-be-non_empty-2s2p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "length: 0",
   "expected": "length greater than 0",
-  "diff": "simple"
+  "message": "Expected array to be non-empty",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected array to be non-empty\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at expect.foo (./test/error/sync-collection-error.test.ts:121:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{array} 'to contain' / 'to include' {any}\" > should throw a consistent AssertionError [array-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to contain' / 'to include' {any}\" [array-to-contain-to-include-any-3s3p] > should throw a consistent AssertionError [array-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     1,
     2,
     3
   ],
   "expected": "array containing 4",
-  "diff": "simple"
+  "message": "Expected array to contain value",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected array to contain value\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:20:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{array} 'to have length' {nonnegative-integer}\" > should throw a consistent AssertionError [array-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to have length' {nonnegative-integer}\" [array-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [array-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": [
     1,
     2,
     3
   ],
-  "expected": 5,
+  "expected": [
+    1,
+    2,
+    3,
+    null,
+    null
+  ],
+  "message": "Assertion \\"{array} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- Expected  - 2\\u001b[39m\\n\\u001b[31m+ Received  + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "name": "AssertionError",
   "operator": "\\"{array} 'to have length' {nonnegative-integer}\\"",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{array} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- Expected  - 2\\u001b[39m\\n\\u001b[31m+ Received  + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:26:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{array} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [array-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to have size' {nonnegative-integer}\" [array-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [array-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 3,
   "expected": 5,
-  "diff": "simple"
+  "message": "Expected array to have size 5, got 3",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected array to have size 5, got 3\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:32:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\" > should throw a consistent AssertionError [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\" [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": {
     "foo": "bar"
   },
-  "expected": "missing",
+  "expected": {
+    "foo": "bar"
+  },
+  "message": "Assertion \\"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "name": "AssertionError",
   "operator": "\\"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\\"",
-  "diff": "simple"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at expect.foo (./test/error/sync-collection-error.test.ts:127:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{non-collection-object} 'to have key' / 'to have property' / 'to have prop' {keypath}\" > should throw a consistent AssertionError [non_collection_object-to-have-key-to-have-property-to-have-prop-keypath-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have key' / 'to have property' / 'to have prop' {keypath}\" [non_collection_object-to-have-key-to-have-property-to-have-prop-keypath-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-key-to-have-property-to-have-prop-keypath-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "no such keypath",
-  "diff": "simple"
+  "message": "Expected object to contain keypath missing.path",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected object to contain keypath missing.path\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at expect.a (./test/error/sync-collection-error.test.ts:133:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{non-collection-object} 'to have keys' / 'to have properties' / 'to have props' {array}\" > should throw a consistent AssertionError [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys' / 'to have properties' / 'to have props' {array}\" [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": "missing keys: b",
   "expected": "to have keys: a, b",
-  "diff": "simple"
+  "message": "Expected object to contain keys: a, b",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected object to contain keys: a, b\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at expect.a (./test/error/sync-collection-error.test.ts:139:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
 
-exports[`sync-collection error snapshots > \"{object} 'to have size' {nonnegative-integer}\" > should throw a consistent AssertionError [object-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{object} 'to have size' {nonnegative-integer}\" [object-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [object-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": 3,
-  "diff": "simple"
+  "message": "Expected object to have 3 keys, but it has 1 keys",
+  "name": "AssertionError",
+  "stack": "AssertionError [ERR_ASSERTION]: Expected object to have 3 keys, but it has 1 keys\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-collection-error.test.ts:145:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
 }
 `;
