@@ -19,6 +19,21 @@ import { isA } from './guards.js';
 const { hasOwn } = Object;
 
 /**
+ * Options for {@link AssertionError}'s constructor
+ *
+ * @remarks
+ * Based on Node.js' {@link NodeAssertionError}'s constructor options, sans
+ * `operator`.
+ * @group Error Options
+ */
+export type AssertionErrorOptions = Partial<
+  Omit<
+    NonNullable<ConstructorParameters<typeof NodeAssertionError>[0]>,
+    'operator'
+  >
+>;
+
+/**
  * Options for {@link AssertionImplementationError}
  *
  * @group Error Options
@@ -81,6 +96,10 @@ export class AssertionError extends NodeAssertionError {
   [kBupkisAssertionError] = true;
 
   override name = 'AssertionError';
+
+  constructor(options?: AssertionErrorOptions) {
+    super(options);
+  }
 
   /**
    * Type guard for an instance of this error.
