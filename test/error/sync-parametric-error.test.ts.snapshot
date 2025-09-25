@@ -4,7 +4,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{Error} 'to have message 
   "expected": "message matching /expected/",
   "message": "Expected error message \\"wrong message\\" to match /expected/",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to match /expected/\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:40:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to match /expected/\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -14,7 +14,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{Error} 'to have message'
   "expected": "expected message",
   "message": "Expected error message \\"wrong message\\" to equal \\"expected message\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to equal \\"expected message\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:33:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to equal \\"expected message\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -24,8 +24,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{any} 'to be a' / 'to be 
   "expected": 0,
   "message": "Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:216:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:216:7)"
 }
 `;
 
@@ -43,8 +42,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equa
   ],
   "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
   "name": "AssertionError",
-  "operator": "\\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:20:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:20:7)"
 }
 `;
 
@@ -62,8 +60,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to satisfy' 
   ],
   "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
   "name": "AssertionError",
-  "operator": "\\"{arraylike} 'to satisfy' / 'to be like' {any}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:26:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:26:7)"
 }
 `;
 
@@ -73,7 +70,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to have arity
   "expected": 3,
   "message": "Expected function to have arity 3, but it has arity 2",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to have arity 3, but it has arity 2\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:50:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to have arity 3, but it has arity 2\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -88,8 +85,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
     }
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:96:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -98,7 +94,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
   "actual": {},
   "message": "Expected function to throw an instance of TypeError, but it threw Error",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw an instance of TypeError, but it threw Error\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:84:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw an instance of TypeError, but it threw Error\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -111,8 +107,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw' / '
     {}
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:72:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -120,7 +115,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw'\" [
 {
   "message": "Expected function to throw, but it did not",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw, but it did not\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:60:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw, but it did not\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -130,7 +125,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to'
   "expected": 5,
   "message": "Expected 10 to be close to 5 (within 2), but difference was 5",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected 10 to be close to 5 (within 2), but difference was 5\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:108:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected 10 to be close to 5 (within 2), but difference was 5\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -140,8 +135,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater t
   "expected": 10,
   "message": "Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:120:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:120:7)"
 }
 `;
 
@@ -151,8 +145,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater t
   "expected": 10,
   "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{number} 'to be greater than' {number}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:114:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:114:7)"
 }
 `;
 
@@ -162,8 +155,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than
   "expected": 5,
   "message": "Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:132:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:132:7)"
 }
 `;
 
@@ -173,8 +165,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than
   "expected": 5,
   "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{number} 'to be less than' / 'to be lt' {number}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:126:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:126:7)"
 }
 `;
 
@@ -190,8 +181,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' /
     ]
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at expect.a (./test/error/sync-parametric-error.test.ts:138:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -207,8 +197,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 
   },
   "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
   "name": "AssertionError",
-  "operator": "\\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:150:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:150:7)"
 }
 `;
 
@@ -224,8 +213,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' 
   },
   "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
   "name": "AssertionError",
-  "operator": "\\"{object} 'to deep equal' / 'to deeply equal' {any}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at expect.a (./test/error/sync-parametric-error.test.ts:144:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at expect.a (./test/error/sync-parametric-error.test.ts:144:7)"
 }
 `;
 
@@ -235,7 +223,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'includes' / 'co
   "expected": "string including \\"universe\\"",
   "message": "Expected \\"hello world\\" to include \\"universe\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to include \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:192:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to include \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -245,7 +233,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be greater t
   "expected": "string greater than or equal to \\"zebra\\"",
   "message": "Expected \\"apple\\" to be greater than or equal to \\"zebra\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than or equal to \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:186:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than or equal to \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -255,7 +243,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be greater t
   "expected": "string greater than \\"zebra\\"",
   "message": "Expected \\"apple\\" to be greater than \\"zebra\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:180:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -265,7 +253,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be less than
   "expected": "string less than or equal to \\"apple\\"",
   "message": "Expected \\"zebra\\" to be less than or equal to \\"apple\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than or equal to \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:204:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than or equal to \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -275,7 +263,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be less than
   "expected": "string less than \\"apple\\"",
   "message": "Expected \\"zebra\\" to be less than \\"apple\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:198:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -285,7 +273,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to begin with' 
   "expected": "string beginning with \\"goodbye\\"",
   "message": "Expected \\"hello world\\" to begin with \\"goodbye\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to begin with \\"goodbye\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:168:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to begin with \\"goodbye\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -295,7 +283,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to end with' {s
   "expected": "string ending with \\"universe\\"",
   "message": "Expected \\"hello world\\" to end with \\"universe\\"",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to end with \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:174:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to end with \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -303,7 +291,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to match' {rege
 {
   "message": "Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:170:15)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:380:18)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:210:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -311,8 +299,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an insta
 {
   "message": "Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:102:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:102:7)"
 }
 `;
 
@@ -322,7 +309,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' 
   "expected": "one of [1, 2, 3]",
   "message": "Expected 5 to be one of [1, 2, 3]",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected 5 to be one of [1, 2, 3]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:156:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected 5 to be one of [1, 2, 3]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;
 
@@ -332,6 +319,6 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be' / 'to e
   "expected": {},
   "message": "Expected {} to equal {}",
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected {} to equal {}\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)\\n    at new AssertionError (./src/error.ts:81:8)\\n    at BupkisAssertionFunctionSync.execute (./src/assertion/assertion-sync.ts:175:13)\\n    at execute (./src/expect.ts:435:22)\\n    at expectFunction (./src/expect.ts:394:14)\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:162:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)"
+  "stack": "AssertionError [ERR_ASSERTION]: Expected {} to equal {}\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
 }
 `;

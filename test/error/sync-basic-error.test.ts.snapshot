@@ -8,8 +8,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{Record<any, unknown>} 'to be 
     "to be an empty object"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:68:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -25,8 +24,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [a
     "to be an empty array"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ [ 1, 2, 3 ], 'to be an empty array' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ [ 1, 2, 3 ], 'to be an empty array' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at expect.foo (./test/error/sync-basic-error.test.ts:62:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ [ 1, 2, 3 ], 'to be an empty array' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -38,8 +36,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be empty'\" [stri
     "to be an empty string"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ 'hello', 'to be an empty string' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 'hello', 'to be an empty string' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:74:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 'hello', 'to be an empty string' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -51,8 +48,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be non-empty'\" [
     "to be a non empty string"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ '', 'to be a non empty string' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ '', 'to be a non empty string' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:140:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ '', 'to be a non empty string' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -64,8 +60,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be -Infinity'\" 
     "to be negative infinity"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ Infinity, 'to be negative infinity' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ Infinity, 'to be negative infinity' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:128:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ Infinity, 'to be negative infinity' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -77,8 +72,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be Infinity'\" [
     "to be positive infinity"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ -Infinity, 'to be positive infinity' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ -Infinity, 'to be positive infinity' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:170:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ -Infinity, 'to be positive infinity' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -88,8 +82,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be NaN'\" [unkno
   "expected": "<nan>",
   "message": "Assertion \\"{unknown} 'to be NaN'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be NaN'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be NaN'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:116:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be NaN'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:116:7)"
 }
 `;
 
@@ -97,8 +90,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a RegExp' / '
 {
   "message": "Assertion \\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\" failed:\\nInput not instance of RegExp",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\" failed:\\nInput not instance of RegExp\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:194:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\" failed:\\nInput not instance of RegExp\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:194:7)"
 }
 `;
 
@@ -108,8 +100,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a Set'\" [unk
   "expected": "<set>",
   "message": "Assertion \\"{unknown} 'to be a Set'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <set>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a Set'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a Set'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <set>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:200:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a Set'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <set>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:200:7)"
 }
 `;
 
@@ -117,8 +108,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakMap'\" 
 {
   "message": "Assertion \\"{unknown} 'to be a WeakMap'\\" failed:\\nInput not instance of WeakMap",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a WeakMap'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a WeakMap'\\" failed:\\nInput not instance of WeakMap\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:236:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a WeakMap'\\" failed:\\nInput not instance of WeakMap\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:236:7)"
 }
 `;
 
@@ -126,8 +116,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakSet'\" 
 {
   "message": "Assertion \\"{unknown} 'to be a WeakSet'\\" failed:\\nInput not instance of WeakSet",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a WeakSet'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a WeakSet'\\" failed:\\nInput not instance of WeakSet\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:242:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a WeakSet'\\" failed:\\nInput not instance of WeakSet\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:242:7)"
 }
 `;
 
@@ -137,8 +126,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a bigint' / '
   "expected": "<bigint>",
   "message": "Assertion \\"{unknown} 'to be a bigint' / 'to be a BigInt'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a bigint' / 'to be a BigInt'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a bigint' / 'to be a BigInt'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:32:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a bigint' / 'to be a BigInt'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:32:7)"
 }
 `;
 
@@ -148,8 +136,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a boolean' / 
   "expected": true,
   "message": "Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mboolean\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mboolean\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:38:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mboolean\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:38:7)"
 }
 `;
 
@@ -157,8 +144,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a class' / 't
 {
   "message": "Assertion \\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:44:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:44:7)"
 }
 `;
 
@@ -168,8 +154,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a date' / 'to
   "expected": "<date>",
   "message": "Assertion \\"{unknown} 'to be a date' / 'to be a Date'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <date>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a date' / 'to be a Date'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a date' / 'to be a Date'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <date>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:50:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a date' / 'to be a Date'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <date>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:50:7)"
 }
 `;
 
@@ -177,8 +162,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a function'\"
 {
   "message": "Assertion \\"{unknown} 'to be a function'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a function'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a function'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:98:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a function'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:98:7)"
 }
 `;
 
@@ -188,8 +172,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a negative in
   "expected": 0,
   "message": "Assertion \\"{unknown} 'to be a negative integer' / 'to be a negative int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a negative integer' / 'to be a negative int'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a negative integer' / 'to be a negative int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:134:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a negative integer' / 'to be a negative int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:134:7)"
 }
 `;
 
@@ -199,8 +182,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a number' / '
   "expected": 0,
   "message": "Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a number' / 'to be finite'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:152:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:152:7)"
 }
 `;
 
@@ -210,8 +192,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a positive in
   "expected": 0,
   "message": "Assertion \\"{unknown} 'to be a positive integer' / 'to be a positive int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a positive integer' / 'to be a positive int'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a positive integer' / 'to be a positive int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:176:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a positive integer' / 'to be a positive int'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:176:7)"
 }
 `;
 
@@ -221,8 +202,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a primitive'\
   "expected": {},
   "message": "Assertion \\"{unknown} 'to be a primitive'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a primitive'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a primitive'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:182:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a primitive'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:182:7)"
 }
 `;
 
@@ -232,8 +212,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a record' / '
   "expected": "<record>",
   "message": "Assertion \\"{unknown} 'to be a record' / 'to be a plain object'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31marray\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a record' / 'to be a plain object'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a record' / 'to be a plain object'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31marray\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:188:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a record' / 'to be a plain object'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31marray\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:188:7)"
 }
 `;
 
@@ -243,8 +222,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a string'\" [
   "expected": "42",
   "message": "Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a string'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:206:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:206:7)"
 }
 `;
 
@@ -254,8 +232,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a symbol' / '
   "expected": "<symbol>",
   "message": "Assertion \\"{unknown} 'to be a symbol' / 'to be a Symbol'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <symbol>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be a symbol' / 'to be a Symbol'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a symbol' / 'to be a Symbol'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <symbol>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:212:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be a symbol' / 'to be a Symbol'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- <symbol>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:212:7)"
 }
 `;
 
@@ -267,8 +244,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an Error' / '
     "to be an error"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "message": "Invalid arguments. No assertion matched: [ 'hello', 'to be an error' ]",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 'hello', 'to be an error' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)\\n    at expectFunction (./src/expect.ts:404:5)\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:80:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)"
+  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 'hello', 'to be an error' ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
 }
 `;
 
@@ -278,8 +254,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an array' / '
   "expected": [],
   "message": "Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32marray\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be an array' / 'to be array'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32marray\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at expect.foo (./test/error/sync-basic-error.test.ts:20:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32marray\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at expect.foo (./test/error/sync-basic-error.test.ts:20:7)"
 }
 `;
 
@@ -287,8 +262,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an async func
 {
   "message": "Assertion \\"{unknown} 'to be an async function'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be an async function'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an async function'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:26:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an async function'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:26:7)"
 }
 `;
 
@@ -298,8 +272,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an integer' /
   "expected": "<int>",
   "message": "Assertion \\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:110:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:110:7)"
 }
 `;
 
@@ -307,8 +280,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an object'\" 
 {
   "message": "Assertion \\"{unknown} 'to be an object'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be an object'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an object'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:158:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an object'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:158:7)"
 }
 `;
 
@@ -316,8 +288,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be defined'\" [u
 {
   "message": "Assertion \\"{unknown} 'to be defined'\\" failed:\\nInvalid input: expected nonoptional, received undefined",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be defined'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be defined'\\" failed:\\nInvalid input: expected nonoptional, received undefined\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:56:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be defined'\\" failed:\\nInvalid input: expected nonoptional, received undefined\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:56:7)"
 }
 `;
 
@@ -327,8 +298,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be false'\" [unk
   "expected": false,
   "message": "Assertion \\"{unknown} 'to be false'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- false\\u001b[39m\\n\\u001b[31m+ true\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be false'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be false'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- false\\u001b[39m\\n\\u001b[31m+ true\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:86:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be false'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- false\\u001b[39m\\n\\u001b[31m+ true\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:86:7)"
 }
 `;
 
@@ -336,8 +306,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be falsy'\" [unk
 {
   "message": "Assertion \\"{unknown} 'to be falsy'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be falsy'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be falsy'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:92:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be falsy'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:92:7)"
 }
 `;
 
@@ -345,8 +314,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be infinite'\" [
 {
   "message": "Assertion \\"{unknown} 'to be infinite'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be infinite'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be infinite'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:104:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be infinite'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:104:7)"
 }
 `;
 
@@ -356,8 +324,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be negative' / '
   "expected": 0,
   "message": "Assertion \\"{unknown} 'to be negative' / 'to be a negative number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be negative' / 'to be a negative number'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be negative' / 'to be a negative number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:122:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be negative' / 'to be a negative number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:122:7)"
 }
 `;
 
@@ -365,8 +332,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be null'\" [unkn
 {
   "message": "Assertion \\"{unknown} 'to be null'\\" failed:\\nInvalid input: expected null, received undefined",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be null'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be null'\\" failed:\\nInvalid input: expected null, received undefined\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:146:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be null'\\" failed:\\nInvalid input: expected null, received undefined\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:146:7)"
 }
 `;
 
@@ -376,8 +342,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be positive' / '
   "expected": 0,
   "message": "Assertion \\"{unknown} 'to be positive' / 'to be a positive number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be positive' / 'to be a positive number'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be positive' / 'to be a positive number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:164:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be positive' / 'to be a positive number'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:164:7)"
 }
 `;
 
@@ -387,8 +352,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be true'\" [unkn
   "expected": true,
   "message": "Assertion \\"{unknown} 'to be true'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- true\\u001b[39m\\n\\u001b[31m+ false\\u001b[39m",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be true'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be true'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- true\\u001b[39m\\n\\u001b[31m+ false\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:218:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be true'\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- true\\u001b[39m\\n\\u001b[31m+ false\\u001b[39m\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:218:7)"
 }
 `;
 
@@ -396,8 +360,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be truthy' / 'to
 {
   "message": "Assertion \\"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\\" failed:\\nInvalid input",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:224:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be truthy' / 'to exist' / 'to be ok'\\" failed:\\nInvalid input\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:224:7)"
 }
 `;
 
@@ -405,7 +368,6 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be undefined'\" 
 {
   "message": "Assertion \\"{unknown} 'to be undefined'\\" failed:\\nInvalid input: expected undefined, received null",
   "name": "AssertionError",
-  "operator": "\\"{unknown} 'to be undefined'\\"",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be undefined'\\" failed:\\nInvalid input: expected undefined, received null\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:230:7)\\n    at TestContext.<anonymous> (./test/error/error-snapshot-util.ts:76:16)\\n    at Test.runInAsyncScope (node:async_hooks:214:14)\\n    at Test.run (node:internal/test_runner/test:1106:25)\\n    at Test.start (node:internal/test_runner/test:1003:17)\\n    at node:internal/test_runner/test:1514:71\\n    at node:internal/per_context/primordials:483:82\\n    at new Promise (<anonymous>)\\n    at new SafePromise (node:internal/per_context/primordials:451:29)\\n    at node:internal/per_context/primordials:483:9"
+  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be undefined'\\" failed:\\nInvalid input: expected undefined, received null\\n    at <anonymous> (./test/error/sync-basic-error.test.ts:230:7)"
 }
 `;
