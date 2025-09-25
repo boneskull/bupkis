@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.2...bupkis-v0.8.0) (2025-09-25)
+
+
+### Features
+
+* proper diffs ([ef29531](https://github.com/boneskull/bupkis/commit/ef295313cf5e8b5b0b0357098f4f7ee22414403d))
+
 ## [0.7.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.1...bupkis-v0.7.2) (2025-09-22)
 
 
