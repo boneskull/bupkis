@@ -1,0 +1,15 @@
+coverage:
+  status:
+    project:
+      src:
+        target: auto
+        only_pulls: true
+        paths: src/
+        informational: true
+      test:
+        target: 100%
+        only_pulls: true
+        paths: tests/
+        informational: true
+github_checks:
+  annotations: false
