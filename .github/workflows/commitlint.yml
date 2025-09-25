@@ -6,6 +6,8 @@ permissions:
 
 jobs:
   commitlint:
+    env:
+      FORCE_COLOR: '1'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
