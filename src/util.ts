@@ -17,6 +17,10 @@ import { type Keypath } from './types.js';
 
 export * from './value-to-schema.js';
 
+const { hasOwn, keys, values } = Object;
+const { isInteger, isNaN } = Number;
+const { isArray } = Array;
+
 /**
  * Retrieves the value at a given keypath from an object using dot or bracket
  * notation.
@@ -191,18 +195,18 @@ export const hasKeyDeep = (
   visited.add(obj);
 
   try {
-    if (Object.hasOwn(obj, key)) {
+    if (hasOwn(obj, key)) {
       return true;
     }
 
-    if (Array.isArray(obj)) {
+    if (isArray(obj)) {
       for (const item of obj) {
         if (hasKeyDeep(item, key, visited)) {
           return true;
         }
       }
     } else {
-      for (const propValue of Object.values(obj)) {
+      for (const propValue of values(obj)) {
         if (hasKeyDeep(propValue, key, visited)) {
           return true;
         }
@@ -255,13 +259,13 @@ export const hasValueDeep = (
   if (
     typeof obj === 'object' &&
     obj !== null &&
-    !Array.isArray(obj) &&
+    !isArray(obj) &&
     typeof value === 'object' &&
     value !== null &&
-    !Array.isArray(value)
+    !isArray(value)
   ) {
-    const objKeys = Object.keys(obj);
-    const valueKeys = Object.keys(value);
+    const objKeys = keys(obj);
+    const valueKeys = keys(value);
 
     if (objKeys.length === 0 && valueKeys.length === 0) {
       return true;
@@ -278,14 +282,14 @@ export const hasValueDeep = (
   visited.add(obj);
 
   try {
-    if (Array.isArray(obj)) {
+    if (isArray(obj)) {
       for (const item of obj) {
         if (hasValueDeep(item, value, visited)) {
           return true;
         }
       }
     } else {
-      for (const propValue of Object.values(obj)) {
+      for (const propValue of values(obj)) {
         if (hasValueDeep(propValue, value, visited)) {
           return true;
         }
@@ -364,6 +368,7 @@ export const keyBy = <
  * parseKeypath("arr[10]['spam']"); // ['arr', 10, 'spam']
  * ```
  *
+ * @function
  * @param keypath The keypath string to parse, using dot and/or bracket
  *   notation.
  * @returns An array of keys, where each key is a string or number. Bracketed
@@ -401,9 +406,7 @@ export const parseKeypath = <S extends string = string>(
       i++;
 
       const numKey = Number(key);
-      keys.push(
-        Number.isInteger(numKey) && !Number.isNaN(numKey) ? numKey : key,
-      );
+      keys.push(isInteger(numKey) && !isNaN(numKey) ? numKey : key);
     } else if (keypath[i] === '.') {
       i++;
     } else {

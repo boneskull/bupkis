@@ -50,6 +50,8 @@ import {
   type MutableOrReadonly,
 } from './types.js';
 
+const { getPrototypeOf, prototype: objectPrototype } = Object;
+
 /**
  * A Zod schema that validates JavaScript constructible functions.
  *
@@ -386,7 +388,7 @@ export const WrappedPromiseLikeSchema = z
  */
 export const DictionarySchema = z
   .custom<Record<PropertyKey, unknown>>(
-    (value) => isNonNullObject(value) && Object.getPrototypeOf(value) === null,
+    (value) => isNonNullObject(value) && getPrototypeOf(value) === null,
   )
   .describe('Object with null prototype')
   .register(BupkisRegistry, { name: 'dictionary' });
@@ -450,7 +452,7 @@ export const NullProtoObjectSchema = DictionarySchema;
  * @group Schema
  */
 export const AsyncFunctionSchema = FunctionSchema.refine(
-  (value) => Object.prototype.toString.call(value) === '[object AsyncFunction]',
+  (value) => objectPrototype.toString.call(value) === '[object AsyncFunction]',
 )
   .describe('Function declared with the `async` keyword')
   .register(BupkisRegistry, { name: 'async-function' });

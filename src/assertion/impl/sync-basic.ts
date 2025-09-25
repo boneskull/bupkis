@@ -27,6 +27,8 @@ import {
 } from '../../schema.js';
 import { createAssertion } from '../create.js';
 
+const { ownKeys } = Reflect;
+
 /**
  * Asserts that the subject is a string value.
  *
@@ -571,9 +573,7 @@ export const emptyArrayAssertion = createAssertion(
  */
 export const emptyObjectAssertion = createAssertion(
   [z.record(z.any(), z.unknown()), 'to be empty'],
-  z
-    .record(z.any(), z.unknown())
-    .refine((obj) => Reflect.ownKeys(obj).length === 0),
+  z.record(z.any(), z.unknown()).refine((obj) => ownKeys(obj).length === 0),
 );
 
 /**

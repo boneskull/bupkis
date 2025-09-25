@@ -20,7 +20,11 @@ import {
   valueToSchema,
   type ValueToSchemaOptions,
 } from '../../src/value-to-schema.js';
-import { calculateNumRuns } from './property-test-util.js';
+import {
+  calculateNumRuns,
+  filteredAnything,
+  filteredObject,
+} from './property-test-util.js';
 
 const numRuns = calculateNumRuns();
 
@@ -34,7 +38,7 @@ const generators = {
   // Functions
   functions: fc.oneof(
     fc.constant(() => {}),
-    fc.constant(function named() {}),
+    fc.constant(() => {}),
     fc.constant(async () => {}),
     fc.constant(function* generator() {}),
   ),
@@ -306,7 +310,9 @@ describe('valueToSchema() property tests', () => {
 
           // Should validate the original empty object
           const validResult = schema.safeParse(obj);
-          if (!validResult.success) return false;
+          if (!validResult.success) {
+            return false;
+          }
         },
       ),
       { numRuns },
@@ -325,7 +331,9 @@ describe('valueToSchema() property tests', () => {
 
           // Should validate object with empty nested object
           const validResult = schema.safeParse({ [key]: {} });
-          if (!validResult.success) return false;
+          if (!validResult.success) {
+            return false;
+          }
 
           // Should reject object with non-empty nested object
           const invalidResult = schema.safeParse({
@@ -377,7 +385,7 @@ describe('valueToSchema() property tests', () => {
     fc.assert(
       fc.property(
         fc
-          .oneof(fc.object(), fc.array(fc.anything()))
+          .oneof(filteredObject, fc.array(filteredAnything))
           .filter((v) => !hasKeyDeep(v, '__proto__')),
         (obj) => {
           const schema = valueToSchema(obj);
@@ -575,7 +583,7 @@ describe('valueToSchema() property tests', () => {
         fc
           .record({
             anotherKey: fc.integer(),
-            nested: fc.record({ value: fc.anything() }),
+            nested: fc.record({ value: filteredAnything }),
             someKey: fc.string(),
           })
           .chain((baseObj) =>
@@ -584,7 +592,7 @@ describe('valueToSchema() property tests', () => {
                 fc.constant({}),
                 fc.constant(null),
                 fc.record({ customProp: fc.string() }),
-                fc.anything(),
+                filteredAnything,
               )
               .map((protoValue) => {
                 // Create an object with own __proto__ property

@@ -1,16 +1,20 @@
 import fc from 'fast-check';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/sync-collection.js';
 import { SyncCollectionAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
+import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { extractPhrases } from './property-test-util.js';
-import { runPropertyTests } from './property-test.macro.js';
+import {
+  extractPhrases,
+  filteredAnything,
+  getVariants,
+  runVariant,
+} from './property-test-util.js';
 
 /**
  * Shared state for WeakMap/WeakSet testing
@@ -103,7 +107,7 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.array(fc.anything(), { maxLength: 9, minLength: 1 }),
+          fc.array(filteredAnything, { maxLength: 9, minLength: 1 }),
           fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
           fc.integer({ max: 100, min: 10 }),
         ],
@@ -123,14 +127,14 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.array(fc.anything(), { maxLength: 100, minLength: 11 }),
+          fc.array(filteredAnything, { maxLength: 100, minLength: 11 }),
           fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
           fc.integer({ max: 10, min: 1 }),
         ],
       },
       valid: {
         generators: [
-          fc.array(fc.anything(), { maxLength: 2, minLength: 2 }),
+          fc.array(filteredAnything, { maxLength: 2, minLength: 2 }),
           fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
           fc.constant(2),
         ],
@@ -254,13 +258,13 @@ const testConfigs = new Map<
         generators: [
           fc.oneof(
             fc
-              .dictionary(fc.string(), fc.anything(), {
+              .dictionary(fc.string(), filteredAnything, {
                 maxKeys: 10,
                 minKeys: 4,
               })
               .map((obj) => new Map(Object.entries(obj))),
             fc
-              .array(fc.anything(), { maxLength: 10, minLength: 4 })
+              .array(filteredAnything, { maxLength: 10, minLength: 4 })
               .map((arr) => new Set(arr)),
           ),
           fc.constantFrom(
@@ -273,13 +277,13 @@ const testConfigs = new Map<
         generators: [
           fc.oneof(
             fc
-              .dictionary(fc.string(), fc.anything(), {
+              .dictionary(fc.string(), filteredAnything, {
                 maxKeys: 2,
                 minKeys: 2,
               })
               .map((obj) => new Map(Object.entries(obj))),
             fc
-              .array(fc.anything(), { maxLength: 2, minLength: 2 })
+              .array(filteredAnything, { maxLength: 2, minLength: 2 })
               .map((arr) => new Set(arr)),
           ),
           fc.constantFrom(
@@ -296,7 +300,7 @@ const testConfigs = new Map<
       invalid: {
         generators: [
           fc
-            .dictionary(fc.string(), fc.anything(), { minKeys: 1 })
+            .dictionary(fc.string(), filteredAnything, { minKeys: 1 })
             .map((obj) => new Map(Object.entries(obj))),
           fc.constantFrom(...extractPhrases(assertions.emptyMapAssertion)),
         ],
@@ -315,7 +319,9 @@ const testConfigs = new Map<
     {
       invalid: {
         generators: [
-          fc.array(fc.anything(), { minLength: 1 }).map((arr) => new Set(arr)),
+          fc
+            .array(filteredAnything, { minLength: 1 })
+            .map((arr) => new Set(arr)),
           fc.constantFrom(...extractPhrases(assertions.emptySetAssertion)),
         ],
       },
@@ -512,7 +518,10 @@ const testConfigs = new Map<
       invalid: {
         generators: [
           fc
-            .dictionary(fc.string(), fc.anything(), { maxKeys: 10, minKeys: 1 })
+            .dictionary(fc.string(), filteredAnything, {
+              maxKeys: 10,
+              minKeys: 1,
+            })
             .map((obj) => new Map(Object.entries(obj))),
           fc.constantFrom(...extractPhrases(assertions.mapSizeAssertion)),
           fc.integer({ max: 100, min: 11 }),
@@ -574,7 +583,7 @@ const testConfigs = new Map<
       },
       valid: {
         generators: [
-          fc.array(fc.anything(), { minLength: 1 }),
+          fc.array(filteredAnything, { minLength: 1 }),
           fc.constantFrom(...extractPhrases(assertions.nonEmptyArrayAssertion)),
         ],
       },
@@ -860,7 +869,7 @@ const testConfigs = new Map<
       invalid: {
         generators: [
           fc
-            .array(fc.anything(), { maxLength: 3, minLength: 3 })
+            .array(filteredAnything, { maxLength: 3, minLength: 3 })
             .map((arr) => new Set(arr))
             .filter(({ size }) => size !== 3), // deduping can shrink it
           fc.constantFrom(...extractPhrases(assertions.setSizeAssertion)),
@@ -870,7 +879,7 @@ const testConfigs = new Map<
       valid: {
         generators: [
           fc
-            .array(fc.anything(), { maxLength: 3, minLength: 3 })
+            .array(filteredAnything, { maxLength: 3, minLength: 3 })
             .map((arr) => new Set(arr))
             .filter(({ size }) => size === 3), // deduping can shrink it
           fc.constantFrom(...extractPhrases(assertions.setSizeAssertion)),
@@ -970,10 +979,31 @@ const testConfigs = new Map<
 ]);
 
 describe('Property-Based Tests for Collection Assertions', () => {
-  expectExhaustiveAssertionTests(
-    'Collection Assertions',
-    SyncCollectionAssertions,
-    testConfigs,
-  );
-  runPropertyTests(testConfigs, testConfigDefaults);
+  it(`should test all available assertions in SyncCollectionAssertions`, () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'SyncCollectionAssertions',
+      'from',
+      SyncCollectionAssertions,
+    );
+  });
+
+  for (const [assertion, testConfig] of testConfigs) {
+    const { id } = assertion;
+    describe(`Assertion: ${assertion} [${id}]`, () => {
+      const runVariants = (configs: PropertyTestConfig[]) => {
+        for (const config of configs) {
+          const { params, variants } = getVariants(config);
+          for (const [name, variant] of variants) {
+            it(`should pass ${name} checks [${id}]`, async () => {
+              await runVariant(variant, testConfigDefaults, params, name);
+            });
+          }
+        }
+      };
+
+      runVariants(Array.isArray(testConfig) ? testConfig : [testConfig]);
+    });
+  }
 });

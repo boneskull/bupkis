@@ -79,6 +79,16 @@
         "types": "./dist/commonjs/index.d.ts",
         "default": "./dist/commonjs/index.js"
       }
+    },
+    "./diff": {
+      "import": {
+        "types": "./dist/esm/diff.d.ts",
+        "default": "./dist/esm/diff.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/diff.d.ts",
+        "default": "./dist/commonjs/diff.js"
+      }
     }
   },
   "files": [
@@ -138,6 +148,7 @@
   },
   "dependencies": {
     "debug": "^4.4.1",
+    "jest-diff": "30.1.2",
     "set.prototype.difference": "^1.1.7",
     "set.prototype.intersection": "^1.1.7",
     "set.prototype.isdisjointfrom": "^1.1.5",
@@ -158,6 +169,8 @@
     "@types/node": "24.5.2",
     "@types/slug": "5.0.9",
     "@types/wallabyjs": "0.0.15",
+    "@typescript-eslint/typescript-estree": "8.44.1",
+    "@typescript-eslint/utils": "8.44.1",
     "c8": "10.1.3",
     "cspell": "9.2.1",
     "escape-string-regexp": "5.0.0",
@@ -212,6 +225,7 @@
     "node": {
       "entry": [
         "scripts/*.js",
+        "scripts/*.ts",
         "test/**/*.test.ts",
         "test/types.types-test.ts",
         "src/assertion/index.ts",
@@ -219,7 +233,8 @@
         "src/types.ts",
         "src/util.ts",
         "src/schema.ts",
-        "src/guards.ts"
+        "src/guards.ts",
+        "src/diff.ts"
       ]
     }
   },
@@ -258,7 +273,8 @@
       "./schema": "./src/schema.ts",
       "./guards": "./src/guards.ts",
       "./assertions": "./src/assertion/index.ts",
-      ".": "./src/index.ts"
+      ".": "./src/index.ts",
+      "./diff": "./src/diff.ts"
     }
   }
 }

@@ -181,6 +181,9 @@ export function createExpectAsyncFunction<
     expect?.assertions.length ?? 0,
     assertions.length + (expect?.assertions.length ?? 0),
   );
+  /**
+   * @function
+   */
   const expectAsyncFunction = async (...args: readonly unknown[]) => {
     await Promise.resolve();
     const [isNegated, processedArgs] = maybeProcessNegation(args);
@@ -359,6 +362,9 @@ export function createExpectSyncFunction<
     expect?.assertions.length ?? 0,
     assertions.length + (expect?.assertions.length ?? 0),
   );
+  /**
+   * @function
+   */
   const expectFunction = (...args: readonly unknown[]) => {
     const [isNegated, processedArgs] = maybeProcessNegation(args);
     const candidates: Array<{
@@ -406,6 +412,7 @@ export function createExpectSyncFunction<
  * @privateRemarks
  * This is here because `Assertion` doesn't know anything about negation and
  * probably shouldn't.
+ * @function
  * @param assertion - The assertion to execute
  * @param parsedValues - Parsed values for the assertion
  * @param args - Original arguments passed to expect
@@ -474,6 +481,7 @@ const execute = <
  * @privateRemarks
  * This is here because `Assertion` doesn't know anything about negation and
  * probably shouldn't.
+ * @function
  * @param assertion - The assertion to execute
  * @param parsedValues - Parsed values for the assertion
  * @param args - Original arguments passed to expectAsync
@@ -533,6 +541,7 @@ const executeAsync = async <
  * requested along with arguments stripped of the leading negation (to enable
  * assertion matching).
  *
+ * @function
  * @internal
  */
 const maybeProcessNegation = (
@@ -555,6 +564,7 @@ const maybeProcessNegation = (
  * Throws an error indicating that no valid assertion could be found for the
  * provided arguments.
  *
+ * @function
  * @param args The arguments that were passed to the expect function
  * @internal
  */
@@ -571,6 +581,7 @@ const throwInvalidParametersError = (args: readonly unknown[]): never => {
  * Detects if an assertion phrase starts with "not " and returns the cleaned
  * phrase.
  *
+ * @function
  * @param phrase - The assertion phrase to check
  * @returns Object with `isNegated` flag and `cleanedPhrase`
  */
@@ -595,6 +606,8 @@ const detectNegation = (
 
 /**
  * {@inheritdoc FailFn}
+ *
+ * @function
  */
 const fail: FailFn = (reason?: string): never => {
   throw new FailAssertionError({ message: reason });

@@ -10,6 +10,9 @@ import { fileURLToPath } from 'node:url';
 import { PageEvent, RendererEvent } from 'typedoc';
 
 import * as assertions from '../dist/esm/assertion/index.js';
+
+const { entries, freeze, fromEntries } = Object;
+
 /**
  * @import {Application} from 'typedoc'
  * @import {AssertionMetadata} from '../dist/esm/types.js'
@@ -18,13 +21,14 @@ import * as assertions from '../dist/esm/assertion/index.js';
 const SOURCE_DIR = fileURLToPath(new URL('../site/media/', import.meta.url));
 
 /**
+ * @function
  * @param {unknown} value
  * @returns {value is AssertionMetadata}
  */
 const isMetadata = (value) =>
   assertions.AssertionMetadataSchema.safeParse(value).success;
 
-const CATEGORY_DOC_MAP = Object.freeze(
+const CATEGORY_DOC_MAP = freeze(
   /** @type {const} */ ({
     async: 'Async_Assertions.html',
     collections: 'Collection_Assertions.html',
@@ -42,6 +46,7 @@ const CATEGORY_DOC_MAP = Object.freeze(
 );
 
 /**
+ * @function
  * @param {Application} app
  */
 export const load = (app) => {
@@ -50,7 +55,7 @@ export const load = (app) => {
 
   /** @type {[name: string, target: string][]} */
   const dynamicRedirects = [];
-  for (const [name, assertion] of Object.entries(assertions)) {
+  for (const [name, assertion] of entries(assertions)) {
     if (!(assertion instanceof assertions.BupkisAssertion)) {
       continue;
     }
@@ -71,7 +76,7 @@ export const load = (app) => {
   );
   app.options.setValue('redirects', {
     ...redirects,
-    ...Object.fromEntries(dynamicRedirects),
+    ...fromEntries(dynamicRedirects),
   });
 
   app.logger.info(
@@ -90,7 +95,9 @@ export const load = (app) => {
   });
 
   app.renderer.on(PageEvent.END, (page) => {
-    if (!page.contents) return;
+    if (!page.contents) {
+      return;
+    }
     const navigationLinks = app.options.getValue('navigationLinks');
     if (!navigationLinks) {
       return;

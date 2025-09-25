@@ -5,14 +5,13 @@
  * consistent error messages across versions.
  */
 
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/async-parametric.js';
 import { AsyncParametricAssertions } from '../../src/assertion/index.js';
-import { expectAsync } from '../../src/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
-import { runErrorSnapshotTests } from './error-snapshot.macro.js';
+import { expect, expectAsync } from '../custom-assertions.js';
+import { takeErrorSnapshot } from './error-snapshot-util.js';
 
 const failingAssertions = new Map<AnyAssertion, () => Promise<void>>([
   [
@@ -120,11 +119,25 @@ const failingAssertions = new Map<AnyAssertion, () => Promise<void>>([
 ]);
 
 describe('Async Parametric Assertion Error Snapshots', () => {
-  expectExhaustiveAssertionTests(
-    'Async Parametric Assertions',
-    AsyncParametricAssertions,
-    failingAssertions,
-  );
+  it(`should test all available assertions in SyncCollectionAssertions`, () => {
+    expect(
+      failingAssertions,
+      'to exhaustively test collection',
+      'AsyncParametricAssertions',
+      'from',
+      AsyncParametricAssertions,
+    );
+  });
 
-  runErrorSnapshotTests(assertions, failingAssertions, { async: true });
+  for (const assertion of Object.values(assertions)) {
+    const { id } = assertion;
+    describe(`${assertion} [${id}]`, () => {
+      const failingAssertion = failingAssertions.get(assertion)!;
+
+      it(
+        `should throw a consistent AssertionError [${assertion.id}] <snapshot>`,
+        takeErrorSnapshot(failingAssertion),
+      );
+    });
+  }
 });

@@ -12,8 +12,11 @@
 
 import { z } from 'zod/v4';
 
+import { isNonNullObject } from '../../guards.js';
 import { DictionarySchema, PropertyKeySchema } from '../../schema.js';
 import { createAssertion } from '../create.js';
+
+const { getOwnPropertyDescriptor, isExtensible, isFrozen, isSealed } = Object;
 
 /**
  * Asserts that an object has a null prototype (i.e.,
@@ -72,7 +75,7 @@ export const enumerablePropertyAssertion = createAssertion(
     z.unknown().nonoptional(),
   ],
   (subject, obj) => {
-    if (!Object.getOwnPropertyDescriptor(obj, subject)?.enumerable) {
+    if (!getOwnPropertyDescriptor(obj, subject)?.enumerable) {
       return {
         actual: false,
         expected: true,
@@ -112,15 +115,16 @@ export const enumerablePropertyAssertion = createAssertion(
  */
 export const enumerablePropertyAssertion2 = createAssertion(
   [z.unknown().nonoptional(), 'to have enumerable property', PropertyKeySchema],
-  (subject, key) => {
-    if (!Object.getOwnPropertyDescriptor(subject, key)?.enumerable) {
-      return {
-        actual: false,
-        expected: true,
-        message: `Expected property ${String(key)} to be enumerable`,
-      };
-    }
-  },
+  (_subject, key) =>
+    z.custom(
+      (value) =>
+        isNonNullObject(value) &&
+        key in value &&
+        !!getOwnPropertyDescriptor(value, key)?.enumerable,
+      {
+        error: `Expected property "${String(key)}" to be enumerable`,
+      },
+    ),
 );
 
 /**
@@ -150,7 +154,7 @@ export const enumerablePropertyAssertion2 = createAssertion(
  */
 export const sealedAssertion = createAssertion(
   ['to be sealed'],
-  z.any().refine((obj) => Object.isSealed(obj)),
+  z.any().refine((obj) => isSealed(obj)),
 );
 
 /**
@@ -181,7 +185,7 @@ export const sealedAssertion = createAssertion(
  * @group Esoteric Assertions
  */
 export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
-  if (!Object.isFrozen(subject)) {
+  if (!isFrozen(subject)) {
     return {
       actual: false,
       expected: true,
@@ -221,5 +225,5 @@ export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
  */
 export const extensibleAssertion = createAssertion(
   ['to be extensible'],
-  z.any().refine((obj) => Object.isExtensible(obj)),
+  z.any().refine((obj) => isExtensible(obj)),
 );

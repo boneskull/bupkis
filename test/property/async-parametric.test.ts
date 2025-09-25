@@ -1,17 +1,20 @@
 import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 import * as assertions from '../../src/assertion/impl/async-parametric.js';
 import { AsyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
-import { expectExhaustiveAssertionTests } from '../exhaustive.macro.js';
+import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
 } from './property-test-config.js';
-import { extractPhrases } from './property-test-util.js';
-import { runPropertyTests } from './property-test.macro.js';
+import {
+  extractPhrases,
+  getVariants,
+  runVariant,
+} from './property-test-util.js';
 
 /**
  * Test config defaults
@@ -461,10 +464,25 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
 ]);
 
 describe('Property-Based Tests for Async Parametric Assertions', () => {
-  expectExhaustiveAssertionTests(
-    'Async Parametric Assertions',
-    AsyncParametricAssertions,
-    testConfigs,
-  );
-  runPropertyTests(testConfigs, testConfigDefaults);
+  it(`should test all available assertions in AsyncParametricAssertions`, () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'AsyncParametricAssertions',
+      'from',
+      AsyncParametricAssertions,
+    );
+  });
+
+  for (const [assertion, testConfig] of testConfigs) {
+    const { id } = assertion;
+    const { params, variants } = getVariants(testConfig);
+    describe(`Assertion: ${assertion} [${id}]`, () => {
+      for (const [name, variant] of variants) {
+        it(`should pass ${name} checks [${id}]`, async () => {
+          await runVariant(variant, testConfigDefaults, params, name);
+        });
+      }
+    });
+  }
 });

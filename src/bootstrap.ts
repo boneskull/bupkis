@@ -15,6 +15,7 @@ import { createUse } from './use.js';
  * Factory function that creates both synchronous and asynchronous assertion
  * engines.
  *
+ * @function
  * @returns Object containing {@link expect} and {@link expectAsync} functions
  * @internal
  */
