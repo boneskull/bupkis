@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-import { ValueToSchemaError } from './error.js';
+import { SatisfactionError } from './error.js';
 import {
   isExpectItExecutor,
   isNonNullObject,
@@ -106,7 +106,7 @@ export const valueToSchema = (
       if (isExpectItExecutor(value)) {
         // Only allow nested assertions when strict is false (e.g., "to satisfy" semantics)
         if (strict) {
-          throw new ValueToSchemaError(
+          throw new SatisfactionError(
             'ExpectItExecutor (expect.it) functions are not allowed in strict mode. ' +
               'Use "to satisfy" assertions for nested expectations.',
           );
@@ -148,7 +148,7 @@ export const valueToSchema = (
     try {
       // Check for objects with own __proto__ property - these can cause unexpected behavior
       if (hasOwn(value, '__proto__')) {
-        throw new ValueToSchemaError(
+        throw new SatisfactionError(
           'Objects with an own "__proto__" property are not supported by valueToSchema',
         );
       }

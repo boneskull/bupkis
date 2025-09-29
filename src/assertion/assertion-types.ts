@@ -271,6 +271,7 @@ export type AssertionImplFnAsync<Parts extends AssertionParts> = (
  */
 export type AssertionImplFnReturnType<Parts extends AssertionParts> =
   | AssertionFailure
+  | AssertionParseRequest
   | boolean
   | void
   | z.ZodError
@@ -409,6 +410,26 @@ export interface AssertionMetadata {
    */
   redirect?: string | undefined;
 }
+
+/**
+ * When you want to use a Zod schema in an assertion implementation function
+ * against some value that _isn't_ the subject, you can return this object and
+ * <span class="bupkis">BUPKIS</span> will do it for you (with better diffs).
+ *
+ * @group Assertion Creation
+ */
+export type AssertionParseRequest = {
+  subject: unknown;
+} & (
+  | {
+      asyncSchema: z.ZodType;
+      schema?: never;
+    }
+  | {
+      asyncSchema?: never;
+      schema: z.ZodType;
+    }
+);
 
 /**
  * Union type representing the fundamental building blocks of an assertion.

@@ -201,7 +201,7 @@ expect('skiball lavatory', 'to be a string');
 >
 > The `expect()`/`expectAsync()` functions returned by `use()` are fully type-safe and aware of your custom assertions. Each `expect()`/`expectAsync()` function has a `.use()` method as well; this allows you to compose multiple sets of assertions together (like from several assertion plugin packages).
 
-**Zod makes it extremely easy to create most custom assertions**. But despite its power, it can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and behavioral (e.g., involving function execution) assertions.
+**Zod makes it extremely easy to create most custom assertions**. But despite its power, it can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
 
 👉 For an assiduous guide on creating assertions, read [Guide: How to Create a Custom Assertion][create-a-custom-assertion].
 
@@ -267,3 +267,4 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 [typedoc]: https://typedoc.org
 [embeddable assertions]: https://bupkis.zip/documents/Basic_Usage#embeddable-assertions
 [unexpected-to-satisfy]: https://unexpected.js.org/assertions/any/to-satisfy/
+[behavioral]: https://bupkis.zip/glossary#behavioral-assertion

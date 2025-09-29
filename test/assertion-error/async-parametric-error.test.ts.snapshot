@@ -1,41 +1,49 @@
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
+  "message": "Assertion \\"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "wrong",
+  "expected": 42,
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' {constructible}\" [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{function} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  [AsyncFunction (anonymous)],\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
+  "message": "Expected function to reject with an instance of TypeError, but it rejected with a Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "Error",
+  "expected": "TypeError",
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with error satisfying' {any}\" [function-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
+  "message": "Assertion \\"{function} 'to reject with error satisfying' {any}\\" failed:\\n\\u001b[32m- expected  - 3\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- Object {\\u001b[39m\\n\\u001b[32m-   \\"message\\": \\"expected message\\",\\u001b[39m\\n\\u001b[32m- }\\u001b[39m\\n\\u001b[31m+ [Error: wrong message]\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {
+    "message": "expected message"
+  },
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\" [function-to-reject-2s2p] > should throw a consistent AssertionError [function-to-reject-2s2p] <snapshot> 1`] = `
 {
-  "message": "Expected function to reject, but it fulfilled instead",
+  "message": "Expected function to reject, but it fulfilled with 'success'",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
-  "expected": "function to reject",
+  "expected": "function rejected",
   "diff": "simple"
 }
 `;
@@ -54,42 +62,50 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' 
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
+  "message": "Assertion \\"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "wrong",
+  "expected": 42,
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\" [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  { then: [Function: then] },\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
+  "message": "Expected Promise to reject with an instance of TypeError, but it rejected with a Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "Error",
+  "expected": "TypeError",
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' {any}\" [promiselike-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
+  "message": "Assertion \\"{promiselike} 'to reject with error satisfying' {any}\\" failed:\\n\\u001b[32m- expected  - 3\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- Object {\\u001b[39m\\n\\u001b[32m-   \\"message\\": \\"expected message\\",\\u001b[39m\\n\\u001b[32m- }\\u001b[39m\\n\\u001b[31m+ [Error: wrong message]\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {
+    "message": "expected message"
+  },
   "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject'\" [promiselike-to-reject-2s2p] > should throw a consistent AssertionError [promiselike-to-reject-2s2p] <snapshot> 1`] = `
 {
-  "message": "Expected function to reject, but it fulfilled instead",
+  "message": "Expected Promise to reject, but it fulfilled with 'success'",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "function fulfilled",
-  "expected": "function to reject",
+  "actual": "Promise fulfilled",
+  "expected": "Promise rejected",
   "diff": "simple"
 }
 `;

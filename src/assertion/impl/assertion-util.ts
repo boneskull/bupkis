@@ -5,6 +5,10 @@
  * @packageDocumentation
  */
 
+type TrapResult =
+  | { error: unknown; result?: never }
+  | { error?: never; result: unknown };
+
 /**
  * Executes & traps a `Promise` rejected from an async function, capturing the
  * error.
@@ -12,13 +16,18 @@
  * @function
  * @param fn The function to execute that may throw an error or return a
  *   `Promise`
- * @returns Rejection
+ * @returns Rejection or whatever was fulfilled
  */
-export const trapAsyncFnError = async (fn: () => unknown) => {
+export const trapAsyncFnError = async (
+  fn: () => unknown,
+): Promise<TrapResult> => {
   try {
-    await fn();
-  } catch (err) {
-    return err;
+    const result = await fn();
+    return { result };
+  } catch (error) {
+    return {
+      error: error ?? new TypeError(`Function rejected with undefined: ${fn}`),
+    };
   }
 };
 
@@ -27,19 +36,18 @@ export const trapAsyncFnError = async (fn: () => unknown) => {
  *
  * @function
  * @param promise The `Promise` to trap
- * @returns Rejection
+ * @returns Result object
  */
-export const trapPromiseError =
-  /**
-   * @function
-   */
-  async (promise: PromiseLike<unknown>) => {
-    try {
-      await promise;
-    } catch (err) {
-      return err;
-    }
-  };
+export const trapPromiseError = async (
+  promise: PromiseLike<unknown>,
+): Promise<TrapResult> => {
+  try {
+    const result = await promise;
+    return { result };
+  } catch (error) {
+    return { error: error ?? new TypeError('Promise rejected with undefined') };
+  }
+};
 
 /**
  * Executes & traps a synchronous function that may throw, capturing any thrown
@@ -49,19 +57,13 @@ export const trapPromiseError =
  * Avoids throwing `undefined` for some reason.
  * @function
  * @param fn Function to execute
- * @returns Error
+ * @returns Result object
  */
-export const trapError =
-  /**
-   * @function
-   */
-  (fn: () => unknown): unknown => {
-    try {
-      fn();
-    } catch (err) {
-      if (err === undefined) {
-        return new Error('Function threw undefined');
-      }
-      return err;
-    }
-  };
+export const trapError = (fn: () => unknown): TrapResult => {
+  try {
+    const result = fn();
+    return { result };
+  } catch (error) {
+    return { error: error ?? new TypeError(`Function threw undefined: ${fn}`) };
+  }
+};

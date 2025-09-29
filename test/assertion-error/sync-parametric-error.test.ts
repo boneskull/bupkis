@@ -61,7 +61,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
-    assertions.functionThrowsMatchingAssertion,
+    assertions.functionThrowsSatisfyingAssertion,
     () => {
       /**
        * @function
@@ -93,7 +93,9 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
       const fn = () => {
         throw new Error('wrong message');
       };
-      expect(fn, 'to throw satisfying', { message: 'expected message' });
+      expect(fn, 'to throw an', Error, 'satisfying', {
+        message: 'expected message',
+      });
     },
   ],
   [

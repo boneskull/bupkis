@@ -7,7 +7,11 @@
 
 import { z } from 'zod/v4';
 
-import type { AssertionFailure, AssertionMetadata } from './types.js';
+import type {
+  AssertionFailure,
+  AssertionMetadata,
+  AssertionParseRequest,
+} from './types.js';
 
 import { isZodType } from './guards.js';
 
@@ -74,6 +78,36 @@ const AssertionFailureSchema: z.ZodType<AssertionFailure> = z
 /**
  * @internal
  */
+const ZodTypeSchema = z
+  .custom<z.ZodType>(isZodType, {
+    error: 'Must be a Zod schema',
+  })
+  .describe('A Zod schema within AssertionParts');
+
+/** @internal */
+const BaseAssertionParseRequestSchema = z.object({
+  subject: z.unknown().describe('The subject value to be validated'),
+});
+
+/**
+ * @internal
+ */
+const AssertionParseRequestSchema: z.ZodType<AssertionParseRequest> = z.union([
+  z.object({
+    ...BaseAssertionParseRequestSchema.shape,
+    schema: ZodTypeSchema.describe('The sync Zod schema to validate against'),
+  }),
+  z.object({
+    ...BaseAssertionParseRequestSchema.shape,
+    asyncSchema: ZodTypeSchema.describe(
+      'The async Zod schema to validate against',
+    ),
+  }),
+]);
+
+/**
+ * @internal
+ */
 const PhraseLiteralSchema = z
   .stringFormat('PhraseLiteral', (value) => !value.startsWith('not '), {
     error: 'Phrase literals may not begin with "not "',
@@ -90,16 +124,6 @@ const PhraseLiteralChoiceSchema = z
   .describe(
     'A choice of phrase literals, represented as an array of strings, within AssertionParts',
   );
-
-/**
- * @internal
- */
-const ZodTypeSchema = z
-  .custom<z.ZodType>(isZodType, {
-    error: 'Must be a Zod schema',
-  })
-  .describe('A Zod schema within AssertionParts');
-
 /**
  * @internal
  */
@@ -113,6 +137,7 @@ const AssertionImplSchemaSync = z
         z.boolean(),
         ZodTypeSchema,
         AssertionFailureSchema,
+        AssertionParseRequestSchema,
       ]),
     }),
   ])
@@ -128,10 +153,12 @@ const AssertionImplSchemaAsync = z
         z.boolean(),
         ZodTypeSchema,
         AssertionFailureSchema,
+        AssertionParseRequestSchema,
         z.promise(z.void()),
         z.promise(z.boolean()),
         z.promise(ZodTypeSchema),
         z.promise(AssertionFailureSchema),
+        z.promise(AssertionParseRequestSchema),
       ]),
     }),
   ])
@@ -176,6 +203,15 @@ export const isAssertionFailure = (
   value: unknown,
 ): value is AssertionFailure => {
   return AssertionFailureSchema.safeParse(value).success;
+};
+
+/**
+ * @function
+ */
+export const isAssertionParseRequest = (
+  value: unknown,
+): value is AssertionParseRequest => {
+  return AssertionParseRequestSchema.safeParse(value).success;
 };
 
 /**

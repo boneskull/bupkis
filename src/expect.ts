@@ -18,6 +18,7 @@ import {
 import { createAssertion, createAsyncAssertion } from './assertion/create.js';
 import {
   AssertionError,
+  AssertionImplementationError,
   FailAssertionError,
   NegatedAssertionError,
   UnknownAssertionError,
@@ -439,33 +440,44 @@ const execute = <
   isNegated: boolean,
   parseResult?: ParsedResult<Parts>,
 ): void => {
-  if (!isNegated) {
-    return assertion.execute(parsedValues, args, stackStartFn, parseResult);
-  }
+  if (isNegated) {
+    // negation logic
+    try {
+      assertion.execute(parsedValues, args, stackStartFn, parseResult);
+    } catch (error) {
+      // success!
+      if (AssertionError.isAssertionError(error)) {
+        return;
+      }
 
-  // negation logic
-  try {
-    assertion.execute(parsedValues, args, stackStartFn, parseResult);
-    // If we reach here, the assertion passed but we expected it to fail
+      if (AssertionImplementationError.isAssertionImplementationError(error)) {
+        throw error;
+      }
+
+      throw new AssertionImplementationError(
+        `Assertion ${assertion} threw a non-AssertionError`,
+        { cause: error },
+      );
+    }
+
+    // if we reach here, then the assertion passed when it should have failed, so:
     throw new NegatedAssertionError({
       message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
       stackStartFn,
     });
-  } catch (error) {
-    // Check if this is the negation error we just threw
-    if (NegatedAssertionError.isNegatedAssertionError(error)) {
-      // This is our negation error, re-throw it
-      throw error;
-    }
+  } else {
+    try {
+      assertion.execute(parsedValues, args, stackStartFn, parseResult);
+    } catch (error) {
+      if (AssertionError.isAssertionError(error)) {
+        throw error;
+      }
 
-    if (AssertionError.isAssertionError(error)) {
-      // The assertion failed as expected for negation - this is success
-      return;
+      throw new AssertionImplementationError(
+        `Assertion ${assertion} threw a non-AssertionError`,
+        { cause: error },
+      );
     }
-
-    debug('Non-assertion error thrown during negated assertion: %O', error);
-    // Re-throw non-assertion errors (like TypeErrors, etc.)
-    throw error;
   }
 };
 
@@ -494,39 +506,50 @@ const executeAsync = async <
   isNegated: boolean,
   parseResult?: ParsedResult<Parts>,
 ): Promise<void> => {
-  if (!isNegated) {
-    return assertion.executeAsync(
-      parsedValues,
-      args,
-      stackStartFn,
-      parseResult,
-    );
-  }
+  if (isNegated) {
+    // negation logic
+    try {
+      await assertion.executeAsync(
+        parsedValues,
+        args,
+        stackStartFn,
+        parseResult,
+      );
+    } catch (error) {
+      // success!
+      if (AssertionError.isAssertionError(error)) {
+        return;
+      }
 
-  try {
-    await assertion.executeAsync(parsedValues, args, stackStartFn, parseResult);
-    // If we reach here, the assertion passed but we expected it to fail
+      throw new AssertionImplementationError(
+        `Assertion ${assertion} threw a non-AssertionError`,
+        { cause: error },
+      );
+    }
+
+    // if we reach here, then the assertion passed when it should have failed, so:
     throw new NegatedAssertionError({
-      message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
+      message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
       stackStartFn,
     });
-  } catch (error) {
-    // Check if this is the negation error we just threw
-    if (NegatedAssertionError.isNegatedAssertionError(error)) {
-      // This is our negation error, re-throw it
-      throw error;
-    }
+  } else {
+    try {
+      await assertion.executeAsync(
+        parsedValues,
+        args,
+        stackStartFn,
+        parseResult,
+      );
+    } catch (error) {
+      if (AssertionError.isAssertionError(error)) {
+        throw error;
+      }
 
-    if (AssertionError.isAssertionError(error)) {
-      // The assertion failed as expected for negation - this is success
-      return;
+      throw new AssertionImplementationError(
+        `Assertion ${assertion} threw a non-AssertionError`,
+        { cause: error },
+      );
     }
-    debug(
-      'Non-assertion error thrown during negated async assertion: %O',
-      error,
-    );
-    // Re-throw non-assertion errors (like TypeErrors, etc.)
-    throw error;
   }
 };
 

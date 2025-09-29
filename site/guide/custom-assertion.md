@@ -3,6 +3,8 @@ title: Creating Custom Assertions
 category: Guides
 ---
 
+<!-- markdownlint-disable MD038 MD026 -->
+
 This guide shows you how to create and register custom assertions in <span class="bupkis">Bupkis</span>. You'll learn to build both simple and parameterized assertions using Zod schemas or custom functions.
 
 > Before you proceed, you should be familiar with the [basic usage](./usage.md) of <span class="bupkis">Bupkis</span> and [Zod][].
@@ -21,7 +23,7 @@ Of course, these mundane reasons may also apply:
 
 ## Static Assertions
 
-_Static assertions_ are assertions about the way things _are_. They do not make expectations about _behavior_.
+[_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_].
 
 ### Static Assertions: "Zod Schema" Style
 
@@ -59,6 +61,36 @@ const isEvenAssertion = createAssertion(
 The function receives the _subject_ of the assertion and any parameters (if applicable; there are none here). Importantly, **the function never receives [phrases][phrase]**—that means the second parameter to the implementation function above will be `undefined` and not `to be even`—phrases are stripped out before the function is called.
 
 > See [Allowed Return Types for Function-Style Assertions](#allowed-return-types-for-function-style-assertions) for more details.
+
+## Behavioral Assertions
+
+[Behavioral assertions](../reference/glossary.md#behavioral-assertion) typically avoid Zod schemas for their implementations, and instead use a _function-style_ assertion. Instead, they test the _behavior_ of functions or Promises. Example:
+
+```ts
+import { z, use, createAssertion } from 'bupkis';
+
+const returnsFooAssertion = createAssertion(
+  [z.function(), 'to return foo'],
+  (subject) => {
+    try {
+      const result = subject();
+      if (result !== 'foo') {
+        return {
+          actual: result,
+          expected: 'foo',
+          message: `Expected function to return 'foo', but got '${result}'`,
+        };
+      }
+    } catch (err) {
+      return {
+        actual: err,
+        expected: 'foo',
+        message: 'Expected function to return 'foo' and not throw an exception',
+      };
+    }
+  },
+);
+```
 
 ## Parametric Assertions
 
@@ -298,6 +330,190 @@ const validAPIResponseAssertion = createAsyncAssertion(
 - **Error Handling**: Composed assertions will throw immediately on the first failure
 - **Performance**: Many composed assertions can be slower than a single comprehensive schema
 
+## Generally Applicable Concepts
+
+This section describes some important concepts to understand when creating assertions.
+
+### Allowed Return Types for Function-Style Assertions
+
+> 🥱 **TL;DR:**
+>
+> Only return Zod schemas, {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} objects, or {@link bupkis!types.AssertionFailure | AssertionFailure} objects. Don't throw anything.
+
+If a function-style assertion must indicate failure, it can:
+
+1. _Return_ a Zod schema (**strongly recommended** if feasible)
+2. _Return_ a {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} function containing a Zod schema and a `subject` to parse (**strongly recommended** if feasible). This is only needed if the subject you want to parse is not the same `subject` as passed to the assertion function implementation.
+3. _Return_ an {@link bupkis!types.AssertionFailure | AssertionFailure} object to indicate failure with details (_only recommended if 1. or 2. is infeasible_)
+4. _Return_ a {@link bupkis!z.ZodError | ZodError} object to indicate failure with details (_not recommended_, but could be worse; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
+5. _Throw/reject_ a `ZodError` (_not recommended_; only slightly worse than previous; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
+6. _Throw/reject_ an `AssertionError` (_not recommended_; prefer returning an {@link bupkis!types.AssertionFailure | AssertionFailure})
+7. _Return_ `false` to indicate failure (_avoid_; the resulting `AssertionError` will be generic and unhelpful)
+
+> **Why don't we want to throw an `AssertionError`?**
+> We don't want to encourage throwing because a) <span class="bupkis">Bupkis</span> will do this for you, and b) it will inhibit automatic diff generation. It will "work", but it might not be pretty.
+>
+> **Why don't we want to throw a `ZodError`?**
+> It's honestly fine to do this, but you might as well avoid throwing errors if you don't need to. You could use `.safeParse()` instead, for instance, then return the resulting `.error` from the parse result.
+>
+> However, it's _even better_ to return a {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} object, which delegates the heavy lifting to <span class="bupkis">Bupkis</span>.
+>
+> **Why don't we want to return `false`?**
+> Returning `false` should be avoided because it provides no context about the failure. It will work, but the resulting `AssertionError` will be generic and unhelpful.
+>
+> The above two options will work in a pinch, but you should avoid them because you might get on the naughty list.
+
+The following subsections will describe each of the non-_non-recommended_ options in more detail.
+
+#### Returning a Zod Schema
+
+You can return a Zod schema from your function; you do not need to call `.parse()` or `.safeParse()`. <span class="bupkis">Bupkis</span> will do that for you. For example, the above assertion could be written like this:
+
+```ts
+const isEvenAssertion = createAssertion(['to be even'], (_subject) =>
+  z.number().refine((n) => n % 2 === 0, { error: 'Expected an even number' }),
+);
+```
+
+You'll note that `_subject` is unused. Functions returning Zod schemas will generally _always_ ignore the `subject` unless there's something weird you're trying to do. More on this in [Parametric Assertions][] later. You can even use Zod's own facilities to provide custom error messages!
+
+If you're looking side-eyed at this, then I'll be happy to tell you that _you didn't need a function at all_, and could have just returned the schema:
+
+```ts
+const isEvenAssertion = createAssertion(
+  ['to be even'],
+  z.number().refine((n) => n % 2 === 0, { error: 'Expected an even number' }),
+);
+```
+
+Oh well. Lesson learned. A non-parametric assertion isn't the right use-case for it; see [Parametric Assertions][].
+
+#### Returning an `AssertionParseRequest` object
+
+An {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} object looks like this:
+
+```ts
+type AssertionParseRequest = {
+  subject: unknown;
+} & (
+  | {
+      asyncSchema: z.ZodType;
+      schema?: never;
+    }
+  | {
+      asyncSchema?: never;
+      schema: z.ZodType;
+    }
+);
+```
+
+If you return this object, <span class="bupkis">Bupkis</span> will call `.parse()` (or `.parseAsync()`, respectively) on the schema with the provided `subject`. This delegates all handling of exceptions to <span class="bupkis">Bupkis</span>, which is good for you and us.
+
+#### Returning an `AssertionFailure` object
+
+An {@link bupkis!types.AssertionFailure | AssertionFailure} object looks like this:
+
+```ts
+type AssertionFailure = {
+  /**
+   * The actual value, or description of what actually happened
+   */
+  actual?: unknown;
+  /**
+   * The expected value, or description of what was expected to happen
+   */
+  expected?: unknown;
+  /**
+   * A custom error message to use
+   */
+  message?: string;
+};
+```
+
+If you return this object, <span class="bupkis">Bupkis</span> will stuff it into an `AssertionError` and toss it. If you don't know what to put for any of the fields, just omit them, with the following caveat: if either `actual` or `expected` (or both) are `undefined`, then no diff will be generated.
+
+In short, returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
+
+#### Returning a `ZodError` object
+
+If, for some reason, you need to call `.safeParse` (or `.parse` + `try`/`catch`) yourself, you can return the resulting `ZodError` object to indicate failure. <span class="bupkis">Bupkis</span> handle it appropriately.
+
+> ⚠️ Warning!
+>
+> I don't know of a use-case for returning a `ZodError` which could not be satisfied by returning an [`AssertionParseRequest`](#returning-an-assertionparserequest-object) instead. If you have one, please [report it](https://github.com/bupkis/issues/new). It may be deprecated and removed.
+
+### The Implicit "Unknown"
+
+Any assertion (be it static, parametric, behavioral, metaphysical, pataphysical, etc.) defined in such a way that the _first_ item in the tuple of phrases passed to `createAssertion()` is _not a Zod schema_ is considered to have an implicit [subject][] of type `unknown`. To illustrate:
+
+```ts
+const stringAssertion = createAssertion(['to be a string'], z.string());
+// Equivalent to:
+const stringAssertion = createAssertion(
+  [z.unknown(), 'to be a string'],
+  z.string(),
+);
+```
+
+We **recommend** supplying a specific schema for the subject; think of it as a "hint". This "hint" will provide better type inference and will warn you before you ~~make a stupid mistake~~ use the wrong assertion:
+
+```ts
+const numberAssertion = createAssertion(z.string(), ['to be an email'], z.string().email()));
+
+// later
+
+expect(42, 'to be an email'); // type error, since 42 is not a string
+```
+
+The point of this black magic is to reduce boilerplate. If you don't care about the type of the subject, ~~you need an attitude adjustment~~ you can skip it and start right in with the phrases.
+
+### Phrase Aliases
+
+Users of language (you and I, presumably) know many different ways to write the same thing. Perhaps we can agree on this: the specific words do not matter as much as _the meaning_ behind those words (_don't you remember your semiotics?_). To that end, <span class="bupkis">Bupkis</span> allows for _aliases_:
+
+```ts
+import { z, use, createAssertion } from 'bupkis';
+
+// Multiple ways to express the same assertion
+const stringAssertion = createAssertion(
+  [['to be based', 'to be bussin']],
+  z.string(),
+);
+
+const { expect } = use([stringAssertion]);
+
+expect('chat', 'to be based');
+expect('chat', 'to be bussin');
+```
+
+_Remember: we are doomed to toil in this prison-house of language._
+
+### Disallowed Phrases
+
+There are certain phrases which are disallowed in custom assertions. These are:
+
+1. A phrase may not begin with `not `. This is because negation is handled automatically by <span class="bupkis">Bupkis</span>. Example:
+
+   ```ts
+   // ❌ Disallowed
+   createAssertion(['not to be a string'], ...);
+
+   // ✅ Allowed; negation is automatic
+   createAssertion(['to be a string'], ...);
+   expect(42, 'not to be a string');
+   ```
+
+2. A phrase may be a bare `and` _if and only if_ it is directly followed by a Zod schema. This is because it conflicts with the [assertion conjunction](../reference/glossary.md#conjunction) functionality provided by <span class="bupkis">BUPKIS</span>. Example:
+
+   ```ts
+   // ❌ Disallowed
+   createAssertion(['to be a string', 'and', 'to have length greater than', 0], ...);
+
+   // ✅ Allowed; chaining is automatic
+   createAssertion(['to be a string', 'and', z.string().min(1)], ...);
+   expect('chat', 'to be a string', 'and', 'to have length greater than', 0);
+   ```
+
 ## Sharing & Reusing Assertions
 
 You can package multiple assertions into a single module for easy reuse. For example, you might create a collection of validation assertions:
@@ -341,104 +557,34 @@ You could even do something _wild_ like publish your assertions as package for o
 
 > Someone should probably go in and create assertions for all of the fancy string validation in Zod…
 
-## Generally Applicable Concepts
+## Troubleshooting
 
-### Allowed Return Types for Function-Style Assertions
+### Common Errors
 
-If a function-style assertion must indicate failure, it can:
+#### "Invalid Arguments. No assertion matched" Error
 
-1. Throw (or reject with) an `AssertionError` (not recommended)
-2. Return `false` to indicate failure (also not recommended)
-3. Return an [AssertionFailure][] object to indicate failure with details (**recommended**)
-4. Return a Zod schema (**recommended**)
-5. Return a {@link bupkis!z.ZodError | ZodError} object to indicate failure with details (**recommended**). This is helpful for when you need to run `.safeParse()` yourself.
+> A.K.A. `ERR_BUPKIS_UNKNOWN_ASSERTION`
 
-> **Why don't we want to throw?**
-> We don't want to encourage throwing because <span class="bupkis">Bupkis</span> will do this for you. It may also inhibit current or future functionality. It will work, but it might not be pretty.
->
-> **Why don't we want to return `false`?**
-> Returning `false` is not recommended because it provides no context about the failure. It will work, but the resulting `AssertionError` will be generic and unhelpful.
->
-> The above two options will work in a pinch, but you should avoid them because you might get on the naughty list.
+- Ensure you've registered it with {@link bupkis!use | use()} before calling {@link bupkis!expect | expect()}.
+- Another assertion may be conflicting; check for overlapping phrases or parameter types.
+- [File an issue][issues]
 
-#### Returning an `AssertionFailure` object
+### Debugging Tips
 
-An [AssertionFailure][] object looks like this:
+- For a firehose of nonsense that _might_ be helpful, enable debug logging:
 
-```ts
-type AssertionFailure = {
-  /**
-   * The actual value, or description of what actually happened
-   */
-  actual?: unknown;
-  /**
-   * The expected value, or description of what was expected to happen
-   */
-  expected?: unknown;
-  /**
-   * A custom error message to use
-   */
-  message?: string;
-};
-```
+  ```bash
+  DEBUG=bupkis* npm test
+  ```
 
-If you return this object, <span class="bupkis">Bupkis</span> will stuff it into an `AssertionError` and toss it. If you don't know what to put for any of the fields, just omit them.
+- Verify your [assertion ID][] and [assertion parts][]:
 
-In short, returning an `AssertionFailure` object provides much more context about what went wrong.
+  ```ts
+  console.log('Assertion ID:', yourAssertion.id);
+  console.log('Phrases:', yourAssertion.parts);
+  ```
 
-#### Returning a Boolean
-
-You _can_ return a plain-old `boolean` from your assertion function. Returning `true` indicates success; returning `false` indicates failure. <span class="bupkis">Bupkis</span> will throw an `AssertionError` for you if you return `false`, but it won't be very informative.
-
-#### Returning a Zod schema
-
-You can return a Zod schema from your function; you do not need to call `.parse()` or `.safeParse()`. <span class="bupkis">Bupkis</span> will do that for you. For example, the above assertion could be written like this:
-
-```ts
-const isEvenAssertion = createAssertion(['to be even'], (_subject) =>
-  z.number().refine((n) => n % 2 === 0, { error: 'Expected an even number' }),
-);
-```
-
-You'll note that `_subject` is unused. Functions returning Zod schemas will generally _always_ ignore the `subject` unless there's something weird you're trying to do. More on this in [Parametric Assertions][] later. You can even use Zod's own facilities to provide custom error messages!
-
-If you're looking side-eyed at this, then I'll be happy to tell you that _you didn't need a function at all_, and could have just returned the schema:
-
-```ts
-const isEvenAssertion = createAssertion(
-  ['to be even'],
-  z.number().refine((n) => n % 2 === 0, { error: 'Expected an even number' }),
-);
-```
-
-Oh well. Lesson learned. A non-parametric assertion isn't the right use-case for it; see [Parametric Assertions][].
-
-### The Implicit "Unknown"
-
-Any assertion (be it static, parametric, metaphysical, pataphysical, etc.) defined in such a way that the _first_ item in the tuple of phrases passed to `createAssertion()` is _not a Zod schema_ is considered to have an implicit [subject][] of type `unknown`. To illustrate:
-
-```ts
-const stringAssertion = createAssertion(['to be a string'], z.string());
-// Equivalent to:
-const stringAssertion = createAssertion(
-  [z.unknown(), 'to be a string'],
-  z.string(),
-);
-```
-
-We **recommend** supplying a specific schema for the subject; think of it as a "hint". This "hint" will provide better type inference and will warn you before you ~~make a stupid mistake~~ use the wrong assertion:
-
-```ts
-const numberAssertion = createAssertion(z.string(), ['to be an email'], z.string().email()));
-
-// later
-
-expect(42, 'to be an email'); // type error, since 42 is not a string
-```
-
-The point of this black magic is to reduce boilerplate. If you don't care about the type of the subject, ~~you need an attitude adjustment~~ you can skip it and start right in with the phrases.
-
-### Reuse of Zod Schemas
+## Bonus for Zod Users!
 
 If you happen to have Zod schemas laying around, you can trivially create assertions for them:
 
@@ -463,52 +609,6 @@ expect(
 );
 ```
 
-### Phrase Aliases
-
-Users of language (you and I, presumably) know many different ways to write the same thing. Perhaps we can agree on this: the specific words do not matter as much as _the meaning_ behind those words (_don't you remember your semiotics?_). To that end, <span class="bupkis">Bupkis</span> allows for _aliases_:
-
-```ts
-import { z, use, createAssertion } from 'bupkis';
-
-// Multiple ways to express the same assertion
-const stringAssertion = createAssertion(
-  [['to be based', 'to be bussin']],
-  z.string(),
-);
-
-const { expect } = use([stringAssertion]);
-
-expect('chat', 'to be based');
-expect('chat', 'to be bussin');
-```
-
-_Remember: we are doomed to toil in this prison-house of language._
-
-## Troubleshooting
-
-### Common Errors
-
-#### "No assertion matched" Error
-
-- Ensure you've registered it with `use()` before calling `expect()`.
-- Another assertion may be conflicting; check for overlapping phrases or parameter types.
-- [File an issue][issues]
-
-### Debugging Tips
-
-- For a firehose of nonsense that _might_ be helpful, enable debug logging:
-
-  ```bash
-  DEBUG=bupkis* npm test
-  ```
-
-- Verify your [assertion ID][] and [assertion parts][]:
-
-  ```ts
-  console.log('Assertion ID:', yourAssertion.id);
-  console.log('Phrases:', yourAssertion.parts);
-  ```
-
 ## Best Practices
 
 - **Keep assertions focused**: Each assertion should test one specific thing
@@ -528,7 +628,6 @@ _Remember: we are doomed to toil in this prison-house of language._
 [about assertions]: /reference/assertions.md
 [assertion id]: /reference/glossary.md#assertion-id
 [assertion parts]: /reference/glossary.md#assertion-parts
-[assertionfailure]: /interfaces/index.assertion.types.AssertionFailure
 [asynchronous assertion]: /reference/glossary.md#asynchronous-assertion
 [issues]: https://github.com/boneskull/bupkis/issues
 [parameter]: /reference/glossary.md#parameter

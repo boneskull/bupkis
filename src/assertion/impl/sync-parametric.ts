@@ -16,7 +16,7 @@
 import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
-import { BupkisError, InvalidSchemaError } from '../../error.js';
+import { BupkisError, InvalidObjectSchemaError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   ArrayLikeSchema,
@@ -637,13 +637,18 @@ export const arrayDeepEqualAssertion = createAssertion(
 export const functionThrowsAssertion = createAssertion(
   [FunctionSchema, 'to throw'],
   (subject) => {
-    const error = trapError(subject);
-    if (!error) {
+    const { error, result } = trapError(subject);
+    if (error === undefined) {
       return {
-        actual: error,
+        actual: result,
         message: `Expected function to throw, but it did not`,
       };
     }
+  },
+  {
+    anchor: 'function-to-throw-any',
+    category: 'function',
+    redirect: 'to-throw',
   },
 );
 
@@ -674,21 +679,27 @@ export const functionThrowsAssertion = createAssertion(
 export const functionThrowsTypeAssertion = createAssertion(
   [FunctionSchema, ['to throw a', 'to throw an'], ConstructibleSchema],
   (subject, ctor) => {
-    const error = trapError(subject);
-    if (!error) {
-      return false;
+    const { error, result } = trapError(subject);
+    if (error === undefined) {
+      return {
+        actual: result,
+        expected: `to throw instance of ${ctor.name}`,
+        message: 'Expected function to throw, but it did not',
+      };
     }
-    if (!(error instanceof ctor)) {
-      let message: string;
-      if (isError(error)) {
-        message = `Expected function to throw an instance of ${ctor.name}, but it threw ${error.constructor.name}`;
-      } else {
-        message = `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${error as unknown}`;
+    if (!isA(error, ctor)) {
+      if (isNonNullObject(error)) {
+        const err = error as object;
+        return {
+          actual: err.constructor.name,
+          expected: ctor.name,
+          message: `Expected function to throw with an instance of ${ctor.name}, but it threw with a ${err.constructor.name}`,
+        };
       }
       return {
-        actual: error,
-        expected: ctor,
-        message,
+        actual: typeof error,
+        expected: ctor.name,
+        message: `Expected function to throw with an instance of ${ctor.name}, but it threw a value of type ${typeof error}: ${inspect(error)}`,
       };
     }
   },
@@ -726,33 +737,41 @@ export const functionThrowsTypeAssertion = createAssertion(
  *
  * @group Parametric Assertions (Sync)
  */
-export const functionThrowsMatchingAssertion = createAssertion(
+export const functionThrowsSatisfyingAssertion = createAssertion(
   [FunctionSchema, ['to throw', 'to throw error satisfying'], z.any()],
   (subject, param) => {
-    const error = trapError(subject);
-    if (!error) {
-      return false;
+    const { error, result } = trapError(subject);
+    if (error === undefined) {
+      return {
+        actual: result,
+        expected: 'to throw',
+        message: 'Expected function to throw, but it did not',
+      };
     }
 
     if (isString(param)) {
-      return z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)))
-        .safeParse(error).success;
+      return {
+        schema: z
+          .looseObject({
+            message: z.coerce.string().pipe(z.literal(param)),
+          })
+          .or(z.coerce.string().pipe(z.literal(param))),
+        subject: error,
+      };
     } else if (isA(param, RegExp)) {
-      return z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param))
-        .safeParse(error).success;
+      return {
+        schema: z
+          .looseObject({
+            message: z.coerce.string().regex(param),
+          })
+          .or(z.coerce.string().regex(param)),
+        subject: error,
+      };
     } else if (isNonNullObject(param)) {
       const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-      return schema.safeParse(error).success;
+      return { schema, subject: error };
     } else {
-      throw new InvalidSchemaError(
+      throw new InvalidObjectSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
         { schema: param },
       );
@@ -798,7 +817,14 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
     z.any(),
   ],
   (subject, ctor, param) => {
-    const error = trapError(subject);
+    const { error, result } = trapError(subject);
+    if (error === undefined) {
+      return {
+        actual: result,
+        expected: `to throw instance of ${ctor.name}`,
+        message: 'Expected function to throw, but it did not',
+      };
+    }
     if (!isA(error, ctor)) {
       return {
         actual: error,
@@ -811,31 +837,29 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
     let schema: undefined | z.ZodType;
     // TODO: can valueToSchema handle the first two conditional branches?
     if (isString(param)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)));
+      schema = z.looseObject({
+        message: z.coerce.string().pipe(z.literal(param)),
+      });
+      // .or(z.coerce.string().pipe(z.literal(param)));
     } else if (isA(param, RegExp)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param));
+      schema = z.looseObject({
+        message: z.coerce.string().regex(param),
+      });
+      // .or(z.coerce.string().regex(param));
     } else if (isNonNullObject(param)) {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     }
     if (!schema) {
-      throw new InvalidSchemaError(
+      throw new InvalidObjectSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
         { schema: param },
       );
     }
 
-    const result = schema.safeParse(error);
-    if (!result.success) {
-      return result.error;
-    }
+    return {
+      schema,
+      subject: error,
+    };
   },
 );
 

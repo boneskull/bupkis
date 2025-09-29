@@ -158,12 +158,12 @@ await expectAsync(
 );
 ```
 
-### `{Promise} to fulfill with value satisfying {any}`
+### `{Promise} to resolve with value satisfying {any}`
 
 > ✏️ Aliases:
 >
->     {Promise} to fulfill with value satisfying {any}
 >     {Promise} to resolve with value satisfying {any}
+>     {Promise} to fulfill with value satisfying {any}
 
 👉 See [`{object} to satisfy {any}}`](object.md#object-to-satisfy-any)
 

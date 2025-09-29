@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PageEvent, RendererEvent } from 'typedoc';
+import { Converter, PageEvent, RendererEvent } from 'typedoc';
 
 import * as assertions from '../dist/esm/assertion/index.js';
 import { isMetadata } from '../dist/esm/internal-schema.js';
@@ -47,30 +47,32 @@ export const load = (app) => {
   const outputDir = app.options.getValue('out');
   const mediaDir = path.join(outputDir, 'media');
 
-  /** @type {[name: string, target: string][]} */
-  const dynamicRedirects = [];
-  for (const [name, assertion] of entries(assertions)) {
-    if (!(assertion instanceof assertions.BupkisAssertion)) {
-      continue;
+  app.converter.on(Converter.EVENT_BEGIN, () => {
+    /** @type {[name: string, target: string][]} */
+    const dynamicRedirects = [];
+    for (const [name, assertion] of entries(assertions)) {
+      if (!(assertion instanceof assertions.BupkisAssertion)) {
+        continue;
+      }
+      const metadata = assertion.metadata();
+      if (isMetadata(metadata)) {
+        const { anchor, category, redirect: redirectName = anchor } = metadata;
+        const document = `documents/${CATEGORY_DOC_MAP[category]}#${anchor}`;
+        const redirect = `assertions/${redirectName}/`;
+        dynamicRedirects.push([redirect, document]);
+        console.info(
+          `Registered redirect for ${name}: ${redirect} ➡️ ${document}`,
+        );
+      }
     }
-    const metadata = assertion.metadata();
-    if (isMetadata(metadata)) {
-      const { anchor, category, redirect: redirectName = anchor } = metadata;
-      const document = `documents/${CATEGORY_DOC_MAP[category]}#${anchor}`;
-      const redirect = `assertions/${redirectName}/`;
-      dynamicRedirects.push([redirect, document]);
-      console.info(
-        `Registered redirect for ${name}: ${redirect} ➡️ ${document}`,
-      );
-    }
-  }
 
-  const redirects = /** @type {Record<string, string> | undefined} */ (
-    app.options.getValue('redirects')
-  );
-  app.options.setValue('redirects', {
-    ...redirects,
-    ...fromEntries(dynamicRedirects),
+    const redirects = /** @type {Record<string, string> | undefined} */ (
+      app.options.getValue('redirects')
+    );
+    app.options.setValue('redirects', {
+      ...redirects,
+      ...fromEntries(dynamicRedirects),
+    });
   });
 
   app.logger.info(

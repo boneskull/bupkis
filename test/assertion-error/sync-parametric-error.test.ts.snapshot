@@ -36,7 +36,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{any} 'to be a' / 'to be 
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equal' / 'to deeply equal' {any}\" [arraylike-to-deep-equal-to-deeply-equal-any-3s3p] > should throw a consistent AssertionError [arraylike-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -56,7 +56,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equa
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to satisfy' / 'to be like' {any}\" [arraylike-to-satisfy-to-be-like-any-3s3p] > should throw a consistent AssertionError [arraylike-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -88,26 +88,26 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to have arity
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' / 'to throw an' {constructible} 'satisfying' {any}\" [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]",
-  "name": "UnknownAssertionError",
-  "args": [
-    null,
-    "to throw satisfying",
-    {
-      "message": "expected message"
-    }
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{function} 'to throw a' / 'to throw an' {constructible} 'satisfying' {any}\\" failed:\\n\\u001b[32m- expected  - 3\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- Object {\\u001b[39m\\n\\u001b[32m-   \\"message\\": \\"expected message\\",\\u001b[39m\\n\\u001b[32m- }\\u001b[39m\\n\\u001b[31m+ [Error: wrong message]\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {
+    "message": "expected message"
+  },
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' / 'to throw an' {constructible}\" [function-to-throw-a-to-throw-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected function to throw an instance of TypeError, but it threw Error",
+  "message": "Expected function to throw with an instance of TypeError, but it threw with a Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": {},
+  "actual": "Error",
+  "expected": "TypeError",
   "diff": "simple"
 }
 `;
@@ -131,6 +131,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw'\" [
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "no error",
   "diff": "simple"
 }
 `;
@@ -149,7 +150,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to'
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\" [number-to-be-greater-than-or-equal-to-to-be-at-least-to-be-gte-number-3s3p] > should throw a consistent AssertionError [number-to-be-greater-than-or-equal-to-to-be-at-least-to-be-gte-number-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -161,7 +162,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater t
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater than' {number}\" [number-to-be-greater-than-number-3s3p] > should throw a consistent AssertionError [number-to-be-greater-than-number-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -173,7 +174,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater t
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\" [number-to-be-less-than-or-equal-to-to-be-at-most-to-be-lte-number-3s3p] > should throw a consistent AssertionError [number-to-be-less-than-or-equal-to-to-be-at-most-to-be-lte-number-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -185,7 +186,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than' / 'to be lt' {number}\" [number-to-be-less-than-to-be-lt-number-3s3p] > should throw a consistent AssertionError [number-to-be-less-than-to-be-lt-number-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -213,7 +214,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' /
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\" [object-to-satisfy-to-be-like-satisfies-any-3s3p] > should throw a consistent AssertionError [object-to-satisfy-to-be-like-satisfies-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
+  "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -231,7 +232,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' / 'to deeply equal' {any}\" [object-to-deep-equal-to-deeply-equal-any-3s3p] > should throw a consistent AssertionError [object-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
+  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -347,6 +348,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an insta
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
+  "actual": "hello",
   "diff": "simple"
 }
 `;

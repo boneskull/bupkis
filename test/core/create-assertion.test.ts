@@ -56,11 +56,10 @@ describe('core API', () => {
                   },
           );
 
-          // const newExpect = expect.use([assertion]);
           expect(
             () => assertion.execute([3], [], () => undefined),
             'to throw',
-            `Assertion ${assertion} failed`,
+            new RegExp(`Assertion ${assertion} failed`),
           );
         });
       });
