@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.8.0...bupkis-v0.9.0) (2025-09-29)
+
+
+### Features
+
+* **assertion:** allow chaining assertions with "and" ([e76e772](https://github.com/boneskull/bupkis/commit/e76e772395afeb613b0936b2ac0fb3ed9792aa0e))
+* **assertions:** assertions can return Assertion Parse Request objects ([43fa2d1](https://github.com/boneskull/bupkis/commit/43fa2d14aed32caff7f665845b7471b014a6c266))
+
 ## [0.8.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.7.2...bupkis-v0.8.0) (2025-09-25)
 
 
