@@ -1,0 +1,43 @@
+exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep equal\" > \"to deep equal\" <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[2m    \\"b\\": Object {\\u001b[22m\\n\\u001b[32m-     \\"c\\": 3,\\u001b[39m\\n\\u001b[31m+     \\"c\\": 2,\\u001b[39m\\n\\u001b[2m    },\\u001b[22m\\n\\u001b[2m  }\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "a": 1,
+    "b": {
+      "c": 2
+    }
+  },
+  "expected": {
+    "a": 1,
+    "b": {
+      "c": 3
+    }
+  },
+  "diff": "simple"
+}
+`;
+
+exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep equal\" > deepStrictEqual <snapshot> 1`] = `
+{
+  "message": "Expected values to be strictly deep-equal:\\n\\u001b[32m+ actual\\u001b[39m \\u001b[31m- expected\\u001b[39m\\n\\n\\u001b[39m  {\\n\\u001b[39m    a: 1,\\n\\u001b[39m    b: {\\n\\u001b[32m+\\u001b[39m     c: 2\\n\\u001b[31m-\\u001b[39m     c: 3\\n\\u001b[39m    }\\n\\u001b[39m  }\\n",
+  "generatedMessage": true,
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "a": 1,
+    "b": {
+      "c": 2
+    }
+  },
+  "expected": {
+    "a": 1,
+    "b": {
+      "c": 3
+    }
+  },
+  "operator": "deepStrictEqual",
+  "diff": "simple"
+}
+`;
