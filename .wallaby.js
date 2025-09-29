@@ -26,7 +26,7 @@ export default {
   tests: [
     '.tmp/**/*.test.ts',
     'test/**/*.test.ts',
-    '!test/error/**/*',
+    '!test/assertion-error/**/*',
     '!.tshy-build/**',
     '!node_modules/**',
     '!dist/**',

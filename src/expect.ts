@@ -22,7 +22,7 @@ import {
   NegatedAssertionError,
   UnknownAssertionError,
 } from './error.js';
-import { isAssertionFailure, isString } from './guards.js';
+import { isString } from './guards.js';
 import {
   type Expect,
   type ExpectAsync,
@@ -186,42 +186,45 @@ export function createExpectAsyncFunction<
    */
   const expectAsyncFunction = async (...args: readonly unknown[]) => {
     await Promise.resolve();
-    const [isNegated, processedArgs] = maybeProcessNegation(args);
-    const candidates: Array<{
-      assertion: AnyAsyncAssertion;
-      parseResult: ParsedResult<AssertionParts>;
-    }> = [];
-    for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
-      const parseResult = await assertion.parseValuesAsync(processedArgs);
-      const { exactMatch, parsedValues, success } = parseResult;
+    const argsMatrix = conjunctify(args);
+    for (const args of argsMatrix) {
+      const { isNegated, processedArgs } = maybeProcessNegation(args);
+      const candidates: Array<{
+        assertion: AnyAsyncAssertion;
+        parseResult: ParsedResult<AssertionParts>;
+      }> = [];
+      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+        const parseResult = await assertion.parseValuesAsync(processedArgs);
+        const { exactMatch, parsedValues, success } = parseResult;
 
-      if (success) {
-        if (exactMatch) {
-          return executeAsync(
-            assertion,
-            parsedValues,
-            [...args],
-            expectAsyncFunction,
-            isNegated,
-            parseResult,
-          );
+        if (success) {
+          if (exactMatch) {
+            return executeAsync(
+              assertion,
+              parsedValues,
+              [...args],
+              expectAsyncFunction,
+              isNegated,
+              parseResult,
+            );
+          }
+          candidates.push({ assertion, parseResult });
         }
-        candidates.push({ assertion, parseResult });
       }
+      if (candidates.length) {
+        const { assertion, parseResult } = candidates[0]!;
+        return executeAsync(
+          assertion as any,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          parseResult.parsedValues as any,
+          [...args],
+          expectAsyncFunction,
+          isNegated,
+          parseResult,
+        );
+      }
+      throwInvalidParametersError(args);
     }
-    if (candidates.length) {
-      const { assertion, parseResult } = candidates[0]!;
-      return executeAsync(
-        assertion as any,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        parseResult.parsedValues as any,
-        [...args],
-        expectAsyncFunction,
-        isNegated,
-        parseResult,
-      );
-    }
-    throwInvalidParametersError(args);
   };
   return expectAsyncFunction;
 }
@@ -366,43 +369,48 @@ export function createExpectSyncFunction<
    * @function
    */
   const expectFunction = (...args: readonly unknown[]) => {
-    const [isNegated, processedArgs] = maybeProcessNegation(args);
-    const candidates: Array<{
-      assertion: AnySyncAssertion;
-      parseResult: ParsedResult<AssertionParts>;
-    }> = [];
-    for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
-      const parseResult = assertion.parseValues(processedArgs);
-      const { exactMatch, parsedValues, success } = parseResult;
+    const argsMatrix = conjunctify(args);
 
-      if (success) {
-        if (exactMatch) {
-          return execute(
-            assertion,
-            parsedValues,
-            [...args],
-            expectFunction,
-            isNegated,
-            parseResult,
-          );
+    for (const args of argsMatrix) {
+      const { isNegated, processedArgs } = maybeProcessNegation(args);
+      const candidates: Array<{
+        assertion: AnySyncAssertion;
+        parseResult: ParsedResult<AssertionParts>;
+      }> = [];
+      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+        const parseResult = assertion.parseValues(processedArgs);
+        const { exactMatch, parsedValues, success } = parseResult;
+
+        if (success) {
+          if (exactMatch) {
+            return execute(
+              assertion,
+              parsedValues,
+              [...args],
+              expectFunction,
+              isNegated,
+              parseResult,
+            );
+          }
+          candidates.push({ assertion, parseResult });
         }
-        candidates.push({ assertion, parseResult });
       }
+      if (candidates.length) {
+        const { assertion, parseResult } = candidates[0]!;
+        return execute(
+          assertion as any,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          parseResult.parsedValues as any,
+          [...args],
+          expectFunction,
+          isNegated,
+          parseResult,
+        );
+      }
+      throwInvalidParametersError(args);
     }
-    if (candidates.length) {
-      const { assertion, parseResult } = candidates[0]!;
-      return execute(
-        assertion as any,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        parseResult.parsedValues as any,
-        [...args],
-        expectFunction,
-        isNegated,
-        parseResult,
-      );
-    }
-    throwInvalidParametersError(args);
   };
+
   return expectFunction;
 }
 
@@ -435,26 +443,12 @@ const execute = <
     return assertion.execute(parsedValues, args, stackStartFn, parseResult);
   }
 
+  // negation logic
   try {
-    const result = assertion.execute(
-      parsedValues,
-      args,
-      stackStartFn,
-      parseResult,
-    );
-    if (isAssertionFailure(result)) {
-      throw new NegatedAssertionError({
-        actual: result.actual,
-        expected: result.expected,
-        message:
-          result.message ??
-          `Expected assertion ${assertion} to fail (due to negation), but it passed`,
-        stackStartFn,
-      });
-    }
+    assertion.execute(parsedValues, args, stackStartFn, parseResult);
     // If we reach here, the assertion passed but we expected it to fail
     throw new NegatedAssertionError({
-      message: `Expected assertion to fail (due to negation), but it passed: ${assertion}`,
+      message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
       stackStartFn,
     });
   } catch (error) {
@@ -546,10 +540,11 @@ const executeAsync = async <
  */
 const maybeProcessNegation = (
   args: readonly unknown[],
-): [isNegated: boolean, processedArgs: readonly unknown[]] => {
+): { isNegated: boolean; processedArgs: readonly unknown[] } => {
   let isNegated = false;
   let processedArgs = args;
 
+  // note: args[1] should always be a string
   if (args.length >= 2 && isString(args[1])) {
     const { cleanedPhrase, isNegated: detected } = detectNegation(args[1]);
     if (detected) {
@@ -557,7 +552,42 @@ const maybeProcessNegation = (
       processedArgs = [args[0], cleanedPhrase, ...args.slice(2)];
     }
   }
-  return [isNegated, processedArgs];
+  return { isNegated, processedArgs };
+};
+
+/**
+ * Given some args, create a matrix of args based on the presence of the
+ * conjunction operator ("and").
+ *
+ * If no "and" is present, returns the original args wrapped in an array.
+ *
+ * @function
+ */
+const conjunctify = (args: readonly unknown[]): (readonly unknown[])[] => {
+  let argsMatrix = [args];
+
+  if (args.length >= 2) {
+    // partition args by the string "and"; there may be multiple "and"s
+    const andIndices = args
+      .map((arg, index) => (arg === 'and' ? index : -1))
+      .filter((index) => index !== -1);
+
+    if (andIndices.length > 0) {
+      const parts: unknown[][] = [];
+      let lastIndex = 0;
+      for (const andIndex of andIndices) {
+        const partsArgs =
+          lastIndex > 0
+            ? [args[0], ...args.slice(lastIndex, andIndex)]
+            : [...args.slice(lastIndex, andIndex)];
+        parts.push(partsArgs);
+        lastIndex = andIndex + 1;
+      }
+      parts.push([args[0], ...args.slice(lastIndex)]);
+      argsMatrix = parts;
+    }
+  }
+  return argsMatrix;
 };
 
 /**
@@ -605,7 +635,7 @@ const detectNegation = (
 };
 
 /**
- * {@inheritdoc FailFn}
+ * {@inheritDoc FailFn}
  *
  * @function
  */

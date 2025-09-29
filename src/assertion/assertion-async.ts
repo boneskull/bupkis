@@ -3,13 +3,8 @@ import z from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError, AssertionImplementationError } from '../error.js';
-import {
-  isA,
-  isAssertionFailure,
-  isBoolean,
-  isError,
-  isZodType,
-} from '../guards.js';
+import { isA, isBoolean, isError, isZodType } from '../guards.js';
+import { isAssertionFailure } from '../internal-schema.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionAsync,
@@ -197,6 +192,8 @@ export class BupkisAssertionSchemaAsync<
       if (isA(error, z.ZodError)) {
         throw this.fromZodError(error, stackStartFn, parsedValues);
       }
+      /* c8 ignore next */
+      throw error;
     }
   }
 
@@ -211,10 +208,7 @@ export class BupkisAssertionSchemaAsync<
     }
 
     let exactMatch = true;
-    let subjectValidationResult:
-      | undefined
-      | { data: any; success: true }
-      | { error: z.ZodError; success: false };
+    let subjectValidationResult: ParsedResultSuccess<Parts>['subjectValidationResult'];
 
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i]!;

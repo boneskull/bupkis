@@ -10,24 +10,18 @@ import { fileURLToPath } from 'node:url';
 import { PageEvent, RendererEvent } from 'typedoc';
 
 import * as assertions from '../dist/esm/assertion/index.js';
-
+import { isMetadata } from '../dist/esm/internal-schema.js';
 const { entries, freeze, fromEntries } = Object;
 
 /**
  * @import {Application} from 'typedoc'
- * @import {AssertionMetadata} from '../dist/esm/types.js'
  */
 
 const SOURCE_DIR = fileURLToPath(new URL('../site/media/', import.meta.url));
 
 /**
- * @function
- * @param {unknown} value
- * @returns {value is AssertionMetadata}
+ * Mapping of category names to doc filenames
  */
-const isMetadata = (value) =>
-  assertions.AssertionMetadataSchema.safeParse(value).success;
-
 const CATEGORY_DOC_MAP = freeze(
   /** @type {const} */ ({
     async: 'Async_Assertions.html',
@@ -61,7 +55,7 @@ export const load = (app) => {
     }
     const metadata = assertion.metadata();
     if (isMetadata(metadata)) {
-      const { anchor, category, redirectName = anchor } = metadata;
+      const { anchor, category, redirect: redirectName = anchor } = metadata;
       const document = `documents/${CATEGORY_DOC_MAP[category]}#${anchor}`;
       const redirect = `assertions/${redirectName}/`;
       dynamicRedirects.push([redirect, document]);

@@ -17,7 +17,7 @@
  */
 
 import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
-import { z } from 'zod/v4';
+import { type z } from 'zod/v4';
 
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
@@ -380,6 +380,37 @@ export type AssertionImplSync<Parts extends AssertionParts> =
   | AssertionImplSchemaSync<Parts>;
 
 /**
+ * Internal metadata for assertions.
+ *
+ * For internal use by documentation tooling.
+ */
+export interface AssertionMetadata {
+  /**
+   * Anchor ID for linking to this assertion
+   */
+  anchor: string;
+  /**
+   * Category to map to page of logically grouped assertions
+   */
+  category:
+    | 'collections'
+    | 'date'
+    | 'equality'
+    | 'error'
+    | 'function'
+    | 'numeric'
+    | 'object'
+    | 'other'
+    | 'primitives'
+    | 'promise'
+    | 'strings';
+  /**
+   * Redirect for assertion to its documentation page, including anchor
+   */
+  redirect?: string | undefined;
+}
+
+/**
  * Union type representing the fundamental building blocks of an assertion.
  *
  * An assertion part can be either a phrase (string literal or choice of
@@ -740,7 +771,6 @@ export interface CreateAssertionFn {
     metadata?: AssertionMetadata,
   ): AssertionFunctionSync<Parts, Impl, Slots>;
 }
-
 /**
  * The main factory function for creating asynchronous assertions.
  *
@@ -789,6 +819,7 @@ export interface CreateAsyncAssertionFn {
     metadata?: AssertionMetadata,
   ): AssertionFunctionAsync<Parts, Impl, Slots>;
 }
+
 /**
  * Utility type for parsed values that may be empty.
  *
@@ -1014,7 +1045,6 @@ export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
-
 /**
  * Type representing a single phrase literal string.
  *
@@ -1044,6 +1074,7 @@ export type Phrase = PhraseLiteral | PhraseLiteralChoice;
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type PhraseLiteral = string;
+
 /**
  * Type representing a choice between multiple phrase literals.
  *
@@ -1152,45 +1183,3 @@ export type RawAssertionImplSchemaAsync<Parts extends AssertionParts> =
  */
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;
-
-/**
- * Metadata associated with an assertion, for internal use by documentation
- * tooling.
- *
- * @private
- */
-export const AssertionMetadataSchema = z
-  .looseObject({
-    anchor: z.string().describe('Anchor ID for linking to this assertion.'),
-    category: z
-      .enum([
-        'collections',
-        'date',
-        'equality',
-        'error',
-        'function',
-        'numeric',
-        'object',
-        'other',
-        'primitives',
-        'promise',
-        'strings',
-      ])
-      .describe('Category to map to page of logically grouped assertions'),
-    redirectName: z
-      .string()
-      .optional()
-      .describe(
-        'Redirect for assertion to its documentation page, including anchor',
-      ),
-  })
-  .describe(
-    'Metadata associated with an assertion, for internal use by documentation tooling.',
-  );
-
-/**
- * {@inheritDoc AssertionMetadataSchema}
- *
- * @private
- */
-export type AssertionMetadata = z.infer<typeof AssertionMetadataSchema>;
