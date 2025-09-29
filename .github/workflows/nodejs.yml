@@ -19,14 +19,5 @@ jobs:
       - uses: ./.github/actions/prepare
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Test w/ Coverage
-        if: matrix.node-version == '^24.0.0'
-        run: npm run test:coverage
       - name: Test
-        if: matrix.node-version != '^24.0.0'
         run: npm test
-      - name: Upload Coverage
-        if: matrix.node-version == '^24.0.0'
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
