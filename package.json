@@ -120,7 +120,7 @@
     "build:dev": "tshy --watch",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
     "docs:build": "typedoc --cleanOutputDir --treatWarningsAsErrors",
-    "docs:dev": "run-p build:docs:dev serve",
+    "docs:dev": "run-p \"docs:build -- --watch\" docs:serve",
     "docs:serve": "serve docs",
     "lint": "run-p lint:eslint lint:types lint:knip lint:markdown lint:spelling",
     "lint:commit": "commitlint",
@@ -141,6 +141,7 @@
     "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",
     "test:property": "run-s \"test:base -- \\\"test/property/*.test.ts\\\"\"",
     "test:property:dev": "run-s \"test:base -- --watch \\\"test/property/*.test.ts\\\"\"",
+    "test:snapshots": "run-s \"test:base -- --test-name-pattern=\\\"<snapshot>\\\" \\\"test/**/*.test.ts\\\"\"",
     "test:update-snapshots": "run-s \"test:base -- --test-update-snapshots --test-name-pattern=\\\"<snapshot>\\\" \\\"test/**/*.test.ts\\\"\""
   },
   "peerDependencies": {
@@ -224,6 +225,7 @@
     ],
     "node": {
       "entry": [
+        ".config/typedoc-plugin-bupkis.js",
         "scripts/*.js",
         "scripts/*.ts",
         "test/**/*.test.ts",

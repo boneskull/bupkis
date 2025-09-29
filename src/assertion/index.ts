@@ -11,7 +11,7 @@
  */
 
 export { BupkisRegistry } from '../metadata.js';
-export * from './assertion-types.js';
+export type * from './assertion-types.js';
 export { BupkisAssertion } from './assertion.js';
 export { createAssertion, createAsyncAssertion } from './create.js';
 export * from './impl/async.js';

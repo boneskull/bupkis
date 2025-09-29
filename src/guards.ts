@@ -16,14 +16,19 @@
  * @packageDocumentation
  */
 
-import { z } from 'zod/v4';
+import { type z } from 'zod/v4';
 
 import type {
-  AssertionFailure,
   AssertionPart,
   PhraseLiteralChoice,
 } from './assertion/assertion-types.js';
-import type { Constructor, ExpectItExecutor, ZodTypeMap } from './types.js';
+import type {
+  AssertionParts,
+  Constructor,
+  ExpectItExecutor,
+  PhraseLiteral,
+  ZodTypeMap,
+} from './types.js';
 
 import { kExpectIt } from './constant.js';
 
@@ -161,34 +166,6 @@ export const isBoolean = (value: unknown): value is boolean =>
 export const isFunction = (value: unknown): value is (...args: any[]) => any =>
   typeof value === 'function';
 
-const AssertionFailureSchema: z.ZodType<AssertionFailure> = z.object({
-  actual: z
-    .unknown()
-    .optional()
-    .describe('The actual value or description of what actually occurred'),
-  expected: z
-    .unknown()
-    .optional()
-    .describe(
-      'The expected value or description of what was expected to occur',
-    ),
-  message: z
-    .string()
-    .optional()
-    .describe('A human-readable message describing the failure'),
-});
-
-/**
- * Type guard for a {@link AssertionFailure} object
- *
- * @function
- * @param value Value to check
- * @returns `true` if the value is an `AssertionFailure`, `false` otherwise
- * @internal
- */
-export const isAssertionFailure = (value: unknown): value is AssertionFailure =>
-  AssertionFailureSchema.safeParse(value).success;
-
 /**
  * Type guard for a string value
  *
@@ -234,7 +211,7 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
  * @internal
  */
 export const isPhraseLiteralChoice = (
-  value: AssertionPart,
+  value: unknown,
 ): value is PhraseLiteralChoice =>
   isArray(value) && value.every(isPhraseLiteral);
 
@@ -247,8 +224,21 @@ export const isPhraseLiteralChoice = (
  * @returns `true` if the part is a `PhraseLiteral`, `false` otherwise
  * @internal
  */
-export const isPhraseLiteral = (value: AssertionPart): value is string =>
-  isString(value) && !value.startsWith('not ');
+export const isPhraseLiteral = (value: unknown): value is PhraseLiteral =>
+  isString(value) && !value.startsWith('not ') && value !== 'and';
+
+/**
+ * Type guard for a {@link PhraseLiteral} or {@link PhraseLiteralChoice}.
+ *
+ * @function
+ * @param value Value to check
+ * @returns `true` if the value is a `PhraseLiteral` or `PhraseLiteralChoice`,
+ *   `false` otherwise
+ */
+export const isPhrase = (
+  value: unknown,
+): value is PhraseLiteral | PhraseLiteralChoice =>
+  isPhraseLiteral(value) || isPhraseLiteralChoice(value);
 
 /**
  * Generic type guard for instanceof checks.
@@ -339,3 +329,27 @@ export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
 ): value is ExpectItExecutor<Subject> => {
   return isFunction(value) && kExpectIt in value && value[kExpectIt] === true;
 };
+
+/**
+ * Type guard for an {@link AssertionPart}, which can be a {@link PhraseLiteral},
+ * {@link PhraseLiteralChoice}, or a Zod schema.
+ *
+ * @function
+ * @param value Value to check
+ * @returns `true` if the value is an `AssertionPart`, `false` otherwise
+ * @internal
+ */
+export const isAssertionPart = (value: unknown): value is AssertionPart =>
+  isPhraseLiteral(value) || isPhraseLiteralChoice(value) || isZodType(value);
+
+/**
+ * Type guard for {@link AssertionParts}, which is an array of
+ * {@link AssertionPart}.
+ *
+ * @function
+ * @param value Value to check
+ * @returns `true` if the value is an `AssertionParts`, `false` otherwise
+ * @internal
+ */
+export const isAssertionParts = (value: unknown): value is AssertionParts =>
+  isArray(value) && !!value.length && value.every(isAssertionPart);

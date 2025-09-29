@@ -16,13 +16,8 @@ import {
   AssertionImplementationError,
   UnexpectedAsyncError,
 } from '../error.js';
-import {
-  isAssertionFailure,
-  isBoolean,
-  isError,
-  isPromiseLike,
-  isZodType,
-} from '../guards.js';
+import { isBoolean, isError, isPromiseLike, isZodType } from '../guards.js';
+import { isAssertionFailure } from '../internal-schema.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionFunctionSync,
@@ -252,10 +247,7 @@ export class BupkisAssertionSchemaSync<
     }
 
     let exactMatch = true;
-    let subjectValidationResult:
-      | undefined
-      | { data: any; success: true }
-      | { error: z.ZodError; success: false };
+    let subjectValidationResult: ParsedResultSuccess<Parts>['subjectValidationResult'];
 
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i]!;

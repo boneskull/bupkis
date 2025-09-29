@@ -151,6 +151,22 @@ To formalize the conventions at a high level:
   );
   ```
 
+- You can "chain" multiple assertions (including custom assertions) together by delimiting them with `and`:
+
+  ```js
+  expect(
+    user,
+    'to satisfy',
+    {
+      name: expect.it('to be a string', 'and', 'to have length less than', 100),
+      age: expect.it('to be greater than', 18),
+    },
+    'and',
+    'to have property',
+    'email',
+  );
+  ```
+
   _How about them apples._
 
 ### Custom Assertions Built With Zod
@@ -230,7 +246,7 @@ npm install bupkis -D
 - [TypeDoc][] it really documents the hell out of TypeScript projects.
 - [@cjihrig](https://github.com/cjihrig) and other Node.js contributors for the thoughtfulness put into [`node:test`](https://nodejs.org/api/test.html) that make it my current test-runner-of-choice.
 
-## Why is it called BUPKIS?
+## Why is it called **BUPKIS**?
 
 TODO: think of good reason and fill in later
 

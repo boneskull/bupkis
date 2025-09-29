@@ -99,6 +99,113 @@ describe('Basic assertions', () => {
 });
 ```
 
+### Negation with "not"
+
+<span class="bupkis">BUPKIS</span> supports natural negation by prefixing assertions with `"not "`. This makes it easy to assert the opposite of any condition:
+
+```ts
+describe('Negation examples', () => {
+  it('should support negated type checks', () => {
+    expect(42, 'not to be a string');
+    expect('hello', 'not to be a number');
+    expect([], 'not to be a function');
+  });
+
+  it('should support negated value checks', () => {
+    expect('apple', 'not to equal', 'orange');
+    expect([1, 2, 3], 'not to have length', 5);
+    expect('hello world', 'not to contain', 'goodbye');
+  });
+
+  it('should support negated object checks', () => {
+    const user = { name: 'Alice', age: 30 };
+
+    expect(user, 'not to have property', 'email');
+    expect(user, 'not to satisfy', { name: 'Bob' });
+    expect(user, 'not to be an', Array);
+  });
+});
+```
+
+Negation works with **all** assertion types in <span class="bupkis">BUPKIS</span>. Simply prefix any assertion phrase with `"not "` and it will assert the opposite condition.
+
+### Chaining with "and"
+
+You can chain multiple assertions on the same value using `"and"`. This allows you to validate multiple conditions in a single, readable statement:
+
+```ts
+describe('Assertion chaining', () => {
+  it('should chain multiple type and value checks', () => {
+    // Chain type and range checks
+    expect(42, 'to be a number', 'and', 'to be greater than', 0);
+    expect('hello', 'to be a string', 'and', 'to have length', 5);
+
+    // Chain multiple range conditions
+    expect(25, 'to be greater than', 18, 'and', 'to be less than', 65);
+  });
+
+  it('should chain object assertions', () => {
+    const user = { name: 'Alice', age: 30, role: 'admin' };
+
+    expect(user, 'to be an object', 'and', 'to have property', 'name');
+    expect(user.name, 'to be a string', 'and', 'to contain', 'Alice');
+  });
+
+  it('should chain array assertions', () => {
+    const numbers = [1, 2, 3, 4, 5];
+
+    expect(numbers, 'to be an array', 'and', 'to have length', 5);
+    expect(numbers, 'to contain', 3, 'and', 'to not contain', 10);
+  });
+
+  it('should work with complex chaining', () => {
+    const config = {
+      database: { host: 'localhost', port: 5432 },
+      features: ['auth', 'logging'],
+    };
+
+    expect(
+      config.database.port,
+      'to be a number',
+      'and',
+      'to be between',
+      1024,
+      65535,
+    );
+    expect(
+      config.features,
+      'to be an array',
+      'and',
+      'to have length greater than',
+      1,
+    );
+  });
+});
+```
+
+#### Chaining Rules
+
+- Use `"and"` to separate multiple assertions on the same subject
+- Each assertion after `"and"` applies to the original subject value
+- You can chain as many assertions as needed: `expect(value, assertion1, 'and', assertion2, 'and', assertion3)`
+- Chaining works with both regular and negated assertions
+- All chained assertions must pass for the overall assertion to succeed
+
+#### Chaining vs. Multiple Statements
+
+Chaining provides several benefits over separate assertion statements:
+
+```ts
+// Using chaining (recommended for related conditions)
+expect(age, 'to be a number', 'and', 'to be between', 18, 65);
+
+// Using separate statements (fine for unrelated conditions)
+expect(age, 'to be a number');
+expect(age, 'to be between', 18, 65);
+```
+
+Choose chaining when the assertions are logically related and you want them grouped together. Use separate statements when the assertions test different aspects of your code.
+
 ## Embeddable Assertions
 
 <span class="bupkis">BUPKIS</span> provides a powerful feature called **embeddable assertions** through the `expect.it()` function. This allows you to create reusable assertion functions that can be embedded within complex object patterns, particularly useful with the `'to satisfy'` assertion.
