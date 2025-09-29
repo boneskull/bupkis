@@ -2,7 +2,14 @@ import { describe, it } from 'node:test';
 import { stripVTControlCharacters } from 'node:util';
 
 import { UnknownAssertionError } from '../../src/error.js';
-import { type Expect, expect, expectAsync, z } from '../../src/index.js';
+import {
+  createAsyncAssertion,
+  type Expect,
+  expect,
+  expectAsync,
+  use,
+  z,
+} from '../../src/index.js';
 import { type AnySyncAssertions } from '../../src/types.js';
 
 describe('core API', () => {
@@ -262,6 +269,69 @@ describe('core API', () => {
             { message: 'expected message' },
           );
         }, 'to throw');
+      });
+    });
+
+    describe('Chaining expectations', () => {
+      describe('when combined with negation', () => {
+        it('should allow chaining with "and"', () => {
+          expect(
+            () =>
+              expect(42, 'to be a', 'number', 'and', 'not to be less than', 10),
+            'not to throw',
+          );
+        });
+      });
+
+      describe('when not combined with negation', () => {
+        it('should allow chaining with "and"', () => {
+          expect(
+            () =>
+              expect(42, 'to be a', 'number', 'and', 'to be less than', 100),
+            'not to throw',
+          );
+        });
+      });
+    });
+
+    describe('Schema-based async assertions', () => {
+      describe('non-unknown subject type', () => {
+        it('should reject when provided invalid parameters', async () => {
+          const customAsyncAssertion = createAsyncAssertion(
+            [z.string(), 'to be valid with param', z.number()],
+            z.string().min(1),
+          );
+
+          const { expectAsync } = use([customAsyncAssertion]);
+          await expectAsync(
+            () =>
+              expectAsync('hello', 'to be valid with param', 'not-a-number'),
+            'to reject with an',
+            UnknownAssertionError,
+          );
+        });
+      });
+
+      describe('unknown subject type', () => {
+        it('should reject when provided invalid parameters', async () => {
+          const customAsyncAssertion2 = createAsyncAssertion(
+            ['to validate against', z.boolean()],
+            z.string(),
+            {
+              anchor: 'foo',
+              category: 'other',
+            },
+          );
+
+          const { expectAsync } = use([customAsyncAssertion2]);
+
+          await expectAsync(
+            () =>
+              expectAsync('test', 'to validate against', { not: 'boolean' }),
+            'to reject with an',
+            UnknownAssertionError,
+          );
+        });
       });
     });
   });

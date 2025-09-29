@@ -65,32 +65,6 @@ describe('core API', () => {
         });
       });
     });
-  });
-
-  describe('createAsyncAssertion()', () => {
-    describe('with Zod schema implementation', () => {
-      it('should create a BupkisAssertionSchemaAsync instance', () => {
-        const assertion = expect.createAsyncAssertion(
-          ['to resolve'],
-          z.promise(z.any()),
-        );
-
-        expect(assertion, 'to be a', BupkisAssertionSchemaAsync);
-        expect(assertion.parts, 'to deep equal', ['to resolve']);
-      });
-    });
-
-    describe('with function implementation', () => {
-      it('should create a BupkisAssertionFunctionAsync instance', () => {
-        const assertion = expect.createAsyncAssertion(
-          ['to be truthy'],
-          async (value) => Boolean(value),
-        );
-
-        expect(assertion, 'to be a', BupkisAssertionFunctionAsync);
-        expect(assertion.parts, 'to satisfy', ['to be truthy']);
-      });
-    });
 
     describe('error handling', () => {
       it('should throw AssertionImplementationError for empty parts array', () => {
@@ -157,6 +131,112 @@ describe('core API', () => {
           () =>
             // @ts-expect-error Testing invalid input
             expect.createAssertion([42], z.string()),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+    });
+  });
+
+  describe('createAsyncAssertion()', () => {
+    describe('with Zod schema implementation', () => {
+      it('should create a BupkisAssertionSchemaAsync instance', () => {
+        const assertion = expect.createAsyncAssertion(
+          ['to resolve'],
+          z.promise(z.any()),
+        );
+
+        expect(assertion, 'to be a', BupkisAssertionSchemaAsync);
+        expect(assertion.parts, 'to deep equal', ['to resolve']);
+      });
+    });
+
+    describe('with function implementation', () => {
+      it('should create a BupkisAssertionFunctionAsync instance', () => {
+        const assertion = expect.createAsyncAssertion(
+          ['to be truthy'],
+          async (value) => Boolean(value),
+        );
+
+        expect(assertion, 'to be a', BupkisAssertionFunctionAsync);
+        expect(assertion.parts, 'to satisfy', ['to be truthy']);
+      });
+    });
+
+    describe('error handling', () => {
+      it('should throw AssertionImplementationError for empty parts array', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion([], z.string()),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for null parts', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion(null, z.string()),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for undefined parts', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion(undefined, z.string()),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for invalid implementation type', () => {
+        expect(
+          () =>
+            expect.createAsyncAssertion(
+              ['to be something'],
+              // @ts-expect-error Testing invalid input
+              'not a function or schema',
+            ),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for null implementation', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion(['to be something'], null),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for undefined implementation', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion(['to be something'], undefined),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should throw AssertionImplementationError for incorrectly typed implementation', () => {
+        expect(
+          // @ts-expect-error Testing invalid input
+          () => expect.createAsyncAssertion('foo', 'bar'),
+          'to throw a',
+          AssertionImplementationError,
+        );
+      });
+
+      it('should handle and format ZodError from slotify', () => {
+        // This should trigger a ZodError during slotify processing
+        expect(
+          () =>
+            // @ts-expect-error Testing invalid input
+            expect.createAsyncAssertion([42], z.string()),
           'to throw a',
           AssertionImplementationError,
         );
