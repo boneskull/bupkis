@@ -5,78 +5,36 @@
  * @packageDocumentation
  */
 
-import path from 'node:path';
 import { type it } from 'node:test';
+import { inspect } from 'node:util';
 
 import { type AssertionError, FailAssertionError } from '../../src/error.js';
-import {
-  isFunction,
-  isNonNullObject,
-  isPromiseLike,
-} from '../../src/guards.js';
+import { isError, isPromiseLike } from '../../src/guards.js';
 import { expect } from '../custom-assertions.js';
 const { stringify } = JSON;
+
 /**
  * Serializes an Error suitable for snapshot testing.
+ *
+ * - Calls `error`'s `toJSON` method if available.
+ * - Truncates the stack trace to only include the message and the first stack
+ *   frame (best effort).
  *
  * @param error Error
  * @returns Serializer
  */
 export const errorSerializer = (error: Error): string => {
-  const serialized: unknown =
-    'toJSON' in error && isFunction(error.toJSON)
-      ? error.toJSON()
-      : { ...error, stack: error.stack };
-
-  if (isNonNullObject(serialized)) {
-    // This file is at test/error/error-snapshot-util.ts, so workspace root is ../..
-    const workspaceRoot = path.resolve(import.meta.dirname, '../..');
-
-    // Keep the message and first stack frame (first "  at" line)
-    let processedStack: string | undefined;
-    if (error.stack) {
-      const stackLines = error.stack.split('\n');
-      const firstAtIndex = stackLines.findIndex((line) =>
-        /^\s*at\s+/.test(line),
-      );
-
-      if (firstAtIndex !== -1) {
-        // Keep everything up to and including the first "at" line
-        const truncatedLines = stackLines.slice(0, firstAtIndex + 1);
-        processedStack = truncatedLines
-          .join('\n')
-          .replace(
-            new RegExp(workspaceRoot.replace(/[/\\]/g, '[/\\\\]'), 'g'),
-            '.',
-          );
-      } else {
-        // No "at" line found, just apply path replacement to full stack
-        processedStack = error.stack.replace(
-          new RegExp(workspaceRoot.replace(/[/\\]/g, '[/\\\\]'), 'g'),
-          '.',
-        );
-      }
-    }
-
-    const err = {
-      ...serialized,
-      stack: processedStack,
-    };
-    return stringify(err, null, 2);
+  if (isError(error)) {
+    const { stack: _stack, ...rest } = error;
+    // @ts-expect-error - message is not enumerable on NodeAssertionError
+    return stringify({ message: error.message, ...rest }, null, 2);
   }
-  return stringify(serialized, null, 2);
+
+  throw new TypeError(
+    `Unexpected type (${typeof error}) of error: ${inspect(error)}`,
+  );
 };
 
-/**
- * Takes a snapshot of an error thrown by an async assertion function.
- *
- * @param failingAssertion - Async function that should throw an AssertionError
- * @param t - Node.js test context for snapshot operations
- * @returns Promise that resolves when the error snapshot is captured
- */
-export function takeErrorSnapshot(
-  failingAssertion: () => Promise<void>,
-): (t: it.TestContext) => Promise<void>;
 /**
  * Takes a snapshot of an error thrown by a sync assertion function.
  *
@@ -86,6 +44,15 @@ export function takeErrorSnapshot(
 export function takeErrorSnapshot(
   failingAssertion: () => void,
 ): (t: it.TestContext) => void;
+/**
+ * Takes a snapshot of an error thrown by an async assertion function.
+ *
+ * @param failingAssertion - Sync function that should throw an AssertionError
+ * @param t - Node.js test context for snapshot operations
+ */
+export function takeErrorSnapshot(
+  failingAssertion: () => Promise<void>,
+): (t: it.TestContext) => Promise<void>;
 export function takeErrorSnapshot(
   failingAssertion: () => Promise<void> | void,
 ) {

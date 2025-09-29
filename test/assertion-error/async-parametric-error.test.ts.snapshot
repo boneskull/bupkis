@@ -1,87 +1,107 @@
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
   "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' {constructible}\" [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{function} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  [AsyncFunction (anonymous)],\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{function} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  [AsyncFunction (anonymous)],\\n  'to reject with a',\\n  [Function: TypeError]\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with error satisfying' {any}\" [function-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
   "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\" [function-to-reject-2s2p] > should throw a consistent AssertionError [function-to-reject-2s2p] <snapshot> 1`] = `
 {
+  "message": "Expected function to reject, but it fulfilled instead",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
   "expected": "function to reject",
-  "message": "Expected function to reject, but it fulfilled instead",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to reject, but it fulfilled instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' / 'to fulfill'\" [function-to-resolve-to-fulfill-2s2p] > should throw a consistent AssertionError [function-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
 {
+  "message": "Expected function to fulfill, but it rejected instead",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "function rejected",
   "expected": "function to fulfill",
-  "message": "Expected function to fulfill, but it rejected instead",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to fulfill, but it rejected instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfill with value satisfying' / 'to resolve with value satisfying' {any}\" [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p] <snapshot> 1`] = `
 {
   "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      42\\n    ],\\n    \\"path\\": [],\\n    \\"message\\": \\"Invalid input: expected 42\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\" [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  { then: [Function: then] },\\n  'to reject with a',\\n  [Function: TypeError]\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{promiselike} 'to reject with a' / 'to reject with an' {constructible}\\" failed for arguments: [\\n  { then: [Function: then] },\\n  'to reject with a',\\n  [Function: TypeError]\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' {any}\" [promiselike-to-reject-with-error-satisfying-any-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
   "message": "[\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: [\\n  {\\n    \\"code\\": \\"invalid_value\\",\\n    \\"values\\": [\\n      \\"expected message\\"\\n    ],\\n    \\"path\\": [\\n      \\"message\\"\\n    ],\\n    \\"message\\": \\"Invalid input: expected \\\\\\"expected message\\\\\\"\\"\\n  }\\n]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject'\" [promiselike-to-reject-2s2p] > should throw a consistent AssertionError [promiselike-to-reject-2s2p] <snapshot> 1`] = `
 {
+  "message": "Expected function to reject, but it fulfilled instead",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
   "expected": "function to reject",
-  "message": "Expected function to reject, but it fulfilled instead",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to reject, but it fulfilled instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolve' / 'to fulfill'\" [promiselike-to-resolve-to-fulfill-2s2p] > should throw a consistent AssertionError [promiselike-to-resolve-to-fulfill-2s2p] <snapshot> 1`] = `
 {
+  "message": "Expected promise to fulfill, but it rejected instead",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "promise rejected",
   "expected": "promise to not reject",
-  "message": "Expected promise to fulfill, but it rejected instead",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected promise to fulfill, but it rejected instead\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;

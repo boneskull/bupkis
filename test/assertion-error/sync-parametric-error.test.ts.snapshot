@@ -1,35 +1,45 @@
 exports[`Sync Parametric Assertion Error Snapshots > \"{Error} 'to have message matching' {regexp}\" [error-to-have-message-matching-regexp-3s3p] > should throw a consistent AssertionError [error-to-have-message-matching-regexp-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected error message \\"wrong message\\" to match /expected/",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "wrong message",
   "expected": "message matching /expected/",
-  "message": "Expected error message \\"wrong message\\" to match /expected/",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to match /expected/\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{Error} 'to have message' {string}\" [error-to-have-message-string-3s3p] > should throw a consistent AssertionError [error-to-have-message-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected error message \\"wrong message\\" to equal \\"expected message\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "wrong message",
   "expected": "expected message",
-  "message": "Expected error message \\"wrong message\\" to equal \\"expected message\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected error message \\"wrong message\\" to equal \\"expected message\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\" [any-to-be-a-to-be-an-to-have-type-string-number-boolean-undefined-null-bigint-bigint-symbol-symbol-object-object-function-function-array-array-date-date-map-map-set-set-weakmap-weakmap-weakset-weakset-regexp-regexp-promise-promise-error-error-weakref-weakref-3s3p] > should throw a consistent AssertionError [any-to-be-a-to-be-an-to-have-type-string-number-boolean-undefined-null-bigint-bigint-symbol-symbol-object-object-function-function-array-array-date-date-map-map-set-set-weakmap-weakmap-weakset-weakset-regexp-regexp-promise-promise-error-error-weakref-weakref-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": 0,
-  "message": "Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{any} 'to be a' / 'to be an' / 'to have type' {string / number / boolean / undefined / null / BigInt / bigint / Symbol / symbol / Object / object / Function / function / Array / array / Date / date / Map / map / Set / set / WeakMap / weakmap / WeakSet / weakset / RegExp / regexp / Promise / promise / Error / error / WeakRef / weakref}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:216:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equal' / 'to deeply equal' {any}\" [arraylike-to-deep-equal-to-deeply-equal-any-3s3p] > should throw a consistent AssertionError [arraylike-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": [
     1,
     2,
@@ -40,14 +50,16 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equa
     2,
     4
   ],
-  "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:20:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to satisfy' / 'to be like' {any}\" [arraylike-to-satisfy-to-be-like-any-3s3p] > should throw a consistent AssertionError [arraylike-to-satisfy-to-be-like-any-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": [
     1,
     2,
@@ -58,24 +70,25 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to satisfy' 
     2,
     4
   ],
-  "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{arraylike} 'to satisfy' / 'to be like' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[32m-   4,\\u001b[39m\\n\\u001b[31m+   3,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:26:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to have arity' {nonnegative-integer}\" [function-to-have-arity-nonnegative_integer-3s3p] > should throw a consistent AssertionError [function-to-have-arity-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected function to have arity 3, but it has arity 2",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 2,
   "expected": 3,
-  "message": "Expected function to have arity 3, but it has arity 2",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to have arity 3, but it has arity 2\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' / 'to throw an' {constructible} 'satisfying' {any}\" [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-satisfying-any-5s5p] <snapshot> 1`] = `
 {
+  "message": "Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]",
   "name": "UnknownAssertionError",
   "args": [
     null,
@@ -84,93 +97,107 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
       "message": "expected message"
     }
   ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [\\n  [Function: fn],\\n  'to throw satisfying',\\n  { message: 'expected message' }\\n]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' / 'to throw an' {constructible}\" [function-to-throw-a-to-throw-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "actual": {},
   "message": "Expected function to throw an instance of TypeError, but it threw Error",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw an instance of TypeError, but it threw Error\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw' / 'to throw error satisfying' {any}\" [function-to-throw-to-throw-error-satisfying-any-3s3p] > should throw a consistent AssertionError [function-to-throw-to-throw-error-satisfying-any-3s3p] <snapshot> 1`] = `
 {
+  "message": "Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]",
   "name": "UnknownAssertionError",
   "args": [
     null,
     "to throw matching",
     {}
   ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw'\" [function-to-throw-2s2p] > should throw a consistent AssertionError [function-to-throw-2s2p] <snapshot> 1`] = `
 {
   "message": "Expected function to throw, but it did not",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected function to throw, but it did not\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to' {number} {number?}\" [number-to-be-close-to-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-close-to-number-number-4s4p] <snapshot> 1`] = `
 {
+  "message": "Expected 10 to be close to 5 (within 2), but difference was 5",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 10,
   "expected": 5,
-  "message": "Expected 10 to be close to 5 (within 2), but difference was 5",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected 10 to be close to 5 (within 2), but difference was 5\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\" [number-to-be-greater-than-or-equal-to-to-be-at-least-to-be-gte-number-3s3p] > should throw a consistent AssertionError [number-to-be-greater-than-or-equal-to-to-be-at-least-to-be-gte-number-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 5,
   "expected": 10,
-  "message": "Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than or equal to' / 'to be at least' / 'to be gte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:120:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be greater than' {number}\" [number-to-be-greater-than-number-3s3p] > should throw a consistent AssertionError [number-to-be-greater-than-number-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 5,
   "expected": 10,
-  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 10\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:114:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\" [number-to-be-less-than-or-equal-to-to-be-at-most-to-be-lte-number-3s3p] > should throw a consistent AssertionError [number-to-be-less-than-or-equal-to-to-be-at-most-to-be-lte-number-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 10,
   "expected": 5,
-  "message": "Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than or equal to' / 'to be at most' / 'to be lte' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:132:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than' / 'to be lt' {number}\" [number-to-be-less-than-to-be-lt-number-3s3p] > should throw a consistent AssertionError [number-to-be-less-than-to-be-lt-number-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 10,
   "expected": 5,
-  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:126:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' / 'to be between' {number} {number}\" [number-to-be-within-to-be-between-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-within-to-be-between-number-number-4s4p] <snapshot> 1`] = `
 {
+  "message": "Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]",
   "name": "UnknownAssertionError",
   "args": [
     15,
@@ -180,13 +207,16 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' /
       10
     ]
   ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION",
-  "stack": "UnknownAssertionError: Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]\\n    at throwInvalidParametersError (./src/expect.ts:574:9)"
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\" [object-to-satisfy-to-be-like-satisfies-any-3s3p] > should throw a consistent AssertionError [object-to-satisfy-to-be-like-satisfies-any-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": {
     "a": 1,
     "b": 2
@@ -195,14 +225,16 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 
     "a": 1,
     "b": 3
   },
-  "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:150:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' / 'to deeply equal' {any}\" [object-to-deep-equal-to-deeply-equal-any-3s3p] > should throw a consistent AssertionError [object-to-deep-equal-to-deeply-equal-any-3s3p] <snapshot> 1`] = `
 {
+  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": {
     "a": 1,
     "b": 2
@@ -211,114 +243,134 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' 
     "a": 1,
     "b": 3
   },
-  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m\\n    at expect.a (./test/error/sync-parametric-error.test.ts:144:7)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'includes' / 'contains' / 'to include' / 'to contain' {string}\" [string-includes-contains-to-include-to-contain-string-3s3p] > should throw a consistent AssertionError [string-includes-contains-to-include-to-contain-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"hello world\\" to include \\"universe\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "hello world",
   "expected": "string including \\"universe\\"",
-  "message": "Expected \\"hello world\\" to include \\"universe\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to include \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be greater than or equal to' {string}\" [string-to-be-greater-than-or-equal-to-string-3s3p] > should throw a consistent AssertionError [string-to-be-greater-than-or-equal-to-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"apple\\" to be greater than or equal to \\"zebra\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "apple",
   "expected": "string greater than or equal to \\"zebra\\"",
-  "message": "Expected \\"apple\\" to be greater than or equal to \\"zebra\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than or equal to \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be greater than' {string}\" [string-to-be-greater-than-string-3s3p] > should throw a consistent AssertionError [string-to-be-greater-than-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"apple\\" to be greater than \\"zebra\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "apple",
   "expected": "string greater than \\"zebra\\"",
-  "message": "Expected \\"apple\\" to be greater than \\"zebra\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"apple\\" to be greater than \\"zebra\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be less than or equal to' {string}\" [string-to-be-less-than-or-equal-to-string-3s3p] > should throw a consistent AssertionError [string-to-be-less-than-or-equal-to-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"zebra\\" to be less than or equal to \\"apple\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "zebra",
   "expected": "string less than or equal to \\"apple\\"",
-  "message": "Expected \\"zebra\\" to be less than or equal to \\"apple\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than or equal to \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to be less than' {string}\" [string-to-be-less-than-string-3s3p] > should throw a consistent AssertionError [string-to-be-less-than-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"zebra\\" to be less than \\"apple\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "zebra",
   "expected": "string less than \\"apple\\"",
-  "message": "Expected \\"zebra\\" to be less than \\"apple\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"zebra\\" to be less than \\"apple\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to begin with' / 'to start with' {string}\" [string-to-begin-with-to-start-with-string-3s3p] > should throw a consistent AssertionError [string-to-begin-with-to-start-with-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"hello world\\" to begin with \\"goodbye\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "hello world",
   "expected": "string beginning with \\"goodbye\\"",
-  "message": "Expected \\"hello world\\" to begin with \\"goodbye\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to begin with \\"goodbye\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to end with' {string}\" [string-to-end-with-string-3s3p] > should throw a consistent AssertionError [string-to-end-with-string-3s3p] <snapshot> 1`] = `
 {
+  "message": "Expected \\"hello world\\" to end with \\"universe\\"",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": "hello world",
   "expected": "string ending with \\"universe\\"",
-  "message": "Expected \\"hello world\\" to end with \\"universe\\"",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected \\"hello world\\" to end with \\"universe\\"\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to match' {regexp}\" [string-to-match-regexp-3s3p] > should throw a consistent AssertionError [string-to-match-regexp-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\" [unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p] > should throw a consistent AssertionError [unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number",
+  "generatedMessage": false,
   "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number\\n    at <anonymous> (./test/error/sync-parametric-error.test.ts:102:7)"
+  "code": "ERR_ASSERTION",
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' {array}\" [unknown-to-be-one-of-array-3s2p] > should throw a consistent AssertionError [unknown-to-be-one-of-array-3s2p] <snapshot> 1`] = `
 {
+  "message": "Expected 5 to be one of [1, 2, 3]",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": 5,
   "expected": "one of [1, 2, 3]",
-  "message": "Expected 5 to be one of [1, 2, 3]",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected 5 to be one of [1, 2, 3]\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be' / 'to equal' / 'equals' / 'is' / 'is equal to' / 'to strictly equal' / 'is strictly equal to' {unknown}\" [unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p] > should throw a consistent AssertionError [unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p] <snapshot> 1`] = `
 {
+  "message": "Expected {} to equal {}",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
   "actual": {},
   "expected": {},
-  "message": "Expected {} to equal {}",
-  "name": "AssertionError",
-  "stack": "AssertionError [ERR_ASSERTION]: Expected {} to equal {}\\n    at new AssertionError (node:internal/assert/assertion_error:376:5)"
+  "diff": "simple"
 }
 `;
