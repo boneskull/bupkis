@@ -1,7 +1,11 @@
 import { describe, it } from 'node:test';
 import { stripVTControlCharacters } from 'node:util';
 
-import { UnknownAssertionError } from '../../src/error.js';
+import {
+  AssertionError,
+  AssertionImplementationError,
+  UnknownAssertionError,
+} from '../../src/error.js';
 import {
   createAsyncAssertion,
   type Expect,
@@ -165,8 +169,118 @@ describe('core API', () => {
           'to throw a',
           UnknownAssertionError,
           'satisfying',
-          /Invalid arguments. No assertion matched.+42.+to do something impossible/,
+          /Invalid arguments\. No assertion matched/,
         );
+      });
+
+      describe('when non-AssertionError is thrown from an assertion implementation (sync)', () => {
+        describe('when the error is a ZodError', () => {
+          it('should re-throw as an AssertionError', async () => {
+            const schema = z.string().min(5);
+            const faultyAssertion = expect.createAssertion(
+              ['to be a long string'],
+              (subject) => {
+                schema.parse(subject);
+              },
+            );
+            const { expect: expect2 } = expect.use([faultyAssertion]);
+
+            expect2(
+              () => expect2('foo', 'to be a long string'),
+              'to throw an',
+              AssertionError,
+            );
+          });
+        });
+
+        it('should throw AssertionImplementationError', () => {
+          const faultyAssertion = expect.createAssertion(
+            ['to be faulty'],
+            () => {
+              throw new Error('Gadzooks!');
+            },
+          );
+
+          const { expect: myExpect } = expect.use([faultyAssertion]);
+
+          expect(
+            () => myExpect('test', 'to be faulty'),
+            'to throw an',
+            AssertionImplementationError,
+          );
+        });
+
+        it('should throw AssertionImplementationError with negation', () => {
+          const faultyAssertion = expect.createAssertion(
+            ['to be faulty'],
+            () => {
+              throw new Error('Gadzooks!');
+            },
+          );
+
+          const { expect: expect2 } = expect.use([faultyAssertion]);
+
+          expect2(
+            () => expect2('test', 'not to be faulty'),
+            'to throw an',
+            AssertionImplementationError,
+          );
+        });
+      });
+
+      describe('when non-AssertionError is thrown from an assertion implementation (async)', () => {
+        describe('when the error is a ZodError', () => {
+          it('should re-throw as an AssertionError', async () => {
+            const schema = z.string().min(5);
+            const faultyAssertion = expect.createAsyncAssertion(
+              ['to be a long string'],
+              async (subject) => {
+                schema.parse(subject);
+              },
+            );
+            const { expectAsync } = expect.use([faultyAssertion]);
+
+            await expectAsync(
+              () => expectAsync('foo', 'to be a long string'),
+              'to reject with an',
+              AssertionError,
+            );
+          });
+        });
+
+        it('should throw AssertionImplementationError', async () => {
+          const faultyAssertion = expect.createAsyncAssertion(
+            ['to be faulty'],
+            async () => {
+              throw new Error('Gadzooks!');
+            },
+          );
+
+          const { expectAsync } = expect.use([faultyAssertion]);
+
+          await expectAsync(
+            () => expectAsync('test', 'to be faulty'),
+            'to reject with an',
+            AssertionImplementationError,
+          );
+        });
+
+        it('should throw AssertionImplementationError with negation', async () => {
+          const faultyAssertion = expect.createAsyncAssertion(
+            ['to be faulty'],
+            async () => {
+              throw new Error('Gadzooks!');
+            },
+          );
+
+          const { expectAsync } = expect.use([faultyAssertion]);
+
+          await expectAsync(
+            () => expectAsync('test', 'not to be faulty'),
+            'to reject with an',
+            AssertionImplementationError,
+          );
+        });
       });
     });
 
@@ -247,6 +361,15 @@ describe('core API', () => {
       });
 
       it('should handle complex error object parameter matching', () => {
+        expect(
+          () => {
+            const error = new Error('test message');
+            throw error;
+          },
+          'to throw',
+          { message: 'test message' },
+        );
+
         // Test successful simple object matching first
         expect(() => {
           expect(

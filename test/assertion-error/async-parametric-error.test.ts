@@ -63,16 +63,6 @@ const failingAssertions = new Map<AnyAssertion, () => Promise<void>>([
     },
   ],
   [
-    assertions.promiseFulfillWithValueSatisfyingAssertion,
-    async () => {
-      await expectAsync(
-        Promise.resolve('wrong'),
-        'to fulfill with value satisfying',
-        42,
-      );
-    },
-  ],
-  [
     assertions.promiseRejectAssertion,
     async () => {
       await expectAsync(Promise.resolve('success'), 'to reject');
@@ -114,6 +104,16 @@ const failingAssertions = new Map<AnyAssertion, () => Promise<void>>([
         },
       };
       await expectAsync(rejectingThenable, 'to resolve');
+    },
+  ],
+  [
+    assertions.promiseResolveWithValueSatisfyingAssertion,
+    async () => {
+      await expectAsync(
+        Promise.resolve('wrong'),
+        'to fulfill with value satisfying',
+        42,
+      );
     },
   ],
 ]);

@@ -7,11 +7,11 @@ import {
   BupkisError,
   FailAssertionError,
   InvalidMetadataError,
-  InvalidSchemaError,
+  InvalidObjectSchemaError,
   NegatedAssertionError,
+  SatisfactionError,
   UnexpectedAsyncError,
   UnknownAssertionError,
-  ValueToSchemaError,
 } from '../../src/error.js';
 import { expect } from '../custom-assertions.js';
 
@@ -20,9 +20,16 @@ describe('Error classes', () => {
     it('should create instance with default options', () => {
       const error = new AssertionError({});
 
-      expect(error, 'to be an instance of', AssertionError);
-      expect(error, 'to be an instance of', NodeAssertionError);
-      expect(error.name, 'to equal', 'AssertionError');
+      expect(
+        error,
+        'to be an instance of',
+        NodeAssertionError,
+        'and',
+        'to satisfy',
+        {
+          name: 'AssertionError',
+        },
+      );
     });
 
     it('should create instance with custom options', () => {
@@ -33,9 +40,7 @@ describe('Error classes', () => {
       };
       const error = new AssertionError(options);
 
-      expect(error.message, 'to equal', 'Test assertion failed');
-      expect(error.actual, 'to equal', 'foo');
-      expect(error.expected, 'to equal', 'bar');
+      expect(error, 'to satisfy', options);
     });
 
     it('should have proper type guard', () => {
@@ -57,14 +62,13 @@ describe('Error classes', () => {
 
       const json = error.toJSON();
 
-      expect(json, 'to have property', 'message');
-      expect(json, 'to have property', 'actual');
-      expect(json, 'to have property', 'expected');
-      expect(json, 'to have property', 'name');
-      expect(json, 'to have property', 'stack');
-      expect(json.message, 'to equal', 'Test message');
-      expect(json.actual, 'to equal', 42);
-      expect(json.expected, 'to equal', 'string');
+      expect(json, 'to satisfy', {
+        actual: 42,
+        expected: 'string',
+        message: 'Test message',
+        name: 'AssertionError',
+        stack: expect.it('to be a string'),
+      });
     });
   });
 
@@ -72,10 +76,10 @@ describe('Error classes', () => {
     it('should create instance with message', () => {
       const error = new BupkisError('Something went wrong');
 
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error, 'to be an instance of', Error);
-      expect(error.name, 'to equal', 'BupkisError');
-      expect(error.message, 'to equal', 'Something went wrong');
+      expect(error, 'to be an instance of', Error, 'and', 'to satisfy', {
+        message: 'Something went wrong',
+        name: 'BupkisError',
+      });
     });
 
     it('should have proper type guard', () => {
@@ -93,12 +97,19 @@ describe('Error classes', () => {
     it('should create instance with message only', () => {
       const error = new AssertionImplementationError('Implementation failed');
 
-      expect(error, 'to be an instance of', AssertionImplementationError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'AssertionImplementationError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_ASSERTION_IMPL');
-      expect(error.message, 'to equal', 'Implementation failed');
-      expect(error.result, 'to be undefined');
+      expect(
+        error,
+        'to be an instance of',
+        AssertionImplementationError,
+        'and',
+        'to satisfy',
+        {
+          code: 'ERR_BUPKIS_ASSERTION_IMPL',
+          message: 'Implementation failed',
+          name: 'AssertionImplementationError',
+          result: undefined,
+        },
+      );
     });
 
     it('should create instance with message and options', () => {
@@ -108,8 +119,10 @@ describe('Error classes', () => {
         result,
       });
 
-      expect(error.result, 'to equal', result);
-      expect(error.cause, 'to be an instance of', Error);
+      expect(error, 'to satisfy', {
+        cause: expect.it('to be an instance of', Error),
+        result,
+      });
     });
   });
 
@@ -121,10 +134,17 @@ describe('Error classes', () => {
         message: 'Explicit failure',
       });
 
-      expect(error, 'to be an instance of', FailAssertionError);
-      expect(error, 'to be an instance of', AssertionError);
-      expect(error.name, 'to equal', 'FailAssertionError');
-      expect(error.message, 'to equal', 'Explicit failure');
+      expect(
+        error,
+        'to be an instance of',
+        FailAssertionError,
+        'and',
+        'to satisfy',
+        {
+          message: 'Explicit failure',
+          name: 'FailAssertionError',
+        },
+      );
     });
 
     it('should have proper type guard', () => {
@@ -144,12 +164,19 @@ describe('Error classes', () => {
     it('should create instance with message only', () => {
       const error = new InvalidMetadataError('Invalid metadata provided');
 
-      expect(error, 'to be an instance of', InvalidMetadataError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'InvalidMetadataError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_INVALID_METADATA');
-      expect(error.message, 'to equal', 'Invalid metadata provided');
-      expect(error.metadata, 'to be undefined');
+      expect(
+        error,
+        'to be an instance of',
+        InvalidMetadataError,
+        'and',
+        'to satisfy',
+        {
+          code: 'ERR_BUPKIS_INVALID_METADATA',
+          message: 'Invalid metadata provided',
+          metadata: undefined,
+          name: 'InvalidMetadataError',
+        },
+      );
     });
 
     it('should create instance with message and options', () => {
@@ -159,32 +186,43 @@ describe('Error classes', () => {
         metadata,
       });
 
-      expect(error.metadata, 'to equal', metadata);
-      expect(error.cause, 'to be an instance of', Error);
+      expect(error, 'to satisfy', {
+        cause: expect.it('to be an instance of', Error),
+        metadata,
+      });
     });
   });
 
   describe('InvalidSchemaError', () => {
     it('should create instance with message only', () => {
-      const error = new InvalidSchemaError('Schema is invalid');
+      const error = new InvalidObjectSchemaError('Schema is invalid');
 
-      expect(error, 'to be an instance of', InvalidSchemaError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'InvalidSchemaError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_INVALID_SCHEMA');
-      expect(error.message, 'to equal', 'Schema is invalid');
-      expect(error.schema, 'to be undefined');
+      expect(
+        error,
+        'to be an instance of',
+        InvalidObjectSchemaError,
+        'and',
+        'to satisfy',
+        {
+          code: 'ERR_BUPKIS_INVALID_OBJECT_SCHEMA',
+          message: 'Schema is invalid',
+          name: 'InvalidObjectSchemaError',
+          schema: undefined,
+        },
+      );
     });
 
     it('should create instance with message and options', () => {
       const schema = { type: 'invalid' };
-      const error = new InvalidSchemaError('Schema error', {
+      const error = new InvalidObjectSchemaError('Schema error', {
         cause: new Error('Schema validation failed'),
         schema,
       });
 
-      expect(error.schema, 'to equal', schema);
-      expect(error.cause, 'to be an instance of', Error);
+      expect(error, 'to satisfy', {
+        cause: expect.it('to be an instance of', Error),
+        schema,
+      });
     });
   });
 
@@ -196,10 +234,20 @@ describe('Error classes', () => {
         message: 'Negated assertion failed',
       });
 
-      expect(error, 'to be an instance of', NegatedAssertionError);
-      expect(error, 'to be an instance of', AssertionError);
-      expect(error.name, 'to equal', 'NegatedAssertionError');
-      expect(error.message, 'to equal', 'Negated assertion failed');
+      expect(
+        error,
+        'to be an instance of',
+        NegatedAssertionError,
+        'and',
+        'to be an instance of',
+        AssertionError,
+        'and',
+        'to satisfy',
+        {
+          message: 'Negated assertion failed',
+          name: 'NegatedAssertionError',
+        },
+      );
     });
 
     it('should have proper type guard', () => {
@@ -222,11 +270,18 @@ describe('Error classes', () => {
     it('should create instance with message', () => {
       const error = new UnexpectedAsyncError('Unexpected async operation');
 
-      expect(error, 'to be an instance of', UnexpectedAsyncError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'UnexpectedAsyncError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_UNEXPECTED_ASYNC');
-      expect(error.message, 'to equal', 'Unexpected async operation');
+      expect(
+        error,
+        'to be an instance of',
+        UnexpectedAsyncError,
+        'and',
+        'to satisfy',
+        {
+          code: 'ERR_BUPKIS_UNEXPECTED_ASYNC',
+          message: 'Unexpected async operation',
+          name: 'UnexpectedAsyncError',
+        },
+      );
     });
   });
 
@@ -237,37 +292,49 @@ describe('Error classes', () => {
         args,
       });
 
-      expect(error, 'to be an instance of', UnknownAssertionError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'UnknownAssertionError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_UNKNOWN_ASSERTION');
-      expect(error.message, 'to equal', 'Unknown assertion called');
-      expect(error.args, 'to equal', args);
+      expect(
+        error,
+        'to be an instance of',
+        UnknownAssertionError,
+        'and',
+        'to satisfy',
+        {
+          args,
+          code: 'ERR_BUPKIS_UNKNOWN_ASSERTION',
+          message: 'Unknown assertion called',
+          name: 'UnknownAssertionError',
+        },
+      );
     });
 
     it('should preserve exact args type', () => {
       const args = [42, 'to be string', true] as const;
       const error = new UnknownAssertionError('Type mismatch', { args });
 
-      expect(error.args[0], 'to equal', 42);
-      expect(error.args[1], 'to equal', 'to be string');
-      expect(error.args[2], 'to equal', true);
+      expect(error.args, 'to satisfy', [42, 'to be string', true]);
     });
   });
 
   describe('ValueToSchemaError', () => {
     it('should create instance with message only', () => {
-      const error = new ValueToSchemaError('Cannot convert value to schema');
+      const error = new SatisfactionError('Cannot convert value to schema');
 
-      expect(error, 'to be an instance of', ValueToSchemaError);
-      expect(error, 'to be an instance of', BupkisError);
-      expect(error.name, 'to equal', 'SatisfactionError');
-      expect(error.code, 'to equal', 'ERR_BUPKIS_SATISFACTION');
-      expect(error.message, 'to equal', 'Cannot convert value to schema');
+      expect(
+        error,
+        'to be an instance of',
+        SatisfactionError,
+        'and',
+        'to satisfy',
+        {
+          code: 'ERR_BUPKIS_SATISFACTION',
+          message: 'Cannot convert value to schema',
+          name: 'SatisfactionError',
+        },
+      );
     });
 
     it('should create instance with message and options', () => {
-      const error = new ValueToSchemaError('Conversion failed', {
+      const error = new SatisfactionError('Conversion failed', {
         cause: new Error('Invalid __proto__ property'),
       });
 
@@ -289,10 +356,10 @@ describe('Error classes', () => {
     it('should maintain proper inheritance chain for BupkisError variants', () => {
       const implError = new AssertionImplementationError('test');
       const metadataError = new InvalidMetadataError('test');
-      const schemaError = new InvalidSchemaError('test');
+      const schemaError = new InvalidObjectSchemaError('test');
       const asyncError = new UnexpectedAsyncError('test');
       const unknownError = new UnknownAssertionError('test', { args: [] });
-      const valueError = new ValueToSchemaError('test');
+      const satisfactionError = new SatisfactionError('test');
 
       const errors = [
         implError,
@@ -300,11 +367,10 @@ describe('Error classes', () => {
         schemaError,
         asyncError,
         unknownError,
-        valueError,
+        satisfactionError,
       ];
 
       for (const error of errors) {
-        expect(error, 'to be an instance of', BupkisError);
         expect(error, 'to be an instance of', Error);
       }
     });
@@ -312,43 +378,51 @@ describe('Error classes', () => {
 
   describe('Error codes and names', () => {
     it('should have correct error codes for BupkisError subclasses', () => {
-      const implError = new AssertionImplementationError('test');
-      const metadataError = new InvalidMetadataError('test');
-      const schemaError = new InvalidSchemaError('test');
-      const asyncError = new UnexpectedAsyncError('test');
-      const unknownError = new UnknownAssertionError('test', { args: [] });
-      const valueError = new ValueToSchemaError('test');
+      const errors = {
+        asyncError: new UnexpectedAsyncError('test'),
+        implError: new AssertionImplementationError('test'),
+        metadataError: new InvalidMetadataError('test'),
+        satisfactionError: new SatisfactionError('test'),
+        schemaError: new InvalidObjectSchemaError('test'),
+        unknownError: new UnknownAssertionError('test', { args: [] }),
+      };
 
-      expect(implError.code, 'to equal', 'ERR_BUPKIS_ASSERTION_IMPL');
-      expect(metadataError.code, 'to equal', 'ERR_BUPKIS_INVALID_METADATA');
-      expect(schemaError.code, 'to equal', 'ERR_BUPKIS_INVALID_SCHEMA');
-      expect(asyncError.code, 'to equal', 'ERR_BUPKIS_UNEXPECTED_ASYNC');
-      expect(unknownError.code, 'to equal', 'ERR_BUPKIS_UNKNOWN_ASSERTION');
-      expect(valueError.code, 'to equal', 'ERR_BUPKIS_SATISFACTION');
+      expect(errors, 'to satisfy', {
+        asyncError: { code: 'ERR_BUPKIS_UNEXPECTED_ASYNC' },
+        implError: { code: 'ERR_BUPKIS_ASSERTION_IMPL' },
+        metadataError: { code: 'ERR_BUPKIS_INVALID_METADATA' },
+        satisfactionError: { code: 'ERR_BUPKIS_SATISFACTION' },
+        schemaError: { code: 'ERR_BUPKIS_INVALID_OBJECT_SCHEMA' },
+        unknownError: { code: 'ERR_BUPKIS_UNKNOWN_ASSERTION' },
+      });
     });
 
     it('should have correct names for all error classes', () => {
-      const assertionError = new AssertionError({});
-      const bupkisError = new BupkisError('test');
-      const implError = new AssertionImplementationError('test');
-      const failError = new FailAssertionError({});
-      const metadataError = new InvalidMetadataError('test');
-      const schemaError = new InvalidSchemaError('test');
-      const negatedError = new NegatedAssertionError({});
-      const asyncError = new UnexpectedAsyncError('test');
-      const unknownError = new UnknownAssertionError('test', { args: [] });
-      const valueError = new ValueToSchemaError('test');
+      const errors = {
+        assertionError: new AssertionError({}),
+        asyncError: new UnexpectedAsyncError('test'),
+        bupkisError: new BupkisError('test'),
+        failError: new FailAssertionError({}),
+        implError: new AssertionImplementationError('test'),
+        metadataError: new InvalidMetadataError('test'),
+        negatedError: new NegatedAssertionError({}),
+        satisfactionError: new SatisfactionError('test'),
+        schemaError: new InvalidObjectSchemaError('test'),
+        unknownError: new UnknownAssertionError('test', { args: [] }),
+      };
 
-      expect(assertionError.name, 'to equal', 'AssertionError');
-      expect(bupkisError.name, 'to equal', 'BupkisError');
-      expect(implError.name, 'to equal', 'AssertionImplementationError');
-      expect(failError.name, 'to equal', 'FailAssertionError');
-      expect(metadataError.name, 'to equal', 'InvalidMetadataError');
-      expect(schemaError.name, 'to equal', 'InvalidSchemaError');
-      expect(negatedError.name, 'to equal', 'NegatedAssertionError');
-      expect(asyncError.name, 'to equal', 'UnexpectedAsyncError');
-      expect(unknownError.name, 'to equal', 'UnknownAssertionError');
-      expect(valueError.name, 'to equal', 'SatisfactionError'); // Note: Different from class name
+      expect(errors, 'to satisfy', {
+        assertionError: { name: 'AssertionError' },
+        asyncError: { name: 'UnexpectedAsyncError' },
+        bupkisError: { name: 'BupkisError' },
+        failError: { name: 'FailAssertionError' },
+        implError: { name: 'AssertionImplementationError' },
+        metadataError: { name: 'InvalidMetadataError' },
+        negatedError: { name: 'NegatedAssertionError' },
+        satisfactionError: { name: 'SatisfactionError' },
+        schemaError: { name: 'InvalidObjectSchemaError' },
+        unknownError: { name: 'UnknownAssertionError' },
+      });
     });
   });
 });

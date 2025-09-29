@@ -13,11 +13,11 @@ import {
   functionRejectWithErrorSatisfyingAssertion,
   functionRejectWithTypeAssertion,
   functionResolveAssertion,
-  promiseFulfillWithValueSatisfyingAssertion,
   promiseRejectAssertion,
   promiseRejectWithErrorSatisfyingAssertion,
   promiseRejectWithTypeAssertion,
   promiseResolveAssertion,
+  promiseResolveWithValueSatisfyingAssertion,
 } from './async-parametric.js';
 
 /**
@@ -34,7 +34,7 @@ export const AsyncParametricAssertions = [
   promiseRejectWithTypeAssertion,
   functionRejectWithErrorSatisfyingAssertion,
   promiseRejectWithErrorSatisfyingAssertion,
-  promiseFulfillWithValueSatisfyingAssertion,
+  promiseResolveWithValueSatisfyingAssertion,
   functionFulfillWithValueSatisfyingAssertion,
 ] as const;
 

@@ -57,7 +57,7 @@ export interface InvalidMetadataErrorOptions extends ErrorOptions {
 }
 
 /**
- * Options for {@link InvalidSchemaError}
+ * Options for {@link InvalidObjectSchemaError}
  *
  * @group Error Options
  */
@@ -163,6 +163,12 @@ export class AssertionImplementationError extends BupkisError {
     super(message, rest);
     this.result = result;
   }
+
+  static isAssertionImplementationError(
+    err: unknown,
+  ): err is AssertionImplementationError {
+    return isA(err, AssertionImplementationError);
+  }
 }
 
 /**
@@ -209,14 +215,15 @@ export class InvalidMetadataError extends BupkisError {
 }
 
 /**
- * Thrown from certain assertions when the result of `valueToSchema` is invalid.
+ * Thrown from certain assertions when a parameter cannot be used as an "object
+ * schema"
  *
  * @group Errors
  */
-export class InvalidSchemaError extends BupkisError {
-  readonly code = 'ERR_BUPKIS_INVALID_SCHEMA';
+export class InvalidObjectSchemaError extends BupkisError {
+  readonly code = 'ERR_BUPKIS_INVALID_OBJECT_SCHEMA';
 
-  override name = 'InvalidSchemaError';
+  override name = 'InvalidObjectSchemaError';
 
   readonly schema?: unknown;
 
@@ -242,6 +249,25 @@ export class NegatedAssertionError extends AssertionError {
     return (
       isA(err, AssertionError) && hasOwn(err, kBupkisNegatedAssertionError)
     );
+  }
+}
+
+/**
+ * Thrown when a value cannot be converted to a schema using `valueToSchema()`.
+ *
+ * @remarks
+ * Currently, this includes the presence of an own property `__proto__` or an
+ * empty object (because this will match anything; though maybe we should change
+ * that).
+ * @group Errors
+ */
+export class SatisfactionError extends BupkisError {
+  readonly code = 'ERR_BUPKIS_SATISFACTION';
+
+  override name = 'SatisfactionError';
+
+  constructor(message: string, options: ErrorOptions = {}) {
+    super(message, options);
   }
 }
 
@@ -275,24 +301,5 @@ export class UnknownAssertionError<
     const { args, ...rest } = options;
     super(message, rest);
     this.args = args;
-  }
-}
-
-/**
- * Thrown when a value cannot be converted to a schema using `valueToSchema()`.
- *
- * @remarks
- * Currently, this includes the presence of an own property `__proto__` or an
- * empty object (because this will match anything; though maybe we should change
- * that).
- * @group Errors
- */
-export class ValueToSchemaError extends BupkisError {
-  readonly code = 'ERR_BUPKIS_SATISFACTION';
-
-  override name = 'SatisfactionError';
-
-  constructor(message: string, options: ErrorOptions = {}) {
-    super(message, options);
   }
 }

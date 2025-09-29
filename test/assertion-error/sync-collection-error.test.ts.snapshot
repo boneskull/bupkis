@@ -288,7 +288,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to contain' / 't
 
 exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to have length' {nonnegative-integer}\" [array-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [array-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{array} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- Expected  - 2\\u001b[39m\\n\\u001b[31m+ Received  + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "message": "Assertion \\"{array} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- expected  - 2\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

@@ -30,12 +30,11 @@ import {
   type AssertionParts,
   type AssertionSlots,
   type ParsedResult,
-  type ParsedValues,
 } from './assertion-types.js';
 
 const debug = createDebug('bupkis:assertion');
 const { hasOwn, keys } = Object;
-
+const { isArray } = Array;
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;
  * and for hyphens to replace everything else that needs replacing) and `<` with
@@ -188,23 +187,21 @@ export abstract class BupkisAssertion<
    * @param values Values which caused the error
    * @returns New `AssertionError`
    */
-  protected fromZodError<Parts extends AssertionParts>(
+  protected fromZodError<Values>(
     zodError: z.ZodError,
     stackStartFn: (...args: any[]) => any,
-    values: ParsedValues<Parts>,
+    values: Values,
   ): AssertionError {
-    // Extract the subject (first value) from parsed values for diff generation
-    const subject = values.length > 0 ? values[0] : undefined;
+    const subject: unknown = isArray(values) ? values[0] : values;
 
-    // Try to extract meaningful actual/expected values for Node.js diff
     const { actual, expected } = extractDiffValues(zodError, subject);
 
     // Only use custom message if we could extract diff values
     if (shouldGenerateDiff(actual, expected)) {
       // Use jest-diff to generate rich, colored diff output
       const diffOutput = generateDiff(expected, actual, {
-        aAnnotation: 'Expected',
-        bAnnotation: 'Received',
+        aAnnotation: 'expected',
+        bAnnotation: 'actual',
         expand: false,
         includeChangeCounts: true,
       });
@@ -223,6 +220,7 @@ export abstract class BupkisAssertion<
       // Fall back to Zod's prettified error message
       const pretty = z.prettifyError(zodError).slice(2);
       return new AssertionError({
+        actual: subject,
         message: `Assertion ${this} failed:\n${pretty}`,
         stackStartFn,
       });

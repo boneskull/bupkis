@@ -1,6 +1,6 @@
 exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep equal\" > \"to deep equal\" <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- Expected  - 1\\u001b[39m\\n\\u001b[31m+ Received  + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[2m    \\"b\\": Object {\\u001b[22m\\n\\u001b[32m-     \\"c\\": 3,\\u001b[39m\\n\\u001b[31m+     \\"c\\": 2,\\u001b[39m\\n\\u001b[2m    },\\u001b[22m\\n\\u001b[2m  }\\u001b[22m",
+  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {any}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[2m    \\"b\\": Object {\\u001b[22m\\n\\u001b[32m-     \\"c\\": 3,\\u001b[39m\\n\\u001b[31m+     \\"c\\": 2,\\u001b[39m\\n\\u001b[2m    },\\u001b[22m\\n\\u001b[2m  }\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

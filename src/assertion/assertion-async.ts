@@ -4,13 +4,17 @@ import z from 'zod/v4';
 import { kStringLiteral } from '../constant.js';
 import { AssertionError, AssertionImplementationError } from '../error.js';
 import { isA, isBoolean, isError, isZodType } from '../guards.js';
-import { isAssertionFailure } from '../internal-schema.js';
+import {
+  isAssertionFailure,
+  isAssertionParseRequest,
+} from '../internal-schema.js';
 import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionAsync,
   type AssertionFunctionAsync,
   type AssertionImplAsync,
   type AssertionImplFnAsync,
+  type AssertionImplFnReturnType,
   type AssertionImplSchemaAsync,
   type AssertionParts,
   type AssertionSchemaAsync,
@@ -109,8 +113,25 @@ export class BupkisAssertionFunctionAsync<
     stackStartFn: (...args: any[]) => any,
     _parseResult?: ParsedResult<Parts>,
   ): Promise<void> {
-    const { impl } = this;
-    const result = await impl(...parsedValues);
+    let result: AssertionImplFnReturnType<Parts>;
+    try {
+      result = await (this.impl as AssertionImplFnAsync<Parts>).call(
+        null,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        ...(parsedValues as any),
+      );
+    } catch (err) {
+      if (AssertionError.isAssertionError(err)) {
+        throw err;
+      }
+      if (isError(err) && err instanceof z.ZodError) {
+        throw this.fromZodError(err, stackStartFn, parsedValues);
+      }
+      throw new AssertionImplementationError(
+        `Unexpected error thrown from assertion ${this}: ${err}`,
+        { cause: err },
+      );
+    }
     if (isZodType(result)) {
       try {
         await result.parseAsync(parsedValues[0]);
@@ -126,14 +147,27 @@ export class BupkisAssertionFunctionAsync<
           message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
         });
       }
+    } else if (isError(result) && result instanceof z.ZodError) {
+      throw this.fromZodError(result, stackStartFn, parsedValues);
+    } else if (isAssertionParseRequest(result)) {
+      const { asyncSchema, schema, subject } = result;
+      let zodResult: z.ZodSafeParseResult<unknown>;
+      if (schema) {
+        zodResult = schema.safeParse(subject);
+      } else {
+        zodResult = asyncSchema.safeParse(subject);
+      }
+      if (!zodResult.success) {
+        throw this.fromZodError(zodResult.error, stackStartFn, subject);
+      }
     } else if (isAssertionFailure(result)) {
       throw new AssertionError({
         actual: result.actual,
         expected: result.expected,
-        message: result.message ?? `Assertion ${this} failed`,
+        message:
+          result.message ??
+          `Assertion ${this} failed for arguments: ${inspect(args)}`,
       });
-    } else if (isError(result) && result instanceof z.ZodError) {
-      throw this.fromZodError(result, stackStartFn, parsedValues);
     } else if (result as unknown) {
       throw new AssertionImplementationError(
         `Invalid return type from assertion ${this}; expected boolean, ZodType, or AssertionFailure`,

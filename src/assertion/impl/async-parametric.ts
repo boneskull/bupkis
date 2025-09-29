@@ -16,7 +16,7 @@
 import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 
-import { InvalidSchemaError } from '../../error.js';
+import { InvalidObjectSchemaError } from '../../error.js';
 import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ConstructibleSchema,
@@ -56,7 +56,7 @@ export const functionResolveAssertion = createAsyncAssertion(
     }
   },
   {
-    anchor: 'to-resolve',
+    anchor: 'promise-to-resolve',
     category: 'promise',
   },
 );
@@ -86,6 +86,10 @@ export const promiseResolveAssertion = createAsyncAssertion(
       };
     }
   },
+  {
+    anchor: 'promise-to-resolve',
+    category: 'promise',
+  },
 );
 
 /**
@@ -103,14 +107,14 @@ export const promiseResolveAssertion = createAsyncAssertion(
 export const functionRejectAssertion = createAsyncAssertion(
   [FunctionSchema, 'to reject'],
   async (subject) => {
-    try {
-      await subject();
+    const { error, result } = await trapAsyncFnError(subject);
+    if (error === undefined) {
       return {
         actual: 'function fulfilled',
-        expected: 'function to reject',
-        message: 'Expected function to reject, but it fulfilled instead',
+        expected: 'function rejected',
+        message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
       };
-    } catch {}
+    }
   },
 );
 
@@ -129,14 +133,14 @@ export const functionRejectAssertion = createAsyncAssertion(
 export const promiseRejectAssertion = createAsyncAssertion(
   [WrappedPromiseLikeSchema, 'to reject'],
   async (subject) => {
-    try {
-      await subject;
+    const { error, result } = await trapPromiseError(subject);
+    if (error === undefined) {
       return {
-        actual: 'function fulfilled',
-        expected: 'function to reject',
-        message: 'Expected function to reject, but it fulfilled instead',
+        actual: 'Promise fulfilled',
+        expected: 'Promise rejected',
+        message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
-    } catch {}
+    }
   },
 );
 
@@ -167,11 +171,29 @@ export const functionRejectWithTypeAssertion = createAsyncAssertion(
     ConstructibleSchema,
   ],
   async (subject, ctor) => {
-    const error = await trapAsyncFnError(subject);
-    if (!error) {
-      return false;
+    const { error, result } = await trapAsyncFnError(subject);
+    if (error === undefined) {
+      return {
+        actual: 'function fulfilled',
+        expect: 'function rejected',
+        message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
+      };
     }
-    return isA(error, ctor);
+    if (!isA(error, ctor)) {
+      if (isNonNullObject(error)) {
+        const err = error as object;
+        return {
+          actual: err.constructor.name,
+          expected: ctor.name,
+          message: `Expected function to reject with an instance of ${ctor.name}, but it rejected with a ${err.constructor.name}`,
+        };
+      }
+      return {
+        actual: typeof error,
+        expected: ctor.name,
+        message: `Expected function to reject with an instance of ${ctor.name}, but it rejected with a value of type ${typeof error}: ${inspect(error)}`,
+      };
+    }
   },
 );
 
@@ -202,11 +224,29 @@ export const promiseRejectWithTypeAssertion = createAsyncAssertion(
     ConstructibleSchema,
   ],
   async (subject, ctor) => {
-    const error = await trapPromiseError(subject);
-    if (!error) {
-      return false;
+    const { error, result } = await trapPromiseError(subject);
+    if (error === undefined) {
+      return {
+        actual: 'Promise fulfilled',
+        expect: 'Promise rejected',
+        message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
+      };
     }
-    return isA(error, ctor);
+    if (!isA(error, ctor)) {
+      if (isNonNullObject(error)) {
+        const err = error as object;
+        return {
+          actual: err.constructor.name,
+          expected: ctor.name,
+          message: `Expected Promise to reject with an instance of ${ctor.name}, but it rejected with a ${err.constructor.name}`,
+        };
+      }
+      return {
+        actual: typeof error,
+        expected: ctor.name,
+        message: `Expected Promise to reject with an instance of ${ctor.name}, but it rejected with a value of type ${typeof error}: ${inspect(error)}`,
+      };
+    }
   },
 );
 
@@ -239,12 +279,12 @@ export const promiseRejectWithTypeAssertion = createAsyncAssertion(
 export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
   [FunctionSchema, ['to reject with error satisfying'], z.any()],
   async (subject, param) => {
-    const error = await trapAsyncFnError(subject);
-    if (!error) {
+    const { error, result } = await trapAsyncFnError(subject);
+    if (error === undefined) {
       return {
         actual: 'function fulfilled',
         expect: 'function to reject',
-        message: 'Expected function to reject, but it fulfilled instead',
+        message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
 
@@ -267,16 +307,16 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
     }
     /* c8 ignore next 5 */
     if (!schema) {
-      throw new InvalidSchemaError(
+      throw new InvalidObjectSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
         { schema: param },
       );
     }
 
-    const result = schema.safeParse(error);
-    if (!result.success) {
-      return result.error;
-    }
+    return {
+      schema,
+      subject: error,
+    };
   },
 );
 
@@ -309,12 +349,12 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
 export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
   [WrappedPromiseLikeSchema, ['to reject with error satisfying'], z.any()],
   async (subject, param) => {
-    const error = await trapPromiseError(subject);
-    if (!error) {
+    const { error, result } = await trapPromiseError(subject);
+    if (error === undefined) {
       return {
-        actual: 'promise fulfilled',
-        expect: 'promise to reject',
-        message: 'Expected promise to reject, but it fulfilled instead',
+        actual: 'Promise fulfilled',
+        expect: 'Promise rejected',
+        message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
     let schema: undefined | z.ZodType;
@@ -336,16 +376,16 @@ export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
     }
     /* c8 ignore next 5 */
     if (!schema) {
-      throw new InvalidSchemaError(
+      throw new InvalidObjectSchemaError(
         `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
         { schema: param },
       );
     }
 
-    const result = schema.safeParse(error);
-    if (!result.success) {
-      return result.error;
-    }
+    return {
+      schema,
+      subject: error,
+    };
   },
 );
 
@@ -375,7 +415,7 @@ export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
  *
  * @group Parametric Assertions (Async)
  */
-export const promiseFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
+export const promiseResolveWithValueSatisfyingAssertion = createAsyncAssertion(
   [
     WrappedPromiseLikeSchema,
     ['to fulfill with value satisfying', 'to resolve with value satisfying'],
@@ -387,19 +427,20 @@ export const promiseFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
       value = await promise;
     } catch (err) {
       return {
-        actual: err,
-        expect: 'promise to fulfill',
-        message: `Expected promise to not reject, but it rejected with ${inspect(
+        actual: 'Promise rejected',
+        expect: 'Promise to fulfill',
+        message: `Expected Promise to fulfill, but it rejected with ${inspect(
           err,
         )}`,
       };
     }
 
     const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    const result = schema.safeParse(value);
-    if (!result.success) {
-      return result.error;
-    }
+
+    return {
+      schema,
+      subject: value,
+    };
   },
 );
 
@@ -442,7 +483,7 @@ export const functionFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
     } catch (err) {
       return {
         actual: 'function rejected',
-        expect: 'function to fulfill',
+        expect: 'function fulfilled',
         message: `Expected function to fulfill, but it rejected with ${inspect(
           err,
         )}`,
@@ -450,9 +491,9 @@ export const functionFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
     }
 
     const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    const result = schema.safeParse(value);
-    if (!result.success) {
-      return result.error;
-    }
+    return {
+      schema,
+      subject: value,
+    };
   },
 );

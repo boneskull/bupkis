@@ -13,7 +13,7 @@ An alternative [phrase].
 
 A validation rule that tests whether a [subject](#subject) meets specific criteria. In <span class="bupkis">BUPKIS</span>, assertions are expressed as natural language [phrases](#phrase) combined with optional [parameters](#parameter). Each assertion has an [implementation](#assertion-implementation) ([schema](#zod-schema) or function) that performs the actual validation.
 
-_See also: [Expectation](#expectation)_
+> 👉 See also: [Expectation](#expectation)
 
 ### Assertion Engine
 
@@ -51,13 +51,27 @@ The standard Node.js error thrown when an [assertion](#assertion) fails. <span c
 
 An [assertion](#assertion) designed to work with Promises and async operations. Created using `createAsyncAssertion()` and used with [`expectAsync()`](#expectasync). Examples include `'to resolve'` and `'to reject'`.
 
+## B
+
+### Behavioral Assertion
+
+An assertion that involves function or Promise execution. Examples include [`{function} to throw`](../assertions/function.md#function-to-throw-any) and [`{Promise} to resolve`](../assertions/promise.md#promise-to-resolve).
+
+## C
+
+### Conjunction
+
+An assertion chaining mechanism using the phrase `'and'` to combine multiple assertions in a single call. For example, `expect(value, 'to be a string', 'and', 'to contain', 'foo')`.
+
+> 👉 See also: [negation](#negation)
+
 ## E
 
 ### Expectation
 
 A statement about what should be true about a value or behavior. This term is used interchangeably with "assertion" in the context of <span class="bupkis">BUPKIS</span>. For example, "I expect this value to be a string" expresses the same concept as "I assert this value is a string."
 
-_See also: [Assertion](#assertion)_
+> 👉 See also: [Assertion](#assertion)
 
 ### expect()
 
@@ -82,6 +96,8 @@ An [assertion](#assertion) implemented using a JavaScript function rather than a
 ### Negation
 
 The ability to invert an [assertion](#assertion) using `'not'`. For example, `expect(5, 'not to be a string')`. <span class="bupkis">BUPKIS</span> automatically supports negation for all assertions.
+
+> 👉 See also: [conjunction](#conjunction)
 
 ## P
 
@@ -127,7 +143,7 @@ An [assertion](#assertion) that completes immediately without waiting for Promis
 
 ### use()
 
-The method for registering custom [assertions](#assertion) with <span class="bupkis">BUPKIS</span>. Called as `expect.use([customAssertions])` and returns new [`expect`](#expect) and [`expectAsync`](#expectasync) functions that include the custom assertions.
+{@link bupkis!use | use()} is the method for registering custom [assertions](#assertion) with <span class="bupkis">BUPKIS</span>. Exported from `bupkis` and also available as {@link bupkis!expect.use | expect.use()}. Called with an array of custom assertions and returns a new {@link bupkis!expect | expect()} and {@link bupkis!expectAsync | expectAsync()} functions which understand the new assertions.
 
 ## Z
 

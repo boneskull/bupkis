@@ -14,7 +14,7 @@
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
-import { ValueToSchemaError } from '../../src/error.js';
+import { SatisfactionError } from '../../src/error.js';
 import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
 import {
   valueToSchema,
@@ -621,7 +621,7 @@ describe('valueToSchema() property tests', () => {
             valueToSchema(objWithProto);
           } catch (error) {
             errorThrown = true;
-            if (error instanceof ValueToSchemaError) {
+            if (error instanceof SatisfactionError) {
               errorMessage = error.message;
             }
           }

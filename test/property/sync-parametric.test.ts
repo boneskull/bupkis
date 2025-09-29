@@ -288,7 +288,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
-    assertions.functionThrowsMatchingAssertion,
+    assertions.functionThrowsSatisfyingAssertion,
     {
       invalid: {
         generators: [
@@ -296,7 +296,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             throw new Error('hello world');
           }),
           fc.constantFrom(
-            ...extractPhrases(assertions.functionThrowsMatchingAssertion),
+            ...extractPhrases(assertions.functionThrowsSatisfyingAssertion),
           ),
           fc.constant(/goodbye/),
         ],
@@ -307,7 +307,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             throw new Error('hello world');
           }),
           fc.constantFrom(
-            ...extractPhrases(assertions.functionThrowsMatchingAssertion),
+            ...extractPhrases(assertions.functionThrowsSatisfyingAssertion),
           ),
           fc.constant(/hello/),
         ],
@@ -354,7 +354,11 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom('to throw a', 'to throw an'),
           fc.constant(TypeError), // Expect TypeError but will get Error
           fc.constant('satisfying'),
-          fc.constant({ message: 'test message' }),
+          fc.constantFrom(
+            { message: 'test message' },
+            'test message',
+            /test message/,
+          ),
         ],
       },
       valid: {
@@ -365,7 +369,11 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           fc.constantFrom('to throw a', 'to throw an'),
           fc.constant(Error), // Expect Error and will get Error
           fc.constant('satisfying'),
-          fc.constant({ message: 'test message' }),
+          fc.constantFrom(
+            { message: 'test message' },
+            'test message',
+            /test message/,
+          ),
         ],
       },
     },
