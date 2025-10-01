@@ -353,7 +353,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an insta
 }
 `;
 
-exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' {array}\" [unknown-to-be-one-of-array-3s2p] > should throw a consistent AssertionError [unknown-to-be-one-of-array-3s2p] <snapshot> 1`] = `
+exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' {any[]}\" [unknown-to-be-one-of-any-3s2p] > should throw a consistent AssertionError [unknown-to-be-one-of-any-3s2p] <snapshot> 1`] = `
 {
   "message": "Expected 5 to be one of [1, 2, 3]",
   "generatedMessage": false,

@@ -258,19 +258,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to inters
 }
 `;
 
-exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to be non-empty'\" [array-to-be-non_empty-2s2p] > should throw a consistent AssertionError [array-to-be-non_empty-2s2p] <snapshot> 1`] = `
-{
-  "message": "Expected array to be non-empty",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": "length: 0",
-  "expected": "length greater than 0",
-  "diff": "simple"
-}
-`;
-
-exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to contain' / 'to include' {any}\" [array-to-contain-to-include-any-3s3p] > should throw a consistent AssertionError [array-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{any[]} 'to contain' / 'to include' {any}\" [any-to-contain-to-include-any-3s3p] > should throw a consistent AssertionError [any-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected array to contain value",
   "generatedMessage": false,
@@ -286,29 +274,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to contain' / 't
 }
 `;
 
-exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to have length' {nonnegative-integer}\" [array-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [array-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{array} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- expected  - 2\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": [
-    1,
-    2,
-    3
-  ],
-  "expected": [
-    1,
-    2,
-    3,
-    null,
-    null
-  ],
-  "diff": "simple"
-}
-`;
-
-exports[`Sync Collection Assertion Error Snapshots > \"{array} 'to have size' {nonnegative-integer}\" [array-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [array-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{any[]} 'to have size' {nonnegative-integer}\" [any-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [any-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected array to have size 5, got 3",
   "generatedMessage": false,
@@ -347,7 +313,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
 }
 `;
 
-exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys' / 'to have properties' / 'to have props' {array}\" [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-to-have-properties-to-have-props-array-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys' / 'to have properties' / 'to have props' {string[]}\" [non_collection_object-to-have-keys-to-have-properties-to-have-props-string-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-to-have-properties-to-have-props-string-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected object to contain keys: a, b",
   "generatedMessage": false,
@@ -367,6 +333,40 @@ exports[`Sync Collection Assertion Error Snapshots > \"{object} 'to have size' {
   "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": 3,
+  "diff": "simple"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{unknown[]} 'to be non-empty'\" [unknown-to-be-non_empty-2s2p] > should throw a consistent AssertionError [unknown-to-be-non_empty-2s2p] <snapshot> 1`] = `
+{
+  "message": "Expected array to be non-empty",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "length: 0",
+  "expected": "length greater than 0",
+  "diff": "simple"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{unknown[]} 'to have length' {nonnegative-integer}\" [unknown-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [unknown-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{unknown[]} 'to have length' {nonnegative-integer}\\" failed:\\n\\u001b[32m- expected  - 2\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": [
+    1,
+    2,
+    3,
+    null,
+    null
+  ],
   "diff": "simple"
 }
 `;

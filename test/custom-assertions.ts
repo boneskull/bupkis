@@ -8,9 +8,10 @@ import { keyBy } from '../src/util.js';
 
 const { keys } = Object;
 
-const AnyAssertionSchema = z.custom<AnyAssertion>(
-  (value): value is AnyAssertion => value instanceof BupkisAssertion,
-);
+const AnyAssertionSchema = z.instanceof(BupkisAssertion) as z.ZodCustom<
+  AnyAssertion,
+  AnyAssertion
+>;
 
 const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
   [
@@ -28,6 +29,7 @@ const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
     try {
       builtinExpect(diff, 'to be empty');
     } catch {
+      /* c8 ignore next */
       throw new AssertionError({
         actual: testedIds,
         expected: allCollectionIds,
