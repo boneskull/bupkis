@@ -22,7 +22,9 @@ import {
   shouldGenerateDiff,
 } from '../diff.js';
 import { AssertionError, InvalidMetadataError } from '../error.js';
+import { isZodType } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
+import { type DefFromZodType } from '../types.js';
 import {
   type Assertion,
   type AssertionImpl,
@@ -33,7 +35,7 @@ import {
 } from './assertion-types.js';
 
 const debug = createDebug('bupkis:assertion');
-const { hasOwn, keys } = Object;
+const { entries, hasOwn, keys } = Object;
 const { isArray } = Array;
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;
@@ -84,87 +86,105 @@ export abstract class BupkisAssertion<
      * Expands a Zod type into a human-readable string representation.
      *
      * @function
-     * @param zodType The Zod type to expand
+     * @param zodType The Zod type (or internal ZodType) to expand
      * @param wrapCurlies Whether to wrap the result in curly braces
      * @returns String representation of the Zod type
      */
-    const expand = (
-      zodType: z.core.$ZodType | z.ZodType,
+    /* c8 ignore start */
+    const expand = <T extends z.core.$ZodType | z.ZodType>(
+      zodType: T,
       wrapCurlies = false,
     ): string => {
-      const def = 'def' in zodType ? zodType.def : zodType._zod.def;
+      /**
+       * Finds a `ZodTypeDef` within a Zod type or internal Zod type
+       *
+       * @function
+       */
+      const getDef = <T extends z.core.$ZodType | z.ZodType>(zodType: T) =>
+        ('def' in zodType
+          ? zodType.def
+          : zodType._zod.def) as DefFromZodType<T>;
+
       let repr = '';
       const meta = BupkisRegistry.get(zodType);
       if (meta?.name) {
         // our name
         repr = meta.name;
       } else {
-        switch (def.type) {
-          case 'custom': {
-            // internal Zod class name. will probably break.
-            try {
-              repr =
-                'Class' in zodType._zod.bag
-                  ? `${(zodType._zod.bag.Class as new (...args: any[]) => any).name}`
-                  : 'custom';
-            } catch (err) {
-              debug(
-                `⚠️ WARNING: Unable to extract custom class name from Zod type(did Zod's API change?): ${err}`,
-              );
-              repr = 'custom';
-            }
-
-            break;
+        // overrides for certain Zod types which have internal structure
+        if (isZodType(zodType, 'custom')) {
+          // handles z.instanceof
+          repr = zodType._zod.bag.Class?.name ?? 'custom';
+        } else if (isZodType(zodType, 'date')) {
+          repr = 'Date';
+        } else if (isZodType(zodType, 'array')) {
+          repr = `${expand(getDef(zodType).element)}[]`;
+        } else if (isZodType(zodType, 'default')) {
+          repr = `{${expand(zodType.unwrap())}}`;
+        } else if (isZodType(zodType, 'enum')) {
+          repr = `${keys(getDef(zodType).entries).join(' / ')}`;
+        } else if (isZodType(zodType, 'function')) {
+          const def = getDef(zodType);
+          const { input, output } = def;
+          const params = input
+            ? isZodType(input, 'tuple')
+              ? `[${getDef(input)
+                  .items.map((p) => expand(p))
+                  .join(', ')}]`
+              : expand(input)
+            : '()';
+          const returns = output ? expand(output) : 'void';
+          repr = `(${params}) => ${returns}`;
+        } else if (isZodType(zodType, 'intersection')) {
+          const def = getDef(zodType);
+          repr = `${expand(def.left)} & ${expand(def.right)}`;
+        } else if (isZodType(zodType, 'literal')) {
+          repr = getDef(zodType)
+            .values.map((value) => `'${value}'`)
+            .join(' / ');
+        } else if (isZodType(zodType, 'map')) {
+          repr = `Map<${expand(getDef(zodType).keyType)}, ${expand(getDef(zodType).valueType)}>`;
+        } else if (isZodType(zodType, 'nonoptional')) {
+          repr = `${expand(getDef(zodType).innerType)}!`;
+        } else if (isZodType(zodType, 'nullable')) {
+          repr = `${expand(getDef(zodType).innerType)}? | null`;
+        } else if (isZodType(zodType, 'optional')) {
+          repr = `${expand(getDef(zodType).innerType)}?`;
+        } else if (isZodType(zodType, 'promise')) {
+          repr = `Promise<${expand(zodType.unwrap())}>`;
+        } else if (isZodType(zodType, 'never')) {
+          repr = 'NEVER';
+        } else if (isZodType(zodType, 'record')) {
+          repr = `Record<${expand(getDef(zodType).keyType)}, ${expand(getDef(zodType).valueType)}>`;
+        } else if (isZodType(zodType, 'set')) {
+          repr = `Set<${expand(getDef(zodType).valueType)}>`;
+        } else if (isZodType(zodType, 'symbol')) {
+          repr = 'Symbol';
+        } else if (isZodType(zodType, 'tuple')) {
+          repr = `[${getDef(zodType)
+            .items.map((value) => expand(value))
+            .join(', ')}]`;
+        } else if (isZodType(zodType, 'union')) {
+          repr = getDef(zodType)
+            .options.map((value) => expand(value))
+            .join(' | ');
+        } else if (isZodType(zodType, 'object')) {
+          const objEntries = entries(zodType.shape);
+          if (objEntries.length) {
+            const pairs = objEntries.map(
+              ([key, zodTypeValue]) => `${key}: ${expand(zodTypeValue)}`,
+            );
+            repr = `{ ${pairs.join('; ')} }`;
+          } else {
+            repr = 'object';
           }
-          case 'default':
-            repr = `{${expand((def as z.core.$ZodDefaultDef).innerType)}}`;
-            break;
-          case 'enum':
-            repr = `${keys((def as z.core.$ZodEnumDef<any>).entries as Record<PropertyKey, unknown>).join(' / ')}`;
-            break;
-          case 'intersection':
-            repr = `${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).left)} & ${expand((def as z.core.$ZodIntersectionDef<z.core.$ZodType>).right)}`;
-            break;
-          case 'literal':
-            repr = (def as z.core.$ZodLiteralDef<any>).values
-              .map((value) => `'${value}'`)
-              .join(' / ');
-            break;
-          case 'map':
-            repr = `Map<${expand((def as z.core.$ZodMapDef).keyType)}, ${expand((def as z.core.$ZodMapDef).valueType)}>`;
-            break;
-          case 'nonoptional':
-            repr = `${expand((def as z.core.$ZodNonOptionalDef).innerType)}!`;
-            break;
-          case 'nullable':
-            repr = `${expand((def as z.core.$ZodNullableDef).innerType)}? | null`;
-            break;
-          case 'optional':
-            repr = `${expand((def as z.core.$ZodOptionalDef).innerType)}?`;
-            break;
-          case 'record':
-            repr = `Record<${expand((def as z.core.$ZodRecordDef).keyType)}, ${expand((def as z.core.$ZodRecordDef).valueType)}>`;
-            break;
-          case 'set':
-            repr = `Set<${expand((def as z.core.$ZodSetDef).valueType)}>`;
-            break;
-          case 'tuple':
-            repr = `[${(def as z.core.$ZodTupleDef).items.map((value) => expand(value)).join(', ')}]`;
-            break;
-          case 'union':
-            repr = (
-              (def as z.core.$ZodUnionDef<any>).options as z.core.$ZodType[]
-            )
-              .map((value) => expand(value))
-              .join(' | ');
-            break;
-          default:
-            repr = def.type;
-            break;
+        } else {
+          repr = getDef(zodType).type;
         }
       }
       return wrapCurlies ? `{${repr}}` : repr;
     };
+    /* c8 ignore stop */
     return `"${this.slots
       .map((slot) =>
         hasOwn(BupkisRegistry.get(slot) ?? {}, kStringLiteral)

@@ -107,6 +107,9 @@ export interface Assertion<
   Impl extends AssertionImpl<Parts>,
   Slots extends AssertionSlots<Parts>,
 > {
+  /**
+   * Unique identifier for this assertion
+   */
   readonly id: string;
 
   /**
@@ -128,6 +131,10 @@ export interface Assertion<
 
   /**
    * Returns the string representation of this assertion.
+   *
+   * @privateRemarks
+   * The existence of this method suppresses
+   * `@typescript-eslint/no-base-to-string` lint errors.
    */
   toString(): string;
 }

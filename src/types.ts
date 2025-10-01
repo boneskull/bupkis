@@ -201,6 +201,13 @@ export type Constructor<
   Args extends unknown[] = any[],
 > = TypeFestConstructor<Instance, Args>;
 
+export type DefFromZodType<T extends z.core.$ZodType | z.ZodType> =
+  T extends z.ZodType
+    ? T['def']
+    : T extends z.core.$ZodType
+      ? T['_zod']['def']
+      : never;
+
 /**
  * The main synchronous assertion function.
  *
@@ -934,33 +941,36 @@ export interface UseFn<
  */
 export interface ZodTypeMap {
   any: z.ZodAny;
-  array: z.ZodArray<any>;
+  array: z.ZodArray;
   bigint: z.ZodBigInt;
   boolean: z.ZodBoolean;
-  catch: z.ZodCatch<any>;
+  catch: z.ZodCatch;
+  custom: z.ZodCustom;
   date: z.ZodDate;
-  default: z.ZodDefault<any>;
-  enum: z.ZodEnum<any>;
-  function: z.ZodFunction<any, any>;
-  lazy: z.ZodLazy<any>;
-  literal: z.ZodLiteral<any>;
-  map: z.ZodMap<any, any>;
+  default: z.ZodDefault;
+  enum: z.ZodEnum;
+  function: z.ZodFunction;
+  intersection: z.ZodIntersection;
+  lazy: z.ZodLazy;
+  literal: z.ZodLiteral;
+  map: z.ZodMap;
   never: z.ZodNever;
+  nonoptional: z.ZodNonOptional;
   null: z.ZodNull;
-  nullable: z.ZodNullable<any>;
+  nullable: z.ZodNullable;
   number: z.ZodNumber;
-  object: z.ZodObject<any>;
-  optional: z.ZodOptional<any>;
-  pipe: z.ZodPipe<any, any>;
-  promise: z.ZodPromise<any>;
-  readonly: z.ZodReadonly<any>;
-  record: z.ZodRecord<any, any>;
-  set: z.ZodSet<any>;
+  object: z.ZodObject;
+  optional: z.ZodOptional;
+  pipe: z.ZodPipe;
+  promise: z.ZodPromise;
+  readonly: z.ZodReadonly;
+  record: z.ZodRecord;
+  set: z.ZodSet;
   string: z.ZodString;
   symbol: z.ZodSymbol;
-  tuple: z.ZodTuple<any>;
+  tuple: z.ZodTuple;
   undefined: z.ZodUndefined;
-  union: z.ZodUnion<any>;
+  union: z.ZodUnion;
   unknown: z.ZodUnknown;
   void: z.ZodVoid;
 }
