@@ -62,7 +62,7 @@ export const slotify = <const Parts extends AssertionParts>(
     } else if (isPhraseLiteral(part)) {
       if (part.startsWith('not ')) {
         throw new AssertionImplementationError(
-          `PhraseLiteral at parts[${index}] must not start with "not ": ${inspect(
+          `PhraseLiteral at parts[${index}] must not start with "not "; refactor to be a positive assertion: ${inspect(
             part,
           )}`,
         );
