@@ -213,7 +213,7 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
 export const isPhraseLiteralChoice = (
   value: unknown,
 ): value is PhraseLiteralChoice =>
-  isArray(value) && value.every(isPhraseLiteral);
+  isArray(value) && value.length >= 1 && value.every(isPhraseLiteral);
 
 /**
  * Type guard for a {@link PhraseLiteral}, which is just a string that does not
@@ -225,7 +225,7 @@ export const isPhraseLiteralChoice = (
  * @internal
  */
 export const isPhraseLiteral = (value: unknown): value is PhraseLiteral =>
-  isString(value) && !value.startsWith('not ') && value !== 'and';
+  isString(value) && value !== 'and';
 
 /**
  * Type guard for a {@link PhraseLiteral} or {@link PhraseLiteralChoice}.
