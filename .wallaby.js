@@ -20,7 +20,7 @@ export default {
     '!src/node_modules/bupkis/**',
     { instrument: false, pattern: 'test/**/*.test.ts.snapshot' },
   ],
-  filesWithNoCoverageCalculated: ['.tmp/**/*.test.ts'],
+  filesWithNoCoverageCalculated: ['.tmp/**/*.test.ts', 'test/**/*.ts'],
   preloadModules: ['tsx/esm'],
   runMode: 'onsave',
   tests: [
