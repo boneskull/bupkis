@@ -190,6 +190,7 @@ export function createExpectAsyncFunction<
     const argsMatrix = conjunctify(args);
 
     // First, try all conjunctified argument sets
+    let foundCount = 0;
     for (const args of argsMatrix) {
       const { isNegated, processedArgs } = maybeProcessNegation(args);
       const candidates: Array<{
@@ -202,7 +203,8 @@ export function createExpectAsyncFunction<
 
         if (success) {
           if (exactMatch) {
-            return executeAsync(
+            foundCount++;
+            await executeAsync(
               assertion,
               parsedValues,
               [...args],
@@ -210,13 +212,15 @@ export function createExpectAsyncFunction<
               isNegated,
               parseResult,
             );
+            break;
           }
           candidates.push({ assertion, parseResult });
         }
       }
       if (candidates.length) {
         const { assertion, parseResult } = candidates[0]!;
-        return executeAsync(
+        foundCount++;
+        await executeAsync(
           assertion as any,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           parseResult.parsedValues as any,
@@ -228,43 +232,95 @@ export function createExpectAsyncFunction<
       }
     }
 
-    // Fallback: if all conjunctified attempts failed and we actually split on "and",
-    // try the original unsplit arguments as a single assertion
-    if (argsMatrix.length > 1) {
-      const { isNegated, processedArgs } = maybeProcessNegation(args);
-      const candidates: Array<{
-        assertion: AnyAsyncAssertion;
-        parseResult: ParsedResult<AssertionParts>;
-      }> = [];
-      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
-        const parseResult = await assertion.parseValuesAsync(processedArgs);
-        const { exactMatch, parsedValues, success } = parseResult;
+    if (foundCount >= argsMatrix.length) {
+      return;
+    }
 
-        if (success) {
-          if (exactMatch) {
-            return executeAsync(
-              assertion,
-              parsedValues,
-              [...args],
-              expectAsyncFunction,
-              isNegated,
-              parseResult,
-            );
+    // Fallback: if all conjunctified attempts failed and we actually split on "and",
+    // try different permutations of rejoining the split parts
+    if (argsMatrix.length > 1) {
+      // Generate all possible ways to rejoin the split arguments
+      const rejoinPermutations: (readonly unknown[])[] = [];
+
+      // For each possible split point, try joining adjacent parts with "and"
+      for (let i = 0; i < argsMatrix.length - 1; i++) {
+        // Join parts i and i+1 with "and"
+        const rejoinedParts: unknown[][] = [];
+
+        // Add parts before the join point
+        for (let j = 0; j < i; j++) {
+          rejoinedParts.push([...argsMatrix[j]!]);
+        }
+
+        // Join the two parts at the split point
+        const leftPart = argsMatrix[i]!;
+        const rightPart = argsMatrix[i + 1]!;
+        const joinedPart = [...leftPart, 'and', ...rightPart.slice(1)]; // Skip subject from right part
+        rejoinedParts.push(joinedPart);
+
+        // Add parts after the join point
+        for (let j = i + 2; j < argsMatrix.length; j++) {
+          rejoinedParts.push([...argsMatrix[j]!]);
+        }
+
+        // If we only have one part after rejoining, it's a single assertion
+        if (rejoinedParts.length === 1) {
+          rejoinPermutations.push(rejoinedParts[0]!);
+        } else {
+          // Multiple parts - this creates a new matrix to process
+          for (const part of rejoinedParts) {
+            rejoinPermutations.push(part);
           }
-          candidates.push({ assertion, parseResult });
         }
       }
-      if (candidates.length) {
-        const { assertion, parseResult } = candidates[0]!;
-        return executeAsync(
-          assertion as any,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          parseResult.parsedValues as any,
-          [...args],
-          expectAsyncFunction,
-          isNegated,
-          parseResult,
-        );
+
+      // Also try the original unsplit arguments as the final permutation
+      rejoinPermutations.push(args);
+
+      // Try each permutation
+      for (const permutation of rejoinPermutations) {
+        const { isNegated, processedArgs } = maybeProcessNegation(permutation);
+        const candidates: Array<{
+          assertion: AnyAsyncAssertion;
+          parseResult: ParsedResult<AssertionParts>;
+        }> = [];
+
+        for (const assertion of [
+          ...(expect?.assertions ?? []),
+          ...assertions,
+        ]) {
+          const parseResult = await assertion.parseValuesAsync(processedArgs);
+          const { exactMatch, parsedValues, success } = parseResult;
+
+          if (success) {
+            if (exactMatch) {
+              await executeAsync(
+                assertion,
+                parsedValues,
+                [...permutation],
+                expectAsyncFunction,
+                isNegated,
+                parseResult,
+              );
+              return;
+            }
+            candidates.push({ assertion, parseResult });
+          }
+        }
+
+        if (candidates.length) {
+          const { assertion, parseResult } = candidates[0]!;
+          await executeAsync(
+            assertion as any,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            parseResult.parsedValues as any,
+            [...permutation],
+            expectAsyncFunction,
+            isNegated,
+            parseResult,
+          );
+          return;
+        }
       }
     }
 
@@ -416,6 +472,7 @@ export function createExpectSyncFunction<
     const argsMatrix = conjunctify(args);
 
     // First, try all conjunctified argument sets
+    let foundCount = 0;
     for (const args of argsMatrix) {
       const { isNegated, processedArgs } = maybeProcessNegation(args);
       const candidates: Array<{
@@ -428,7 +485,8 @@ export function createExpectSyncFunction<
 
         if (success) {
           if (exactMatch) {
-            return execute(
+            foundCount++;
+            execute(
               assertion,
               parsedValues,
               [...args],
@@ -436,13 +494,15 @@ export function createExpectSyncFunction<
               isNegated,
               parseResult,
             );
+            break;
           }
           candidates.push({ assertion, parseResult });
         }
       }
       if (candidates.length) {
         const { assertion, parseResult } = candidates[0]!;
-        return execute(
+        foundCount++;
+        execute(
           assertion as any,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           parseResult.parsedValues as any,
@@ -454,43 +514,94 @@ export function createExpectSyncFunction<
       }
     }
 
+    if (foundCount >= argsMatrix.length) {
+      return;
+    }
     // Fallback: if all conjunctified attempts failed and we actually split on "and",
-    // try the original unsplit arguments as a single assertion
+    // try different permutations of rejoining the split parts
     if (argsMatrix.length > 1) {
-      const { isNegated, processedArgs } = maybeProcessNegation(args);
-      const candidates: Array<{
-        assertion: AnySyncAssertion;
-        parseResult: ParsedResult<AssertionParts>;
-      }> = [];
-      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
-        const parseResult = assertion.parseValues(processedArgs);
-        const { exactMatch, parsedValues, success } = parseResult;
+      // Generate all possible ways to rejoin the split arguments
+      const rejoinPermutations: (readonly unknown[])[] = [];
 
-        if (success) {
-          if (exactMatch) {
-            return execute(
-              assertion,
-              parsedValues,
-              [...args],
-              expectFunction,
-              isNegated,
-              parseResult,
-            );
+      // For each possible split point, try joining adjacent parts with "and"
+      for (let i = 0; i < argsMatrix.length - 1; i++) {
+        // Join parts i and i+1 with "and"
+        const rejoinedParts: unknown[][] = [];
+
+        // Add parts before the join point
+        for (let j = 0; j < i; j++) {
+          rejoinedParts.push([...argsMatrix[j]!]);
+        }
+
+        // Join the two parts at the split point
+        const leftPart = argsMatrix[i]!;
+        const rightPart = argsMatrix[i + 1]!;
+        const joinedPart = [...leftPart, 'and', ...rightPart.slice(1)]; // Skip subject from right part
+        rejoinedParts.push(joinedPart);
+
+        // Add parts after the join point
+        for (let j = i + 2; j < argsMatrix.length; j++) {
+          rejoinedParts.push([...argsMatrix[j]!]);
+        }
+
+        // If we only have one part after rejoining, it's a single assertion
+        if (rejoinedParts.length === 1) {
+          rejoinPermutations.push(rejoinedParts[0]!);
+        } else {
+          // Multiple parts - this creates a new matrix to process
+          for (const part of rejoinedParts) {
+            rejoinPermutations.push(part);
           }
-          candidates.push({ assertion, parseResult });
         }
       }
-      if (candidates.length) {
-        const { assertion, parseResult } = candidates[0]!;
-        return execute(
-          assertion as any,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          parseResult.parsedValues as any,
-          [...args],
-          expectFunction,
-          isNegated,
-          parseResult,
-        );
+
+      // Also try the original unsplit arguments as the final permutation
+      rejoinPermutations.push(args);
+
+      // Try each permutation
+      for (const permutation of rejoinPermutations) {
+        const { isNegated, processedArgs } = maybeProcessNegation(permutation);
+        const candidates: Array<{
+          assertion: AnySyncAssertion;
+          parseResult: ParsedResult<AssertionParts>;
+        }> = [];
+
+        for (const assertion of [
+          ...(expect?.assertions ?? []),
+          ...assertions,
+        ]) {
+          const parseResult = assertion.parseValues(processedArgs);
+          const { exactMatch, parsedValues, success } = parseResult;
+
+          if (success) {
+            if (exactMatch) {
+              execute(
+                assertion,
+                parsedValues,
+                [...permutation],
+                expectFunction,
+                isNegated,
+                parseResult,
+              );
+              return;
+            }
+            candidates.push({ assertion, parseResult });
+          }
+        }
+
+        if (candidates.length) {
+          const { assertion, parseResult } = candidates[0]!;
+          execute(
+            assertion as any,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            parseResult.parsedValues as any,
+            [...permutation],
+            expectFunction,
+            isNegated,
+            parseResult,
+          );
+          return;
+        }
       }
     }
 
@@ -547,6 +658,7 @@ const execute = <
 
     // if we reach here, then the assertion passed when it should have failed, so:
     throw new NegatedAssertionError({
+      id: assertion.id,
       message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
       stackStartFn,
     });
@@ -614,6 +726,7 @@ const executeAsync = async <
 
     // if we reach here, then the assertion passed when it should have failed, so:
     throw new NegatedAssertionError({
+      id: assertion.id,
       message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
       stackStartFn,
     });
@@ -691,7 +804,8 @@ const conjunctify = (args: readonly unknown[]): (readonly unknown[])[] => {
         parts.push(partsArgs);
         lastIndex = andIndex + 1;
       }
-      parts.push([args[0], ...args.slice(lastIndex)]);
+      const finalPartsArgs = [args[0], ...args.slice(lastIndex)];
+      parts.push(finalPartsArgs);
       argsMatrix = parts;
     }
   }

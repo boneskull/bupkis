@@ -151,14 +151,22 @@ describe('core API', () => {
     });
 
     describe('with function implementation', () => {
-      it('should create a BupkisAssertionFunctionAsync instance', () => {
-        const assertion = expect.createAsyncAssertion(
-          ['to be truthy'],
-          async (value) => Boolean(value),
-        );
+      const assertion = expect.createAsyncAssertion(
+        ['to be truthy'],
+        async (value) => Boolean(value),
+      );
 
-        expect(assertion, 'to be a', BupkisAssertionFunctionAsync);
-        expect(assertion.parts, 'to satisfy', ['to be truthy']);
+      describe('which returns a boolean', () => {
+        it('should create a BupkisAssertionFunctionAsync instance', () => {
+          expect(
+            assertion,
+            'to be a',
+            BupkisAssertionFunctionAsync,
+            'and',
+            'to satisfy',
+            { parts: ['to be truthy'] },
+          );
+        });
       });
     });
 
