@@ -20,6 +20,7 @@ import { type z } from 'zod/v4';
 
 import type { PhraseLiteralChoice } from './assertion/assertion-types.js';
 import type {
+  AssertionPart,
   Constructor,
   ExpectItExecutor,
   PhraseLiteral,
@@ -207,7 +208,7 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
  * @internal
  */
 export const isPhraseLiteralChoice = (
-  value: unknown,
+  value: AssertionPart,
 ): value is PhraseLiteralChoice =>
   isArray(value) && value.length >= 1 && value.every(isPhraseLiteral);
 
@@ -220,7 +221,7 @@ export const isPhraseLiteralChoice = (
  * @returns `true` if the part is a `PhraseLiteral`, `false` otherwise
  * @internal
  */
-export const isPhraseLiteral = (value: unknown): value is PhraseLiteral =>
+export const isPhraseLiteral = (value: AssertionPart): value is PhraseLiteral =>
   isString(value) && value !== 'and';
 
 /**
@@ -232,7 +233,7 @@ export const isPhraseLiteral = (value: unknown): value is PhraseLiteral =>
  *   `false` otherwise
  */
 export const isPhrase = (
-  value: unknown,
+  value: AssertionPart,
 ): value is PhraseLiteral | PhraseLiteralChoice =>
   isPhraseLiteral(value) || isPhraseLiteralChoice(value);
 
