@@ -20,8 +20,6 @@ import symmetricDifference from 'set.prototype.symmetricdifference';
 import setUnion from 'set.prototype.union';
 import { z } from 'zod/v4';
 
-import type { AssertionFailure } from '../assertion-types.js';
-
 import { isWeakKey } from '../../guards.js';
 import {
   KeypathSchema,
@@ -58,7 +56,7 @@ export const mapContainsAssertion = createAssertion(
     ['to contain', 'to include'],
     z.unknown(),
   ],
-  (subject, key): AssertionFailure | boolean => {
+  (subject, key) => {
     // WeakMap.has only works with object or symbol keys
     let hasKey: boolean;
     if (subject instanceof WeakMap) {
@@ -102,7 +100,7 @@ export const mapContainsAssertion = createAssertion(
  */
 export const mapSizeAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have size', NonNegativeIntegerSchema],
-  (subject, expectedSize): AssertionFailure | boolean => {
+  (subject, expectedSize) => {
     if (subject.size === expectedSize) {
       return true;
     }
@@ -155,7 +153,7 @@ export const setContainsAssertion = createAssertion(
     ['to contain', 'to include'],
     z.any(),
   ],
-  (subject, value): AssertionFailure | boolean => {
+  (subject, value) => {
     // WeakSet.has only works with object or symbol values
     if (subject instanceof WeakSet && !isWeakKey(value)) {
       return {
@@ -245,7 +243,7 @@ export const emptySetAssertion = createAssertion(
  */
 export const arrayContainsAssertion = createAssertion(
   [z.array(z.any()), ['to contain', 'to include'], z.any()],
-  (subject, value): AssertionFailure | boolean => {
+  (subject, value) => {
     if (subject.includes(value)) {
       return true;
     }
@@ -271,7 +269,7 @@ export const arrayContainsAssertion = createAssertion(
  */
 export const arraySizeAssertion = createAssertion(
   [z.array(z.any()), 'to have size', NonNegativeIntegerSchema],
-  (subject, expectedSize): AssertionFailure | boolean => {
+  (subject, expectedSize) => {
     if (subject.length === expectedSize) {
       return true;
     }
@@ -720,7 +718,7 @@ export const setSymmetricDifferenceEqualityAssertion = createAssertion(
  */
 export const mapKeyAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have key', z.unknown()],
-  (map, key): AssertionFailure | boolean => {
+  (map, key) => {
     if (map.has(key)) {
       return true;
     }
@@ -747,7 +745,7 @@ export const mapKeyAssertion = createAssertion(
  */
 export const mapValueAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have value', z.unknown()],
-  (map, value): AssertionFailure | boolean => {
+  (map, value) => {
     for (const mapValue of map.values()) {
       if (mapValue === value) {
         return true;
@@ -780,7 +778,7 @@ export const mapEntryAssertion = createAssertion(
     'to have entry',
     z.tuple([z.unknown(), z.unknown()]),
   ],
-  (map, [key, value]): AssertionFailure | boolean => {
+  (map, [key, value]) => {
     // WeakMap operations only work with object or symbol keys
     if (map instanceof WeakMap && !isWeakKey(key)) {
       return {
@@ -834,7 +832,7 @@ export const mapEqualityAssertion = createAssertion(
     'to equal',
     z.map(z.unknown(), z.unknown()),
   ],
-  (mapA, mapB): AssertionFailure | boolean => {
+  (mapA, mapB) => {
     if (mapA.size !== mapB.size) {
       return {
         actual: mapA.size,
@@ -880,7 +878,7 @@ export const collectionSizeGreaterThanAssertion = createAssertion(
     'to have size greater than',
     NonNegativeIntegerSchema,
   ],
-  (collection, minSize): AssertionFailure | boolean => {
+  (collection, minSize) => {
     if (collection.size > minSize) {
       return true;
     }
@@ -910,7 +908,7 @@ export const collectionSizeLessThanAssertion = createAssertion(
     'to have size less than',
     NonNegativeIntegerSchema,
   ],
-  (collection, maxSize): AssertionFailure | boolean => {
+  (collection, maxSize) => {
     if (collection.size < maxSize) {
       return true;
     }
@@ -940,7 +938,7 @@ export const collectionSizeBetweenAssertion = createAssertion(
     'to have size between',
     z.tuple([z.number(), z.number()]),
   ],
-  (collection, [min, max]): AssertionFailure | boolean => {
+  (collection, [min, max]) => {
     const size = collection.size;
     if (size >= min && size <= max) {
       return true;
