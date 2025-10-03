@@ -14,6 +14,7 @@ export * from './async-parametric.js';
 export * from './async.js';
 export * from './sync-basic.js';
 export * from './sync-collection.js';
+export * from './sync-date.js';
 export * from './sync-esoteric.js';
 export * from './sync-parametric.js';
 export * from './sync.js';

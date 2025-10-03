@@ -86,6 +86,23 @@ import {
   setUnionEqualityAssertion,
 } from './sync-collection.js';
 import {
+  afterAssertion,
+  atLeastAgoAssertion,
+  atLeastFromNowAssertion,
+  beforeAssertion,
+  betweenAssertion,
+  equalWithinAssertion,
+  inTheFutureAssertion,
+  inThePastAssertion,
+  sameDateAssertion,
+  todayAssertion,
+  validDateAssertion,
+  weekdayAssertion,
+  weekendAssertion,
+  withinAgoAssertion,
+  withinFromNowAssertion,
+} from './sync-date.js';
+import {
   enumerablePropertyAssertion,
   enumerablePropertyAssertion2,
   extensibleAssertion,
@@ -124,6 +141,24 @@ import {
   stringMatchesAssertion,
   typeOfAssertion,
 } from './sync-parametric.js';
+
+export const SyncDateAssertions = [
+  afterAssertion,
+  atLeastAgoAssertion,
+  atLeastFromNowAssertion,
+  beforeAssertion,
+  betweenAssertion,
+  equalWithinAssertion,
+  inTheFutureAssertion,
+  inThePastAssertion,
+  sameDateAssertion,
+  todayAssertion,
+  validDateAssertion,
+  weekdayAssertion,
+  weekendAssertion,
+  withinAgoAssertion,
+  withinFromNowAssertion,
+] as const;
 
 /**
  * Tuple of all built-in esoteric synchronous assertions.
@@ -269,11 +304,13 @@ export const SyncAssertions = [
   ...SyncBasicAssertions,
   ...SyncParametricAssertions,
   ...SyncEsotericAssertions,
+  ...SyncDateAssertions,
 ] as const;
 
 // Re-export collection tuples for compatibility
 // Re-export all individual assertions for convenience
 export * from './sync-basic.js';
 export * from './sync-collection.js';
+export * from './sync-date.js';
 export * from './sync-esoteric.js';
 export * from './sync-parametric.js';
