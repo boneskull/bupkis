@@ -97,7 +97,7 @@ export class AssertionError extends NodeAssertionError {
 
   override name = 'AssertionError';
 
-  constructor(options?: AssertionErrorOptions) {
+  constructor(options: AssertionErrorOptions) {
     super(options);
   }
 
