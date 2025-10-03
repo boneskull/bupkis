@@ -456,6 +456,22 @@ describe('valueToSchema() property tests', () => {
     );
   });
 
+  it.skip('should handle Map types', () => {
+    // this fails because valueToSchema does not traverse Maps or Sets
+    fc.assert(
+      fc.property(
+        fc
+          .tuple(filteredAnything, filteredAnything)
+          .map(([k, v]) => [new Map([[k, v]]), new Map([[v, k]])]),
+        ([map1, map2]) => {
+          const schema = valueToSchema(map2);
+          const result = schema.safeParse(map1);
+          return !!result.error;
+        },
+      ),
+    );
+  });
+
   it('should reject wrong types for built-in objects', () => {
     fc.assert(
       fc.property(fc.date(), fc.string(), (date, string) => {
