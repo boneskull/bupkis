@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 
 import {
   AssertionError,
+  type AssertionErrorOptions,
   AssertionImplementationError,
   BupkisError,
   FailAssertionError,
@@ -18,7 +19,7 @@ import { expect } from '../custom-assertions.js';
 describe('Error classes', () => {
   describe('AssertionError', () => {
     it('should create instance with default options', () => {
-      const error = new AssertionError({});
+      const error = new AssertionError({ id: 'test' });
 
       expect(
         error,
@@ -33,18 +34,24 @@ describe('Error classes', () => {
     });
 
     it('should create instance with custom options', () => {
-      const options = {
+      const options: AssertionErrorOptions = {
         actual: 'foo',
         expected: 'bar',
+        id: 'test',
         message: 'Test assertion failed',
       };
       const error = new AssertionError(options);
 
-      expect(error, 'to satisfy', options);
+      expect(error, 'to satisfy', {
+        actual: 'foo',
+        assertionId: 'test',
+        expected: 'bar',
+        message: 'Test assertion failed',
+      });
     });
 
     it('should have proper type guard', () => {
-      const error = new AssertionError({});
+      const error = new AssertionError({ id: 'test' });
       const nodeError = new NodeAssertionError({ message: 'test' });
 
       expect(AssertionError.isAssertionError(error), 'to be true');
@@ -57,6 +64,7 @@ describe('Error classes', () => {
       const error = new AssertionError({
         actual: 42,
         expected: 'string',
+        id: 'test',
         message: 'Test message',
       });
 
@@ -148,8 +156,8 @@ describe('Error classes', () => {
     });
 
     it('should have proper type guard', () => {
-      const failError = new FailAssertionError({});
-      const assertionError = new AssertionError({});
+      const failError = new FailAssertionError();
+      const assertionError = new AssertionError({ id: 'test' });
 
       expect(FailAssertionError.isFailAssertionError(failError), 'to be true');
       expect(
@@ -231,6 +239,7 @@ describe('Error classes', () => {
       const error = new NegatedAssertionError({
         actual: false,
         expected: true,
+        id: 'test',
         message: 'Negated assertion failed',
       });
 
@@ -251,8 +260,8 @@ describe('Error classes', () => {
     });
 
     it('should have proper type guard', () => {
-      const negatedError = new NegatedAssertionError({});
-      const assertionError = new AssertionError({});
+      const negatedError = new NegatedAssertionError({ id: 'test' });
+      const assertionError = new AssertionError({ id: 'test' });
 
       expect(
         NegatedAssertionError.isNegatedAssertionError(negatedError),
@@ -344,8 +353,8 @@ describe('Error classes', () => {
 
   describe('Error inheritance relationships', () => {
     it('should maintain proper inheritance chain for AssertionError variants', () => {
-      const failError = new FailAssertionError({});
-      const negatedError = new NegatedAssertionError({});
+      const failError = new FailAssertionError();
+      const negatedError = new NegatedAssertionError({ id: 'test' });
 
       expect(failError, 'to be an instance of', AssertionError);
       expect(failError, 'to be an instance of', NodeAssertionError);
@@ -399,13 +408,13 @@ describe('Error classes', () => {
 
     it('should have correct names for all error classes', () => {
       const errors = {
-        assertionError: new AssertionError({}),
+        assertionError: new AssertionError({ id: 'test' }),
         asyncError: new UnexpectedAsyncError('test'),
         bupkisError: new BupkisError('test'),
-        failError: new FailAssertionError({}),
+        failError: new FailAssertionError(),
         implError: new AssertionImplementationError('test'),
         metadataError: new InvalidMetadataError('test'),
-        negatedError: new NegatedAssertionError({}),
+        negatedError: new NegatedAssertionError({ id: 'test' }),
         satisfactionError: new SatisfactionError('test'),
         schemaError: new InvalidObjectSchemaError('test'),
         unknownError: new UnknownAssertionError('test', { args: [] }),

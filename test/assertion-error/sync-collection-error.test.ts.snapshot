@@ -6,7 +6,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | 
   "code": "ERR_ASSERTION",
   "actual": 4,
   "expected": "size between 1 and 3 (inclusive)",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-set_unknown-to-have-size-between-number-number-3s3p"
 }
 `;
 
@@ -18,7 +19,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | 
   "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": "size greater than 2",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-set_unknown-to-have-size-greater-than-nonnegative_integer-3s3p"
 }
 `;
 
@@ -30,7 +32,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | 
   "code": "ERR_ASSERTION",
   "actual": 3,
   "expected": "size less than 2",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-set_unknown-to-have-size-less-than-nonnegative_integer-3s3p"
 }
 `;
 
@@ -42,7 +45,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | 
   "code": "ERR_ASSERTION",
   "actual": "missing",
   "expected": "key to exist in Map",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-weakmap-to-contain-to-include-unknown-3s3p"
 }
 `;
 
@@ -60,7 +64,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown> | 
     "key",
     "wrong"
   ],
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-weakmap-to-have-entry-unknown-unknown-3s3p"
 }
 `;
 
@@ -70,7 +75,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-to-be-empty-2s2p"
 }
 `;
 
@@ -88,7 +94,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
     "b",
     2
   ],
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-to-equal-map_unknown-unknown-3s3p"
 }
 `;
 
@@ -102,7 +109,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
     "key"
   ],
   "expected": "missing",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-to-have-key-unknown-3s3p"
 }
 `;
 
@@ -114,7 +122,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
   "code": "ERR_ASSERTION",
   "actual": 2,
   "expected": 3,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-to-have-size-nonnegative_integer-3s3p"
 }
 `;
 
@@ -128,7 +137,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
     "value"
   ],
   "expected": "missing",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "map_unknown-unknown-to-have-value-unknown-3s3p"
 }
 `;
 
@@ -140,7 +150,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown> | WeakSet} 
   "code": "ERR_ASSERTION",
   "actual": "c",
   "expected": "value to exist in Set",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-weakset-to-contain-to-include-any-3s3p"
 }
 `;
 
@@ -150,7 +161,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be a s
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-be-a-subset-of-set_unknown-3s3p"
 }
 `;
 
@@ -160,7 +172,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be a s
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-be-a-superset-of-set_unknown-3s3p"
 }
 `;
 
@@ -170,7 +183,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be dis
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-be-disjoint-from-set_unknown-3s3p"
 }
 `;
 
@@ -182,7 +196,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to be emp
   "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-be-empty-2s2p"
 }
 `;
 
@@ -192,7 +207,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to equal'
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-equal-set_unknown-3s3p"
 }
 `;
 
@@ -202,7 +218,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have d
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-have-difference-set_unknown-equal-to-set_unknown-5s5p"
 }
 `;
 
@@ -212,7 +229,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have i
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-have-intersection-set_unknown-equal-to-set_unknown-5s5p"
 }
 `;
 
@@ -224,7 +242,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have s
   "code": "ERR_ASSERTION",
   "actual": 2,
   "expected": 3,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-have-size-nonnegative_integer-3s3p"
 }
 `;
 
@@ -234,7 +253,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have s
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-have-symmetric-difference-set_unknown-equal-to-set_unknown-5s5p"
 }
 `;
 
@@ -244,7 +264,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to have u
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-have-union-set_unknown-equal-to-set_unknown-5s5p"
 }
 `;
 
@@ -254,7 +275,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown>} 'to inters
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "set_unknown-to-intersect-with-set_unknown-3s3p"
 }
 `;
 
@@ -270,7 +292,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{any[]} 'to contain' / 't
     3
   ],
   "expected": "array containing 4",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "any-to-contain-to-include-any-3s3p"
 }
 `;
 
@@ -282,7 +305,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{any[]} 'to have size' {n
   "code": "ERR_ASSERTION",
   "actual": 3,
   "expected": 5,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "any-to-have-size-nonnegative_integer-3s3p"
 }
 `;
 
@@ -298,7 +322,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
   "expected": {
     "foo": "bar"
   },
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p"
 }
 `;
 
@@ -309,7 +334,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "no such keypath",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-key-to-have-property-to-have-prop-keypath-3s3p"
 }
 `;
 
@@ -321,7 +347,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
   "code": "ERR_ASSERTION",
   "actual": "missing keys: b",
   "expected": "to have keys: a, b",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-keys-to-have-properties-to-have-props-string-3s3p"
 }
 `;
 
@@ -333,7 +360,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{object} 'to have size' {
   "code": "ERR_ASSERTION",
   "actual": 1,
   "expected": 3,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "object-to-have-size-nonnegative_integer-3s3p"
 }
 `;
 
@@ -345,7 +373,8 @@ exports[`Sync Collection Assertion Error Snapshots > \"{unknown[]} 'to be non-em
   "code": "ERR_ASSERTION",
   "actual": "length: 0",
   "expected": "length greater than 0",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-non_empty-2s2p"
 }
 `;
 
@@ -367,6 +396,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{unknown[]} 'to have leng
     null,
     null
   ],
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-have-length-nonnegative_integer-3s3p"
 }
 `;

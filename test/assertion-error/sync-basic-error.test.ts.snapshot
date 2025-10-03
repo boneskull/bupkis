@@ -84,7 +84,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be NaN'\" [unkno
   "code": "ERR_ASSERTION",
   "actual": 42,
   "expected": "<nan>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-nan-2s1p"
 }
 `;
 
@@ -95,7 +96,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a RegExp' / '
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-regexp-to-be-a-regex-to-be-a-regexp-2s1p"
 }
 `;
 
@@ -107,7 +109,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a Set'\" [unk
   "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": "<set>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-set-2s1p"
 }
 `;
 
@@ -118,7 +121,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakMap'\" 
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-weakmap-2s1p"
 }
 `;
 
@@ -129,7 +133,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakSet'\" 
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-weakset-2s1p"
 }
 `;
 
@@ -141,7 +146,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a bigint' / '
   "code": "ERR_ASSERTION",
   "actual": 42,
   "expected": "<bigint>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-bigint-to-be-a-bigint-2s1p"
 }
 `;
 
@@ -153,7 +159,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a boolean' / 
   "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": true,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-boolean-to-be-boolean-to-be-a-bool-2s1p"
 }
 `;
 
@@ -164,7 +171,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a class' / 't
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-class-to-be-a-constructor-to-be-constructible-2s1p"
 }
 `;
 
@@ -176,7 +184,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a date' / 'to
   "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": "<date>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-date-to-be-a-date-2s1p"
 }
 `;
 
@@ -187,7 +196,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a function'\"
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-function-2s1p"
 }
 `;
 
@@ -199,7 +209,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a negative in
   "code": "ERR_ASSERTION",
   "actual": 5,
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-negative-integer-to-be-a-negative-int-2s1p"
 }
 `;
 
@@ -211,7 +222,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a number' / '
   "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-number-to-be-finite-2s1p"
 }
 `;
 
@@ -223,7 +235,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a positive in
   "code": "ERR_ASSERTION",
   "actual": -5,
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-positive-integer-to-be-a-positive-int-2s1p"
 }
 `;
 
@@ -235,7 +248,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a primitive'\
   "code": "ERR_ASSERTION",
   "actual": {},
   "expected": {},
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-primitive-2s1p"
 }
 `;
 
@@ -247,7 +261,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a record' / '
   "code": "ERR_ASSERTION",
   "actual": [],
   "expected": "<record>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-record-to-be-a-plain-object-2s1p"
 }
 `;
 
@@ -259,7 +274,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a string'\" [
   "code": "ERR_ASSERTION",
   "actual": 42,
   "expected": "42",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-string-2s1p"
 }
 `;
 
@@ -271,7 +287,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a symbol' / '
   "code": "ERR_ASSERTION",
   "actual": "hello",
   "expected": "<symbol>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-symbol-to-be-a-symbol-2s1p"
 }
 `;
 
@@ -295,7 +312,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an array' / '
   "code": "ERR_ASSERTION",
   "actual": 42,
   "expected": [],
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-an-array-to-be-array-2s1p"
 }
 `;
 
@@ -305,7 +323,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an async func
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-an-async-function-2s1p"
 }
 `;
 
@@ -317,7 +336,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an integer' /
   "code": "ERR_ASSERTION",
   "actual": 3.14,
   "expected": "<int>",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-an-integer-to-be-a-safe-integer-to-be-an-int-to-be-a-safe-int-2s1p"
 }
 `;
 
@@ -328,7 +348,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an object'\" 
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-an-object-2s1p"
 }
 `;
 
@@ -338,7 +359,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be defined'\" [u
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-defined-2s1p"
 }
 `;
 
@@ -350,7 +372,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be false'\" [unk
   "code": "ERR_ASSERTION",
   "actual": true,
   "expected": false,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-false-2s1p"
 }
 `;
 
@@ -361,7 +384,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be falsy'\" [unk
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 1,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-falsy-2s1p"
 }
 `;
 
@@ -372,7 +396,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be infinite'\" [
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 42,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-infinite-2s1p"
 }
 `;
 
@@ -384,7 +409,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be negative' / '
   "code": "ERR_ASSERTION",
   "actual": 5,
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-negative-to-be-a-negative-number-2s1p"
 }
 `;
 
@@ -394,7 +420,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be null'\" [unkn
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-null-2s1p"
 }
 `;
 
@@ -406,7 +433,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be positive' / '
   "code": "ERR_ASSERTION",
   "actual": -5,
   "expected": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-positive-to-be-a-positive-number-2s1p"
 }
 `;
 
@@ -418,7 +446,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be true'\" [unkn
   "code": "ERR_ASSERTION",
   "actual": false,
   "expected": true,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-true-2s1p"
 }
 `;
 
@@ -429,7 +458,8 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be truthy' / 'to
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 0,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-truthy-to-exist-to-be-ok-2s1p"
 }
 `;
 
@@ -440,6 +470,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be undefined'\" 
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": null,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "unknown-to-be-undefined-2s1p"
 }
 `;

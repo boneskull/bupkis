@@ -7,8 +7,10 @@
  */
 
 import { AssertionError as NodeAssertionError } from 'node:assert';
+import { type LiteralStringUnion } from 'type-fest/source/literal-union.js';
 
 import {
+  FAIL,
   kBupkisAssertionError,
   kBupkisError,
   kBupkisFailAssertionError,
@@ -31,7 +33,7 @@ export type AssertionErrorOptions = Partial<
     NonNullable<ConstructorParameters<typeof NodeAssertionError>[0]>,
     'operator'
   >
->;
+> & { id: string };
 
 /**
  * Options for {@link AssertionImplementationError}
@@ -44,6 +46,8 @@ export interface AssertionImplementationErrorOptions extends ErrorOptions {
    */
   result?: unknown;
 }
+export type FailAssertionErrorOptions = Omit<AssertionErrorOptions, 'id'>;
+
 /**
  * Options for {@link InvalidMetadataError}
  *
@@ -91,6 +95,11 @@ export interface UnknownAssertionErrorOptions<T extends readonly unknown[]>
  */
 export class AssertionError extends NodeAssertionError {
   /**
+   * Assertion ID of the assertion that caused this error.
+   */
+  readonly assertionId: LiteralStringUnion<typeof FAIL>;
+
+  /**
    * @internal
    */
   [kBupkisAssertionError] = true;
@@ -99,6 +108,7 @@ export class AssertionError extends NodeAssertionError {
 
   constructor(options: AssertionErrorOptions) {
     super(options);
+    this.assertionId = options.id;
   }
 
   /**
@@ -184,6 +194,10 @@ export class FailAssertionError extends AssertionError {
   [kBupkisFailAssertionError] = true;
 
   override name = 'FailAssertionError';
+
+  constructor(options?: FailAssertionErrorOptions) {
+    super({ ...options, id: FAIL });
+  }
 
   static isFailAssertionError(err: unknown): err is FailAssertionError {
     return (
