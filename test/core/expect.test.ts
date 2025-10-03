@@ -415,6 +415,43 @@ describe('core API', () => {
           );
         });
       });
+
+      describe('when an assertion has a bare "and" in its parts', () => {
+        it('should not throw UnknownAssertionError', () => {
+          expect(
+            () =>
+              expect(
+                Date.now(),
+                'to be between',
+                Date.now() - 1000,
+                'and',
+                Date.now() + 1000,
+                'and',
+                'to be an integer',
+              ),
+            'not to throw',
+          );
+        });
+
+        it('should throw an AssertionError', () => {
+          expect(
+            () =>
+              expect(
+                new Date(Date.now()),
+                'to be between',
+                new Date(Date.now() - 1000),
+                'and',
+                new Date(Date.now() + 1000),
+                'and',
+                'to be a string',
+              ),
+            'to throw an',
+            AssertionError,
+            'satisfying',
+            /Comparing two different types of values/,
+          );
+        });
+      });
     });
 
     describe('Schema-based async assertions', () => {

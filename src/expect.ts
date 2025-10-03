@@ -188,6 +188,8 @@ export function createExpectAsyncFunction<
   const expectAsyncFunction = async (...args: readonly unknown[]) => {
     await Promise.resolve();
     const argsMatrix = conjunctify(args);
+
+    // First, try all conjunctified argument sets
     for (const args of argsMatrix) {
       const { isNegated, processedArgs } = maybeProcessNegation(args);
       const candidates: Array<{
@@ -224,8 +226,49 @@ export function createExpectAsyncFunction<
           parseResult,
         );
       }
-      throwInvalidParametersError(args);
     }
+
+    // Fallback: if all conjunctified attempts failed and we actually split on "and",
+    // try the original unsplit arguments as a single assertion
+    if (argsMatrix.length > 1) {
+      const { isNegated, processedArgs } = maybeProcessNegation(args);
+      const candidates: Array<{
+        assertion: AnyAsyncAssertion;
+        parseResult: ParsedResult<AssertionParts>;
+      }> = [];
+      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+        const parseResult = await assertion.parseValuesAsync(processedArgs);
+        const { exactMatch, parsedValues, success } = parseResult;
+
+        if (success) {
+          if (exactMatch) {
+            return executeAsync(
+              assertion,
+              parsedValues,
+              [...args],
+              expectAsyncFunction,
+              isNegated,
+              parseResult,
+            );
+          }
+          candidates.push({ assertion, parseResult });
+        }
+      }
+      if (candidates.length) {
+        const { assertion, parseResult } = candidates[0]!;
+        return executeAsync(
+          assertion as any,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          parseResult.parsedValues as any,
+          [...args],
+          expectAsyncFunction,
+          isNegated,
+          parseResult,
+        );
+      }
+    }
+
+    throwInvalidParametersError(args);
   };
   return expectAsyncFunction;
 }
@@ -372,6 +415,7 @@ export function createExpectSyncFunction<
   const expectFunction = (...args: readonly unknown[]) => {
     const argsMatrix = conjunctify(args);
 
+    // First, try all conjunctified argument sets
     for (const args of argsMatrix) {
       const { isNegated, processedArgs } = maybeProcessNegation(args);
       const candidates: Array<{
@@ -408,8 +452,49 @@ export function createExpectSyncFunction<
           parseResult,
         );
       }
-      throwInvalidParametersError(args);
     }
+
+    // Fallback: if all conjunctified attempts failed and we actually split on "and",
+    // try the original unsplit arguments as a single assertion
+    if (argsMatrix.length > 1) {
+      const { isNegated, processedArgs } = maybeProcessNegation(args);
+      const candidates: Array<{
+        assertion: AnySyncAssertion;
+        parseResult: ParsedResult<AssertionParts>;
+      }> = [];
+      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+        const parseResult = assertion.parseValues(processedArgs);
+        const { exactMatch, parsedValues, success } = parseResult;
+
+        if (success) {
+          if (exactMatch) {
+            return execute(
+              assertion,
+              parsedValues,
+              [...args],
+              expectFunction,
+              isNegated,
+              parseResult,
+            );
+          }
+          candidates.push({ assertion, parseResult });
+        }
+      }
+      if (candidates.length) {
+        const { assertion, parseResult } = candidates[0]!;
+        return execute(
+          assertion as any,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          parseResult.parsedValues as any,
+          [...args],
+          expectFunction,
+          isNegated,
+          parseResult,
+        );
+      }
+    }
+
+    throwInvalidParametersError(args);
   };
 
   return expectFunction;
