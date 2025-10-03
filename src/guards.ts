@@ -18,12 +18,8 @@
 
 import { type z } from 'zod/v4';
 
+import type { PhraseLiteralChoice } from './assertion/assertion-types.js';
 import type {
-  AssertionPart,
-  PhraseLiteralChoice,
-} from './assertion/assertion-types.js';
-import type {
-  AssertionParts,
   Constructor,
   ExpectItExecutor,
   PhraseLiteral,
@@ -329,27 +325,3 @@ export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
 ): value is ExpectItExecutor<Subject> => {
   return isFunction(value) && kExpectIt in value && value[kExpectIt] === true;
 };
-
-/**
- * Type guard for an {@link AssertionPart}, which can be a {@link PhraseLiteral},
- * {@link PhraseLiteralChoice}, or a Zod schema.
- *
- * @function
- * @param value Value to check
- * @returns `true` if the value is an `AssertionPart`, `false` otherwise
- * @internal
- */
-export const isAssertionPart = (value: unknown): value is AssertionPart =>
-  isPhraseLiteral(value) || isPhraseLiteralChoice(value) || isZodType(value);
-
-/**
- * Type guard for {@link AssertionParts}, which is an array of
- * {@link AssertionPart}.
- *
- * @function
- * @param value Value to check
- * @returns `true` if the value is an `AssertionParts`, `false` otherwise
- * @internal
- */
-export const isAssertionParts = (value: unknown): value is AssertionParts =>
-  isArray(value) && !!value.length && value.every(isAssertionPart);
