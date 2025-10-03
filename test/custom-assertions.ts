@@ -1,7 +1,6 @@
 import setDifference from 'set.prototype.difference';
 
 import { BupkisAssertion } from '../src/assertion/assertion.js';
-import { AssertionError } from '../src/error.js';
 import { expect as builtinExpect, z } from '../src/index.js';
 import { type AnyAssertion } from '../src/types.js';
 import { keyBy } from '../src/util.js';
@@ -30,11 +29,12 @@ const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
       builtinExpect(diff, 'to be empty');
     } catch {
       /* c8 ignore next */
-      throw new AssertionError({
+      return {
         actual: testedIds,
         expected: allCollectionIds,
+        id: 'test',
         message: `Some assertions in collection "${collectionName}" are missing property test configurations`,
-      });
+      };
     }
   },
 );
