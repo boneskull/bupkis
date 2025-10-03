@@ -201,7 +201,7 @@
     "typedoc-plugin-mdn-links": "5.0.9",
     "typedoc-plugin-redirect": "1.2.0",
     "typedoc-plugin-zod": "1.4.2",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.45.0"
   },
   "publishConfig": {
