@@ -84,3 +84,10 @@ export const KEYPATH_REGEX =
  * @internal
  */
 export const kBupkisError: unique symbol = Symbol('bupkis-error');
+
+/**
+ * Assertion ID of a `FailAssertionError`.
+ *
+ * @internal
+ */
+export const FAIL = 'FAIL' as const;

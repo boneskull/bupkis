@@ -233,6 +233,7 @@ export abstract class BupkisAssertion<
       return new AssertionError({
         actual,
         expected,
+        id: this.id,
         message,
         stackStartFn,
       });
@@ -241,6 +242,7 @@ export abstract class BupkisAssertion<
       const pretty = z.prettifyError(zodError).slice(2);
       return new AssertionError({
         actual: subject,
+        id: this.id,
         message: `Assertion ${this} failed:\n${pretty}`,
         stackStartFn,
       });

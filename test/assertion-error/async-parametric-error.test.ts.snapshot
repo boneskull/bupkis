@@ -6,7 +6,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill w
   "code": "ERR_ASSERTION",
   "actual": "wrong",
   "expected": 42,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "function-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p"
 }
 `;
 
@@ -18,7 +19,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject wi
   "code": "ERR_ASSERTION",
   "actual": "Error",
   "expected": "TypeError",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "function-to-reject-with-a-to-reject-with-an-constructible-3s3p"
 }
 `;
 
@@ -32,7 +34,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject wi
   "expected": {
     "message": "expected message"
   },
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "function-to-reject-with-error-satisfying-any-3s3p"
 }
 `;
 
@@ -44,7 +47,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\"
   "code": "ERR_ASSERTION",
   "actual": "function fulfilled",
   "expected": "function rejected",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "function-to-reject-2s2p"
 }
 `;
 
@@ -56,7 +60,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' 
   "code": "ERR_ASSERTION",
   "actual": "function rejected",
   "expected": "function to fulfill",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "function-to-resolve-to-fulfill-2s2p"
 }
 `;
 
@@ -68,7 +73,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfil
   "code": "ERR_ASSERTION",
   "actual": "wrong",
   "expected": 42,
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "promiselike-to-fulfill-with-value-satisfying-to-resolve-with-value-satisfying-any-3s3p"
 }
 `;
 
@@ -80,7 +86,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
   "code": "ERR_ASSERTION",
   "actual": "Error",
   "expected": "TypeError",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "promiselike-to-reject-with-a-to-reject-with-an-constructible-3s3p"
 }
 `;
 
@@ -94,7 +101,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
   "expected": {
     "message": "expected message"
   },
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "promiselike-to-reject-with-error-satisfying-any-3s3p"
 }
 `;
 
@@ -106,7 +114,8 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
   "code": "ERR_ASSERTION",
   "actual": "Promise fulfilled",
   "expected": "Promise rejected",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "promiselike-to-reject-2s2p"
 }
 `;
 
@@ -118,6 +127,7 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolv
   "code": "ERR_ASSERTION",
   "actual": "promise rejected",
   "expected": "promise to not reject",
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "promiselike-to-resolve-to-fulfill-2s2p"
 }
 `;

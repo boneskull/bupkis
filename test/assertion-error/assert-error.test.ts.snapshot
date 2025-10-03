@@ -16,7 +16,8 @@ exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep eq
       "c": 3
     }
   },
-  "diff": "simple"
+  "diff": "simple",
+  "assertionId": "object-to-deep-equal-to-deeply-equal-any-3s3p"
 }
 `;
 

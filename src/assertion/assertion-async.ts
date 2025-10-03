@@ -144,6 +144,7 @@ export class BupkisAssertionFunctionAsync<
     } else if (isBoolean(result)) {
       if (!result) {
         throw new AssertionError({
+          id: this.id,
           message: `Assertion ${this} failed for arguments: ${inspect(args)}`,
         });
       }
@@ -164,6 +165,7 @@ export class BupkisAssertionFunctionAsync<
       throw new AssertionError({
         actual: result.actual,
         expected: result.expected,
+        id: this.id,
         message:
           result.message ??
           `Assertion ${this} failed for arguments: ${inspect(args)}`,
