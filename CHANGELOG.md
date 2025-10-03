@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.9.0...bupkis-v0.10.0) (2025-10-03)
+
+
+### Features
+
+* **assertions:** add more date assertions ([ab8365c](https://github.com/boneskull/bupkis/commit/ab8365cbcf09c9c56fb88d174880c5e72d608f03))
+
+
+### Bug Fixes
+
+* **assertions:** more accurate string representations of assertions ([b78c36a](https://github.com/boneskull/bupkis/commit/b78c36a103f07bb3a06b327231186ef5f34fed82))
+* **deps:** update dependency jest-diff to v30.2.0 ([#103](https://github.com/boneskull/bupkis/issues/103)) ([dba6f6f](https://github.com/boneskull/bupkis/commit/dba6f6ff3858c5e5d4351bcaaef7c991145a5252))
+* **error:** AssertionErrorOptions fix for @types/node ([7aef073](https://github.com/boneskull/bupkis/commit/7aef0737ac5e2960d63aeacb3e2f7851e23c79ff))
+* **expect:** proper handling of assertions containing bare "and" phrases ([0ad9eee](https://github.com/boneskull/bupkis/commit/0ad9eeeac73173cb3fc5c05173a22b8baed51efe))
+
 ## [0.9.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.8.0...bupkis-v0.9.0) (2025-09-29)
 
 
