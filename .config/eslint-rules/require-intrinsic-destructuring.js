@@ -144,4 +144,5 @@ export default ESLintUtils.RuleCreator.withoutDocs({
     ],
     type: 'suggestion',
   },
+  name: 'require-intrinsic-destructuring',
 });
