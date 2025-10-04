@@ -41,6 +41,8 @@ import { trapAsyncFnError, trapPromiseError } from './assertion-util.js';
  * ```
  *
  * @group Parametric Assertions (Async)
+ * @bupkisAnchor function-to-resolve
+ * @bupkisAssertionCategory promise
  */
 export const functionResolveAssertion = createAsyncAssertion(
   [FunctionSchema, ['to resolve', 'to fulfill']],
@@ -55,10 +57,6 @@ export const functionResolveAssertion = createAsyncAssertion(
       };
     }
   },
-  {
-    anchor: 'promise-to-resolve',
-    category: 'promise',
-  },
 );
 
 /**
@@ -69,9 +67,18 @@ export const functionResolveAssertion = createAsyncAssertion(
  * ```typescript
  * await expectAsync(Promise.resolve('success'), 'to resolve'); // passes
  * await expectAsync(Promise.reject('error'), 'to fulfill'); // fails
+ * /**
+ * Assertion for testing if a promise resolves.
+ *
+ * @example
+ *
+ * ```typescript
+ * await expectAsync(Promise.resolve('success'), 'to resolve'); // passes
+ * await expectAsync(Promise.reject('error'), 'to resolve'); // fails
  * ```
  *
- * @group Parametric Assertions (Async)
+ * @group Parametric Assertions (Async) @bupkisAnchor promise-to-resolve
+ * @bupkisAssertionCategory promise
  */
 export const promiseResolveAssertion = createAsyncAssertion(
   [WrappedPromiseLikeSchema, ['to resolve', 'to fulfill']],
@@ -81,14 +88,10 @@ export const promiseResolveAssertion = createAsyncAssertion(
     } catch {
       return {
         actual: 'promise rejected',
-        expected: 'promise to not reject',
+        expected: 'promise to fulfill',
         message: 'Expected promise to fulfill, but it rejected instead',
       };
     }
-  },
-  {
-    anchor: 'promise-to-resolve',
-    category: 'promise',
   },
 );
 

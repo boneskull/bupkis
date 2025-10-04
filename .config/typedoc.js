@@ -12,7 +12,13 @@ const customFooterHtml = readFileSync(
 
 /** @type {Partial<TypeDocOptions>} */
 export default {
-  blockTags: [...OptionDefaults.blockTags, '@knipignore'],
+  blockTags: [
+    ...OptionDefaults.blockTags,
+    '@knipignore',
+    '@bupkisAnchor',
+    '@bupkisRedirect',
+    '@bupkisAssertionCategory',
+  ],
   categoryOrder: ['Assertions', 'Guides', 'Reference', 'API', 'About'],
   cname: 'bupkis.zip',
   customCss: '../site/media/bupkis-theme.css',

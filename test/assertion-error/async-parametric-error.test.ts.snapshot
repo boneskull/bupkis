@@ -126,7 +126,7 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolv
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "promise rejected",
-  "expected": "promise to not reject",
+  "expected": "promise to fulfill",
   "diff": "simple",
   "assertionId": "promiselike-to-resolve-to-fulfill-2s2p"
 }

@@ -40,11 +40,10 @@ const { ownKeys } = Reflect;
  * ```
  *
  * @group Basic Assertions
+ * @bupkisAnchor unknown-to-be-a-string
+ * @bupkisAssertionCategory primitives
  */
-export const stringAssertion = createAssertion(['to be a string'], z.string(), {
-  anchor: 'unknown-to-be-a-string',
-  category: 'primitives',
-});
+export const stringAssertion = createAssertion(['to be a string'], z.string());
 
 /**
  * Asserts that the subject is a finite number value.
