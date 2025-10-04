@@ -7,11 +7,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Converter, PageEvent, RendererEvent } from 'typedoc';
+import { Converter, PageEvent, ReflectionKind, RendererEvent } from 'typedoc';
 
-import * as assertions from '../dist/esm/assertion/index.js';
-import { isMetadata } from '../dist/esm/internal-schema.js';
-const { entries, freeze, fromEntries } = Object;
+const { freeze, fromEntries } = Object;
 
 /**
  * @import {Application} from 'typedoc'
@@ -47,25 +45,75 @@ export const load = (app) => {
   const outputDir = app.options.getValue('out');
   const mediaDir = path.join(outputDir, 'media');
 
-  app.converter.on(Converter.EVENT_BEGIN, () => {
-    /** @type {[name: string, target: string][]} */
-    const dynamicRedirects = [];
-    for (const [name, assertion] of entries(assertions)) {
-      if (!(assertion instanceof assertions.BupkisAssertion)) {
-        continue;
-      }
-      const metadata = assertion.metadata();
-      if (isMetadata(metadata)) {
-        const { anchor, category, redirect: redirectName = anchor } = metadata;
-        const document = `documents/${CATEGORY_DOC_MAP[category]}#${anchor}`;
-        const redirect = `assertions/${redirectName}/`;
-        dynamicRedirects.push([redirect, document]);
-        console.info(
-          `Registered redirect for ${name}: ${redirect} ➡️ ${document}`,
-        );
-      }
-    }
+  /** @type {[name: string, target: string][]} */
+  const dynamicRedirects = [];
 
+  // Listen for declaration creation to inspect JSDoc block tags
+  app.converter.on(
+    Converter.EVENT_CREATE_DECLARATION,
+    (_context, reflection) => {
+      // Check if this is a variable declaration with assertion types
+      if (
+        reflection.kind == ReflectionKind.Variable &&
+        !!reflection.type &&
+        !!reflection.comment
+      ) {
+        // Check if the type matches assertion types
+        const typeString = reflection.type.toString();
+        const isAssertionType =
+          typeString.includes('AssertionSchemaSync') ||
+          typeString.includes('AssertionFunctionSync') ||
+          typeString.includes('AssertionSchemaAsync') ||
+          typeString.includes('AssertionFunctionAsync');
+
+        if (isAssertionType && reflection.comment.blockTags) {
+          let anchor = '';
+          let category = '';
+          let redirect = '';
+
+          // Extract metadata from block tags
+          for (const tag of reflection.comment.blockTags) {
+            if (tag.tag === '@bupkisAnchor' && tag.content) {
+              anchor = tag.content
+                .map((part) => part.text || '')
+                .join('')
+                .trim();
+            } else if (tag.tag === '@bupkisAssertionCategory' && tag.content) {
+              category = tag.content
+                .map((part) => part.text || '')
+                .join('')
+                .trim();
+            } else if (tag.tag === '@bupkisRedirect' && tag.content) {
+              redirect = tag.content
+                .map((part) => part.text || '')
+                .join('')
+                .trim();
+            }
+          }
+
+          // If we have anchor and category, register the redirect
+          if (anchor && category) {
+            if (category in CATEGORY_DOC_MAP) {
+              const redirectName = redirect || anchor;
+              const document = `documents/${CATEGORY_DOC_MAP[/** @type {keyof typeof CATEGORY_DOC_MAP} */ (category)]}#${anchor}`;
+              const redirectPath = `assertions/${redirectName}/`;
+              dynamicRedirects.push([redirectPath, document]);
+              app.logger.info(
+                `Registered redirect for ${reflection.name}: ${redirectPath} ➡️ ${document}`,
+              );
+            } else {
+              app.logger.warn(
+                `Unknown category "${category}" for assertion ${reflection.name}`,
+              );
+            }
+          }
+        }
+      }
+    },
+  );
+
+  app.converter.on(Converter.EVENT_END, () => {
+    // Apply all collected redirects at the end
     const redirects = /** @type {Record<string, string> | undefined} */ (
       app.options.getValue('redirects')
     );
