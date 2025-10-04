@@ -37,6 +37,8 @@ const { getOwnPropertyDescriptor, isExtensible, isFrozen, isSealed } = Object;
  * ```
  *
  * @group Esoteric Assertions
+ * @bupkisAnchor object-to-have-a-null-prototype
+ * @bupkisAssertionCategory object
  */
 export const nullPrototypeAssertion = createAssertion(
   [['to have a null prototype', 'to be a dictionary']],
@@ -67,6 +69,8 @@ export const nullPrototypeAssertion = createAssertion(
  * ```
  *
  * @group Esoteric Assertions
+ * @bupkisAnchor string-number-symbol-to-be-an-enumerable-property-of-non-null
+ * @bupkisAssertionCategory object
  */
 export const enumerablePropertyAssertion = createAssertion(
   [
@@ -151,6 +155,8 @@ export const enumerablePropertyAssertion2 = createAssertion(
  * ```
  *
  * @group Esoteric Assertions
+ * @bupkisAnchor unknown-to-be-sealed
+ * @bupkisAssertionCategory object
  */
 export const sealedAssertion = createAssertion(
   ['to be sealed'],
@@ -183,6 +189,8 @@ export const sealedAssertion = createAssertion(
  * ```
  *
  * @group Esoteric Assertions
+ * @bupkisAnchor unknown-to-be-frozen
+ * @bupkisAssertionCategory object
  */
 export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
   if (!isFrozen(subject)) {
@@ -222,6 +230,8 @@ export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
  * ```
  *
  * @group Esoteric Assertions
+ * @bupkisAnchor unknown-to-be-extensible
+ * @bupkisAssertionCategory object
  */
 export const extensibleAssertion = createAssertion(
   ['to be extensible'],

@@ -71,14 +71,12 @@ import { z } from 'zod/v4';
 import type {
   AssertionImplAsync,
   AssertionImplSync,
-  AssertionMetadata,
   AssertionParts,
 } from './assertion-types.js';
 
 import { AssertionImplementationError } from '../error.js';
 import { isFunction, isZodType } from '../guards.js';
 import {
-  AssertionMetadataSchema,
   CreateAssertionInputSchema,
   CreateAssertionInputSchemaAsync,
 } from '../internal-schema.js';
@@ -94,7 +92,6 @@ import {
   type CreateAssertionFn,
   type CreateAsyncAssertionFn,
 } from './assertion-types.js';
-import { AssertionMetadataRegistry } from './assertion.js';
 import { slotify } from './slotify.js';
 
 /**
@@ -110,11 +107,10 @@ export const createAssertion: CreateAssertionFn = <
 >(
   parts: Parts,
   impl: Impl,
-  metadata?: AssertionMetadata,
 ) => {
   // Validate inputs using Zod schema
   try {
-    CreateAssertionInputSchema.parse([parts, impl, metadata]);
+    CreateAssertionInputSchema.parse([parts, impl]);
   } catch (err) {
     if (err instanceof z.ZodError) {
       throw new AssertionImplementationError(
@@ -129,17 +125,9 @@ export const createAssertion: CreateAssertionFn = <
   const slots = slotify<Parts>(parts);
 
   if (isZodType(impl)) {
-    const assertion = new BupkisAssertionSchemaSync(parts, slots, impl);
-    if (metadata) {
-      AssertionMetadataRegistry.set(assertion, metadata);
-    }
-    return assertion;
+    return new BupkisAssertionSchemaSync(parts, slots, impl);
   } else if (isFunction(impl)) {
-    const assertion = new BupkisAssertionFunctionSync(parts, slots, impl);
-    if (metadata) {
-      AssertionMetadataRegistry.set(assertion, metadata);
-    }
-    return assertion;
+    return new BupkisAssertionFunctionSync(parts, slots, impl);
   }
   // should be impossible if CreateAssertionInputSchema is correct
   /* c8 ignore next */
@@ -161,11 +149,10 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
 >(
   parts: Parts,
   impl: Impl,
-  metadata?: AssertionMetadata,
 ) => {
   // Validate inputs using Zod schema
   try {
-    CreateAssertionInputSchemaAsync.parse([parts, impl, metadata]);
+    CreateAssertionInputSchemaAsync.parse([parts, impl]);
   } catch (err) {
     if (err instanceof z.ZodError) {
       throw new AssertionImplementationError(
@@ -180,23 +167,9 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
   const slots = slotify<Parts>(parts);
 
   if (isZodType(impl)) {
-    const assertion = new BupkisAssertionSchemaAsync(parts, slots, impl);
-    if (metadata) {
-      AssertionMetadataRegistry.set(
-        assertion,
-        AssertionMetadataSchema.parse(metadata),
-      );
-    }
-    return assertion;
+    return new BupkisAssertionSchemaAsync(parts, slots, impl);
   } else if (isFunction(impl)) {
-    const assertion = new BupkisAssertionFunctionAsync(parts, slots, impl);
-    if (metadata) {
-      AssertionMetadataRegistry.set(
-        assertion,
-        AssertionMetadataSchema.parse(metadata),
-      );
-    }
-    return assertion;
+    return new BupkisAssertionFunctionAsync(parts, slots, impl);
   }
   // should be impossible if CreateAssertionInputSchemaAsync is correct
   /* c8 ignore next */
