@@ -1,0 +1,102 @@
+exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be after' {date-like}\" [date_like-to-be-after-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-after-date_like-3s3p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{date-like} 'to be after' {date-like}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 2025-01-01T00:00:00.001Z\\u001b[39m\\n\\u001b[31m+ 2024-01-01T00:00:00.000Z\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "2024-01-01T00:00:00.000Z",
+  "expected": "2025-01-01T00:00:00.001Z",
+  "diff": "simple",
+  "assertionId": "date_like-to-be-after-date_like-3s3p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be before' {date-like}\" [date_like-to-be-before-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-before-date_like-3s3p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{date-like} 'to be before' {date-like}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 2023-12-31T23:59:59.999Z\\u001b[39m\\n\\u001b[31m+ 2025-01-01T00:00:00.000Z\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "2025-01-01T00:00:00.000Z",
+  "expected": "2023-12-31T23:59:59.999Z",
+  "diff": "simple",
+  "assertionId": "date_like-to-be-before-date_like-3s3p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be between' {date-like} 'and' {date-like}\" [date_like-to-be-between-date_like-and-date_like-5s5p] > should throw a consistent AssertionError [date_like-to-be-between-date_like-and-date_like-5s5p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{date-like} 'to be between' {date-like} 'and' {date-like}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 2024-12-31T00:00:00.000Z\\u001b[39m\\n\\u001b[31m+ 2025-06-01T00:00:00.000Z\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "2025-06-01T00:00:00.000Z",
+  "expected": "2024-12-31T00:00:00.000Z",
+  "diff": "simple",
+  "assertionId": "date_like-to-be-between-date_like-and-date_like-5s5p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be the same date as' {date-like}\" [date_like-to-be-the-same-date-as-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-the-same-date-as-date_like-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected dates to be the same day, but Wed Jan 01 2025 !== Thu Jan 02 2025",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "Wed Jan 01 2025",
+  "expected": "Thu Jan 02 2025",
+  "diff": "simple",
+  "assertionId": "date_like-to-be-the-same-date-as-date_like-3s3p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to equal' {date-like} 'within' {duration}\" [date_like-to-equal-date_like-within-duration-5s5p] > should throw a consistent AssertionError [date_like-to-equal-date_like-within-duration-5s5p] <snapshot> 1`] = `
+{
+  "message": "Expected dates to be equal within 30 seconds (30000ms), but difference was 60000ms",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "60000ms difference",
+  "expected": "within 30000ms",
+  "diff": "simple",
+  "assertionId": "date_like-to-equal-date_like-within-duration-5s5p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a valid date' / 'to be date-like'\" [unknown-to-be-a-valid-date-to-be-date_like-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-valid-date-to-be-date_like-2s1p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{unknown} 'to be a valid date' / 'to be date-like'\\" failed:\\nInvalid input",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "not-a-date",
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-valid-date-to-be-date_like-2s1p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekday'\" [unknown-to-be-a-weekday-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weekday-2s1p] <snapshot> 1`] = `
+{
+  "message": "Expected date to be a weekday (Monday through Friday), but it was Saturday",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "Saturday",
+  "expected": "Monday through Friday",
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-weekday-2s1p"
+}
+`;
+
+exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekend'\" [unknown-to-be-a-weekend-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weekend-2s1p] <snapshot> 1`] = `
+{
+  "message": "Expected date to be a weekend (Saturday or Sunday), but it was Monday",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "Monday",
+  "expected": "Saturday or Sunday",
+  "diff": "simple",
+  "assertionId": "unknown-to-be-a-weekend-2s1p"
+}
+`;
