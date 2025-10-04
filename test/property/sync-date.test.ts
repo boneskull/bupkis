@@ -594,28 +594,33 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.withinFromNowAssertion,
     {
       invalid: {
-        generators: fc
-          .tuple(
+        generators: fc.oneof(
+          // Past dates (should always be invalid for "from now")
+          fc.tuple(
             fc
-              .date({ noInvalidDate: true })
-              .filter((d) => Math.abs(d.getTime() - Date.now()) > 7200000), // More than 2 hours difference
+              .integer({ max: -1000, min: -86400000 })
+              .map((offsetMs) => new Date(Date.now() + offsetMs)), // 1 second to 1 day ago
+            fc.constant('to be within'),
             fc.constant('1 hour'),
-          )
-          .map(([date, duration]) => [
-            date,
-            'to be within',
-            duration,
-            'from now',
-          ]),
+            fc.constant('from now'),
+          ),
+          // Future dates that are too far (more than 1 hour away)
+          fc.tuple(
+            fc
+              .integer({ max: 86400000, min: 3900000 })
+              .map((offsetMs) => new Date(Date.now() + offsetMs)), // 65 minutes to 1 day from now
+            fc.constant('to be within'),
+            fc.constant('1 hour'),
+            fc.constant('from now'),
+          ),
+        ),
       },
       valid: {
         generators: fc
           .tuple(
-            fc.date({
-              max: new Date(Date.now() + 1800000), // 30 minutes from now
-              min: new Date(Date.now() - 1800000), // 30 minutes ago
-              noInvalidDate: true,
-            }),
+            fc
+              .integer({ max: 1800000, min: 1000 })
+              .map((offsetMs) => new Date(Date.now() + offsetMs)), // 1 second to 30 minutes from now
             fc.constant('1 hour'),
           )
           .map(([date, duration]) => [

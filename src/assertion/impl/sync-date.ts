@@ -11,12 +11,20 @@
  *
  * @showGroups
  */
+import { z } from 'zod';
 
-import { z } from 'zod/v4';
+import type {
+  AssertionFailure,
+  AssertionParseRequest,
+} from '../assertion-types.js';
 
-import { BupkisRegistry } from '../../metadata.js';
+import {
+  DateLikeFormatSchema,
+  DurationFormatSchema,
+  DurationSchema,
+} from '../../schema.js';
 import { createAssertion } from '../create.js';
-
+const { isNaN } = Number;
 const { abs } = Math;
 const { now } = Date;
 
@@ -42,99 +50,6 @@ const toDate = (value: unknown): Date | null => {
 };
 
 /**
- * Parses a duration string like "1 hour", "30 minutes", "2 days" into
- * milliseconds.
- *
- * @function
- */
-const parseDuration = (duration: string): null | number => {
-  const match = duration
-    .trim()
-    .match(
-      /^(\d+)\s*(milliseconds?|ms|seconds?|s|minutes?|m|hours?|h|days?|d|weeks?|w|months?|months?|years?|y)$/i,
-    );
-  if (!match) {
-    return null;
-  }
-
-  const [, amountStr, unit] = match;
-  if (!amountStr || !unit) {
-    return null;
-  }
-  const amount = parseInt(amountStr, 10);
-
-  switch (unit.toLowerCase()) {
-    case 'd':
-      return amount * 24 * 60 * 60 * 1000;
-    case 'day':
-    case 'days':
-      return amount * 24 * 60 * 60 * 1000;
-    case 'h':
-      return amount * 60 * 60 * 1000;
-    case 'hour':
-    case 'hours':
-      return amount * 60 * 60 * 1000;
-    case 'm':
-      return amount * 60 * 1000;
-    case 'millisecond':
-    case 'milliseconds':
-    case 'ms':
-      return amount;
-    case 'minute':
-    case 'minutes':
-      return amount * 60 * 1000;
-    case 'month':
-    case 'months':
-      return amount * 30 * 24 * 60 * 60 * 1000; // Approximate
-    case 's':
-      return amount * 1000;
-    case 'second':
-    case 'seconds':
-      return amount * 1000;
-    case 'w':
-      return amount * 7 * 24 * 60 * 60 * 1000;
-    case 'week':
-    case 'weeks':
-      return amount * 7 * 24 * 60 * 60 * 1000;
-    case 'y':
-      return amount * 365 * 24 * 60 * 60 * 1000; // Approximate
-    case 'year':
-    case 'years':
-      return amount * 365 * 24 * 60 * 60 * 1000; // Approximate
-    default:
-      return null;
-  }
-};
-
-/**
- * Schema for validating Date objects, ISO strings, or timestamps.
- */
-const DateLikeSchema = z
-  .union([
-    z.date(),
-    z.string().refine((str) => !isNaN(new Date(str).getTime()), {
-      message: 'Invalid date string',
-    }),
-    z.number().refine((num) => !isNaN(new Date(num).getTime()), {
-      message: 'Invalid timestamp',
-    }),
-  ])
-  .register(BupkisRegistry, { name: 'date-like' })
-  .describe('Date, ISO string, or timestamp');
-
-/**
- * Schema for validating duration strings.
- */
-const DurationSchema = z
-  .string()
-  .refine((str) => parseDuration(str) !== null, {
-    message:
-      'Invalid duration format. Expected format: "1 hour", "30 minutes", "2 days", etc.',
-  })
-  .register(BupkisRegistry, { name: 'duration' })
-  .describe('Duration string like "1 hour", "30 minutes", "2 days"');
-
-/**
  * Asserts that the subject is a valid date (Date object, ISO string, or
  * timestamp).
  *
@@ -151,7 +66,7 @@ const DurationSchema = z
  */
 export const validDateAssertion = createAssertion(
   [['to be a valid date', 'to be date-like']],
-  DateLikeSchema,
+  DateLikeFormatSchema,
   {
     anchor: 'unknown-to-be-a-valid-date',
     category: 'date',
@@ -172,18 +87,31 @@ export const validDateAssertion = createAssertion(
  */
 export const todayAssertion = createAssertion(
   ['to be today'],
-  (subject) => {
+  (subject): AssertionFailure | boolean => {
     const date = toDate(subject);
     if (!date) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
 
     const today = new Date();
-    return (
+    const isToday =
       date.getFullYear() === today.getFullYear() &&
       date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    );
+      date.getDate() === today.getDate();
+
+    if (!isToday) {
+      return {
+        actual: date.toDateString(),
+        expected: today.toDateString(),
+        message: `Expected date to be today (${today.toDateString()}), but received: ${date.toDateString()}`,
+      };
+    }
+
+    return true;
   },
   {
     anchor: 'unknown-to-be-today',
@@ -205,14 +133,30 @@ export const todayAssertion = createAssertion(
  * @group Date/Time Assertions
  */
 export const beforeAssertion = createAssertion(
-  [DateLikeSchema, 'to be before', DateLikeSchema],
-  (subject, other) => {
+  [DateLikeFormatSchema, 'to be before', DateLikeFormatSchema],
+  (subject, other): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
-    if (!subjectDate || !otherDate) {
-      return false;
+    if (!subjectDate) {
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
-    return subjectDate.getTime() < otherDate.getTime();
+    if (!otherDate) {
+      return {
+        actual: other,
+        expected: 'a valid date',
+        message: `Expected comparison date to be a valid date, but received: ${other}`,
+      };
+    }
+
+    // Use Zod's date validation with max constraint for better error messages
+    return {
+      schema: z.date().max(new Date(otherDate.getTime() - 1)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-before-date-like',
@@ -234,14 +178,30 @@ export const beforeAssertion = createAssertion(
  * @group Date/Time Assertions
  */
 export const afterAssertion = createAssertion(
-  [DateLikeSchema, 'to be after', DateLikeSchema],
-  (subject, other) => {
+  [DateLikeFormatSchema, 'to be after', DateLikeFormatSchema],
+  (subject, other): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
-    if (!subjectDate || !otherDate) {
-      return false;
+    if (!subjectDate) {
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
-    return subjectDate.getTime() > otherDate.getTime();
+    if (!otherDate) {
+      return {
+        actual: other,
+        expected: 'a valid date',
+        message: `Expected comparison date to be a valid date, but received: ${other}`,
+      };
+    }
+
+    // Use Zod's date validation with min constraint for better error messages
+    return {
+      schema: z.date().min(new Date(otherDate.getTime() + 1)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-after-date-like',
@@ -272,18 +232,44 @@ export const afterAssertion = createAssertion(
  * @group Date/Time Assertions
  */
 export const betweenAssertion = createAssertion(
-  [DateLikeSchema, 'to be between', DateLikeSchema, 'and', DateLikeSchema],
-  (subject, start, end) => {
+  [
+    DateLikeFormatSchema,
+    'to be between',
+    DateLikeFormatSchema,
+    'and',
+    DateLikeFormatSchema,
+  ],
+  (subject, start, end): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     const startDate = toDate(start);
     const endDate = toDate(end);
-    if (!subjectDate || !startDate || !endDate) {
-      return false;
+    if (!subjectDate) {
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
-    const subjectTime = subjectDate.getTime();
-    return (
-      subjectTime >= startDate.getTime() && subjectTime <= endDate.getTime()
-    );
+    if (!startDate) {
+      return {
+        actual: start,
+        expected: 'a valid date',
+        message: `Expected start date to be a valid date, but received: ${start}`,
+      };
+    }
+    if (!endDate) {
+      return {
+        actual: end,
+        expected: 'a valid date',
+        message: `Expected end date to be a valid date, but received: ${end}`,
+      };
+    }
+
+    // Use Zod's date validation with min/max constraints for better error messages
+    return {
+      schema: z.date().min(startDate).max(endDate),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-between-date-like-and-date-like',
@@ -297,32 +283,48 @@ export const betweenAssertion = createAssertion(
  * @example
  *
  * ```ts
- * expect(new Date(), 'to be within', '1 hour from now'); // passes if within the last hour
+ * expect(new Date(), 'to be within', '1 hour', 'from now'); // passes if within the last hour
  * expect(
  *   new Date(Date.now() - 3600000),
  *   'to be within',
- *   '30 minutes from now',
+ *   '30 minutes',
+ *   'from now',
  * ); // fails
  * ```
  *
  * @group Date/Time Assertions
  */
 export const withinFromNowAssertion = createAssertion(
-  [DateLikeSchema, 'to be within', DurationSchema, 'from now'],
-  (subject, durationStr) => {
+  [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'from now'],
+  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
 
-    const durationMs = parseDuration(durationStr);
-    if (durationMs === null) {
-      return false;
+    // Transform the duration string to milliseconds
+    const durationResult = DurationSchema.safeParse(durationStr);
+    if (!durationResult.success) {
+      return {
+        actual: durationStr,
+        expected: 'a valid duration string',
+        message: `Expected a valid duration string, but received: ${durationStr}`,
+      };
     }
+    const durationMs = durationResult.data;
 
     const nowTime = now();
-    const diff = abs(subjectDate.getTime() - nowTime);
-    return diff <= durationMs;
+    const maxTime = nowTime + durationMs;
+
+    // Use Zod's date validation to ensure it's between now and now + duration
+    return {
+      schema: z.date().min(new Date(nowTime)).max(new Date(maxTime)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-within-duration-from-now',
@@ -336,30 +338,43 @@ export const withinFromNowAssertion = createAssertion(
  * @example
  *
  * ```ts
- * expect(new Date(Date.now() - 1800000), 'to be within', '1 hour ago'); // passes if within 30 minutes ago
- * expect(new Date(Date.now() + 1800000), 'to be within', '1 hour ago'); // fails (future date)
+ * expect(new Date(Date.now() - 1800000), 'to be within', '1 hour', 'ago'); // passes if within 30 minutes ago
+ * expect(new Date(Date.now() + 1800000), 'to be within', '1 hour', 'ago'); // fails (future date)
  * ```
  *
  * @group Date/Time Assertions
  */
 export const withinAgoAssertion = createAssertion(
-  [DateLikeSchema, 'to be within', DurationSchema, 'ago'],
-  (subject, durationStr) => {
+  [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'ago'],
+  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
 
-    const durationMs = parseDuration(durationStr);
-    if (durationMs === null) {
-      return false;
+    // Transform the duration string to milliseconds
+    const durationResult = DurationSchema.safeParse(durationStr);
+    if (!durationResult.success) {
+      return {
+        actual: durationStr,
+        expected: 'a valid duration string',
+        message: `Expected a valid duration string, but received: ${durationStr}`,
+      };
     }
+    const durationMs = durationResult.data;
 
     const nowTime = now();
-    const subjectTime = subjectDate.getTime();
+    const minTime = nowTime - durationMs;
 
-    // Must be in the past and within the duration
-    return subjectTime <= nowTime && nowTime - subjectTime <= durationMs;
+    // Use Zod's date validation to ensure it's between now - duration and now
+    return {
+      schema: z.date().min(new Date(minTime)).max(new Date(nowTime)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-within-duration-ago',
@@ -376,35 +391,50 @@ export const withinAgoAssertion = createAssertion(
  * expect(
  *   new Date(Date.now() + 7200000),
  *   'to be at least',
- *   '1 hour from now',
+ *   '1 hour',
+ *   'from now',
  * ); // passes (2 hours from now)
  * expect(
  *   new Date(Date.now() + 1800000),
  *   'to be at least',
- *   '1 hour from now',
+ *   '1 hour',
+ *   'from now',
  * ); // fails (30 minutes from now)
  * ```
  *
  * @group Date/Time Assertions
  */
 export const atLeastFromNowAssertion = createAssertion(
-  [DateLikeSchema, 'to be at least', DurationSchema, 'from now'],
-  (subject, durationStr) => {
+  [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'from now'],
+  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
 
-    const durationMs = parseDuration(durationStr);
-    if (durationMs === null) {
-      return false;
+    // Transform the duration string to milliseconds
+    const durationResult = DurationSchema.safeParse(durationStr);
+    if (!durationResult.success) {
+      return {
+        actual: durationStr,
+        expected: 'a valid duration string',
+        message: `Expected a valid duration string, but received: ${durationStr}`,
+      };
     }
+    const durationMs = durationResult.data;
 
     const nowTime = now();
-    const subjectTime = subjectDate.getTime();
+    const minTime = nowTime + durationMs;
 
-    // Must be in the future and at least the duration away
-    return subjectTime > nowTime && subjectTime - nowTime >= durationMs;
+    // Use Zod's date validation to ensure it's at least the duration from now
+    return {
+      schema: z.date().min(new Date(minTime)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-at-least-duration-from-now',
@@ -418,30 +448,53 @@ export const atLeastFromNowAssertion = createAssertion(
  * @example
  *
  * ```ts
- * expect(new Date(Date.now() - 7200000), 'to be at least', '1 hour ago'); // passes (2 hours ago)
- * expect(new Date(Date.now() - 1800000), 'to be at least', '1 hour ago'); // fails (30 minutes ago)
+ * expect(
+ *   new Date(Date.now() - 7200000),
+ *   'to be at least',
+ *   '1 hour',
+ *   'ago',
+ * ); // passes (2 hours ago)
+ * expect(
+ *   new Date(Date.now() - 1800000),
+ *   'to be at least',
+ *   '1 hour',
+ *   'ago',
+ * ); // fails (30 minutes ago)
  * ```
  *
  * @group Date/Time Assertions
  */
 export const atLeastAgoAssertion = createAssertion(
-  [DateLikeSchema, 'to be at least', DurationSchema, 'ago'],
-  (subject, durationStr) => {
+  [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'ago'],
+  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
 
-    const durationMs = parseDuration(durationStr);
-    if (durationMs === null) {
-      return false;
+    // Transform the duration string to milliseconds
+    const durationResult = DurationSchema.safeParse(durationStr);
+    if (!durationResult.success) {
+      return {
+        actual: durationStr,
+        expected: 'a valid duration string',
+        message: `Expected a valid duration string, but received: ${durationStr}`,
+      };
     }
+    const durationMs = durationResult.data;
 
     const nowTime = now();
-    const subjectTime = subjectDate.getTime();
+    const maxTime = nowTime - durationMs;
 
-    // Must be in the past and at least the duration ago
-    return subjectTime <= nowTime && nowTime - subjectTime >= durationMs;
+    // Use Zod's date validation to ensure it's at least the duration ago
+    return {
+      schema: z.date().max(new Date(maxTime)),
+      subject: subjectDate,
+    };
   },
   {
     anchor: 'date-like-to-be-at-least-duration-ago',
@@ -470,19 +523,39 @@ export const atLeastAgoAssertion = createAssertion(
  * @group Date/Time Assertions
  */
 export const sameDateAssertion = createAssertion(
-  [DateLikeSchema, 'to be the same date as', DateLikeSchema],
-  (subject, other) => {
+  [DateLikeFormatSchema, 'to be the same date as', DateLikeFormatSchema],
+  (subject, other): AssertionFailure | boolean => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
-    if (!subjectDate || !otherDate) {
-      return false;
+    if (!subjectDate) {
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
+    }
+    if (!otherDate) {
+      return {
+        actual: other,
+        expected: 'a valid date',
+        message: `Expected comparison date to be a valid date, but received: ${other}`,
+      };
     }
 
-    return (
+    const isSameDate =
       subjectDate.getFullYear() === otherDate.getFullYear() &&
       subjectDate.getMonth() === otherDate.getMonth() &&
-      subjectDate.getDate() === otherDate.getDate()
-    );
+      subjectDate.getDate() === otherDate.getDate();
+
+    if (!isSameDate) {
+      return {
+        actual: subjectDate.toDateString(),
+        expected: otherDate.toDateString(),
+        message: `Expected dates to be the same day, but ${subjectDate.toDateString()} !== ${otherDate.toDateString()}`,
+      };
+    }
+
+    return true;
   },
   {
     anchor: 'date-like-to-be-the-same-date-as-date-like',
@@ -505,21 +578,52 @@ export const sameDateAssertion = createAssertion(
  * @group Date/Time Assertions
  */
 export const equalWithinAssertion = createAssertion(
-  [DateLikeSchema, 'to equal', DateLikeSchema, 'within', DurationSchema],
-  (subject, other, toleranceStr) => {
+  [
+    DateLikeFormatSchema,
+    'to equal',
+    DateLikeFormatSchema,
+    'within',
+    DurationFormatSchema,
+  ],
+  (subject, other, toleranceStr): AssertionFailure | boolean => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
-    if (!subjectDate || !otherDate) {
-      return false;
+    if (!subjectDate) {
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
+    }
+    if (!otherDate) {
+      return {
+        actual: other,
+        expected: 'a valid date',
+        message: `Expected comparison date to be a valid date, but received: ${other}`,
+      };
     }
 
-    const toleranceMs = parseDuration(toleranceStr);
-    if (toleranceMs === null) {
-      return false;
+    // Transform the duration string to milliseconds
+    const durationResult = DurationSchema.safeParse(toleranceStr);
+    if (!durationResult.success) {
+      return {
+        actual: toleranceStr,
+        expected: 'a valid duration string',
+        message: `Expected a valid duration string, but received: ${toleranceStr}`,
+      };
     }
+    const toleranceMs = durationResult.data;
 
     const diff = abs(subjectDate.getTime() - otherDate.getTime());
-    return diff <= toleranceMs;
+    if (diff > toleranceMs) {
+      return {
+        actual: `${diff}ms difference`,
+        expected: `within ${toleranceMs}ms`,
+        message: `Expected dates to be equal within ${toleranceStr} (${toleranceMs}ms), but difference was ${diff}ms`,
+      };
+    }
+
+    return true;
   },
   {
     anchor: 'date-like-to-equal-date-like-within-duration',
@@ -541,12 +645,21 @@ export const equalWithinAssertion = createAssertion(
  */
 export const inThePastAssertion = createAssertion(
   ['to be in the past'],
-  (subject) => {
+  (subject): AssertionFailure | AssertionParseRequest => {
     const date = toDate(subject);
     if (!date) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
-    return date.getTime() < now();
+
+    // Use Zod's date validation with max constraint for the past
+    return {
+      schema: z.date().max(new Date(now() - 1)), // Must be before now
+      subject: date,
+    };
   },
   {
     anchor: 'unknown-to-be-in-the-past',
@@ -568,12 +681,21 @@ export const inThePastAssertion = createAssertion(
  */
 export const inTheFutureAssertion = createAssertion(
   ['to be in the future'],
-  (subject) => {
+  (subject): AssertionFailure | AssertionParseRequest => {
     const date = toDate(subject);
     if (!date) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
-    return date.getTime() > now();
+
+    // Use Zod's date validation with min constraint for the future
+    return {
+      schema: z.date().min(new Date(now() + 1)), // Must be after now
+      subject: date,
+    };
   },
   {
     anchor: 'unknown-to-be-in-the-future',
@@ -596,13 +718,37 @@ export const inTheFutureAssertion = createAssertion(
  */
 export const weekendAssertion = createAssertion(
   ['to be a weekend'],
-  (subject) => {
+  (subject): AssertionFailure | boolean => {
     const date = toDate(subject);
     if (!date) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
+
     const day = date.getDay();
-    return day === 0 || day === 6; // Sunday or Saturday
+    const isWeekend = day === 0 || day === 6; // Sunday or Saturday
+
+    if (!isWeekend) {
+      const dayNames = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
+      return {
+        actual: dayNames[day],
+        expected: 'Saturday or Sunday',
+        message: `Expected date to be a weekend (Saturday or Sunday), but it was ${dayNames[day]}`,
+      };
+    }
+
+    return true;
   },
   {
     anchor: 'unknown-to-be-a-weekend',
@@ -625,13 +771,37 @@ export const weekendAssertion = createAssertion(
  */
 export const weekdayAssertion = createAssertion(
   ['to be a weekday'],
-  (subject) => {
+  (subject): AssertionFailure | boolean => {
     const date = toDate(subject);
     if (!date) {
-      return false;
+      return {
+        actual: subject,
+        expected: 'a valid date',
+        message: `Expected subject to be a valid date, but received: ${subject}`,
+      };
     }
+
     const day = date.getDay();
-    return day >= 1 && day <= 5; // Monday through Friday
+    const isWeekday = day >= 1 && day <= 5; // Monday through Friday
+
+    if (!isWeekday) {
+      const dayNames = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
+      return {
+        actual: dayNames[day],
+        expected: 'Monday through Friday',
+        message: `Expected date to be a weekday (Monday through Friday), but it was ${dayNames[day]}`,
+      };
+    }
+
+    return true;
   },
   {
     anchor: 'unknown-to-be-a-weekday',

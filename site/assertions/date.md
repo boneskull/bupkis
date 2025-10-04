@@ -178,15 +178,20 @@ expect(
 **Success**:
 
 ```js
-expect(new Date(), 'to be within', '1 hour from now');
-expect(new Date(Date.now() - 30000), 'to be within', '1 minute from now'); // 30 seconds ago
+expect(new Date(), 'to be within', '1 hour', 'from now');
+expect(new Date(Date.now() - 30000), 'to be within', '1 minute', 'from now'); // 30 seconds ago
 ```
 
 **Failure**:
 
 ```js
-expect(new Date(Date.now() - 3600000), 'to be within', '30 minutes from now');
-// AssertionError: Expected date to be within 30 minutes from now
+expect(
+  new Date(Date.now() - 3600000),
+  'to be within',
+  '30 minutes',
+  'from now',
+);
+// AssertionError: Expected date to be within 30 minutes, from now
 ```
 
 **Negation**:
@@ -195,7 +200,8 @@ expect(new Date(Date.now() - 3600000), 'to be within', '30 minutes from now');
 expect(
   new Date(Date.now() - 3600000),
   'not to be within',
-  '30 minutes from now',
+  '30 minutes',
+  'from now',
 );
 ```
 
@@ -204,21 +210,21 @@ expect(
 **Success**:
 
 ```js
-expect(new Date(Date.now() - 1800000), 'to be within', '1 hour ago'); // 30 minutes ago
-expect(new Date(Date.now() - 60000), 'to be within', '5 minutes ago'); // 1 minute ago
+expect(new Date(Date.now() - 1800000), 'to be within', '1 hour', 'ago'); // 30 minutes ago
+expect(new Date(Date.now() - 60000), 'to be within', '5 minutes', 'ago'); // 1 minute ago
 ```
 
 **Failure**:
 
 ```js
-expect(new Date(Date.now() + 1800000), 'to be within', '1 hour ago'); // future date
-// AssertionError: Expected future date to be within 1 hour ago
+expect(new Date(Date.now() + 1800000), 'to be within', '1 hour', 'ago'); // future date
+// AssertionError: Expected future date to be within 1 hour, ago
 ```
 
 **Negation**:
 
 ```js
-expect(new Date(Date.now() + 1800000), 'not to be within', '1 hour ago');
+expect(new Date(Date.now() + 1800000), 'not to be within', '1 hour', 'ago');
 ```
 
 ### `{date-like} to be at least {duration} from now`
@@ -226,21 +232,31 @@ expect(new Date(Date.now() + 1800000), 'not to be within', '1 hour ago');
 **Success**:
 
 ```js
-expect(new Date(Date.now() + 7200000), 'to be at least', '1 hour from now'); // 2 hours from now
-expect(new Date(Date.now() + 86400000), 'to be at least', '12 hours from now'); // 1 day from now
+expect(new Date(Date.now() + 7200000), 'to be at least', '1 hour', 'from now'); // 2 hours from now
+expect(
+  new Date(Date.now() + 86400000),
+  'to be at least',
+  '12 hours',
+  'from now',
+); // 1 day from now
 ```
 
 **Failure**:
 
 ```js
-expect(new Date(Date.now() + 1800000), 'to be at least', '1 hour from now'); // 30 minutes from now
-// AssertionError: Expected date to be at least 1 hour from now
+expect(new Date(Date.now() + 1800000), 'to be at least', '1 hour', 'from now'); // 30 minutes from now
+// AssertionError: Expected date to be at least 1 hour, from now
 ```
 
 **Negation**:
 
 ```js
-expect(new Date(Date.now() + 1800000), 'not to be at least', '1 hour from now');
+expect(
+  new Date(Date.now() + 1800000),
+  'not to be at least',
+  '1 hour',
+  'from now',
+);
 ```
 
 ### `{date-like} to be at least {duration} ago`
@@ -248,21 +264,21 @@ expect(new Date(Date.now() + 1800000), 'not to be at least', '1 hour from now');
 **Success**:
 
 ```js
-expect(new Date(Date.now() - 7200000), 'to be at least', '1 hour ago'); // 2 hours ago
-expect(new Date(Date.now() - 86400000), 'to be at least', '12 hours ago'); // 1 day ago
+expect(new Date(Date.now() - 7200000), 'to be at least', '1 hour', 'ago'); // 2 hours ago
+expect(new Date(Date.now() - 86400000), 'to be at least', '12 hours', 'ago'); // 1 day ago
 ```
 
 **Failure**:
 
 ```js
-expect(new Date(Date.now() - 1800000), 'to be at least', '1 hour ago'); // 30 minutes ago
-// AssertionError: Expected date to be at least 1 hour ago
+expect(new Date(Date.now() - 1800000), 'to be at least', '1 hour', 'ago'); // 30 minutes ago
+// AssertionError: Expected date to be at least 1 hour, ago
 ```
 
 **Negation**:
 
 ```js
-expect(new Date(Date.now() - 1800000), 'not to be at least', '1 hour ago');
+expect(new Date(Date.now() - 1800000), 'not to be at least', '1 hour', 'ago');
 ```
 
 ### `{date-like} to be the same date as {date-like}`
@@ -433,7 +449,7 @@ The date/time assertions support human-readable duration strings in the followin
 Examples:
 
 ```js
-expect(someDate, 'to be within', '30 minutes ago');
-expect(futureDate, 'to be at least', '2 hours from now');
+expect(someDate, 'to be within', '30 minutes', 'ago');
+expect(futureDate, 'to be at least', '2 hours', 'from now');
 expect(date1, 'to equal', date2, 'within', '1 second');
 ```

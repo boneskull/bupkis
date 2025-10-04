@@ -44,6 +44,7 @@ export const errorSerializer = (error: Error): string => {
 export function takeErrorSnapshot(
   failingAssertion: () => void,
 ): (t: it.TestContext) => void;
+
 /**
  * Takes a snapshot of an error thrown by an async assertion function.
  *
@@ -53,6 +54,7 @@ export function takeErrorSnapshot(
 export function takeErrorSnapshot(
   failingAssertion: () => Promise<void>,
 ): (t: it.TestContext) => Promise<void>;
+
 export function takeErrorSnapshot(
   failingAssertion: () => Promise<void> | void,
 ) {
