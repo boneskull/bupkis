@@ -191,7 +191,7 @@
     "prettier-plugin-pkg": "0.21.2",
     "prettier-plugin-sort-json": "4.1.1",
     "serve": "14.2.5",
-    "tshy": "3.0.2",
+    "tshy": "3.0.3",
     "tsx": "4.20.6",
     "type-fest": "4.41.0",
     "typedoc": "0.28.13",
