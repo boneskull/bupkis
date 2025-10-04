@@ -772,3 +772,238 @@ export const NonNegativeIntegerSchema = z
   .nonnegative()
   .describe('A non-negative integer')
   .register(BupkisRegistry, { name: 'nonnegative-integer' });
+
+const MIN_TIMESTAMP = -8640000000000000;
+const MAX_TIMESTAMP = 8640000000000000;
+
+/**
+ * A Zod schema that validates numeric timestamps.
+ *
+ * This schema validates JavaScript timestamp values (milliseconds since Unix
+ * epoch) within the valid range for JavaScript Date objects. It ensures the
+ * timestamp is an integer between -8,640,000,000,000,000 and
+ * 8,640,000,000,000,000 milliseconds, which corresponds to the range of dates
+ * that can be represented by JavaScript's Date object (approximately April 20,
+ * 271821 BCE to September 13, 275760 CE).
+ *
+ * @example
+ *
+ * ```typescript
+ * TimestampFormatSchema.parse(Date.now()); // ✓ Valid current timestamp
+ * TimestampFormatSchema.parse(0); // ✓ Valid Unix epoch
+ * TimestampFormatSchema.parse(-62135596800000); // ✓ Valid timestamp (year 1 CE)
+ * TimestampFormatSchema.parse(1.5); // ✗ Throws - not an integer
+ * TimestampFormatSchema.parse(9e15); // ✗ Throws - exceeds maximum timestamp
+ * TimestampFormatSchema.parse('1234567890000'); // ✗ Throws - string not number
+ * ```
+ *
+ * @group Schema
+ */
+export const TimestampFormatSchema = z
+  .number()
+  .int()
+  .min(MIN_TIMESTAMP)
+  .max(MAX_TIMESTAMP);
+
+/**
+ * A Zod schema that validates ISO date strings.
+ *
+ * This schema validates ISO 8601 date and datetime strings in various formats.
+ * It accepts both date-only formats (YYYY-MM-DD) and full datetime formats with
+ * optional timezone information. The schema supports local datetime strings and
+ * those with timezone offsets.
+ *
+ * @example
+ *
+ * ```typescript
+ * ISODateFormatSchema.parse('2025-01-01'); // ✓ Valid ISO date
+ * ISODateFormatSchema.parse('2025-01-01T10:30:00'); // ✓ Valid local datetime
+ * ISODateFormatSchema.parse('2025-01-01T10:30:00Z'); // ✓ Valid UTC datetime
+ * ISODateFormatSchema.parse('2025-01-01T10:30:00+05:30'); // ✓ Valid with offset
+ * ISODateFormatSchema.parse('2025-01-01T10:30:00.123Z'); // ✓ Valid with milliseconds
+ * ISODateFormatSchema.parse('01/01/2025'); // ✗ Throws - not ISO format
+ * ISODateFormatSchema.parse('2025-13-01'); // ✗ Throws - invalid month
+ * ISODateFormatSchema.parse('not-a-date'); // ✗ Throws - invalid format
+ * ```
+ *
+ * @group Schema
+ */
+export const ISODateFormatSchema = z.union([
+  z.iso.datetime({ local: true, offset: true }),
+  z.iso.date(),
+]);
+
+/**
+ * A Zod schema that validates date-like values.
+ *
+ * This schema accepts any value that can represent a date: native JavaScript
+ * Date objects, ISO 8601 date strings, or numeric timestamps. It provides a
+ * unified validation approach for date inputs across different assertion types.
+ * The schema is registered in the BupkisRegistry for use in assertion
+ * creation.
+ *
+ * @privateRemarks
+ * This schema is registered with the name 'date-like' in the BupkisRegistry and
+ * is commonly used in temporal assertions throughout the library.
+ * @example
+ *
+ * ```typescript
+ * DateLikeFormatSchema.parse(new Date()); // ✓ Valid Date object
+ * DateLikeFormatSchema.parse('2025-01-01'); // ✓ Valid ISO date string
+ * DateLikeFormatSchema.parse('2025-01-01T10:30:00Z'); // ✓ Valid ISO datetime
+ * DateLikeFormatSchema.parse(Date.now()); // ✓ Valid timestamp
+ * DateLikeFormatSchema.parse(0); // ✓ Valid Unix epoch
+ * DateLikeFormatSchema.parse('invalid-date'); // ✗ Throws - invalid format
+ * DateLikeFormatSchema.parse({}); // ✗ Throws - not date-like
+ * DateLikeFormatSchema.parse(null); // ✗ Throws - null not accepted
+ * ```
+ *
+ * @group Schema
+ */
+export const DateLikeFormatSchema = z
+  .union([z.date(), ISODateFormatSchema, TimestampFormatSchema])
+  .register(BupkisRegistry, { name: 'date-like' })
+  .describe('Date, ISO string, or timestamp');
+
+const DURATION_REGEX =
+  /^(\d+)\s*(milliseconds?|ms|seconds?|s|minutes?|m|hours?|h|days?|d|weeks?|w|months?|months?|years?|y)$/i;
+
+/**
+ * A Zod schema that validates duration string formats.
+ *
+ * This schema validates human-readable duration strings using a flexible format
+ * that supports various time units with both full names and abbreviations. The
+ * format is "{amount} {unit}" where amount is a positive integer and unit can
+ * be any supported time unit. Extra whitespace is automatically trimmed.
+ *
+ * Supported units (case-insensitive):
+ *
+ * - Milliseconds: `millisecond`, `milliseconds`, `ms`
+ * - Seconds: `second`, `seconds`, `s`
+ * - Minutes: `minute`, `minutes`, `m`
+ * - Hours: `hour`, `hours`, `h`
+ * - Days: `day`, `days`, `d`
+ * - Weeks: `week`, `weeks`, `w`
+ * - Months: `month`, `months` (approximate: 30 days)
+ * - Years: `year`, `years`, `y` (approximate: 365 days)
+ *
+ * @privateRemarks
+ * This schema only validates the format; it does not perform any
+ * transformations. For converting to milliseconds, use {@link DurationSchema}
+ * instead. The schema is registered with the name 'duration' in the
+ * BupkisRegistry.
+ * @example
+ *
+ * ```typescript
+ * DurationFormatSchema.parse('1 hour'); // ✓ Valid
+ * DurationFormatSchema.parse('30 minutes'); // ✓ Valid
+ * DurationFormatSchema.parse('2 days'); // ✓ Valid
+ * DurationFormatSchema.parse('  5 seconds  '); // ✓ Valid (whitespace trimmed)
+ * DurationFormatSchema.parse('1h'); // ✓ Valid abbreviation
+ * DurationFormatSchema.parse('10 ms'); // ✓ Valid milliseconds
+ * DurationFormatSchema.parse('-5 minutes'); // ✗ Throws - negative not allowed
+ * DurationFormatSchema.parse('1.5 hours'); // ✗ Throws - decimal not allowed
+ * DurationFormatSchema.parse('5'); // ✗ Throws - missing unit
+ * DurationFormatSchema.parse('five minutes'); // ✗ Throws - non-numeric amount
+ * ```
+ *
+ * @group Schema
+ */
+export const DurationFormatSchema = z
+  .stringFormat('duration', (val: string) => DURATION_REGEX.test(val.trim()))
+  .register(BupkisRegistry, { name: 'duration' })
+  .describe('Duration string format like "1 hour", "30 minutes", "2 days"');
+
+/**
+ * A Zod schema that validates and transforms duration strings to milliseconds.
+ *
+ * This schema extends {@link DurationFormatSchema} by adding a transformation
+ * step that converts valid duration strings into their equivalent values in
+ * milliseconds. It supports the same flexible duration format but returns a
+ * numeric value representing the total duration in milliseconds.
+ *
+ * The transformation handles all supported time units with accurate
+ * conversions, except for months and years which use approximate values (30
+ * days per month, 365 days per year) due to the variability of these units.
+ *
+ * Conversion rates:
+ *
+ * - 1 millisecond = 1 ms
+ * - 1 second = 1,000 ms
+ * - 1 minute = 60,000 ms
+ * - 1 hour = 3,600,000 ms
+ * - 1 day = 86,400,000 ms
+ * - 1 week = 604,800,000 ms
+ * - 1 month ≈ 2,592,000,000 ms (30 days)
+ * - 1 year ≈ 31,536,000,000 ms (365 days)
+ *
+ * @privateRemarks
+ * The transformation function includes comprehensive error handling, though
+ * errors should never occur in practice due to the format validation step. The
+ * schema is registered with the name 'duration' in the BupkisRegistry.
+ * @example
+ *
+ * ```typescript
+ * DurationSchema.parse('1 hour'); // → 3600000
+ * DurationSchema.parse('30 minutes'); // → 1800000
+ * DurationSchema.parse('2 days'); // → 172800000
+ * DurationSchema.parse('500 ms'); // → 500
+ * DurationSchema.parse('1 week'); // → 604800000
+ * DurationSchema.parse('1 year'); // → 31536000000 (approximate)
+ * DurationSchema.parse('invalid'); // ✗ Throws - invalid format
+ * ```
+ *
+ * @group Schema
+ */
+export const DurationSchema = DurationFormatSchema.transform(
+  (duration: string): number => {
+    const match = duration.trim().match(DURATION_REGEX);
+
+    if (!match) {
+      throw new Error('Invalid duration format'); // Should never happen due to format validation
+    }
+
+    const [, amountStr, unit] = match;
+    const amount = parseInt(amountStr!, 10);
+
+    switch (unit!.toLowerCase()) {
+      case 'd':
+      case 'day':
+      case 'days':
+        return amount * 24 * 60 * 60 * 1000;
+      case 'h':
+      case 'hour':
+      case 'hours':
+        return amount * 60 * 60 * 1000;
+      case 'm':
+      case 'minute':
+      case 'minutes':
+        return amount * 60 * 1000;
+      case 'millisecond':
+      case 'milliseconds':
+      case 'ms':
+        return amount;
+      case 'month':
+      case 'months':
+        return amount * 30 * 24 * 60 * 60 * 1000; // Approximate
+      case 's':
+      case 'second':
+      case 'seconds':
+        return amount * 1000;
+      case 'w':
+      case 'week':
+      case 'weeks':
+        return amount * 7 * 24 * 60 * 60 * 1000;
+      case 'y':
+      case 'year':
+      case 'years':
+        return amount * 365 * 24 * 60 * 60 * 1000; // Approximate
+      default:
+        throw new Error(`Unrecognized duration unit: ${unit}`); // Should never happen
+    }
+  },
+)
+  .register(BupkisRegistry, { name: 'duration' })
+  .describe(
+    'Duration string like "1 hour", "30 minutes", "2 days" (transforms to milliseconds)',
+  );

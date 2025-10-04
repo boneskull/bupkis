@@ -151,7 +151,7 @@ export const setContainsAssertion = createAssertion(
   [
     z.set(z.unknown()).or(z.instanceof(WeakSet)),
     ['to contain', 'to include'],
-    z.any(),
+    z.unknown(),
   ],
   (subject, value) => {
     // WeakSet.has only works with object or symbol values

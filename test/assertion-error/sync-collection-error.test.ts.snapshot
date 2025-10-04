@@ -142,7 +142,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Map<unknown, unknown>} '
 }
 `;
 
-exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown> | WeakSet} 'to contain' / 'to include' {any}\" [set_unknown-weakset-to-contain-to-include-any-3s3p] > should throw a consistent AssertionError [set_unknown-weakset-to-contain-to-include-any-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown> | WeakSet} 'to contain' / 'to include' {unknown}\" [set_unknown-weakset-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [set_unknown-weakset-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected Set to contain value",
   "generatedMessage": false,
@@ -151,7 +151,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{Set<unknown> | WeakSet} 
   "actual": "c",
   "expected": "value to exist in Set",
   "diff": "simple",
-  "assertionId": "set_unknown-weakset-to-contain-to-include-any-3s3p"
+  "assertionId": "set_unknown-weakset-to-contain-to-include-unknown-3s3p"
 }
 `;
 
