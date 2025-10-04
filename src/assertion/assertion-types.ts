@@ -388,37 +388,6 @@ export type AssertionImplSync<Parts extends AssertionParts> =
   | AssertionImplSchemaSync<Parts>;
 
 /**
- * Internal metadata for assertions.
- *
- * For internal use by documentation tooling.
- */
-export interface AssertionMetadata {
-  /**
-   * Anchor ID for linking to this assertion
-   */
-  anchor: string;
-  /**
-   * Category to map to page of logically grouped assertions
-   */
-  category:
-    | 'collections'
-    | 'date'
-    | 'equality'
-    | 'error'
-    | 'function'
-    | 'numeric'
-    | 'object'
-    | 'other'
-    | 'primitives'
-    | 'promise'
-    | 'strings';
-  /**
-   * Redirect for assertion to its documentation page, including anchor
-   */
-  redirect?: string | undefined;
-}
-
-/**
  * When you want to use a Zod schema in an assertion implementation function
  * against some value that _isn't_ the subject, you can return this object and
  * <span class="bupkis">BUPKIS</span> will do it for you (with better diffs).
@@ -776,7 +745,6 @@ export interface CreateAssertionFn {
   >(
     parts: Parts,
     impl: Impl,
-    metadata?: AssertionMetadata,
   ): AssertionSchemaSync<Parts, AssertionImplSchemaSync<Parts>, Slots>;
 
   /**
@@ -796,7 +764,6 @@ export interface CreateAssertionFn {
   >(
     parts: Parts,
     impl: Impl,
-    metadata?: AssertionMetadata,
   ): AssertionFunctionSync<Parts, Impl, Slots>;
 }
 /**
@@ -824,7 +791,6 @@ export interface CreateAsyncAssertionFn {
   >(
     parts: Parts,
     impl: Impl,
-    metadata?: AssertionMetadata,
   ): AssertionSchemaAsync<Parts, AssertionImplSchemaAsync<Parts>, Slots>;
 
   /**
@@ -844,7 +810,6 @@ export interface CreateAsyncAssertionFn {
   >(
     parts: Parts,
     impl: Impl,
-    metadata?: AssertionMetadata,
   ): AssertionFunctionAsync<Parts, Impl, Slots>;
 }
 

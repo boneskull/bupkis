@@ -477,10 +477,6 @@ describe('core API', () => {
           const customAsyncAssertion2 = createAsyncAssertion(
             ['to validate against', z.boolean()],
             z.string(),
-            {
-              anchor: 'foo',
-              category: 'other',
-            },
           );
 
           const { expectAsync } = use([customAsyncAssertion2]);

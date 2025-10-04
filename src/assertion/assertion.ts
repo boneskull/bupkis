@@ -28,7 +28,6 @@ import { type DefFromZodType } from '../types.js';
 import {
   type Assertion,
   type AssertionImpl,
-  type AssertionMetadata,
   type AssertionParts,
   type AssertionSlots,
   type ParsedResult,
@@ -45,14 +44,6 @@ const { isArray } = Array;
  * @see {@link BupkisAssertion.generateUniqueId} for usage
  */
 const SLUG_CHARMAP = { ...slug.charmap, '-': '_', '<': '_', '>': '' };
-
-/**
- * Registry of assertion metadata.
- */
-export const AssertionMetadataRegistry = new WeakMap<
-  BupkisAssertion<any, any, any>,
-  AssertionMetadata
->();
 
 /**
  * Base abstract class for ALL assertions.
@@ -72,10 +63,6 @@ export abstract class BupkisAssertion<
   ) {
     this.id = this.generateAssertionId();
     debug('ℹ Created assertion %s', this);
-  }
-
-  public metadata(): AssertionMetadata | undefined {
-    return AssertionMetadataRegistry.get(this);
   }
 
   /**
