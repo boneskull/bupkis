@@ -7,48 +7,9 @@
 
 import { z } from 'zod/v4';
 
-import type {
-  AssertionFailure,
-  AssertionMetadata,
-  AssertionParseRequest,
-} from './types.js';
+import type { AssertionFailure, AssertionParseRequest } from './types.js';
 
 import { isZodType } from './guards.js';
-
-/**
- * Schema for internal assertion metadata.
- *
- * Used by documentation tooling.
- */
-
-export const AssertionMetadataSchema: z.ZodType<AssertionMetadata> = z
-  .looseObject({
-    anchor: z.string().describe('Anchor ID for linking to this assertion.'),
-    category: z
-      .enum([
-        'collections',
-        'date',
-        'equality',
-        'error',
-        'function',
-        'numeric',
-        'object',
-        'other',
-        'primitives',
-        'promise',
-        'strings',
-      ])
-      .describe('Category to map to page of logically grouped assertions'),
-    redirect: z
-      .string()
-      .optional()
-      .describe(
-        'Redirect for assertion to its documentation page, including anchor',
-      ),
-  })
-  .describe(
-    'Metadata associated with an assertion, for internal use by documentation tooling.',
-  );
 
 /**
  * Schema for {@link AssertionFailure}.
@@ -218,29 +179,12 @@ export const isAssertionParseRequest = (
  * @internal
  */
 export const CreateAssertionInputSchema = z
-  .tuple([
-    AssertionPartsSchema,
-    AssertionImplSchemaSync,
-    z.optional(AssertionMetadataSchema),
-  ])
+  .tuple([AssertionPartsSchema, AssertionImplSchemaSync])
   .describe('Parameters for createAssertion()');
 
 /**
  * @internal
  */
 export const CreateAssertionInputSchemaAsync = z
-  .tuple([
-    AssertionPartsSchema,
-    AssertionImplSchemaAsync,
-    z.optional(AssertionMetadataSchema),
-  ])
+  .tuple([AssertionPartsSchema, AssertionImplSchemaAsync])
   .describe('Parameters for createAsyncAssertion()');
-
-/**
- * @function
- * @param value
- * @returns
- * @knipignore
- */
-export const isMetadata = (value: unknown): value is AssertionMetadata =>
-  AssertionMetadataSchema.safeParse(value).success;
