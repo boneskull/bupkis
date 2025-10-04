@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.0...bupkis-v0.10.1) (2025-10-04)
+
+
+### Bug Fixes
+
+* **assertions:** another fix for handling of conjuncted assertions w/ bare "and" phrases ([fb79b8b](https://github.com/boneskull/bupkis/commit/fb79b8bd0969f3ab71d93fe6ddfcc9b3fab93ff0))
+
 ## [0.10.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.9.0...bupkis-v0.10.0) (2025-10-03)
 
 
