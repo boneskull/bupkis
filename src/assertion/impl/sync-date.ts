@@ -25,6 +25,7 @@ import {
   DurationSchema,
 } from '../../schema.js';
 import { createAssertion } from '../create.js';
+
 const { isNaN } = Number;
 const { abs } = Math;
 const { now } = Date;
@@ -64,14 +65,12 @@ const toDate = (value: unknown): Date | null => {
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-a-valid-date
+ * @bupkisAssertionCategory date
  */
 export const validDateAssertion = createAssertion(
   [['to be a valid date', 'to be date-like']],
   DateLikeFormatSchema,
-  {
-    anchor: 'unknown-to-be-a-valid-date',
-    category: 'date',
-  },
 );
 
 /**
@@ -85,6 +84,8 @@ export const validDateAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-today
+ * @bupkisAssertionCategory date
  */
 export const todayAssertion = createAssertion(
   ['to be today'],
@@ -114,10 +115,6 @@ export const todayAssertion = createAssertion(
 
     return true;
   },
-  {
-    anchor: 'unknown-to-be-today',
-    category: 'date',
-  },
 );
 
 /**
@@ -132,6 +129,8 @@ export const todayAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-before-date-like
+ * @bupkisAssertionCategory date
  */
 export const beforeAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be before', DateLikeFormatSchema],
@@ -159,10 +158,6 @@ export const beforeAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-before-date-like',
-    category: 'date',
-  },
 );
 
 /**
@@ -177,6 +172,8 @@ export const beforeAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-after-date-like
+ * @bupkisAssertionCategory date
  */
 export const afterAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be after', DateLikeFormatSchema],
@@ -204,10 +201,6 @@ export const afterAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-after-date-like',
-    category: 'date',
-  },
 );
 
 /**
@@ -231,6 +224,8 @@ export const afterAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-between-date-like-and-date-like
+ * @bupkisAssertionCategory date
  */
 export const betweenAssertion = createAssertion(
   [
@@ -272,10 +267,6 @@ export const betweenAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-between-date-like-and-date-like',
-    category: 'date',
-  },
 );
 
 /**
@@ -294,6 +285,8 @@ export const betweenAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-within-duration-from-now
+ * @bupkisAssertionCategory date
  */
 export const withinFromNowAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'from now'],
@@ -327,10 +320,6 @@ export const withinFromNowAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-within-duration-from-now',
-    category: 'date',
-  },
 );
 
 /**
@@ -344,6 +333,8 @@ export const withinFromNowAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-within-duration-ago
+ * @bupkisAssertionCategory date
  */
 export const withinAgoAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'ago'],
@@ -377,10 +368,6 @@ export const withinAgoAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-within-duration-ago',
-    category: 'date',
-  },
 );
 
 /**
@@ -404,6 +391,8 @@ export const withinAgoAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-at-least-duration-from-now
+ * @bupkisAssertionCategory date
  */
 export const atLeastFromNowAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'from now'],
@@ -437,10 +426,6 @@ export const atLeastFromNowAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-at-least-duration-from-now',
-    category: 'date',
-  },
 );
 
 /**
@@ -464,6 +449,8 @@ export const atLeastFromNowAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-at-least-duration-ago
+ * @bupkisAssertionCategory date
  */
 export const atLeastAgoAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'ago'],
@@ -497,10 +484,6 @@ export const atLeastAgoAssertion = createAssertion(
       subject: subjectDate,
     };
   },
-  {
-    anchor: 'date-like-to-be-at-least-duration-ago',
-    category: 'date',
-  },
 );
 
 /**
@@ -522,6 +505,8 @@ export const atLeastAgoAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-be-the-same-date-as-date-like
+ * @bupkisAssertionCategory date
  */
 export const sameDateAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be the same date as', DateLikeFormatSchema],
@@ -558,10 +543,6 @@ export const sameDateAssertion = createAssertion(
 
     return true;
   },
-  {
-    anchor: 'date-like-to-be-the-same-date-as-date-like',
-    category: 'date',
-  },
 );
 
 /**
@@ -577,6 +558,8 @@ export const sameDateAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor date-like-to-equal-date-like-within-duration
+ * @bupkisAssertionCategory date
  */
 export const equalWithinAssertion = createAssertion(
   [
@@ -626,10 +609,6 @@ export const equalWithinAssertion = createAssertion(
 
     return true;
   },
-  {
-    anchor: 'date-like-to-equal-date-like-within-duration',
-    category: 'date',
-  },
 );
 
 /**
@@ -643,6 +622,8 @@ export const equalWithinAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-in-the-past
+ * @bupkisAssertionCategory date
  */
 export const inThePastAssertion = createAssertion(
   ['to be in the past'],
@@ -662,10 +643,6 @@ export const inThePastAssertion = createAssertion(
       subject: date,
     };
   },
-  {
-    anchor: 'unknown-to-be-in-the-past',
-    category: 'date',
-  },
 );
 
 /**
@@ -679,6 +656,8 @@ export const inThePastAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-in-the-future
+ * @bupkisAssertionCategory date
  */
 export const inTheFutureAssertion = createAssertion(
   ['to be in the future'],
@@ -698,10 +677,6 @@ export const inTheFutureAssertion = createAssertion(
       subject: date,
     };
   },
-  {
-    anchor: 'unknown-to-be-in-the-future',
-    category: 'date',
-  },
 );
 
 /**
@@ -716,6 +691,8 @@ export const inTheFutureAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-a-weekend
+ * @bupkisAssertionCategory date
  */
 export const weekendAssertion = createAssertion(
   ['to be a weekend'],
@@ -742,10 +719,6 @@ export const weekendAssertion = createAssertion(
 
     return true;
   },
-  {
-    anchor: 'unknown-to-be-a-weekend',
-    category: 'date',
-  },
 );
 
 /**
@@ -760,6 +733,8 @@ export const weekendAssertion = createAssertion(
  * ```
  *
  * @group Date/Time Assertions
+ * @bupkisAnchor unknown-to-be-a-weekday
+ * @bupkisAssertionCategory date
  */
 export const weekdayAssertion = createAssertion(
   ['to be a weekday'],
@@ -785,9 +760,5 @@ export const weekdayAssertion = createAssertion(
     }
 
     return true;
-  },
-  {
-    anchor: 'unknown-to-be-a-weekday',
-    category: 'date',
   },
 );

@@ -49,6 +49,8 @@ const { hasOwn, keys } = Object;
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-contain-any
+ * @bupkisAssertionCategory collections
  */
 export const mapContainsAssertion = createAssertion(
   [
@@ -97,6 +99,8 @@ export const mapContainsAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-have-size-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const mapSizeAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have size', NonNegativeIntegerSchema],
@@ -123,6 +127,8 @@ export const mapSizeAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-be-empty
+ * @bupkisAssertionCategory collections
  */
 export const emptyMapAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to be empty'],
@@ -146,6 +152,8 @@ export const emptyMapAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-contain-any
+ * @bupkisAssertionCategory collections
  */
 export const setContainsAssertion = createAssertion(
   [
@@ -190,6 +198,8 @@ export const setContainsAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-have-size-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const setSizeAssertion = createAssertion(
   [z.set(z.unknown()), 'to have size', NonNegativeIntegerSchema],
@@ -215,6 +225,8 @@ export const setSizeAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-be-empty
+ * @bupkisAssertionCategory collections
  */
 export const emptySetAssertion = createAssertion(
   [z.set(z.unknown()), 'to be empty'],
@@ -240,6 +252,8 @@ export const emptySetAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor array-to-contain-any
+ * @bupkisAssertionCategory collections
  */
 export const arrayContainsAssertion = createAssertion(
   [z.array(z.any()), ['to contain', 'to include'], z.any()],
@@ -266,6 +280,8 @@ export const arrayContainsAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor array-to-have-size-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const arraySizeAssertion = createAssertion(
   [z.array(z.any()), 'to have size', NonNegativeIntegerSchema],
@@ -292,6 +308,8 @@ export const arraySizeAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor array-to-have-length-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const arrayLengthAssertion = createAssertion(
   [z.array(z.unknown()), 'to have length', NonNegativeIntegerSchema],
@@ -310,6 +328,8 @@ export const arrayLengthAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor array-not-to-be-empty
+ * @bupkisAssertionCategory collections
  */
 export const nonEmptyArrayAssertion = createAssertion(
   [z.array(z.unknown()), 'to be non-empty'],
@@ -335,6 +355,8 @@ export const nonEmptyArrayAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor object-to-have-keys-array
+ * @bupkisAssertionCategory object
  */
 // TODO support keypaths, maybe.
 // TODO support `undefined` values (will require moving away from Zod schema)
@@ -383,6 +405,8 @@ export const objectKeysAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor object-to-have-key-string-number-symbol
+ * @bupkisAssertionCategory object
  */
 export const objectKeyAssertion = createAssertion(
   [
@@ -436,6 +460,8 @@ export const objectKeyAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor object-to-have-only-keys-array
+ * @bupkisAssertionCategory object
  */
 export const objectExactKeyAssertion = createAssertion(
   [
@@ -461,6 +487,8 @@ export const objectExactKeyAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor unknown-to-be-an-object
+ * @bupkisAssertionCategory object
  */
 export const objectSizeAssertion = createAssertion(
   [z.looseObject({}), 'to have size', NonNegativeIntegerSchema],
@@ -487,6 +515,8 @@ export const objectSizeAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-equal-set
+ * @bupkisAssertionCategory collections
  */
 export const setEqualityAssertion = createAssertion(
   [z.set(z.unknown()), 'to equal', z.set(z.unknown())],
@@ -506,6 +536,8 @@ export const setEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-be-a-subset-of-set
+ * @bupkisAssertionCategory collections
  */
 export const setSubsetAssertion = createAssertion(
   [z.set(z.unknown()), 'to be a subset of', z.set(z.unknown())],
@@ -523,6 +555,8 @@ export const setSubsetAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-be-a-superset-of-set
+ * @bupkisAssertionCategory collections
  */
 export const setSupersetAssertion = createAssertion(
   [z.set(z.unknown()), 'to be a superset of', z.set(z.unknown())],
@@ -540,6 +574,8 @@ export const setSupersetAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-have-intersection-with-set-satisfying-any
+ * @bupkisAssertionCategory collections
  */
 export const setIntersectionAssertion = createAssertion(
   [z.set(z.unknown()), 'to intersect with', z.set(z.unknown())],
@@ -557,6 +593,8 @@ export const setIntersectionAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-to-be-disjoint-from-set
+ * @bupkisAssertionCategory collections
  */
 export const setDisjointAssertion = createAssertion(
   [z.set(z.unknown()), 'to be disjoint from', z.set(z.unknown())],
@@ -579,6 +617,8 @@ export const setDisjointAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-union-with-set-to-equal-set
+ * @bupkisAssertionCategory collections
  */
 export const setUnionEqualityAssertion = createAssertion(
   [
@@ -614,6 +654,8 @@ export const setUnionEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-intersection-with-set-to-equal-set
+ * @bupkisAssertionCategory collections
  */
 export const setIntersectionEqualityAssertion = createAssertion(
   [
@@ -649,6 +691,8 @@ export const setIntersectionEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-difference-with-set-to-equal-set
+ * @bupkisAssertionCategory collections
  */
 export const setDifferenceEqualityAssertion = createAssertion(
   [
@@ -684,6 +728,8 @@ export const setDifferenceEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor set-symmetric-difference-with-set-to-equal-set
+ * @bupkisAssertionCategory collections
  */
 export const setSymmetricDifferenceEqualityAssertion = createAssertion(
   [
@@ -715,6 +761,8 @@ export const setSymmetricDifferenceEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-have-key-any
+ * @bupkisAssertionCategory collections
  */
 export const mapKeyAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have key', z.unknown()],
@@ -742,6 +790,8 @@ export const mapKeyAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-have-value-any
+ * @bupkisAssertionCategory collections
  */
 export const mapValueAssertion = createAssertion(
   [z.map(z.unknown(), z.unknown()), 'to have value', z.unknown()],
@@ -771,6 +821,8 @@ export const mapValueAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-have-entry-any-any
+ * @bupkisAssertionCategory collections
  */
 export const mapEntryAssertion = createAssertion(
   [
@@ -825,6 +877,8 @@ export const mapEntryAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor map-to-equal-map
+ * @bupkisAssertionCategory collections
  */
 export const mapEqualityAssertion = createAssertion(
   [
@@ -871,6 +925,8 @@ export const mapEqualityAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-size-greater-than-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const collectionSizeGreaterThanAssertion = createAssertion(
   [
@@ -901,6 +957,8 @@ export const collectionSizeGreaterThanAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-size-less-than-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const collectionSizeLessThanAssertion = createAssertion(
   [
@@ -931,6 +989,8 @@ export const collectionSizeLessThanAssertion = createAssertion(
  * ```
  *
  * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-size-between-nonnegative-integer-and-nonnegative-integer
+ * @bupkisAssertionCategory collections
  */
 export const collectionSizeBetweenAssertion = createAssertion(
   [

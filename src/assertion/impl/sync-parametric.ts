@@ -633,6 +633,9 @@ export const arrayDeepEqualAssertion = createAssertion(
  * ```
  *
  * @group Parametric Assertions (Sync)
+ * @bupkisAnchor function-to-throw-any
+ * @bupkisAssertionCategory function
+ * @bupkisRedirect to-throw
  */
 export const functionThrowsAssertion = createAssertion(
   [FunctionSchema, 'to throw'],
@@ -644,11 +647,6 @@ export const functionThrowsAssertion = createAssertion(
         message: `Expected function to throw, but it did not`,
       };
     }
-  },
-  {
-    anchor: 'function-to-throw-any',
-    category: 'function',
-    redirect: 'to-throw',
   },
 );
 
@@ -922,6 +920,9 @@ export const stringMatchesAssertion = createAssertion(
  * ```
  *
  * @group Parametric Assertions (Sync)
+ * @bupkisAnchor object-to-satisfy-any
+ * @bupkisAssertionCategory object
+ * @bupkisRedirect satisfies
  */
 export const objectSatisfiesAssertion = createAssertion(
   [
@@ -930,11 +931,6 @@ export const objectSatisfiesAssertion = createAssertion(
     z.any(),
   ],
   (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
-  {
-    anchor: 'object-to-satisfy-any',
-    category: 'object',
-    redirect: 'satisfies',
-  },
 );
 
 /**
