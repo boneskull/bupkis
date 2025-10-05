@@ -389,48 +389,52 @@ expect(new Date('2022-01-01'), 'not to be in the future');
 
 ### `{unknown} to be a weekend`
 
+Tests whether the date represents a weekend day (Saturday or Sunday) **in UTC**.
+
 **Success**:
 
 ```js
-expect(new Date('2023-01-07'), 'to be a weekend'); // Saturday
-expect(new Date('2023-01-08'), 'to be a weekend'); // Sunday
-expect('2023-12-30', 'to be a weekend'); // Saturday
+expect(new Date('2023-01-07'), 'to be a weekend'); // Saturday in UTC
+expect(new Date('2023-01-08'), 'to be a weekend'); // Sunday in UTC
+expect('2023-12-30', 'to be a weekend'); // Saturday in UTC
 ```
 
 **Failure**:
 
 ```js
-expect(new Date('2023-01-09'), 'to be a weekend'); // Monday
+expect(new Date('2023-01-09'), 'to be a weekend'); // Monday in UTC
 // AssertionError: Expected 2023-01-09T00:00:00.000Z to be a weekend
 ```
 
 **Negation**:
 
 ```js
-expect(new Date('2023-01-09'), 'not to be a weekend'); // Monday
+expect(new Date('2023-01-09'), 'not to be a weekend'); // Monday in UTC
 ```
 
 ### `{unknown} to be a weekday`
 
+Tests whether the date represents a weekday (Monday through Friday) **in UTC**.
+
 **Success**:
 
 ```js
-expect(new Date('2023-01-09'), 'to be a weekday'); // Monday
-expect(new Date('2023-01-13'), 'to be a weekday'); // Friday
-expect('2023-01-10', 'to be a weekday'); // Tuesday
+expect(new Date('2023-01-09'), 'to be a weekday'); // Monday in UTC
+expect(new Date('2023-01-13'), 'to be a weekday'); // Friday in UTC
+expect('2023-01-10', 'to be a weekday'); // Tuesday in UTC
 ```
 
 **Failure**:
 
 ```js
-expect(new Date('2023-01-07'), 'to be a weekday'); // Saturday
+expect(new Date('2023-01-07'), 'to be a weekday'); // Saturday in UTC
 // AssertionError: Expected 2023-01-07T00:00:00.000Z to be a weekday
 ```
 
 **Negation**:
 
 ```js
-expect(new Date('2023-01-07'), 'not to be a weekday'); // Saturday
+expect(new Date('2023-01-07'), 'not to be a weekday'); // Saturday in UTC
 ```
 
 ## Duration Formats

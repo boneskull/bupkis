@@ -9,6 +9,8 @@
  * @internal
  */
 
+const { freeze } = Object;
+
 /**
  * Symbol flagging the value as a Bupkis-created string literal, which will be
  * omitted from the parameters to an `AssertionImpl`.
@@ -91,3 +93,13 @@ export const kBupkisError: unique symbol = Symbol('bupkis-error');
  * @internal
  */
 export const FAIL = 'FAIL' as const;
+
+export const DAY_NAMES = freeze([
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+] as const);
