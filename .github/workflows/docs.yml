@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+  delete:
   # Allow manual triggering
   workflow_dispatch:
 
@@ -17,41 +20,87 @@ permissions:
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: 'pages'
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request_target' && format('preview-{0}', github.event.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
 
 jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    env:
+      # TODO: Update these values for your setup
+      PREVIEW_REPO: boneskull/bupkis-previews # Create this repository
+      PAGES_BASE: https://boneskull.github.io/bupkis-previews # Update to match your preview repo
     steps:
-      - name: Checkout
+      - name: Checkout branch
+        if: ${{ !startsWith(github.event_name, 'pull_request') }}
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
+      - name: Checkout PR head
+        if: ${{ startsWith(github.event_name, 'pull_request') && github.event.action != 'closed' }}
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && format('refs/pull/{0}/merge', github.event.number) || github.head_ref }}
+
       - name: Setup Node.js
+        if: ${{ github.event.action != 'closed' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
+        if: ${{ github.event.action != 'closed' }}
         run: npm ci
 
       - name: Build library
+        if: ${{ github.event.action != 'closed' }}
         run: npm run build
 
-      - name: Build documentation
-        run: npm run docs:build
+      # Determine base URL for preview builds
+      - name: Determine base URL
+        if: ${{ github.event.action != 'closed' && (startsWith(github.event_name, 'pull_request') || github.event_name == 'delete') }}
+        id: baseurl
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request_target" ]; then
+            full="${{ env.PAGES_BASE }}/${{ github.repository }}/pr/${{ github.event.number }}"
+          else
+            full="${{ env.PAGES_BASE }}/${{ github.repository }}/branch/${{ github.ref_name }}"
+          fi
+          relative=/$(echo "$full" | cut -d/ -f4-)
+          echo "full=$full" >> "$GITHUB_OUTPUT"
+          echo "relative=$relative" >> "$GITHUB_OUTPUT"
+        shell: bash
 
+      - name: Build documentation
+        if: ${{ github.event.action != 'closed' }}
+        run: npm run docs:build
+        # Add base URL configuration if your docs build supports it
+        # env:
+        #   BASE_URL: ${{ steps.baseurl.outputs.relative || '/' }}
+
+      # For main branch: deploy to GitHub Pages
       - name: Setup Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: Upload artifact for GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs
 
-  # Deployment job
+      # For PRs and other branches: deploy to preview
+      - name: Deploy preview
+        if: ${{ startsWith(github.event_name, 'pull_request') || github.event_name == 'delete' }}
+        uses: EndBug/pages-preview@v1
+        with:
+          build_dir: docs
+          preview_base_url: ${{ env.PAGES_BASE }}
+          preview_repo: ${{ env.PREVIEW_REPO }}
+          preview_token: ${{ secrets.PREVIEW_TOKEN }}
+
+  # Deployment job for main branch
   deploy:
     # Only deploy on main branch pushes (not PRs)
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
