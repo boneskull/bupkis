@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.3](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.2...bupkis-v0.10.3) (2025-10-05)
+
+
+### Bug Fixes
+
+* **assertion:** remove metadata parameter from createAssertion/createAsyncAssertion ([3fb6681](https://github.com/boneskull/bupkis/commit/3fb6681cccc3e9af17e2f6f4071fb0b608ed85a2))
+* **assertions:** error-reporting fixes for date assertions ([a9bcb4d](https://github.com/boneskull/bupkis/commit/a9bcb4d36abafa3a4dec4b5e9a1ba45c64bd7f4c))
+* **assertions:** update weekend/weekday assertions to use UTC ([7e18155](https://github.com/boneskull/bupkis/commit/7e18155b08ffe4319081822ee6f6d9b9dd038443))
+* **schema:** expose datetime-related schemas ([a9bcb4d](https://github.com/boneskull/bupkis/commit/a9bcb4d36abafa3a4dec4b5e9a1ba45c64bd7f4c))
+
 ## [0.10.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.1...bupkis-v0.10.2) (2025-10-04)
 
 
