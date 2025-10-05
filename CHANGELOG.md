@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.4](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.3...bupkis-v0.10.4) (2025-10-05)
+
+
+### Bug Fixes
+
+* **ci:** re-enable token-based publishing ([f2183ee](https://github.com/boneskull/bupkis/commit/f2183eeb71068929e6794add5a763625d62a8717))
+
 ## [0.10.3](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.2...bupkis-v0.10.3) (2025-10-05)
 
 
