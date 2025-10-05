@@ -98,7 +98,9 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": {},
+  "actual": {
+    "message": "wrong message"
+  },
   "expected": {
     "message": "expected message"
   },
