@@ -77,11 +77,11 @@ exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a valid date' 
 
 exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekday'\" [unknown-to-be-a-weekday-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weekday-2s1p] <snapshot> 1`] = `
 {
-  "message": "Expected date to be a weekday (Monday through Friday), but it was Saturday",
+  "message": "Expected date to be a weekday (Monday through Friday in UTC), but it was Sunday in UTC",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "Saturday",
+  "actual": "Sunday",
   "expected": "Monday through Friday",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-weekday-2s1p"
@@ -90,11 +90,11 @@ exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekday'\" [
 
 exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekend'\" [unknown-to-be-a-weekend-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weekend-2s1p] <snapshot> 1`] = `
 {
-  "message": "Expected date to be a weekend (Saturday or Sunday), but it was Monday",
+  "message": "Expected date to be a weekend (Saturday or Sunday in UTC), but it was Tuesday in UTC",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "Monday",
+  "actual": "Tuesday",
   "expected": "Saturday or Sunday",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-weekend-2s1p"

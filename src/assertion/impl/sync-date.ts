@@ -18,6 +18,7 @@ import type {
   AssertionParseRequest,
 } from '../assertion-types.js';
 
+import { DAY_NAMES } from '../../constant.js';
 import {
   DateLikeFormatSchema,
   DurationFormatSchema,
@@ -704,14 +705,14 @@ export const inTheFutureAssertion = createAssertion(
 );
 
 /**
- * Asserts that the subject is a weekend (Saturday or Sunday).
+ * Asserts that the subject is a weekend (Saturday or Sunday) in UTC.
  *
  * @example
  *
  * ```ts
- * expect(new Date('2023-01-07'), 'to be a weekend'); // passes (Saturday)
- * expect(new Date('2023-01-08'), 'to be a weekend'); // passes (Sunday)
- * expect(new Date('2023-01-09'), 'to be a weekend'); // fails (Monday)
+ * expect(new Date('2023-01-07'), 'to be a weekend'); // passes (Saturday in UTC)
+ * expect(new Date('2023-01-08'), 'to be a weekend'); // passes (Sunday in UTC)
+ * expect(new Date('2023-01-09'), 'to be a weekend'); // fails (Monday in UTC)
  * ```
  *
  * @group Date/Time Assertions
@@ -728,23 +729,14 @@ export const weekendAssertion = createAssertion(
       };
     }
 
-    const day = date.getDay();
+    const day = date.getUTCDay();
     const isWeekend = day === 0 || day === 6; // Sunday or Saturday
 
     if (!isWeekend) {
-      const dayNames = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ];
       return {
-        actual: dayNames[day],
+        actual: DAY_NAMES[day],
         expected: 'Saturday or Sunday',
-        message: `Expected date to be a weekend (Saturday or Sunday), but it was ${dayNames[day]}`,
+        message: `Expected date to be a weekend (Saturday or Sunday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
 
@@ -757,14 +749,14 @@ export const weekendAssertion = createAssertion(
 );
 
 /**
- * Asserts that the subject is a weekday (Monday through Friday).
+ * Asserts that the subject is a weekday (Monday through Friday) in UTC.
  *
  * @example
  *
  * ```ts
- * expect(new Date('2023-01-09'), 'to be a weekday'); // passes (Monday)
- * expect(new Date('2023-01-13'), 'to be a weekday'); // passes (Friday)
- * expect(new Date('2023-01-07'), 'to be a weekday'); // fails (Saturday)
+ * expect(new Date('2023-01-09'), 'to be a weekday'); // passes (Monday in UTC)
+ * expect(new Date('2023-01-13'), 'to be a weekday'); // passes (Friday in UTC)
+ * expect(new Date('2023-01-07'), 'to be a weekday'); // fails (Saturday in UTC)
  * ```
  *
  * @group Date/Time Assertions
@@ -781,23 +773,14 @@ export const weekdayAssertion = createAssertion(
       };
     }
 
-    const day = date.getDay();
+    const day = date.getUTCDay();
     const isWeekday = day >= 1 && day <= 5; // Monday through Friday
 
     if (!isWeekday) {
-      const dayNames = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ];
       return {
-        actual: dayNames[day],
+        actual: DAY_NAMES[day],
         expected: 'Monday through Friday',
-        message: `Expected date to be a weekday (Monday through Friday), but it was ${dayNames[day]}`,
+        message: `Expected date to be a weekday (Monday through Friday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
 

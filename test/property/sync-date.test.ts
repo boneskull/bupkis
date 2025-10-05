@@ -123,7 +123,7 @@ const futureDateGenerator = fc.date({
  * Generates weekend dates (Saturday or Sunday)
  */
 const weekendDateGenerator = fc.date({ noInvalidDate: true }).filter((d) => {
-  const day = d.getDay();
+  const day = d.getUTCDay();
   return day === 0 || day === 6; // Sunday or Saturday
 });
 
@@ -131,7 +131,7 @@ const weekendDateGenerator = fc.date({ noInvalidDate: true }).filter((d) => {
  * Generates weekday dates (Monday through Friday)
  */
 const weekdayDateGenerator = fc.date({ noInvalidDate: true }).filter((d) => {
-  const day = d.getDay();
+  const day = d.getUTCDay();
   return day >= 1 && day <= 5; // Monday through Friday
 });
 
