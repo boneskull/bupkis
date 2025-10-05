@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.5](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.4...bupkis-v0.10.5) (2025-10-05)
+
+
+### Bug Fixes
+
+* **assertions:** better assertion error messages for regexes ([956c985](https://github.com/boneskull/bupkis/commit/956c9858b4a7c3c004fbe665cff2f1be1492b9c8))
+
 ## [0.10.4](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.3...bupkis-v0.10.4) (2025-10-05)
 
 
