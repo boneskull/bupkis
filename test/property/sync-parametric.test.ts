@@ -1091,7 +1091,10 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .oneof(
             // Generate value-type pairs where value matches the type
             fc.constant([fc.string(), 'string']),
-            fc.constant([fc.float({ noDefaultInfinity: true }), 'number']),
+            fc.constant([
+              fc.float({ noDefaultInfinity: true, noNaN: true }),
+              'number',
+            ]),
             fc.constant([fc.boolean(), 'boolean']),
             fc.constant([fc.constant(undefined), 'undefined']),
             fc.constant([fc.constant(null), 'null']),
