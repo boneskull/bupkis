@@ -17,8 +17,9 @@ const { stringify } = JSON;
  * Serializes an Error suitable for snapshot testing.
  *
  * - Calls `error`'s `toJSON` method if available.
- * - Truncates the stack trace to only include the message and the first stack
- *   frame (best effort).
+ * - Discards the stack.
+ * - Handles Error objects that don't serialize properly to JSON by extracting
+ *   their non-enumerable properties.
  *
  * @param error Error
  * @returns Serializer
@@ -26,8 +27,39 @@ const { stringify } = JSON;
 export const errorSerializer = (error: Error): string => {
   if (isError(error)) {
     const { stack: _stack, ...rest } = error;
-    // @ts-expect-error - message is not enumerable on NodeAssertionError
-    return stringify({ message: error.message, ...rest }, null, 2);
+
+    // Handle the actual and expected properties specially if they are Error objects
+    const processErrorValue = (value: unknown): unknown => {
+      if (isError(value)) {
+        // Error objects don't serialize to JSON properly, so extract their properties
+        const errorProps: Record<string, unknown> = {};
+        for (const prop of Object.getOwnPropertyNames(value)) {
+          if (prop !== 'stack') {
+            // Skip stack to reduce noise
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            errorProps[prop] = (value as any)[prop];
+          }
+        }
+        return errorProps;
+      }
+      return value;
+    };
+
+    const result: Record<string, unknown> = {
+      // @ts-expect-error - message is not enumerable on NodeAssertionError
+      message: error.message,
+      ...rest,
+    };
+
+    // Process actual and expected values to handle Error objects
+    if ('actual' in error) {
+      result.actual = processErrorValue(error.actual);
+    }
+    if ('expected' in error) {
+      result.expected = processErrorValue(error.expected);
+    }
+
+    return stringify(result, null, 2);
   }
 
   throw new TypeError(

@@ -18,7 +18,7 @@ export type { DiffOptions };
 const { isArray } = Array;
 const { max } = Math;
 const { stringify } = JSON;
-const { entries } = Object;
+const { entries, getOwnPropertyNames } = Object;
 
 /**
  * Result of extracting diff values from a `ZodError`
@@ -59,12 +59,59 @@ export const extractDiffValues = (
         );
 
         switch (issue.code) {
+          case 'invalid_format': {
+            // For format errors (e.g., regex patterns), show what the pattern expects
+            const actualValue = getValueAtPath(actual, filteredPath);
+            let correctedValue = actualValue;
+
+            // Try to extract pattern info from the message
+            const regexMatch = issue.message.match(/pattern (.+)/);
+            if (regexMatch) {
+              // For regex patterns, create a placeholder that indicates the expected pattern
+              correctedValue = `<string matching ${regexMatch[1]}>`;
+            } else {
+              // Fallback for other format errors
+              correctedValue = '<string in valid format>';
+            }
+
+            expected = setValueAtPath(expected, filteredPath, correctedValue);
+            break;
+          }
+
           case 'invalid_type': {
             const correctedValue = createCorrectValueForType(
               issue.expected,
               getValueAtPath(actual, filteredPath),
             );
             expected = setValueAtPath(expected, filteredPath, correctedValue);
+            break;
+          }
+
+          case 'invalid_union': {
+            // For union errors, we can't easily determine the "correct" value
+            // but we can try to provide a hint based on the error context
+            const actualValue = getValueAtPath(actual, filteredPath);
+
+            // Check if this is a top-level union error (like regex OR object)
+            if (filteredPath.length === 0) {
+              // For top-level union errors, try to suggest an alternative format
+              if (typeof actualValue === 'object' && actualValue !== null) {
+                // If actual is an object, the union might expect a string pattern
+                expected = '<string matching pattern>';
+              } else if (typeof actualValue === 'string') {
+                // If actual is a string, the union might expect an object structure
+                expected = '<object satisfying schema>';
+              } else {
+                expected = '<value matching union schema>';
+              }
+            } else {
+              // For nested union errors, provide a generic placeholder
+              expected = setValueAtPath(
+                expected,
+                filteredPath,
+                '<value matching union schema>',
+              );
+            }
             break;
           }
 
@@ -251,7 +298,28 @@ const customDeepClone = (value: unknown): unknown => {
   if (isArray(value)) {
     return value.map(customDeepClone);
   }
-  // For objects, create a new object and copy properties
+
+  // Special handling for Error objects to preserve non-enumerable properties
+  if (value instanceof Error) {
+    const cloned: Record<string, unknown> = {};
+    // Copy enumerable properties
+    for (const [key, val] of entries(value)) {
+      cloned[key] = customDeepClone(val);
+    }
+    // Copy non-enumerable properties that are important for Error objects
+    for (const prop of getOwnPropertyNames(value)) {
+      if (!(prop in cloned)) {
+        try {
+          cloned[prop] = (value as unknown as Record<string, unknown>)[prop];
+        } catch {
+          // Skip properties that can't be accessed
+        }
+      }
+    }
+    return cloned;
+  }
+
+  // For regular objects, create a new object and copy properties
   const cloned: Record<string, unknown> = {};
   for (const [key, val] of entries(value)) {
     cloned[key] = customDeepClone(val);
@@ -322,22 +390,52 @@ const setValueAtPath = (
     obj = typeof path[0] === 'number' ? [] : {};
   }
 
-  const result = isArray(obj)
-    ? [...(obj as unknown[])]
-    : { ...(obj as Record<string, unknown>) };
-  const [head, ...tail] = path;
+  if (isArray(obj)) {
+    const result = [...(obj as unknown[])];
+    const [head, ...tail] = path;
 
-  if (head !== undefined) {
-    if (tail.length === 0) {
-      (result as Record<number | string, unknown>)[head] = value;
-    } else {
-      (result as Record<number | string, unknown>)[head] = setValueAtPath(
-        (result as Record<number | string, unknown>)[head],
-        tail,
-        value,
-      );
+    if (head !== undefined) {
+      if (tail.length === 0) {
+        result[head as number] = value;
+      } else {
+        result[head as number] = setValueAtPath(
+          result[head as number],
+          tail,
+          value,
+        );
+      }
     }
-  }
 
-  return result;
+    return result;
+  } else {
+    let result: Record<number | string, unknown>;
+
+    // Handle Error objects and other objects with non-enumerable properties
+    if (obj instanceof Error) {
+      // For Error objects, copy all own properties (including non-enumerable ones)
+      result = {};
+      for (const prop of getOwnPropertyNames(obj)) {
+        if (prop !== 'stack') {
+          // Skip stack to reduce noise
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          result[prop] = (obj as any)[prop];
+        }
+      }
+    } else {
+      // For regular objects, use spread operator
+      result = { ...(obj as Record<string, unknown>) };
+    }
+
+    const [head, ...tail] = path;
+
+    if (head !== undefined) {
+      if (tail.length === 0) {
+        result[head] = value;
+      } else {
+        result[head] = setValueAtPath(result[head], tail, value);
+      }
+    }
+
+    return result;
+  }
 };
