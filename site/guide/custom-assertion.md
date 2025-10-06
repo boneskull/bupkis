@@ -140,25 +140,27 @@ You can return a `boolean` or an `AssertionFailure` object just as you would wit
 import { createAssertion, z, use } from 'bupkis';
 
 // boolean-style
-const greaterThanAssertion = createAssertion(
-  [z.number(), 'to be greater than', z.number()],
-  (subject, threshold) => subject > threshold,
+const toBeOfSizeAssertion = createAssertion(
+  [z.array(z.unknown()), 'to be of size', z.number()],
+  (subject, expectedSize) => subject.length === expectedSize,
 );
 
 // AssertionFailure-style
-const containsAssertion = createAssertion(
-  [z.number(), 'to be greater than', z.number()],
-  (subject, threshold) => {
-    if (subject <= threshold) {
+const toBeOfSizeAssertion2 = createAssertion(
+  [z.array(z.unknown()), 'to be of size', z.number()],
+  (subject, expectedSize) => {
+    if (subject.length !== expectedSize) {
       return {
-        actual: subject,
-        expected: `number greater than ${threshold}`,
-        message: `Expected ${subject} to be greater than ${threshold}`,
+        actual: subject.length,
+        expected: expectedSize,
+        message: `Expected ${subject} to be of size ${expectedSize}`,
       };
     }
   },
 );
 ```
+
+As you can see, returning an `AssertionFailure` object allows you to provide more context about the failure, resulting in better error messaging.
 
 > See [Allowed Return Types for Function-Style Assertions](#allowed-return-types-for-function-style-assertions) for more details.
 
@@ -432,7 +434,15 @@ type AssertionFailure = {
 
 If you return this object, <span class="bupkis">Bupkis</span> will stuff it into an `AssertionError` and toss it. If you don't know what to put for any of the fields, just omit them, with the following caveat: if either `actual` or `expected` (or both) are `undefined`, then no diff will be generated.
 
-In short, returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
+> ℹ️ When To Use `actual` and `expected`
+>
+> Use `actual` and `expected` if you can provide meaningful, _diff-able_ values. This is generally best used in "equality"-style assertions.
+>
+> One thing explicitly _not_ to do is to provide values of two different types for `expected` and `actual`. There is no reasonable way to diff them, and the error message will reflect that.
+>
+> In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`.
+
+Returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
 
 #### Returning a `ZodError` object
 
