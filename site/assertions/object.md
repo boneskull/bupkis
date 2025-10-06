@@ -89,6 +89,12 @@ expect({ a: 1 }, 'not to be empty');
 >     {object} to have keys {array}
 >     {object} to have properties {array}
 >     {object} to have props {array}
+>     {object} to include keys {array}
+>     {object} to include properties {array}
+>     {object} to include props {array}
+>     {object} to contain keys {array}
+>     {object} to contain properties {array}
+>     {object} to contain props {array}
 
 **Success**:
 
@@ -117,6 +123,12 @@ expect({ a: 1 }, 'not to have keys', ['a', 'b']);
 >     {object} to have key {keypath}
 >     {object} to have property {keypath}
 >     {object} to have prop {keypath}
+>     {object} to include key {keypath}
+>     {object} to include property {keypath}
+>     {object} to include prop {keypath}
+>     {object} to contain key {keypath}
+>     {object} to contain property {keypath}
+>     {object} to contain prop {keypath}
 
 Tests whether an object has a property at the specified keypath using dot or bracket notation. This assertion supports complex _keypath_ traversal including nested properties, array indices, and quoted keys.
 

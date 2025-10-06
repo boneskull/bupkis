@@ -43,34 +43,53 @@ export const extractDiffValues = (
   subject: unknown,
 ): DiffValues => {
   try {
-    // Start with the original subject as the actual value
     const actual = subject;
 
-    // Create a copy to modify as the expected value
     let expected = subject != null ? deepClone(subject) : subject;
 
-    // Process each issue to build the expected value
     for (const issue of zodError.issues) {
       try {
-        // Filter path to only string/number keys (symbols are rare in practice)
         const filteredPath = issue.path.filter(
           (key): key is number | string =>
             typeof key === 'string' || typeof key === 'number',
         );
 
         switch (issue.code) {
+          case 'custom': {
+            const params = issue.params as Record<string, unknown> | undefined;
+
+            if (
+              params?.bupkisType === 'missing_key' &&
+              filteredPath.length > 0
+            ) {
+              const missingKey = filteredPath[0];
+              if (typeof expected === 'object' && expected !== null) {
+                expected = {
+                  ...(expected as Record<string, unknown>),
+                  [missingKey as string]: '<missing>',
+                };
+              }
+            } else if (filteredPath.length > 0) {
+              const actualValue = getValueAtPath(actual, filteredPath);
+              if (actualValue === undefined) {
+                expected = setValueAtPath(
+                  expected,
+                  filteredPath,
+                  '<missing value>',
+                );
+              }
+            }
+            break;
+          }
+
           case 'invalid_format': {
-            // For format errors (e.g., regex patterns), show what the pattern expects
             const actualValue = getValueAtPath(actual, filteredPath);
             let correctedValue = actualValue;
 
-            // Try to extract pattern info from the message
             const regexMatch = issue.message.match(/pattern (.+)/);
             if (regexMatch) {
-              // For regex patterns, create a placeholder that indicates the expected pattern
               correctedValue = `<string matching ${regexMatch[1]}>`;
             } else {
-              // Fallback for other format errors
               correctedValue = '<string in valid format>';
             }
 
@@ -88,24 +107,17 @@ export const extractDiffValues = (
           }
 
           case 'invalid_union': {
-            // For union errors, we can't easily determine the "correct" value
-            // but we can try to provide a hint based on the error context
             const actualValue = getValueAtPath(actual, filteredPath);
 
-            // Check if this is a top-level union error (like regex OR object)
             if (filteredPath.length === 0) {
-              // For top-level union errors, try to suggest an alternative format
               if (typeof actualValue === 'object' && actualValue !== null) {
-                // If actual is an object, the union might expect a string pattern
                 expected = '<string matching pattern>';
               } else if (typeof actualValue === 'string') {
-                // If actual is a string, the union might expect an object structure
                 expected = '<object satisfying schema>';
               } else {
                 expected = '<value matching union schema>';
               }
             } else {
-              // For nested union errors, provide a generic placeholder
               expected = setValueAtPath(
                 expected,
                 filteredPath,
@@ -116,7 +128,6 @@ export const extractDiffValues = (
           }
 
           case 'invalid_value': {
-            // For literal/enum errors, use the first valid value
             const correctedValue =
               issue.values && issue.values.length > 0
                 ? issue.values[0]
@@ -162,7 +173,6 @@ export const extractDiffValues = (
           }
 
           case 'unrecognized_keys': {
-            // Remove unrecognized keys from expected
             if (
               filteredPath.length === 0 &&
               typeof expected === 'object' &&
@@ -180,20 +190,16 @@ export const extractDiffValues = (
           }
 
           default: {
-            // For other error types, just mark that something should be different
-            // but don't try to guess what the correct value should be
             break;
           }
         }
       } catch {
-        // If we can't process an individual issue, continue with others
         continue;
       }
     }
 
     return { actual, expected };
   } catch {
-    // If anything goes wrong, return undefined to fall back to pretty error
     return { actual: undefined, expected: undefined };
   }
 };
@@ -275,7 +281,6 @@ const createCorrectValueForType = (
       if (typeof actualValue === 'object') {
         return stringify(actualValue);
       }
-      // For primitive types (number, boolean, etc.) - we know it's not an object here
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       return `${actualValue}`;
     case 'undefined':
@@ -299,14 +304,11 @@ const customDeepClone = (value: unknown): unknown => {
     return value.map(customDeepClone);
   }
 
-  // Special handling for Error objects to preserve non-enumerable properties
   if (value instanceof Error) {
     const cloned: Record<string, unknown> = {};
-    // Copy enumerable properties
     for (const [key, val] of entries(value)) {
       cloned[key] = customDeepClone(val);
     }
-    // Copy non-enumerable properties that are important for Error objects
     for (const prop of getOwnPropertyNames(value)) {
       if (!(prop in cloned)) {
         try {
@@ -319,7 +321,6 @@ const customDeepClone = (value: unknown): unknown => {
     return cloned;
   }
 
-  // For regular objects, create a new object and copy properties
   const cloned: Record<string, unknown> = {};
   for (const [key, val] of entries(value)) {
     cloned[key] = customDeepClone(val);
@@ -339,7 +340,6 @@ const deepClone = (value: unknown): unknown => {
   try {
     return structuredClone(value);
   } catch (error) {
-    // Handle DataCloneError for values that can't be cloned (functions, symbols, etc.)
     if (error instanceof Error && error.name === 'DataCloneError') {
       return customDeepClone(value);
     }
@@ -386,7 +386,6 @@ const setValueAtPath = (
   }
 
   if (obj == null) {
-    // Need to create the structure
     obj = typeof path[0] === 'number' ? [] : {};
   }
 
@@ -410,19 +409,15 @@ const setValueAtPath = (
   } else {
     let result: Record<number | string, unknown>;
 
-    // Handle Error objects and other objects with non-enumerable properties
     if (obj instanceof Error) {
-      // For Error objects, copy all own properties (including non-enumerable ones)
       result = {};
       for (const prop of getOwnPropertyNames(obj)) {
         if (prop !== 'stack') {
-          // Skip stack to reduce noise
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           result[prop] = (obj as any)[prop];
         }
       }
     } else {
-      // For regular objects, use spread operator
       result = { ...(obj as Record<string, unknown>) };
     }
 

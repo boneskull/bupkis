@@ -459,7 +459,7 @@ export const oneOfAssertion = createAssertion(
     if (!values.includes(subject)) {
       return {
         actual: subject,
-        expected: `one of [${values.map((v) => inspect(v)).join(', ')}]`,
+        expected: values,
         message: `Expected ${inspect(subject)} to be one of [${values.map((v) => inspect(v)).join(', ')}]`,
       };
     }
@@ -738,11 +738,9 @@ export const functionThrowsTypeAssertion = createAssertion(
 export const functionThrowsSatisfyingAssertion = createAssertion(
   [FunctionSchema, ['to throw', 'to throw error satisfying'], z.any()],
   (subject, param) => {
-    const { error, result } = trapError(subject);
+    const { error } = trapError(subject);
     if (error === undefined) {
       return {
-        actual: result,
-        expected: 'to throw',
         message: 'Expected function to throw, but it did not',
       };
     }

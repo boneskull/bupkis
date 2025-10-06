@@ -56,8 +56,12 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to equal' {date-li
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "60000ms difference",
-  "expected": "within 30000ms",
+  "actual": {
+    "difference": 60000
+  },
+  "expected": {
+    "maxDifference": 30000
+  },
   "diff": "simple",
   "assertionId": "date_like-to-equal-date_like-within-duration-5s5p"
 }

@@ -55,7 +55,6 @@ import {
 } from './sync-basic.js';
 import {
   arrayContainsAssertion,
-  arrayLengthAssertion,
   arraySizeAssertion,
   collectionSizeBetweenAssertion,
   collectionSizeGreaterThanAssertion,
@@ -142,6 +141,11 @@ import {
   typeOfAssertion,
 } from './sync-parametric.js';
 
+/**
+ * Tuple of all built-in date-related synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
 export const SyncDateAssertions = [
   afterAssertion,
   atLeastAgoAssertion,
@@ -270,7 +274,6 @@ export const SyncCollectionAssertions = [
   emptySetAssertion,
   arrayContainsAssertion,
   arraySizeAssertion,
-  arrayLengthAssertion,
   nonEmptyArrayAssertion,
   objectKeysAssertion,
   objectSizeAssertion,

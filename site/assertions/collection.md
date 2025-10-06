@@ -58,6 +58,11 @@ expect([1, 2, 3], 'not to be empty');
 
 ### `{array} to have length {nonnegative-integer}`
 
+> ✏️ Aliases:
+>
+>     {array} to have length {nonnegative-integer}
+>     {array} to have size {nonnegative-integer}
+
 **Success**:
 
 ```js

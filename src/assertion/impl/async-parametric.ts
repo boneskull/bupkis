@@ -51,8 +51,6 @@ export const functionResolveAssertion = createAsyncAssertion(
       await subject();
     } catch {
       return {
-        actual: 'function rejected',
-        expected: 'function to fulfill',
         message: 'Expected function to fulfill, but it rejected instead',
       };
     }
@@ -67,18 +65,11 @@ export const functionResolveAssertion = createAsyncAssertion(
  * ```typescript
  * await expectAsync(Promise.resolve('success'), 'to resolve'); // passes
  * await expectAsync(Promise.reject('error'), 'to fulfill'); // fails
- * /**
- * Assertion for testing if a promise resolves.
- *
- * @example
- *
- * ```typescript
- * await expectAsync(Promise.resolve('success'), 'to resolve'); // passes
- * await expectAsync(Promise.reject('error'), 'to resolve'); // fails
  * ```
  *
- * @group Parametric Assertions (Async) @bupkisAnchor promise-to-resolve
  * @bupkisAssertionCategory promise
+ * @bupkisAnchor promise-to-resolve
+ * @group Parametric Assertions (Async)
  */
 export const promiseResolveAssertion = createAsyncAssertion(
   [WrappedPromiseLikeSchema, ['to resolve', 'to fulfill']],
@@ -87,8 +78,6 @@ export const promiseResolveAssertion = createAsyncAssertion(
       await subject;
     } catch {
       return {
-        actual: 'promise rejected',
-        expected: 'promise to fulfill',
         message: 'Expected promise to fulfill, but it rejected instead',
       };
     }
@@ -113,8 +102,6 @@ export const functionRejectAssertion = createAsyncAssertion(
     const { error, result } = await trapAsyncFnError(subject);
     if (error === undefined) {
       return {
-        actual: 'function fulfilled',
-        expected: 'function rejected',
         message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
@@ -139,8 +126,6 @@ export const promiseRejectAssertion = createAsyncAssertion(
     const { error, result } = await trapPromiseError(subject);
     if (error === undefined) {
       return {
-        actual: 'Promise fulfilled',
-        expected: 'Promise rejected',
         message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
     }

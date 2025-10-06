@@ -13,11 +13,6 @@
  */
 import { z } from 'zod';
 
-import type {
-  AssertionFailure,
-  AssertionParseRequest,
-} from '../assertion-types.js';
-
 import { DAY_NAMES } from '../../constant.js';
 import {
   DateLikeFormatSchema,
@@ -87,35 +82,28 @@ export const validDateAssertion = createAssertion(
  * @bupkisAnchor unknown-to-be-today
  * @bupkisAssertionCategory date
  */
-export const todayAssertion = createAssertion(
-  ['to be today'],
-  (subject): AssertionFailure | boolean => {
-    const date = toDate(subject);
-    if (!date) {
-      return {
-        actual: subject,
-        expected: 'a valid date',
-        message: `Expected subject to be a valid date, but received: ${subject}`,
-      };
-    }
+export const todayAssertion = createAssertion(['to be today'], (subject) => {
+  const date = toDate(subject);
+  if (!date) {
+    return {
+      message: `Expected subject to be a valid date, but received: ${subject}`,
+    };
+  }
 
-    const today = new Date();
-    const isToday =
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate();
+  const today = new Date();
+  const isToday =
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate();
 
-    if (!isToday) {
-      return {
-        actual: date.toDateString(),
-        expected: today.toDateString(),
-        message: `Expected date to be today (${today.toDateString()}), but received: ${date.toDateString()}`,
-      };
-    }
-
-    return true;
-  },
-);
+  if (!isToday) {
+    return {
+      actual: date.toDateString(),
+      expected: today.toDateString(),
+      message: `Expected date to be today (${today.toDateString()}), but received: ${date.toDateString()}`,
+    };
+  }
+});
 
 /**
  * Asserts that the subject is before another date.
@@ -134,20 +122,16 @@ export const todayAssertion = createAssertion(
  */
 export const beforeAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be before', DateLikeFormatSchema],
-  (subject, other): AssertionFailure | AssertionParseRequest => {
+  (subject, other) => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
     if (!otherDate) {
       return {
-        actual: other,
-        expected: 'a valid date',
         message: `Expected comparison date to be a valid date, but received: ${other}`,
       };
     }
@@ -177,20 +161,16 @@ export const beforeAssertion = createAssertion(
  */
 export const afterAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be after', DateLikeFormatSchema],
-  (subject, other): AssertionFailure | AssertionParseRequest => {
+  (subject, other) => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
-    if (!subjectDate) {
+    if (subjectDate === null) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
-    if (!otherDate) {
+    if (otherDate === null) {
       return {
-        actual: other,
-        expected: 'a valid date',
         message: `Expected comparison date to be a valid date, but received: ${other}`,
       };
     }
@@ -235,28 +215,22 @@ export const betweenAssertion = createAssertion(
     'and',
     DateLikeFormatSchema,
   ],
-  (subject, start, end): AssertionFailure | AssertionParseRequest => {
+  (subject, start, end) => {
     const subjectDate = toDate(subject);
     const startDate = toDate(start);
     const endDate = toDate(end);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
     if (!startDate) {
       return {
-        actual: start,
-        expected: 'a valid date',
         message: `Expected start date to be a valid date, but received: ${start}`,
       };
     }
     if (!endDate) {
       return {
-        actual: end,
-        expected: 'a valid date',
         message: `Expected end date to be a valid date, but received: ${end}`,
       };
     }
@@ -290,12 +264,10 @@ export const betweenAssertion = createAssertion(
  */
 export const withinFromNowAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'from now'],
-  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
+  (subject, durationStr) => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -304,8 +276,6 @@ export const withinFromNowAssertion = createAssertion(
     const durationResult = DurationSchema.safeParse(durationStr);
     if (!durationResult.success) {
       return {
-        actual: durationStr,
-        expected: 'a valid duration string',
         message: `Expected a valid duration string, but received: ${durationStr}`,
       };
     }
@@ -338,12 +308,10 @@ export const withinFromNowAssertion = createAssertion(
  */
 export const withinAgoAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be within', DurationFormatSchema, 'ago'],
-  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
+  (subject, durationStr) => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -352,8 +320,6 @@ export const withinAgoAssertion = createAssertion(
     const durationResult = DurationSchema.safeParse(durationStr);
     if (!durationResult.success) {
       return {
-        actual: durationStr,
-        expected: 'a valid duration string',
         message: `Expected a valid duration string, but received: ${durationStr}`,
       };
     }
@@ -396,12 +362,10 @@ export const withinAgoAssertion = createAssertion(
  */
 export const atLeastFromNowAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'from now'],
-  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
+  (subject, durationStr) => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -410,8 +374,6 @@ export const atLeastFromNowAssertion = createAssertion(
     const durationResult = DurationSchema.safeParse(durationStr);
     if (!durationResult.success) {
       return {
-        actual: durationStr,
-        expected: 'a valid duration string',
         message: `Expected a valid duration string, but received: ${durationStr}`,
       };
     }
@@ -454,12 +416,10 @@ export const atLeastFromNowAssertion = createAssertion(
  */
 export const atLeastAgoAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be at least', DurationFormatSchema, 'ago'],
-  (subject, durationStr): AssertionFailure | AssertionParseRequest => {
+  (subject, durationStr) => {
     const subjectDate = toDate(subject);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -468,8 +428,6 @@ export const atLeastAgoAssertion = createAssertion(
     const durationResult = DurationSchema.safeParse(durationStr);
     if (!durationResult.success) {
       return {
-        actual: durationStr,
-        expected: 'a valid duration string',
         message: `Expected a valid duration string, but received: ${durationStr}`,
       };
     }
@@ -510,20 +468,16 @@ export const atLeastAgoAssertion = createAssertion(
  */
 export const sameDateAssertion = createAssertion(
   [DateLikeFormatSchema, 'to be the same date as', DateLikeFormatSchema],
-  (subject, other): AssertionFailure | boolean => {
+  (subject, other) => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
     if (!otherDate) {
       return {
-        actual: other,
-        expected: 'a valid date',
         message: `Expected comparison date to be a valid date, but received: ${other}`,
       };
     }
@@ -540,8 +494,6 @@ export const sameDateAssertion = createAssertion(
         message: `Expected dates to be the same day, but ${subjectDate.toDateString()} !== ${otherDate.toDateString()}`,
       };
     }
-
-    return true;
   },
 );
 
@@ -569,20 +521,16 @@ export const equalWithinAssertion = createAssertion(
     'within',
     DurationFormatSchema,
   ],
-  (subject, other, toleranceStr): AssertionFailure | boolean => {
+  (subject, other, toleranceStr) => {
     const subjectDate = toDate(subject);
     const otherDate = toDate(other);
     if (!subjectDate) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
     if (!otherDate) {
       return {
-        actual: other,
-        expected: 'a valid date',
         message: `Expected comparison date to be a valid date, but received: ${other}`,
       };
     }
@@ -591,8 +539,6 @@ export const equalWithinAssertion = createAssertion(
     const durationResult = DurationSchema.safeParse(toleranceStr);
     if (!durationResult.success) {
       return {
-        actual: toleranceStr,
-        expected: 'a valid duration string',
         message: `Expected a valid duration string, but received: ${toleranceStr}`,
       };
     }
@@ -601,13 +547,11 @@ export const equalWithinAssertion = createAssertion(
     const diff = abs(subjectDate.getTime() - otherDate.getTime());
     if (diff > toleranceMs) {
       return {
-        actual: `${diff}ms difference`,
-        expected: `within ${toleranceMs}ms`,
+        actual: { difference: diff },
+        expected: { maxDifference: toleranceMs },
         message: `Expected dates to be equal within ${toleranceStr} (${toleranceMs}ms), but difference was ${diff}ms`,
       };
     }
-
-    return true;
   },
 );
 
@@ -627,12 +571,10 @@ export const equalWithinAssertion = createAssertion(
  */
 export const inThePastAssertion = createAssertion(
   ['to be in the past'],
-  (subject): AssertionFailure | AssertionParseRequest => {
+  (subject) => {
     const date = toDate(subject);
     if (!date) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -661,12 +603,10 @@ export const inThePastAssertion = createAssertion(
  */
 export const inTheFutureAssertion = createAssertion(
   ['to be in the future'],
-  (subject): AssertionFailure | AssertionParseRequest => {
+  (subject) => {
     const date = toDate(subject);
     if (!date) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -696,12 +636,10 @@ export const inTheFutureAssertion = createAssertion(
  */
 export const weekendAssertion = createAssertion(
   ['to be a weekend'],
-  (subject): AssertionFailure | boolean => {
+  (subject) => {
     const date = toDate(subject);
     if (!date) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -716,8 +654,6 @@ export const weekendAssertion = createAssertion(
         message: `Expected date to be a weekend (Saturday or Sunday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
-
-    return true;
   },
 );
 
@@ -738,12 +674,10 @@ export const weekendAssertion = createAssertion(
  */
 export const weekdayAssertion = createAssertion(
   ['to be a weekday'],
-  (subject): AssertionFailure | boolean => {
+  (subject) => {
     const date = toDate(subject);
     if (!date) {
       return {
-        actual: subject,
-        expected: 'a valid date',
         message: `Expected subject to be a valid date, but received: ${subject}`,
       };
     }
@@ -758,7 +692,5 @@ export const weekdayAssertion = createAssertion(
         message: `Expected date to be a weekday (Monday through Friday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
-
-    return true;
   },
 );

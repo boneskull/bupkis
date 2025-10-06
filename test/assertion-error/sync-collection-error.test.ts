@@ -21,7 +21,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
-    assertions.arrayLengthAssertion,
+    assertions.arraySizeAssertion,
     () => {
       expect([1, 2, 3], 'to have length', 5);
     },
