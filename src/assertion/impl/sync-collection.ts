@@ -22,10 +22,14 @@ import { z } from 'zod/v4';
 
 import { isWeakKey } from '../../guards.js';
 import {
+  AnyMapSchema,
+  AnySetSchema,
   KeypathSchema,
+  MapSchema,
   NonCollectionObjectSchema,
   NonNegativeIntegerSchema,
   PropertyKeySchema,
+  SetSchema,
 } from '../../schema.js';
 import { has } from '../../util.js';
 import { createAssertion } from '../create.js';
@@ -53,19 +57,13 @@ const { hasOwn, keys } = Object;
  * @bupkisAssertionCategory collections
  */
 export const mapContainsAssertion = createAssertion(
-  [
-    z.map(z.unknown(), z.unknown()).or(z.instanceof(WeakMap)),
-    ['to contain', 'to include'],
-    z.unknown(),
-  ],
+  [AnyMapSchema, ['to contain', 'to include'], z.unknown()],
   (subject, key) => {
     // WeakMap.has only works with object or symbol keys
     let hasKey: boolean;
     if (subject instanceof WeakMap) {
       if (!isWeakKey(key)) {
         return {
-          actual: typeof key,
-          expected: 'object or symbol',
           message: `WeakMap keys must be objects or symbols, got ${typeof key}`,
         };
       }
@@ -80,7 +78,6 @@ export const mapContainsAssertion = createAssertion(
         message: `Expected ${subject.constructor.name} to contain key`,
       };
     }
-    return true;
   },
 );
 
@@ -103,17 +100,11 @@ export const mapContainsAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const mapSizeAssertion = createAssertion(
-  [z.map(z.unknown(), z.unknown()), 'to have size', NonNegativeIntegerSchema],
-  (subject, expectedSize) => {
-    if (subject.size === expectedSize) {
-      return true;
-    }
-    return {
-      actual: subject.size,
-      expected: expectedSize,
-      message: `Expected ${subject.constructor.name} to have size ${expectedSize}, got ${subject.size}`,
-    };
-  },
+  [MapSchema, 'to have size', NonNegativeIntegerSchema],
+  (_subject, expectedSize) =>
+    z.map(z.unknown(), z.unknown()).refine((map) => map.size === expectedSize, {
+      error: `Expected Map to have size ${expectedSize}`,
+    }),
 );
 
 /**
@@ -131,8 +122,10 @@ export const mapSizeAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const emptyMapAssertion = createAssertion(
-  [z.map(z.unknown(), z.unknown()), 'to be empty'],
-  (subject) => subject.size === 0,
+  [MapSchema, 'to be empty'],
+  z
+    .map(z.unknown(), z.unknown())
+    .refine((map) => map.size === 0, { error: 'Expected Map to be empty' }),
 );
 
 /**
@@ -156,17 +149,11 @@ export const emptyMapAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setContainsAssertion = createAssertion(
-  [
-    z.set(z.unknown()).or(z.instanceof(WeakSet)),
-    ['to contain', 'to include'],
-    z.unknown(),
-  ],
+  [AnySetSchema, ['to contain', 'to include'], z.unknown()],
   (subject, value) => {
     // WeakSet.has only works with object or symbol values
     if (subject instanceof WeakSet && !isWeakKey(value)) {
       return {
-        actual: typeof value,
-        expected: 'object or symbol',
         message: `WeakSet values must be objects or symbols, got ${typeof value}`,
       };
     }
@@ -182,7 +169,6 @@ export const setContainsAssertion = createAssertion(
         message: `Expected ${subject.constructor.name} to contain value`,
       };
     }
-    return true;
   },
 );
 
@@ -202,16 +188,14 @@ export const setContainsAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setSizeAssertion = createAssertion(
-  [z.set(z.unknown()), 'to have size', NonNegativeIntegerSchema],
-  (subject, expectedSize) => {
-    if (subject.size !== expectedSize) {
-      return {
-        actual: subject.size,
-        expected: expectedSize,
-        message: `Expected ${subject.constructor.name} to have size ${expectedSize}, got ${subject.size}`,
-      };
-    }
-  },
+  [SetSchema, 'to have size', NonNegativeIntegerSchema],
+  (_subject, expectedSize) =>
+    z
+      .set(z.unknown())
+      .min(expectedSize, { error: `Expected Set to have size ${expectedSize}` })
+      .max(expectedSize, {
+        error: `Expected Set to have size ${expectedSize}`,
+      }),
 );
 
 /**
@@ -229,16 +213,8 @@ export const setSizeAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const emptySetAssertion = createAssertion(
-  [z.set(z.unknown()), 'to be empty'],
-  (subject) => {
-    if (subject.size !== 0) {
-      return {
-        actual: subject.size,
-        expected: 0,
-        message: `Expected ${subject.constructor.name} to be empty, got size ${subject.size}`,
-      };
-    }
-  },
+  [SetSchema, 'to be empty'],
+  z.set(z.unknown()).max(0, { error: 'Expected Set to be empty' }),
 );
 
 /**
@@ -256,16 +232,13 @@ export const emptySetAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const arrayContainsAssertion = createAssertion(
-  [z.array(z.any()), ['to contain', 'to include'], z.any()],
+  [z.array(z.unknown()), ['to contain', 'to include'], z.unknown()],
   (subject, value) => {
-    if (subject.includes(value)) {
-      return true;
+    if (!subject.includes(value)) {
+      return {
+        message: `Expected array to contain value`,
+      };
     }
-    return {
-      actual: subject,
-      expected: `array containing ${String(value)}`,
-      message: `Expected array to contain value`,
-    };
   },
 );
 
@@ -275,7 +248,7 @@ export const arrayContainsAssertion = createAssertion(
  * @example
  *
  * ```ts
- * expect([1, 2, 3], 'to have size', 3); // passes
+ * expect([1, 2, 3], 'to have length', 3); // passes
  * expect([1, 2, 3], 'to have size', 2); // fails
  * ```
  *
@@ -284,37 +257,20 @@ export const arrayContainsAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const arraySizeAssertion = createAssertion(
-  [z.array(z.any()), 'to have size', NonNegativeIntegerSchema],
-  (subject, expectedSize) => {
-    if (subject.length === expectedSize) {
-      return true;
-    }
-    return {
-      actual: subject.length,
-      expected: expectedSize,
-      message: `Expected array to have size ${expectedSize}, got ${subject.length}`,
-    };
-  },
-);
-
-/**
- * Asserts that an array has a specific length.
- *
- * @example
- *
- * ```ts
- * expect([1, 2, 3], 'to have length', 3); // passes
- * expect([1, 2, 3], 'to have length', 2); // fails
- * ```
- *
- * @group Collection Assertions
- * @bupkisAnchor array-to-have-length-nonnegative-integer
- * @bupkisAssertionCategory collections
- */
-export const arrayLengthAssertion = createAssertion(
-  [z.array(z.unknown()), 'to have length', NonNegativeIntegerSchema],
-  (_, expectedLength) =>
-    z.array(z.unknown()).min(expectedLength).max(expectedLength),
+  [
+    z.array(z.unknown()),
+    ['to have length', 'to have size'],
+    NonNegativeIntegerSchema,
+  ],
+  (_subject, expectedSize) =>
+    z
+      .array(z.unknown())
+      .min(expectedSize, {
+        error: `Expected array to have size ${expectedSize}}`,
+      })
+      .max(expectedSize, {
+        error: `Expected array to have size ${expectedSize}}`,
+      }),
 );
 
 /**
@@ -333,15 +289,7 @@ export const arrayLengthAssertion = createAssertion(
  */
 export const nonEmptyArrayAssertion = createAssertion(
   [z.array(z.unknown()), 'to be non-empty'],
-  (subject) => {
-    if (subject.length === 0) {
-      return {
-        actual: `length: ${subject.length}`,
-        expected: 'length greater than 0',
-        message: 'Expected array to be non-empty',
-      };
-    }
-  },
+  z.array(z.unknown()).min(1, { error: 'Expected array to be non-empty' }),
 );
 
 /**
@@ -363,19 +311,33 @@ export const nonEmptyArrayAssertion = createAssertion(
 export const objectKeysAssertion = createAssertion(
   [
     NonCollectionObjectSchema,
-    ['to have keys', 'to have properties', 'to have props'],
-    z.array(z.string()).nonempty(),
+    [
+      'to have keys',
+      'to have properties',
+      'to have props',
+      'to contain keys',
+      'to contain properties',
+      'to contain props',
+      'to include keys',
+      'to include properties',
+      'to include props',
+    ],
+    z.array(PropertyKeySchema).nonempty(),
   ],
-  (subject, keys) => {
-    const missing = keys.filter((k) => !hasOwn(subject, k));
-    if (missing.length > 0) {
-      return {
-        actual: `missing keys: ${missing.join(', ')}`,
-        expected: `to have keys: ${keys.join(', ')}`,
-        message: `Expected object to contain keys: ${keys.join(', ')}`,
-      };
-    }
-  },
+  (_subject, keys) =>
+    NonCollectionObjectSchema.superRefine((subject, ctx) => {
+      // iterate thru keys and add an issue for each missing
+      for (const k of keys) {
+        if (!hasOwn(subject, k)) {
+          ctx.addIssue({
+            code: 'custom',
+            input: subject,
+            message: `Expected object to contain key "${String(k)}"`,
+            params: { bupkisType: 'missing_key' },
+          });
+        }
+      }
+    }),
 );
 
 /**
@@ -411,7 +373,17 @@ export const objectKeysAssertion = createAssertion(
 export const objectKeyAssertion = createAssertion(
   [
     NonCollectionObjectSchema,
-    ['to have key', 'to have property', 'to have prop'],
+    [
+      'to have key',
+      'to have property',
+      'to have prop',
+      'to contain key',
+      'to contain property',
+      'to contain prop',
+      'to include key',
+      'to include property',
+      'to include prop',
+    ],
     KeypathSchema,
   ],
   (subject, keypath) => {
@@ -519,7 +491,7 @@ export const objectSizeAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setEqualityAssertion = createAssertion(
-  [z.set(z.unknown()), 'to equal', z.set(z.unknown())],
+  [SetSchema, 'to equal', SetSchema],
   (actual, expected) => {
     return actual.size === expected.size && isSubsetOf(actual, expected);
   },
@@ -540,7 +512,7 @@ export const setEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setSubsetAssertion = createAssertion(
-  [z.set(z.unknown()), 'to be a subset of', z.set(z.unknown())],
+  [SetSchema, 'to be a subset of', SetSchema],
   (subset, superset) => isSubsetOf(subset, superset),
 );
 
@@ -559,7 +531,7 @@ export const setSubsetAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setSupersetAssertion = createAssertion(
-  [z.set(z.unknown()), 'to be a superset of', z.set(z.unknown())],
+  [SetSchema, 'to be a superset of', SetSchema],
   (superset, subset) => isSupersetOf(superset, subset),
 );
 
@@ -578,7 +550,7 @@ export const setSupersetAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setIntersectionAssertion = createAssertion(
-  [z.set(z.unknown()), 'to intersect with', z.set(z.unknown())],
+  [SetSchema, 'to intersect with', SetSchema],
   (setA, setB) => !isDisjointFrom(setA, setB),
 );
 
@@ -597,7 +569,7 @@ export const setIntersectionAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setDisjointAssertion = createAssertion(
-  [z.set(z.unknown()), 'to be disjoint from', z.set(z.unknown())],
+  [SetSchema, 'to be disjoint from', SetSchema],
   (setA, setB) => isDisjointFrom(setA, setB),
 );
 
@@ -621,13 +593,7 @@ export const setDisjointAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setUnionEqualityAssertion = createAssertion(
-  [
-    z.set(z.unknown()),
-    'to have union',
-    z.set(z.unknown()),
-    'equal to',
-    z.set(z.unknown()),
-  ],
+  [SetSchema, 'to have union', SetSchema, 'equal to', SetSchema],
   (setA, setB, expected) => {
     const result = setUnion(setA, setB);
     return (
@@ -658,13 +624,7 @@ export const setUnionEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setIntersectionEqualityAssertion = createAssertion(
-  [
-    z.set(z.unknown()),
-    'to have intersection',
-    z.set(z.unknown()),
-    'equal to',
-    z.set(z.unknown()),
-  ],
+  [SetSchema, 'to have intersection', SetSchema, 'equal to', SetSchema],
   (setA, setB, expected) => {
     const result = setIntersection(setA, setB);
     return (
@@ -695,13 +655,7 @@ export const setIntersectionEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setDifferenceEqualityAssertion = createAssertion(
-  [
-    z.set(z.unknown()),
-    'to have difference',
-    z.set(z.unknown()),
-    'equal to',
-    z.set(z.unknown()),
-  ],
+  [SetSchema, 'to have difference', SetSchema, 'equal to', SetSchema],
   (setA, setB, expected) => {
     const result = setDifference(setA, setB);
     return (
@@ -732,13 +686,7 @@ export const setDifferenceEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setSymmetricDifferenceEqualityAssertion = createAssertion(
-  [
-    z.set(z.unknown()),
-    'to have symmetric difference',
-    z.set(z.unknown()),
-    'equal to',
-    z.set(z.unknown()),
-  ],
+  [SetSchema, 'to have symmetric difference', SetSchema, 'equal to', SetSchema],
   (setA, setB, expected) => {
     const result = symmetricDifference(setA, setB);
     return (
@@ -765,16 +713,15 @@ export const setSymmetricDifferenceEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const mapKeyAssertion = createAssertion(
-  [z.map(z.unknown(), z.unknown()), 'to have key', z.unknown()],
+  [MapSchema, 'to have key', z.unknown()],
   (map, key) => {
-    if (map.has(key)) {
-      return true;
+    if (!map.has(key)) {
+      return {
+        actual: [...map.keys()],
+        expected: [...map.keys(), key],
+        message: 'Expected Map to have key',
+      };
     }
-    return {
-      actual: [...map.keys()],
-      expected: key,
-      message: `Expected Map to have key`,
-    };
   },
 );
 
@@ -794,11 +741,15 @@ export const mapKeyAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const mapValueAssertion = createAssertion(
-  [z.map(z.unknown(), z.unknown()), 'to have value', z.unknown()],
+  [
+    MapSchema,
+    ['to have value', 'to contain value', 'to include value'],
+    z.unknown(),
+  ],
   (map, value) => {
     for (const mapValue of map.values()) {
       if (mapValue === value) {
-        return true;
+        return;
       }
     }
     return {
@@ -826,16 +777,21 @@ export const mapValueAssertion = createAssertion(
  */
 export const mapEntryAssertion = createAssertion(
   [
-    z.map(z.unknown(), z.unknown()).or(z.instanceof(WeakMap)),
-    'to have entry',
+    AnyMapSchema,
+    [
+      'to have entry',
+      'to have key/value pair',
+      'to contain entry',
+      'to contain key/value pair',
+      'to include entry',
+      'to include key/value pair',
+    ],
     z.tuple([z.unknown(), z.unknown()]),
   ],
   (map, [key, value]) => {
     // WeakMap operations only work with object or symbol keys
     if (map instanceof WeakMap && !isWeakKey(key)) {
       return {
-        actual: typeof key,
-        expected: 'object or symbol',
         message: `WeakMap keys must be objects or symbols, got ${typeof key}`,
       };
     }
@@ -844,7 +800,7 @@ export const mapEntryAssertion = createAssertion(
     const actualValue =
       map instanceof WeakMap ? map.get(key as WeakKey) : map.get(key);
     if (actualValue === value) {
-      return true;
+      return;
     }
 
     const hasKey =
@@ -881,11 +837,7 @@ export const mapEntryAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const mapEqualityAssertion = createAssertion(
-  [
-    z.map(z.unknown(), z.unknown()),
-    'to equal',
-    z.map(z.unknown(), z.unknown()),
-  ],
+  [MapSchema, 'to equal', MapSchema],
   (mapA, mapB) => {
     if (mapA.size !== mapB.size) {
       return {
@@ -897,8 +849,6 @@ export const mapEqualityAssertion = createAssertion(
     for (const [key, value] of mapA) {
       if (!mapB.has(key)) {
         return {
-          actual: `missing key: ${String(key)}`,
-          expected: `key ${String(key)} to exist`,
           message: `Expected second Map to contain key ${String(key)}`,
         };
       }
@@ -910,7 +860,6 @@ export const mapEqualityAssertion = createAssertion(
         };
       }
     }
-    return true;
   },
 );
 
@@ -930,19 +879,18 @@ export const mapEqualityAssertion = createAssertion(
  */
 export const collectionSizeGreaterThanAssertion = createAssertion(
   [
-    z.union([z.map(z.unknown(), z.unknown()), z.set(z.unknown())]),
+    z.union([MapSchema, SetSchema]),
     'to have size greater than',
     NonNegativeIntegerSchema,
   ],
   (collection, minSize) => {
-    if (collection.size > minSize) {
-      return true;
+    if (collection.size <= minSize) {
+      return {
+        actual: collection.size,
+        expected: minSize,
+        message: `Expected ${collection.constructor.name} to have size greater than ${minSize}, got ${collection.size}`,
+      };
     }
-    return {
-      actual: collection.size,
-      expected: `size greater than ${minSize}`,
-      message: `Expected ${collection.constructor.name} to have size greater than ${minSize}, got ${collection.size}`,
-    };
   },
 );
 
@@ -962,19 +910,18 @@ export const collectionSizeGreaterThanAssertion = createAssertion(
  */
 export const collectionSizeLessThanAssertion = createAssertion(
   [
-    z.union([z.map(z.unknown(), z.unknown()), z.set(z.unknown())]),
+    z.union([MapSchema, SetSchema]),
     'to have size less than',
     NonNegativeIntegerSchema,
   ],
   (collection, maxSize) => {
-    if (collection.size < maxSize) {
-      return true;
+    if (collection.size >= maxSize) {
+      return {
+        actual: collection.size,
+        expected: maxSize,
+        message: `Expected ${collection.constructor.name} to have size less than ${maxSize}, got ${collection.size}`,
+      };
     }
-    return {
-      actual: collection.size,
-      expected: `size less than ${maxSize}`,
-      message: `Expected ${collection.constructor.name} to have size less than ${maxSize}, got ${collection.size}`,
-    };
   },
 );
 
@@ -994,19 +941,16 @@ export const collectionSizeLessThanAssertion = createAssertion(
  */
 export const collectionSizeBetweenAssertion = createAssertion(
   [
-    z.union([z.map(z.unknown(), z.unknown()), z.set(z.unknown())]),
+    z.union([MapSchema, SetSchema]),
     'to have size between',
     z.tuple([z.number(), z.number()]),
   ],
   (collection, [min, max]) => {
     const size = collection.size;
-    if (size >= min && size <= max) {
-      return true;
+    if (!(size >= min && size <= max)) {
+      return {
+        message: `Expected ${collection.constructor.name} to have size between ${min} and ${max}, got ${size}`,
+      };
     }
-    return {
-      actual: size,
-      expected: `size between ${min} and ${max} (inclusive)`,
-      message: `Expected ${collection.constructor.name} to have size between ${min} and ${max}, got ${size}`,
-    };
   },
 );

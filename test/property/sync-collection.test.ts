@@ -103,40 +103,20 @@ const testConfigs = new Map<
   ],
 
   [
-    assertions.arrayLengthAssertion,
+    assertions.arraySizeAssertion,
     {
       invalid: {
         generators: [
           fc.array(filteredAnything, { maxLength: 9, minLength: 1 }),
-          fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
+          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
           fc.integer({ max: 100, min: 10 }),
         ],
       },
       valid: {
         generators: [
           fc.constant([1, 2, 3]),
-          fc.constantFrom(...extractPhrases(assertions.arrayLengthAssertion)),
+          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
           fc.constant(3),
-        ],
-      },
-    },
-  ],
-
-  [
-    assertions.arraySizeAssertion,
-    {
-      invalid: {
-        generators: [
-          fc.array(filteredAnything, { maxLength: 100, minLength: 11 }),
-          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
-          fc.integer({ max: 10, min: 1 }),
-        ],
-      },
-      valid: {
-        generators: [
-          fc.array(filteredAnything, { maxLength: 2, minLength: 2 }),
-          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
-          fc.constant(2),
         ],
       },
     },

@@ -387,7 +387,11 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' 
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 5,
-  "expected": "one of [1, 2, 3]",
+  "expected": [
+    1,
+    2,
+    3
+  ],
   "diff": "simple",
   "assertionId": "unknown-to-be-one-of-any-3s2p"
 }

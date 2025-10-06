@@ -79,8 +79,6 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject'\"
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "function fulfilled",
-  "expected": "function rejected",
   "diff": "simple",
   "assertionId": "function-to-reject-2s2p"
 }
@@ -92,8 +90,6 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to resolve' 
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "function rejected",
-  "expected": "function to fulfill",
   "diff": "simple",
   "assertionId": "function-to-resolve-to-fulfill-2s2p"
 }
@@ -148,8 +144,6 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "Promise fulfilled",
-  "expected": "Promise rejected",
   "diff": "simple",
   "assertionId": "promiselike-to-reject-2s2p"
 }
@@ -161,8 +155,6 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to resolv
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "promise rejected",
-  "expected": "promise to fulfill",
   "diff": "simple",
   "assertionId": "promiselike-to-resolve-to-fulfill-2s2p"
 }
