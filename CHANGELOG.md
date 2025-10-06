@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.6](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.5...bupkis-v0.10.6) (2025-10-06)
+
+
+### Bug Fixes
+
+* **deps:** move type-fest to dependencies ([7db2b81](https://github.com/boneskull/bupkis/commit/7db2b81fa14d2cefdcc57835706e694fa0794830))
+
 ## [0.10.5](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.4...bupkis-v0.10.5) (2025-10-05)
 
 
