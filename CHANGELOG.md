@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.6...bupkis-v0.11.0) (2025-10-06)
+
+
+### Features
+
+* **assertions:** add some more aliases; cleanup ([a751cdb](https://github.com/boneskull/bupkis/commit/a751cdb1462ec77a8e17fc52c4d5434ca3197535))
+* **schema:** add more schemas ([0b0c292](https://github.com/boneskull/bupkis/commit/0b0c2928a29c4615433e537d34637bdb1cd44af9))
+
+
+### Bug Fixes
+
+* **deps:** unpin type-fest ([e621d19](https://github.com/boneskull/bupkis/commit/e621d1982c371581206d49ec979b45eefddec125))
+
 ## [0.10.6](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.5...bupkis-v0.10.6) (2025-10-06)
 
 
