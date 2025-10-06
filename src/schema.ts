@@ -1007,3 +1007,182 @@ export const DurationSchema = DurationFormatSchema.transform(
   .describe(
     'Duration string like "1 hour", "30 minutes", "2 days" (transforms to milliseconds)',
   );
+
+/**
+ * Schema that matches any `Set` instance, including those with any element
+ * types.
+ *
+ * This schema is designed for runtime type checking and assertion matching
+ * rather than parsing or validation of Set contents. It uses `instanceof`
+ * checking to verify that a value is a Set, regardless of what elements it
+ * contains.
+ *
+ * **Usage in Assertions:**
+ *
+ * - Collection size validation: `expect(mySet, 'to have size', 3)`
+ * - Set operations: `expect(setA, 'to be a subset of', setB)`
+ * - Emptiness checks: `expect(mySet, 'to be empty')`
+ * - Element containment: `expect(mySet, 'to contain', value)`
+ *
+ * **Why `instanceof` Instead of Zod's `z.set()`:**
+ *
+ * - `z.set()` requires knowing the element schema at compile time
+ * - This schema works with Sets containing any element types
+ * - Focuses on the Set structure rather than element validation
+ * - Better performance for assertion matching scenarios
+ *
+ * @example
+ *
+ * ```ts
+ * // Matches any Set regardless of element types
+ * SetSchema.parse(new Set([1, 2, 3])); // ✓ passes
+ * SetSchema.parse(new Set(['a', 'b'])); // ✓ passes
+ * SetSchema.parse(new Set()); // ✓ passes (empty Set)
+ * SetSchema.parse([]); // ✗ fails (not a Set)
+ * SetSchema.parse(new WeakSet()); // ✗ fails (use AnySetSchema)
+ * ```
+ *
+ * @group Schema
+ */
+export const SetSchema = z
+  .instanceof(Set)
+  .register(BupkisRegistry, { name: 'set' })
+  .describe('A Set instance');
+
+/**
+ * Schema that matches either `Set` or `WeakSet` instances.
+ *
+ * This unified schema handles both strong and weak Set types, making it useful
+ * for assertions that should work with either variant. The distinction between
+ * Set and WeakSet is important for garbage collection behavior but often
+ * irrelevant for structural assertions.
+ *
+ * **Key Differences Between Set and WeakSet:**
+ *
+ * - **Set**: Holds strong references, prevents GC, iterable, any value types
+ * - **WeakSet**: Holds weak references, allows GC, not iterable, object keys only
+ *
+ * **Usage Scenarios:**
+ *
+ * - Generic containment checks that work with both types
+ * - Polymorphic collection handling in assertion libraries
+ * - APIs that accept either Set variant for flexibility
+ *
+ * **WeakSet Limitations:**
+ *
+ * - Only accepts object or symbol values (primitives will cause runtime errors)
+ * - Cannot be iterated or have size checked
+ * - Some Set-specific assertions may not work with WeakSet
+ *
+ * @example
+ *
+ * ```ts
+ * // Accepts both Set and WeakSet
+ * AnySetSchema.parse(new Set([1, 2, 3])); // ✓ passes
+ * AnySetSchema.parse(new WeakSet([obj1, obj2])); // ✓ passes
+ * AnySetSchema.parse(new Map()); // ✗ fails (wrong collection type)
+ *
+ * // Usage in assertions
+ * expect(myWeakSet, 'to contain', someObject); // Works with WeakSet
+ * expect(mySet, 'to contain', 'string'); // Works with Set
+ * ```
+ *
+ * @group Schema
+ */
+export const AnySetSchema = SetSchema.or(z.instanceof(WeakSet))
+  .register(BupkisRegistry, { name: 'set-or-weakset' })
+  .describe('A Set or WeakSet instance');
+
+/**
+ * Schema that matches any `Map` instance, including those with any key-value
+ * types.
+ *
+ * This schema provides runtime type checking for Map instances without
+ * requiring compile-time knowledge of key or value schemas. It uses
+ * `instanceof` checking to verify Map structure while being agnostic about the
+ * contained data types.
+ *
+ * **Usage in Assertions:**
+ *
+ * - Size validation: `expect(myMap, 'to have size', 5)`
+ * - Key presence: `expect(myMap, 'to have key', 'someKey')`
+ * - Value containment: `expect(myMap, 'to have value', expectedValue)`
+ * - Entry validation: `expect(myMap, 'to have entry', [key, value])`
+ * - Map equality: `expect(mapA, 'to equal', mapB)`
+ *
+ * **Advantages Over `z.map()`:**
+ *
+ * - Works with Maps having heterogeneous key/value types
+ * - No need to specify key and value schemas upfront
+ * - Optimized for structural validation rather than content parsing
+ * - Better error messages for type mismatches in assertions
+ *
+ * @example
+ *
+ * ```ts
+ * // Matches any Map regardless of key/value types
+ * MapSchema.parse(new Map([['key', 'value']])); // ✓ passes
+ * MapSchema.parse(
+ *   new Map([
+ *     [1, 'one'],
+ *     [2, 'two'],
+ *   ]),
+ * ); // ✓ passes
+ * MapSchema.parse(new Map()); // ✓ passes (empty Map)
+ * MapSchema.parse({}); // ✗ fails (plain object)
+ * MapSchema.parse(new WeakMap()); // ✗ fails (use AnyMapSchema)
+ * ```
+ *
+ * @group Schema
+ */
+export const MapSchema = z
+  .instanceof(Map)
+  .register(BupkisRegistry, { name: 'map' })
+  .describe('A Map instance');
+
+/**
+ * Schema that matches either `Map` or `WeakMap` instances.
+ *
+ * This union schema accommodates both strong and weak Map variants, enabling
+ * assertions to work polymorphically across both collection types. The choice
+ * between Map and WeakMap affects memory management and iteration capabilities
+ * but often doesn't impact structural validation logic.
+ *
+ * **Key Differences Between Map and WeakMap:**
+ *
+ * - **Map**: Strong references, enumerable, iterable, any key types, has `.size`
+ * - **WeakMap**: Weak references, not enumerable, not iterable, object keys only,
+ *   no `.size`
+ *
+ * **Usage Considerations:**
+ *
+ * - Use for assertions that need to work with either Map type
+ * - Particularly useful in library code that accepts either variant
+ * - Some Map-specific operations (iteration, size) won't work with WeakMap
+ * - WeakMap key restrictions (objects/symbols only) should be considered
+ *
+ * **Memory Management Implications:**
+ *
+ * - Map entries prevent garbage collection of keys
+ * - WeakMap entries allow garbage collection when keys become unreachable
+ * - This affects long-lived caches and memory-sensitive applications
+ *
+ * @example
+ *
+ * ```ts
+ * // Accepts both Map and WeakMap
+ * AnyMapSchema.parse(new Map([['key', 'value']])); // ✓ passes
+ * AnyMapSchema.parse(new WeakMap([[obj, 'value']])); // ✓ passes
+ * AnyMapSchema.parse(new Set()); // ✗ fails (wrong collection type)
+ *
+ * // Usage in assertions
+ * expect(myWeakMap, 'to have key', someObject); // Works with WeakMap
+ * expect(myMap, 'to have key', 'stringKey'); // Works with Map
+ * expect(myWeakMap, 'to have size', 3); // ✗ Fails - WeakMap has no size
+ * ```
+ *
+ * @group Schema
+ */
+export const AnyMapSchema = MapSchema.or(z.instanceof(WeakMap))
+  .register(BupkisRegistry, { name: 'map-or-weakmap' })
+  .describe('A Map or WeakMap instance');
