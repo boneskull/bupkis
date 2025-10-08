@@ -5,6 +5,7 @@ import { describe, it } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-parametric.js';
 import { SyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { SyncParametricGenerators } from '../../test-data/sync-parametric-generators.js';
 import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
@@ -13,7 +14,6 @@ import {
 import {
   extractPhrases,
   filteredAnything,
-  filteredObject,
   getVariants,
   objectFilter,
   runVariant,
@@ -56,18 +56,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(structuredClone(expected)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arrayDeepEqualAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.arrayDeepEqualAssertion,
+        )!,
       },
     },
   ],
@@ -99,18 +90,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(structuredClone(expected)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arraySatisfiesAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.arraySatisfiesAssertion,
+        )!,
       },
     },
   ],
@@ -132,17 +114,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc
-          .string()
-          .chain((expectedMessage) =>
-            fc.tuple(
-              fc.constant(new Error(expectedMessage)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.errorMessageAssertion),
-              ),
-              fc.constant(expectedMessage),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.errorMessageAssertion,
+        )!,
       },
     },
   ],
@@ -168,19 +142,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .map(safeRegexStringFilter)
-          .filter((message) => !!message.length)
-          .chain((message) =>
-            fc.tuple(
-              fc.constant(new Error(message)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.errorMessageMatchingAssertion),
-              ),
-              fc.constant(new RegExp(escapeStringRegexp(message))),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.errorMessageMatchingAssertion,
+        )!,
       },
     },
   ],
@@ -275,14 +239,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(() => {
-            throw new Error('test error');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionThrowsAssertion),
-          ),
-        ],
+        generators: SyncParametricGenerators.get(
+          assertions.functionThrowsAssertion,
+        )!,
       },
     },
   ],
@@ -302,15 +261,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(() => {
-            throw new Error('hello world');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionThrowsSatisfyingAssertion),
-          ),
-          fc.constant(/hello/),
-        ],
+        generators: SyncParametricGenerators.get(
+          assertions.functionThrowsSatisfyingAssertion,
+        )!,
       },
     },
   ],
@@ -330,15 +283,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(() => {
-            throw new Error('test');
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionThrowsTypeAssertion),
-          ),
-          fc.constant(Error),
-        ],
+        generators: SyncParametricGenerators.get(
+          assertions.functionThrowsTypeAssertion,
+        )!,
       },
     },
   ],
@@ -362,19 +309,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(() => {
-            throw new Error('test message');
-          }),
-          fc.constantFrom('to throw a', 'to throw an'),
-          fc.constant(Error), // Expect Error and will get Error
-          fc.constant('satisfying'),
-          fc.constantFrom(
-            { message: 'test message' },
-            'test message',
-            /test message/,
-          ),
-        ],
+        generators: SyncParametricGenerators.get(
+          assertions.functionThrowsTypeSatisfyingAssertion,
+        )!,
       },
     },
   ],
@@ -390,11 +327,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Error('test')),
-          fc.constantFrom(...extractPhrases(assertions.instanceOfAssertion)),
-          fc.constant(Error),
-        ],
+        generators: SyncParametricGenerators.get(
+          assertions.instanceOfAssertion,
+        )!,
       },
     },
   ],
@@ -420,21 +355,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc.integer({ max: 100, min: -100 }).chain((target) =>
-          fc.integer({ max: 10, min: 1 }).chain((tolerance) =>
-            fc.tuple(
-              fc.integer({
-                max: target + tolerance,
-                min: target - tolerance,
-              }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberCloseToAssertion),
-              ),
-              fc.constant(target),
-              fc.constant(tolerance),
-            ),
-          ),
-        ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberCloseToAssertion,
+        )!,
       },
     },
   ],
@@ -456,17 +379,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .integer({ max: 5, min: 1 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.integer({ max: 10, min: 6 }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberGreaterThanAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberGreaterThanAssertion,
+        )!,
       },
     },
   ],
@@ -488,17 +403,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .integer({ max: 50, min: -50 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.integer({ min: threshold }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberGreaterThanOrEqualAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberGreaterThanOrEqualAssertion,
+        )!,
       },
     },
   ],
@@ -520,17 +427,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .integer({ max: 50, min: -50 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.integer({ max: threshold - 1 }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberLessThanAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberLessThanAssertion,
+        )!,
       },
     },
   ],
@@ -552,17 +451,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .integer({ max: 50, min: -50 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.integer({ max: threshold }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberLessThanOrEqualAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberLessThanOrEqualAssertion,
+        )!,
       },
     },
   ],
@@ -588,18 +479,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc.integer({ max: 50, min: 0 }).chain((min) =>
-          fc.integer({ max: 100, min: min + 5 }).chain((max) =>
-            fc.tuple(
-              fc.integer({ max, min }), // Within range
-              fc.constantFrom(
-                ...extractPhrases(assertions.numberWithinRangeAssertion),
-              ),
-              fc.constant(min),
-              fc.constant(max),
-            ),
-          ),
-        ),
+        generators: SyncParametricGenerators.get(
+          assertions.numberWithinRangeAssertion,
+        )!,
       },
     },
   ],
@@ -629,18 +511,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         verbose: true,
       },
       valid: {
-        generators: fc
-          .object()
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(structuredClone(expected)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.objectDeepEqualAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.objectDeepEqualAssertion,
+        )!,
       },
     },
   ],
@@ -670,18 +543,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         verbose: true,
       },
       valid: {
-        generators: fc
-          .object({ depthSize: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(structuredClone(expected)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.objectSatisfiesAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.objectSatisfiesAssertion,
+        )!,
       },
     },
   ],
@@ -697,15 +561,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.oneof(
-            fc.constant('test'),
-            fc.constant('other1'),
-            fc.constant('other2'),
-          ),
-          fc.constantFrom(...extractPhrases(assertions.oneOfAssertion)),
-          fc.constant(['test', 'other1', 'other2']),
-        ],
+        generators: SyncParametricGenerators.get(assertions.oneOfAssertion)!,
       },
     },
   ],
@@ -728,18 +584,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .anything()
-          .filter((v) => !Number.isNaN(v))
-          .chain((value) =>
-            fc.tuple(
-              fc.constant(value),
-              fc.constantFrom(
-                ...extractPhrases(assertions.strictEqualityAssertion),
-              ),
-              fc.constant(value),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.strictEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -761,21 +608,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc
-          .string({ minLength: 2 })
-          .chain((str) =>
-            fc
-              .integer({ max: str.length, min: 1 })
-              .chain((prefixLength) =>
-                fc.tuple(
-                  fc.constant(str),
-                  fc.constantFrom(
-                    ...extractPhrases(assertions.stringBeginsWithAssertion),
-                  ),
-                  fc.constant(str.substring(0, prefixLength)),
-                ),
-              ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringBeginsWithAssertion,
+        )!,
       },
     },
   ],
@@ -797,21 +632,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc
-          .string({ minLength: 2 })
-          .chain((str) =>
-            fc
-              .integer({ max: str.length, min: 1 })
-              .chain((suffixLength) =>
-                fc.tuple(
-                  fc.constant(str),
-                  fc.constantFrom(
-                    ...extractPhrases(assertions.stringEndsWithAssertion),
-                  ),
-                  fc.constant(str.substring(str.length - suffixLength)),
-                ),
-              ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringEndsWithAssertion,
+        )!,
       },
     },
   ],
@@ -835,17 +658,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.constant(threshold + 'a'), // Simple: append 'a' to make it greater
-              fc.constantFrom(
-                ...extractPhrases(assertions.stringGreaterThanAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringGreaterThanAssertion,
+        )!,
       },
     },
   ],
@@ -872,20 +687,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.oneof(
-                fc.constant(threshold), // Equal case
-                fc.constant(threshold + 'a'), // Greater case: append 'a'
-              ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.stringGreaterThanOrEqualAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringGreaterThanOrEqualAssertion,
+        )!,
       },
     },
   ],
@@ -907,27 +711,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc
-          .string({ minLength: 3 })
-          .chain((str) =>
-            fc
-              .integer({ max: str.length - 1, min: 1 })
-              .chain((startIndex) =>
-                fc
-                  .integer({ max: str.length - startIndex, min: 1 })
-                  .chain((length) =>
-                    fc.tuple(
-                      fc.constant(str),
-                      fc.constantFrom(
-                        ...extractPhrases(assertions.stringIncludesAssertion),
-                      ),
-                      fc.constant(
-                        str.substring(startIndex, startIndex + length),
-                      ),
-                    ),
-                  ),
-              ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringIncludesAssertion,
+        )!,
       },
     },
   ],
@@ -952,22 +738,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .chain((threshold) =>
-            fc.tuple(
-              // Generate string guaranteed to be less than threshold
-              fc.constant(
-                threshold.length > 0 && threshold.charCodeAt(0) > 32
-                  ? ' '.repeat(threshold.length)
-                  : '',
-              ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.stringLessThanAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringLessThanAssertion,
+        )!,
       },
     },
   ],
@@ -989,26 +762,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .chain((threshold) =>
-            fc.tuple(
-              fc.oneof(
-                fc.constant(threshold), // Equal case
-                // Less case: if threshold starts with a character > space, replace with space
-                // Otherwise use empty string (which is always < any non-empty string)
-                fc.constant(
-                  threshold.length > 0 && threshold.charCodeAt(0) > 32
-                    ? ' '.repeat(threshold.length)
-                    : '',
-                ),
-              ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.stringLessThanOrEqualAssertion),
-              ),
-              fc.constant(threshold),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringLessThanOrEqualAssertion,
+        )!,
       },
     },
   ],
@@ -1034,19 +790,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .map(safeRegexStringFilter)
-          .filter((str) => !!str.length)
-          .chain((str) =>
-            fc.tuple(
-              fc.constant(str),
-              fc.constantFrom(
-                ...extractPhrases(assertions.stringMatchesAssertion),
-              ),
-              fc.constant(new RegExp(escapeStringRegexp(str))),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(
+          assertions.stringMatchesAssertion,
+        )!,
       },
     },
   ],
@@ -1087,41 +833,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ),
       },
       valid: {
-        generators: fc
-          .oneof(
-            // Generate value-type pairs where value matches the type
-            fc.constant([fc.string(), 'string']),
-            fc.constant([
-              fc.float({ noDefaultInfinity: true, noNaN: true }),
-              'number',
-            ]),
-            fc.constant([fc.boolean(), 'boolean']),
-            fc.constant([fc.constant(undefined), 'undefined']),
-            fc.constant([fc.constant(null), 'null']),
-            fc.constant([fc.constant(BigInt(1)), 'bigint']),
-            fc.constant([fc.constant(Symbol('test')), 'symbol']),
-            fc.constant([filteredObject, 'object']),
-            fc.constant([fc.func(filteredAnything), 'function']),
-            fc.constant([fc.array(filteredAnything), 'array']),
-            fc.constant([fc.constant(new Date()), 'date']),
-            fc.constant([fc.constant(new Map()), 'map']),
-            fc.constant([fc.constant(new Set()), 'set']),
-            fc.constant([fc.constant(new WeakMap()), 'weakmap']),
-            fc.constant([fc.constant(new WeakSet()), 'weakset']),
-            fc.constant([fc.constant(/test/), 'regexp']),
-            fc.constant([fc.constant(Promise.resolve()), 'promise']),
-            fc.constant([fc.constant(new Error()), 'error']),
-            fc.constant([fc.constant(new WeakRef({})), 'weakref']),
-          )
-          .chain(([valueGen, typeString]) =>
-            valueGen.chain((value) =>
-              fc.tuple(
-                fc.constant(value),
-                fc.constantFrom(...extractPhrases(assertions.typeOfAssertion)),
-                fc.constant(typeString), // Only use lowercase
-              ),
-            ),
-          ),
+        generators: SyncParametricGenerators.get(assertions.typeOfAssertion)!,
       },
     },
   ],

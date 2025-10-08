@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-collection.js';
 import { SyncCollectionAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { SyncCollectionGenerators } from '../../test-data/sync-collection-generators.js';
 import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
@@ -93,11 +94,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant([42, 'test', true]),
-          fc.constantFrom(...extractPhrases(assertions.arrayContainsAssertion)),
-          fc.constantFrom(42, 'test', true),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.arrayContainsAssertion,
+        )!,
       },
     },
   ],
@@ -113,123 +112,69 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant([1, 2, 3]),
-          fc.constantFrom(...extractPhrases(assertions.arraySizeAssertion)),
-          fc.constant(3),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.arraySizeAssertion,
+        )!,
       },
     },
   ],
 
   [
     assertions.collectionSizeBetweenAssertion,
-    [
-      {
-        invalid: {
-          generators: [
-            fc.constant(new Map([['a', 1]])), // size 1, outside range [2,4]
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
-            ),
-            fc.constant([2, 4]),
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['a', 1],
-                ['b', 2],
-                ['c', 3],
-              ]),
-            ), // size 3, within range [2,4]
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
-            ),
-            fc.constant([2, 4]),
-          ],
-        },
+    {
+      invalid: {
+        generators: [
+          fc.constantFrom('Map', 'Set').chain((type) => {
+            if (type === 'Map') {
+              return fc.constant(new Map([['a', 1]]) as any); // size 1, outside range [2,4]
+            } else {
+              return fc.constant(new Set([1]) as any); // size 1, outside range [2,4]
+            }
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.collectionSizeBetweenAssertion),
+          ),
+          fc.constant([2, 4]),
+        ],
       },
-      {
-        invalid: {
-          generators: [
-            fc.constant(new Set([1])), // size 1, outside range [2,4]
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
-            ),
-            fc.constant([2, 4]),
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(new Set([1, 2, 3])), // size 3, within range [2,4]
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeBetweenAssertion),
-            ),
-            fc.constant([2, 4]),
-          ],
-        },
+      valid: {
+        generators: SyncCollectionGenerators.get(
+          assertions.collectionSizeBetweenAssertion,
+        )!,
       },
-    ],
+    },
   ],
 
   // Size comparison assertions
   [
     assertions.collectionSizeGreaterThanAssertion,
-    [
-      {
-        invalid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['a', 1],
-                ['b', 2],
-              ]),
-            ), // size 2
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
-            ),
-            fc.integer({ max: 10, min: 2 }), // 2 or greater
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['a', 1],
-                ['b', 2],
-                ['c', 3],
-              ]),
-            ), // size 3
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
-            ),
-            fc.integer({ max: 2, min: 0 }), // 0 to 2 (less than 3)
-          ],
-        },
+    {
+      invalid: {
+        generators: [
+          fc.constantFrom('Map', 'Set').chain((type) => {
+            if (type === 'Map') {
+              return fc.constant(
+                new Map([
+                  ['a', 1],
+                  ['b', 2],
+                ]) as any,
+              ); // size 2
+            } else {
+              return fc.constant(new Set([1, 2]) as any); // size 2
+            }
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
+          ),
+          fc.integer({ max: 10, min: 2 }), // 2 or greater
+        ],
       },
-      {
-        invalid: {
-          generators: [
-            fc.constant(new Set([1, 2])), // size 2
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
-            ),
-            fc.integer({ max: 10, min: 2 }), // 2 or greater
-          ],
-        },
-        valid: {
-          generators: [
-            fc.constant(new Set([1, 2, 3])), // size 3
-            fc.constantFrom(
-              ...extractPhrases(assertions.collectionSizeGreaterThanAssertion),
-            ),
-            fc.integer({ max: 2, min: 0 }), // 0 to 2 (less than 3)
-          ],
-        },
+      valid: {
+        generators: SyncCollectionGenerators.get(
+          assertions.collectionSizeGreaterThanAssertion,
+        )!,
       },
-    ],
+    },
   ],
   [
     assertions.collectionSizeLessThanAssertion,
@@ -254,23 +199,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.oneof(
-            fc
-              .dictionary(fc.string(), filteredAnything, {
-                maxKeys: 2,
-                minKeys: 2,
-              })
-              .map((obj) => new Map(Object.entries(obj))),
-            fc
-              .array(filteredAnything, { maxLength: 2, minLength: 2 })
-              .map((arr) => new Set(arr)),
-          ),
-          fc.constantFrom(
-            ...extractPhrases(assertions.collectionSizeLessThanAssertion),
-          ),
-          fc.integer({ max: 10, min: 3 }),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.collectionSizeLessThanAssertion,
+        )!,
       },
     },
   ],
@@ -286,10 +217,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Map()),
-          fc.constantFrom(...extractPhrases(assertions.emptyMapAssertion)),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.emptyMapAssertion)!,
       },
     },
   ],
@@ -306,10 +234,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set()),
-          fc.constantFrom(...extractPhrases(assertions.emptySetAssertion)),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.emptySetAssertion)!,
       },
     },
   ],
@@ -326,16 +251,9 @@ const testConfigs = new Map<
           ],
         },
         valid: {
-          generators: [
-            fc.constant(
-              new Map([
-                ['key1', 'value1'],
-                ['key2', 'value2'],
-              ]),
-            ),
-            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
-            fc.constantFrom('key1', 'key2'),
-          ],
+          generators: SyncCollectionGenerators.get(
+            assertions.mapContainsAssertion,
+          )!,
         },
       },
       {
@@ -347,11 +265,9 @@ const testConfigs = new Map<
           ],
         },
         valid: {
-          generators: [
-            fc.constant(SharedWeakMapState.getWeakMap()),
-            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
-            fc.constant(SharedWeakMapState.getKey()),
-          ],
+          generators: SyncCollectionGenerators.get(
+            assertions.mapContainsAssertion,
+          )!,
         },
       },
       {
@@ -363,11 +279,9 @@ const testConfigs = new Map<
           ],
         },
         valid: {
-          generators: [
-            fc.constant(SharedWeakMapState.getWeakMap()),
-            fc.constantFrom(...extractPhrases(assertions.mapContainsAssertion)),
-            fc.constant(SharedWeakMapState.getKey()),
-          ],
+          generators: SyncCollectionGenerators.get(
+            assertions.mapContainsAssertion,
+          )!,
         },
       },
     ],
@@ -442,21 +356,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(
-            new Map([
-              ['a', 1],
-              ['b', 2],
-            ]),
-          ),
-          fc.constantFrom(...extractPhrases(assertions.mapEqualityAssertion)),
-          fc.constant(
-            new Map([
-              ['a', 1],
-              ['b', 2],
-            ]),
-          ), // Order doesn't matter
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.mapEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -478,16 +380,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(
-            new Map([
-              ['key1', 'value1'],
-              ['key2', 'value2'],
-            ]),
-          ),
-          fc.constantFrom(...extractPhrases(assertions.mapKeyAssertion)),
-          fc.constantFrom('key1', 'key2'),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.mapKeyAssertion)!,
       },
     },
   ],
@@ -508,16 +401,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(
-            new Map([
-              ['a', 1],
-              ['b', 2],
-            ]),
-          ),
-          fc.constantFrom(...extractPhrases(assertions.mapSizeAssertion)),
-          fc.constant(2),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.mapSizeAssertion)!,
       },
     },
   ],
@@ -538,16 +422,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(
-            new Map([
-              ['key1', 'value1'],
-              ['key2', 'value2'],
-            ]),
-          ),
-          fc.constantFrom(...extractPhrases(assertions.mapValueAssertion)),
-          fc.constantFrom('value1', 'value2'),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.mapValueAssertion)!,
       },
     },
   ],
@@ -562,10 +437,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.array(filteredAnything, { minLength: 1 }),
-          fc.constantFrom(...extractPhrases(assertions.nonEmptyArrayAssertion)),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.nonEmptyArrayAssertion,
+        )!,
       },
     },
   ],
@@ -587,17 +461,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant({
-            'key.with.dots': 'direct property',
-            'key[with]brackets': 'another direct property',
-            simple: 'value',
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectExactKeyAssertion),
-          ),
-          fc.constantFrom('key.with.dots', 'key[with]brackets', 'simple'),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.objectExactKeyAssertion,
+        )!,
       },
     },
   ],
@@ -622,21 +488,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant({
-            foo: { bar: [{ baz: 'value' }] },
-            items: [{ id: 1, name: 'first' }],
-            'kebab-case': 'works',
-          }),
-          fc.constantFrom(...extractPhrases(assertions.objectKeyAssertion)),
-          fc.constantFrom(
-            'foo.bar',
-            'foo.bar[0].baz',
-            'items[0].id',
-            'items[0].name',
-            'kebab-case',
-          ),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.objectKeyAssertion,
+        )!,
       },
     },
   ],
@@ -664,11 +518,9 @@ const testConfigs = new Map<
           [{ '': 1 }, 'to have keys', ['']],
           [{ foo: undefined }, 'to have keys', ['foo']],
         ],
-        generators: [
-          fc.constant({ a: 1, b: 2, c: 3 }),
-          fc.constantFrom(...extractPhrases(assertions.objectKeysAssertion)),
-          fc.array(fc.constantFrom('a', 'b', 'c'), { minLength: 1 }),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.objectKeysAssertion,
+        )!,
       },
     },
   ],
@@ -684,11 +536,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant({ a: 1, b: 2, c: 3 }),
-          fc.constantFrom(...extractPhrases(assertions.objectSizeAssertion)),
-          fc.constant(3),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.objectSizeAssertion,
+        )!,
       },
     },
   ],
@@ -744,13 +594,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3])),
-          fc.constant('to have difference'),
-          fc.constant(new Set([2, 3, 4])),
-          fc.constant('equal to'),
-          fc.constant(new Set([1])), // Correct difference
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setDifferenceEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -766,11 +612,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2])),
-          fc.constantFrom(...extractPhrases(assertions.setDisjointAssertion)),
-          fc.constant(new Set([3, 4])),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setDisjointAssertion,
+        )!,
       },
     },
   ],
@@ -786,11 +630,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3])),
-          fc.constantFrom(...extractPhrases(assertions.setEqualityAssertion)),
-          fc.constant(new Set([1, 2, 3])), // Same elements
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -808,13 +650,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3])),
-          fc.constantFrom(
-            ...extractPhrases(assertions.setIntersectionAssertion),
-          ),
-          fc.constant(new Set([2, 3, 4])),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setIntersectionAssertion,
+        )!,
       },
     },
   ],
@@ -832,13 +670,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3])),
-          fc.constant('to have intersection'),
-          fc.constant(new Set([2, 3, 4])),
-          fc.constant('equal to'),
-          fc.constant(new Set([2, 3])), // Correct intersection
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setIntersectionEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -857,14 +691,7 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc
-            .array(filteredAnything, { maxLength: 3, minLength: 3 })
-            .map((arr) => new Set(arr))
-            .filter(({ size }) => size === 3), // deduping can shrink it
-          fc.constantFrom(...extractPhrases(assertions.setSizeAssertion)),
-          fc.constant(3),
-        ],
+        generators: SyncCollectionGenerators.get(assertions.setSizeAssertion)!,
       },
     },
   ],
@@ -880,11 +707,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2])),
-          fc.constantFrom(...extractPhrases(assertions.setSubsetAssertion)),
-          fc.constant(new Set([1, 2, 3])),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setSubsetAssertion,
+        )!,
       },
     },
   ],
@@ -900,11 +725,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3, 4])),
-          fc.constantFrom(...extractPhrases(assertions.setSupersetAssertion)),
-          fc.constant(new Set([1, 2])),
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setSupersetAssertion,
+        )!,
       },
     },
   ],
@@ -922,13 +745,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2, 3])),
-          fc.constant('to have symmetric difference'),
-          fc.constant(new Set([2, 3, 4])),
-          fc.constant('equal to'),
-          fc.constant(new Set([1, 4])), // Correct symmetric difference
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setSymmetricDifferenceEqualityAssertion,
+        )!,
       },
     },
   ],
@@ -946,13 +765,9 @@ const testConfigs = new Map<
         ],
       },
       valid: {
-        generators: [
-          fc.constant(new Set([1, 2])),
-          fc.constant('to have union'),
-          fc.constant(new Set([3, 4])),
-          fc.constant('equal to'),
-          fc.constant(new Set([1, 2, 3, 4])), // Correct union
-        ],
+        generators: SyncCollectionGenerators.get(
+          assertions.setUnionEqualityAssertion,
+        )!,
       },
     },
   ],

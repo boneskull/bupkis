@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import * as assertions from '../../src/assertion/impl/sync-esoteric.js';
 import { SyncEsotericAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { SyncEsotericGenerators } from '../../test-data/sync-esoteric-generators.js';
 import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
@@ -44,19 +45,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant('a'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.enumerablePropertyAssertion),
-          ),
-          fc.constant({}).map((obj) => {
-            Object.defineProperty(obj, 'a', {
-              enumerable: true,
-              value: 42,
-            });
-            return obj;
-          }),
-        ],
+        generators: SyncEsotericGenerators.get(
+          assertions.enumerablePropertyAssertion,
+        )!,
       },
     },
   ],
@@ -77,19 +68,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          filteredObject.map((obj) => {
-            Object.defineProperty(obj, 'a', {
-              enumerable: true,
-              value: 42,
-            });
-            return obj;
-          }),
-          fc.constantFrom(
-            ...extractPhrases(assertions.enumerablePropertyAssertion2),
-          ),
-          fc.constant('a'),
-        ],
+        generators: SyncEsotericGenerators.get(
+          assertions.enumerablePropertyAssertion2,
+        )!,
       },
     },
   ],
@@ -108,10 +89,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          filteredObject,
-          fc.constantFrom(...extractPhrases(assertions.extensibleAssertion)),
-        ],
+        generators: SyncEsotericGenerators.get(assertions.extensibleAssertion)!,
       },
     },
   ],
@@ -126,10 +104,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          filteredObject.map(Object.freeze),
-          fc.constantFrom(...extractPhrases(assertions.frozenAssertion)),
-        ],
+        generators: SyncEsotericGenerators.get(assertions.frozenAssertion)!,
       },
     },
   ],
@@ -145,10 +120,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          fc.constant(Object.create(null)),
-          fc.constantFrom(...extractPhrases(assertions.nullPrototypeAssertion)),
-        ],
+        generators: SyncEsotericGenerators.get(
+          assertions.nullPrototypeAssertion,
+        )!,
       },
     },
   ],
@@ -163,13 +137,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          filteredObject.map((obj) => {
-            Object.seal(obj);
-            return obj;
-          }),
-          fc.constantFrom(...extractPhrases(assertions.sealedAssertion)),
-        ],
+        generators: SyncEsotericGenerators.get(assertions.sealedAssertion)!,
       },
     },
   ],

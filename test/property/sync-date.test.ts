@@ -4,6 +4,14 @@ import { describe, it } from 'node:test';
 import type { AnyAssertion } from '../../src/types.js';
 
 import * as assertions from '../../src/assertion/impl/sync-date.js';
+import {
+  futureDateGenerator,
+  pastDateGenerator,
+  SyncDateGenerators,
+  validDateLikeGenerator,
+  weekdayDateGenerator,
+  weekendDateGenerator,
+} from '../../test-data/sync-date-generators.js';
 import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
@@ -17,39 +25,12 @@ import {
 } from './property-test-util.js';
 
 // Get all the sync date assertions
-const allAssertions = Object.values(assertions);
+const SyncDateAssertions = Object.values(assertions);
 
 /**
  * Test config defaults
  */
 const testConfigDefaults: PropertyTestConfigParameters = {} as const;
-
-/**
- * Generates valid date-like values (Date objects, ISO strings, timestamps)
- */
-const validDateLikeGenerator = fc
-  .oneof(
-    fc.date({
-      max: new Date('2100-01-01'),
-      min: new Date(0),
-      noInvalidDate: true,
-    }),
-    fc
-      .date({
-        max: new Date('2100-01-01'),
-        min: new Date(0),
-        noInvalidDate: true,
-      })
-      .map((d) => d.toISOString()),
-    fc
-      .date({
-        max: new Date('2100-01-01'),
-        min: new Date(0),
-        noInvalidDate: true,
-      })
-      .map((d) => d.getTime()),
-  )
-  .filter((v) => `${new Date(v)}` !== 'Invalid Date');
 
 /**
  * Generates invalid date-like values
@@ -64,7 +45,7 @@ const invalidDateLikeGenerator = filteredAnything.filter(
 /**
  * Generates valid duration strings
  */
-const validDurationGenerator = fc.oneof(
+const durationGenerator = fc.oneof(
   fc.integer({ max: 100, min: 1 }).map((n) => `${n} milliseconds`),
   fc.integer({ max: 100, min: 1 }).map((n) => `${n} ms`),
   fc.integer({ max: 100, min: 1 }).map((n) => `${n} seconds`),
@@ -83,11 +64,6 @@ const validDurationGenerator = fc.oneof(
 );
 
 /**
- * Generates dates that are known to be today (for testing)
- */
-const todayDateGenerator = fc.constant(new Date());
-
-/**
  * Generates dates that are not today
  */
 const notTodayDateGenerator = fc.oneof(
@@ -102,38 +78,6 @@ const notTodayDateGenerator = fc.oneof(
   fc.constant(new Date('2020-01-01')),
   fc.constant(new Date('2030-12-31')),
 );
-
-/**
- * Generates past dates
- */
-const pastDateGenerator = fc.date({
-  max: new Date(Date.now() - 5000), // At least 5 seconds ago to avoid timing issues
-  noInvalidDate: true,
-});
-
-/**
- * Generates future dates
- */
-const futureDateGenerator = fc.date({
-  min: new Date(Date.now() + 5000), // At least 5 seconds from now to avoid timing issues
-  noInvalidDate: true,
-});
-
-/**
- * Generates weekend dates (Saturday or Sunday)
- */
-const weekendDateGenerator = fc.date({ noInvalidDate: true }).filter((d) => {
-  const day = d.getUTCDay();
-  return day === 0 || day === 6; // Sunday or Saturday
-});
-
-/**
- * Generates weekday dates (Monday through Friday)
- */
-const weekdayDateGenerator = fc.date({ noInvalidDate: true }).filter((d) => {
-  const day = d.getUTCDay();
-  return day >= 1 && day <= 5; // Monday through Friday
-});
 
 /**
  * Map of assertions to their property test configurations.
@@ -153,14 +97,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .map(([subject, other]) => [subject, 'to be after', other]),
       },
       valid: {
-        generators: fc
-          .tuple(validDateLikeGenerator, validDateLikeGenerator)
-          .filter(([a, b]) => {
-            const dateA = new Date(a);
-            const dateB = new Date(b);
-            return dateA.getTime() > dateB.getTime();
-          })
-          .map(([subject, other]) => [subject, 'to be after', other]),
+        generators: SyncDateGenerators.get(assertions.afterAssertion)!,
       },
     },
   ],
@@ -172,7 +109,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: fc
           .oneof(
             // Future dates should fail
-            fc.tuple(futureDateGenerator, validDurationGenerator),
+            fc.tuple(futureDateGenerator, durationGenerator),
             // Dates too close to now should fail
             fc.tuple(
               fc.date({
@@ -186,16 +123,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .map(([date, duration]) => [date, 'to be at least', duration, 'ago']),
       },
       valid: {
-        generators: fc
-          .tuple(
-            fc.date({
-              max: new Date(Date.now() - 7200000), // 2 hours ago
-              min: new Date(Date.now() - 86400000), // 1 day ago
-              noInvalidDate: true,
-            }),
-            fc.constant('1 hour'),
-          )
-          .map(([date, duration]) => [date, 'to be at least', duration, 'ago']),
+        generators: SyncDateGenerators.get(assertions.atLeastAgoAssertion)!,
       },
     },
   ],
@@ -207,7 +135,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: fc
           .oneof(
             // Past dates should fail
-            fc.tuple(pastDateGenerator, validDurationGenerator),
+            fc.tuple(pastDateGenerator, durationGenerator),
             // Dates too close to now should fail
             fc.tuple(
               fc.date({
@@ -226,21 +154,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ]),
       },
       valid: {
-        generators: fc
-          .tuple(
-            fc.date({
-              max: new Date(Date.now() + 86400000), // 1 day from now
-              min: new Date(Date.now() + 7200000), // 2 hours from now
-              noInvalidDate: true,
-            }),
-            fc.constant('1 hour'),
-          )
-          .map(([date, duration]) => [
-            date,
-            'to be at least',
-            duration,
-            'from now',
-          ]),
+        generators: SyncDateGenerators.get(assertions.atLeastFromNowAssertion)!,
       },
     },
   ],
@@ -263,18 +177,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .map(([subject, other]) => [subject, 'to be before', other]),
       },
       valid: {
-        generators: fc
-          .tuple(validDateLikeGenerator, validDateLikeGenerator)
-          .filter(([a, b]) => {
-            const dateA = new Date(a);
-            const dateB = new Date(b);
-            // Ensure both dates are valid
-            if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-              return false;
-            }
-            return dateA.getTime() < dateB.getTime();
-          })
-          .map(([subject, other]) => [subject, 'to be before', other]),
+        generators: SyncDateGenerators.get(assertions.beforeAssertion)!,
       },
     },
   ],
@@ -324,29 +227,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ]),
       },
       valid: {
-        generators: validDateLikeGenerator
-          .chain((subject) =>
-            fc.tuple(
-              fc.constant(subject),
-              fc.date({
-                max: new Date(subject),
-                min: new Date(0),
-                noInvalidDate: true,
-              }),
-              fc.date({
-                max: new Date('2100-01-01'),
-                min: new Date(subject),
-                noInvalidDate: true,
-              }),
-            ),
-          )
-          .map(([subject, start, end]) => [
-            subject,
-            'to be between',
-            start,
-            'and',
-            end,
-          ]),
+        generators: SyncDateGenerators.get(assertions.betweenAssertion)!,
       },
     },
   ],
@@ -385,22 +266,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ]),
       },
       valid: {
-        generators: fc
-          .date({
-            max: new Date('2099-01-01'), // Ensure room for addition
-            min: new Date('2000-01-01'),
-            noInvalidDate: true,
-          })
-          .filter((date) => !Number.isNaN(date.getTime())) // Ensure valid date
-          .map((baseDate) => {
-            const offset = Math.floor(Math.random() * 500); // Within 500ms
-            const closeDate = new Date(baseDate.getTime() + offset);
-            // Ensure the new date is also valid
-            if (isNaN(closeDate.getTime())) {
-              return [baseDate, 'to equal', baseDate, 'within', '1 second'];
-            }
-            return [baseDate, 'to equal', closeDate, 'within', '1 second'];
-          }),
+        generators: SyncDateGenerators.get(assertions.equalWithinAssertion)!,
       },
     },
   ],
@@ -415,10 +281,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          futureDateGenerator,
-          fc.constantFrom(...extractPhrases(assertions.inTheFutureAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.inTheFutureAssertion)!,
       },
     },
   ],
@@ -433,10 +296,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          pastDateGenerator,
-          fc.constantFrom(...extractPhrases(assertions.inThePastAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.inThePastAssertion)!,
       },
     },
   ],
@@ -463,17 +323,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           ]),
       },
       valid: {
-        generators: fc
-          .date({ noInvalidDate: true })
-          .chain((baseDate) => {
-            const sameDate = new Date(baseDate);
-            return fc.tuple(fc.constant(baseDate), fc.constant(sameDate));
-          })
-          .map(([subject, other]) => [
-            subject,
-            'to be the same date as',
-            other,
-          ]),
+        generators: SyncDateGenerators.get(assertions.sameDateAssertion)!,
       },
     },
   ],
@@ -488,10 +338,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          todayDateGenerator,
-          fc.constantFrom(...extractPhrases(assertions.todayAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.todayAssertion)!,
       },
     },
   ],
@@ -506,10 +353,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          validDateLikeGenerator,
-          fc.constantFrom(...extractPhrases(assertions.validDateAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.validDateAssertion)!,
       },
     },
   ],
@@ -524,10 +368,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          weekdayDateGenerator,
-          fc.constantFrom(...extractPhrases(assertions.weekdayAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.weekdayAssertion)!,
       },
     },
   ],
@@ -542,10 +383,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
       },
       valid: {
-        generators: [
-          weekendDateGenerator,
-          fc.constantFrom(...extractPhrases(assertions.weekendAssertion)),
-        ],
+        generators: SyncDateGenerators.get(assertions.weekendAssertion)!,
       },
     },
   ],
@@ -576,16 +414,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           .map(([date, duration]) => [date, 'to be within', duration, 'ago']),
       },
       valid: {
-        generators: fc
-          .tuple(
-            fc.date({
-              max: new Date(Date.now() - 10000), // At least 10 seconds ago
-              min: new Date(Date.now() - 1800000), // 30 minutes ago
-              noInvalidDate: true,
-            }),
-            fc.constant('1 hour'),
-          )
-          .map(([date, duration]) => [date, 'to be within', duration, 'ago']),
+        generators: SyncDateGenerators.get(assertions.withinAgoAssertion)!,
       },
     },
   ],
@@ -616,19 +445,7 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ),
       },
       valid: {
-        generators: fc
-          .tuple(
-            fc
-              .integer({ max: 1800000, min: 1000 })
-              .map((offsetMs) => new Date(Date.now() + offsetMs)), // 1 second to 30 minutes from now
-            fc.constant('1 hour'),
-          )
-          .map(([date, duration]) => [
-            date,
-            'to be within',
-            duration,
-            'from now',
-          ]),
+        generators: SyncDateGenerators.get(assertions.withinFromNowAssertion)!,
       },
     },
   ],
@@ -660,7 +477,7 @@ describe('Date/Time assertions property tests', () => {
       'to exhaustively test collection',
       'SyncDateAssertions',
       'from',
-      allAssertions,
+      SyncDateAssertions,
     );
   });
 });

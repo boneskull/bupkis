@@ -5,6 +5,7 @@ import { describe, it } from 'node:test';
 import * as assertions from '../../src/assertion/impl/async-parametric.js';
 import { AsyncParametricAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
+import { AsyncParametricGenerators } from '../../test-data/async-parametric-generators.js';
 import { expect } from '../custom-assertions.js';
 import {
   type PropertyTestConfig,
@@ -61,21 +62,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc
-          .string({ maxLength: 9, minLength: 7 })
-          .map(safeRegexStringFilter)
-          .filter((message) => !!message.length)
-          .chain((str) =>
-            fc.tuple(
-              fc.constant(async () => str),
-              fc.constantFrom(
-                ...extractPhrases(
-                  assertions.functionFulfillWithValueSatisfyingAssertion,
-                ),
-              ),
-              fc.constant(str),
-            ),
-          ),
+        generators: AsyncParametricGenerators.get(
+          assertions.functionFulfillWithValueSatisfyingAssertion,
+        )!,
       },
     },
   ],
@@ -97,16 +86,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc.string().chain((expected) =>
-          fc.tuple(
-            fc.constant(async () => {
-              throw new Error(expected);
-            }),
-            fc.constantFrom(
-              ...extractPhrases(assertions.functionRejectAssertion),
-            ),
-          ),
-        ),
+        generators: AsyncParametricGenerators.get(
+          assertions.functionRejectAssertion,
+        )!,
       },
     },
   ],
@@ -151,30 +133,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc
-          .string({ maxLength: 5, minLength: 1 })
-          .map(safeRegexStringFilter)
-          .filter((actual) => !!actual.length)
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(async () => {
-                throw new Error(expected);
-              }),
-              fc.constantFrom(
-                ...extractPhrases(
-                  assertions.functionRejectWithErrorSatisfyingAssertion,
-                ),
-              ),
-              fc.oneof(
-                fc.constant(expected),
-                fc.constant(new RegExp(escapeStringRegexp(expected))),
-                fc.constant({ message: expected }),
-                fc.constant({
-                  message: new RegExp(escapeStringRegexp(expected)),
-                }),
-              ),
-            ),
-          ),
+        generators: AsyncParametricGenerators.get(
+          assertions.functionRejectWithErrorSatisfyingAssertion,
+        )!,
       },
     },
   ],
@@ -207,19 +168,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc
-          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
-          .chain((ErrorCtor) =>
-            fc.tuple(
-              fc.constant(async () => {
-                throw new ErrorCtor('error');
-              }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.functionRejectWithTypeAssertion),
-              ),
-              fc.constant(ErrorCtor),
-            ),
-          ),
+        generators: AsyncParametricGenerators.get(
+          assertions.functionRejectWithTypeAssertion,
+        )!,
       },
     },
   ],
@@ -240,12 +191,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(async () => 'success'),
-          fc.constantFrom(
-            ...extractPhrases(assertions.functionResolveAssertion),
-          ),
-        ],
+        generators: AsyncParametricGenerators.get(
+          assertions.functionResolveAssertion,
+        )!,
       },
     },
   ],
@@ -262,17 +210,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant({
-            then(
-              _resolve: (value: any) => void,
-              reject: (reason: any) => void,
-            ) {
-              reject(new Error('rejection'));
-            },
-          }),
-          fc.constantFrom(...extractPhrases(assertions.promiseRejectAssertion)),
-        ],
+        generators: AsyncParametricGenerators.get(
+          assertions.promiseRejectAssertion,
+        )!,
       },
     },
   ],
@@ -308,24 +248,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc.string().chain((message) =>
-          fc.tuple(
-            fc.constant({
-              then(
-                _resolve: (value: any) => void,
-                reject: (reason: any) => void,
-              ) {
-                reject(new Error(message));
-              },
-            }),
-            fc.constantFrom(
-              ...extractPhrases(
-                assertions.promiseRejectWithErrorSatisfyingAssertion,
-              ),
-            ),
-            fc.constant(message),
-          ),
-        ),
+        generators: AsyncParametricGenerators.get(
+          assertions.promiseRejectWithErrorSatisfyingAssertion,
+        )!,
       },
     },
   ],
@@ -363,24 +288,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc
-          .constantFrom(TypeError, ReferenceError, RangeError, SyntaxError)
-          .chain((ExpectedCtor) =>
-            fc.tuple(
-              fc.constant({
-                then(
-                  _resolve: (value: any) => void,
-                  reject: (reason: any) => void,
-                ) {
-                  reject(new ExpectedCtor('error'));
-                },
-              }),
-              fc.constantFrom(
-                ...extractPhrases(assertions.promiseRejectWithTypeAssertion),
-              ),
-              fc.constant(ExpectedCtor),
-            ),
-          ),
+        generators: AsyncParametricGenerators.get(
+          assertions.promiseRejectWithTypeAssertion,
+        )!,
       },
     },
   ],
@@ -406,12 +316,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: [
-          fc.constant(Promise.resolve('success')),
-          fc.constantFrom(
-            ...extractPhrases(assertions.promiseResolveAssertion),
-          ),
-        ],
+        generators: AsyncParametricGenerators.get(
+          assertions.promiseResolveAssertion,
+        )!,
       },
     },
   ],
@@ -458,22 +365,9 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         async: true,
-        generators: fc
-          .string({ maxLength: 20, minLength: 10 })
-          .chain((expected) =>
-            fc.tuple(
-              fc.constant(Promise.resolve(expected)),
-              fc.constantFrom(
-                ...extractPhrases(
-                  assertions.promiseResolveWithValueSatisfyingAssertion,
-                ),
-              ),
-              fc.oneof(
-                fc.constant(expected),
-                fc.constant(new RegExp(escapeStringRegexp(expected))),
-              ),
-            ),
-          ),
+        generators: AsyncParametricGenerators.get(
+          assertions.promiseResolveWithValueSatisfyingAssertion,
+        )!,
       },
     },
   ],
