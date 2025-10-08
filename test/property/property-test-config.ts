@@ -14,17 +14,25 @@ import type { Parameters } from 'fast-check';
 
 import { z } from 'zod/v4';
 
+export type GeneratorParams =
+  | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
+  | readonly [
+      subject: fc.Arbitrary<any>,
+      phrase: fc.Arbitrary<string>,
+      ...fc.Arbitrary<any>[],
+    ];
+
 export type InferPropertyTestConfigVariantAsyncProperty<T> =
   T extends PropertyTestConfigVariantAsyncProperty<infer U>
     ? PropertyTestConfigVariantAsyncProperty<U>
     : never;
-
 export type InferPropertyTestConfigVariantModel<
   T extends PropertyTestConfigVariant,
 > =
   T extends PropertyTestConfigVariantModel<infer M, infer R>
     ? PropertyTestConfigVariantModel<M, R>
     : never;
+
 export type InferPropertyTestConfigVariantProperty<T> =
   T extends PropertyTestConfigVariantProperty<infer U>
     ? PropertyTestConfigVariantProperty<U>
@@ -118,13 +126,7 @@ export interface PropertyTestConfigVariantProperty<T = any>
 
 export interface PropertyTestConfigVariantSyncGenerators
   extends PropertyTestConfigParameters {
-  generators:
-    | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
-    | readonly [
-        subject: fc.Arbitrary<any>,
-        phrase: fc.Arbitrary<string>,
-        ...fc.Arbitrary<any>[],
-      ];
+  generators: GeneratorParams;
 }
 
 // Shared schema for PropertyTestConfigParameters

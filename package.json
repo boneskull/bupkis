@@ -116,6 +116,9 @@
     "tape"
   ],
   "scripts": {
+    "bench": "tsx bench/index.ts",
+    "bench:dev": "tsx --watch bench/index.ts",
+    "bench:runner": "tsx bench/runner.ts",
     "build": "tshy",
     "build:dev": "tshy --watch",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
@@ -192,6 +195,7 @@
     "prettier-plugin-pkg": "0.21.2",
     "prettier-plugin-sort-json": "4.1.1",
     "serve": "14.2.5",
+    "tinybench": "2.9.0",
     "tshy": "3.0.3",
     "tsx": "4.20.6",
     "typedoc": "0.28.13",
@@ -225,6 +229,7 @@
     "node": {
       "entry": [
         ".config/typedoc-plugin-bupkis.js",
+        "bench/*.ts",
         "scripts/*.js",
         "scripts/*.ts",
         "test/**/*.test.ts",
