@@ -32,7 +32,13 @@ import {
   SyncParametricGenerators,
 } from '../test-data/index.js';
 import { type GeneratorParams } from '../test/property/property-test-config.js';
-import { DEFAULT_BENCH_CONFIG } from './config.js';
+import {
+  CI_BENCH_CONFIG,
+  colors,
+  COMPREHENSIVE_BENCH_CONFIG,
+  DEFAULT_BENCH_CONFIG,
+  QUICK_BENCH_CONFIG,
+} from './config.js';
 
 /**
  * Configuration for benchmark creation
@@ -55,7 +61,7 @@ const createEventHandlers = (benchmarkName: string) => {
   const taskTimeouts = new Map<string, NodeJS.Timeout>();
 
   const startHandler = () => {
-    console.log(`🏗️  Starting ${benchmarkName} benchmark...`);
+    // this function intentionally left blank
   };
 
   const cycleHandler = (evt: any) => {
@@ -75,12 +81,12 @@ const createEventHandlers = (benchmarkName: string) => {
       const [, assertionTitle, collection] = match;
       const opsPerSec = task.result?.hz?.toFixed(0) ?? '?';
       console.log(
-        `✓ \x1b[92m${assertionTitle}\x1b[0m \x1b[2m[${collection}]\x1b[0m: \x1b[33m${opsPerSec} ops/sec\x1b[0m`,
+        `✓ ${colors.dim}[${collection}]${colors.reset} ${colors.brightGreen}${assertionTitle}${colors.reset}: ${colors.yellow}${opsPerSec} ops/sec${colors.reset}`,
       );
     } else {
       // Fallback for unexpected format
       console.log(
-        `✓ ${task.name}: \x1b[33m${task.result?.hz?.toFixed(0) ?? '?'} ops/sec\x1b[0m`,
+        `✓ ${task.name}: ${colors.yellow}${task.result?.hz?.toFixed(0) ?? '?'} ops/sec${colors.reset}`,
       );
     }
   };
@@ -120,6 +126,14 @@ const createEventHandlers = (benchmarkName: string) => {
  */
 const createBenchmark = (config: BenchmarkConfig): Bench => {
   const bench = new Bench(DEFAULT_BENCH_CONFIG);
+  const filteredAssertions = config.assertions.filter(config.filter);
+
+  if (!filteredAssertions.length) {
+    console.log(
+      `ℹ️  No assertions matched the filter criteria. Skipping suite ${colors.yellow}${config.label}${colors.reset}`,
+    );
+    return bench;
+  }
   const handlers = createEventHandlers(config.name);
 
   // Set up event listeners
@@ -133,8 +147,9 @@ const createBenchmark = (config: BenchmarkConfig): Bench => {
     bench.removeEventListener('complete', handlers.completeHandler);
   });
 
-  const filteredAssertions = config.assertions.filter(config.filter);
-  console.log(`Benchmarking ${filteredAssertions.length} ${config.label}`);
+  console.log(
+    `⏱️  Benchmarking ${colors.brightCyan}${filteredAssertions.length}${colors.reset} ${colors.yellow}${config.label}${colors.reset}`,
+  );
 
   // Add benchmarks for each assertion
   for (const assertion of filteredAssertions) {
@@ -144,14 +159,12 @@ const createBenchmark = (config: BenchmarkConfig): Bench => {
       const testData = getTestDataForAssertion(assertion);
       const taskName = `${assertion} [${config.name}]`;
 
-      const task = bench.add(taskName, () =>
-        config.taskRunner(assertion, [...testData]),
-      );
+      bench.add(taskName, () => config.taskRunner(assertion, [...testData]));
 
       // Add timeout handling for individual tasks
-      task.addEventListener('start', () => {
-        handlers.createTaskTimeout(taskName);
-      });
+      // task.addEventListener('start', () => {
+      //   handlers.createTaskTimeout(taskName);
+      // });
     }
   }
 
@@ -209,7 +222,7 @@ const isAsyncFunctionAssertion = <T extends AnyAssertion>(
 /**
  * Type guard to check if assertion is an async schema-based implementation
  */
-const _isAsyncSchemaAssertion = <T extends AnyAssertion>(
+const isAsyncSchemaAssertion = <T extends AnyAssertion>(
   assertion: T,
 ): assertion is BupkisAssertionSchemaAsync<any, any, any> & T =>
   assertion instanceof BupkisAssertionSchemaAsync;
@@ -376,22 +389,219 @@ export const createAsyncFunctionAssertionsBench = (): Bench =>
     name: 'async-function',
     taskRunner: async (assertion, testData) => {
       try {
-        const phrase = getPrimaryPhrase(assertion);
-        if (!phrase) {
-          return;
-        }
-
-        // For async assertions, wrap the subject in a Promise
-        const promiseData = phrase.includes('reject')
-          ? Promise.reject(new Error(String(testData[0])))
-          : Promise.resolve(testData[0]);
-
-        // Create updated test data with the Promise as the first argument
-        const asyncTestData = [promiseData, ...testData.slice(1)];
-
-        await expectAsync(...asyncTestData);
+        await expectAsync(...testData);
       } catch (error) {
         warnUnexpectedException(assertion, error);
       }
     },
   });
+
+/**
+ * Create benchmarks for async schema-based assertions. Tests assertions that
+ * use Zod schemas for Promise validation.
+ */
+export const createAsyncSchemaAssertionsBench = (): Bench =>
+  createBenchmark({
+    assertions: AsyncAssertions,
+    filter: isAsyncSchemaAssertion,
+    label: 'async schema-based assertions',
+    name: 'async-schema',
+    taskRunner: async (assertion, testData) => {
+      try {
+        await expectAsync(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+
+/**
+ * Create benchmarks for basic type assertions using test data generators.
+ * Replaces the hardcoded createTypeAssertionsBench from suites.ts.
+ */
+export const createTypeAssertionsBench = (): Bench => {
+  // Filter for basic type checking assertions
+  const isBasicTypeAssertion = (assertion: AnyAssertion): boolean => {
+    const phrase = getPrimaryPhrase(assertion);
+    if (!phrase) {
+      return false;
+    }
+
+    return [
+      'to be a string',
+      'to be a number',
+      'to be a boolean',
+      'to be an array',
+      'to be an object',
+      'to be null',
+      'to be undefined',
+      'to be defined',
+      'to be a bigint',
+      'to be a date',
+      'to be a class',
+      'to be a function',
+      'to be an async function',
+    ].some((pattern) => phrase.includes(pattern));
+  };
+
+  return createBenchmark({
+    assertions: SyncAssertions,
+    filter: isBasicTypeAssertion,
+    label: 'basic type assertions',
+    name: 'type',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
+
+/**
+ * Create benchmarks for collection-based assertions using test data generators.
+ * Replaces the hardcoded createCollectionAssertionsBench from suites.ts.
+ */
+export const createCollectionAssertionsBench = (): Bench => {
+  // Filter for collection operations (arrays, objects, etc.)
+  const isCollectionAssertion = (assertion: AnyAssertion): boolean => {
+    const phrase = getPrimaryPhrase(assertion);
+    if (!phrase) {
+      return false;
+    }
+
+    return [
+      'to contain',
+      'to have key',
+      'to have length',
+      'to have size',
+      'to be empty',
+      'to have property',
+      'to include',
+    ].some((pattern) => phrase.includes(pattern));
+  };
+
+  return createBenchmark({
+    assertions: SyncAssertions,
+    filter: isCollectionAssertion,
+    label: 'collection assertions',
+    name: 'collection',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
+
+/**
+ * Create benchmarks for equality and comparison assertions using test data
+ * generators. Replaces the hardcoded createComparisonAssertionsBench from
+ * suites.ts.
+ */
+export const createComparisonAssertionsBench = (): Bench => {
+  // Filter for equality and comparison operations
+  const isComparisonAssertion = (assertion: AnyAssertion): boolean => {
+    const phrase = getPrimaryPhrase(assertion);
+    if (!phrase) {
+      return false;
+    }
+
+    return [
+      'to equal',
+      'to be greater than',
+      'to be less than',
+      'to be greater than or equal to',
+      'to be less than or equal to',
+      'to be close to',
+      'to deep equal',
+      'to satisfy',
+      'to satisfies',
+    ].some((pattern) => phrase.includes(pattern));
+  };
+
+  return createBenchmark({
+    assertions: SyncAssertions,
+    filter: isComparisonAssertion,
+    label: 'comparison assertions',
+    name: 'comparison',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
+
+/**
+ * Create benchmarks for pattern matching and regex assertions using test data
+ * generators. Replaces the hardcoded createPatternAssertionsBench from
+ * suites.ts.
+ */
+export const createPatternAssertionsBench = (): Bench => {
+  // Filter for pattern matching and string operations
+  const isPatternAssertion = (assertion: AnyAssertion): boolean => {
+    const phrase = getPrimaryPhrase(assertion);
+    if (!phrase) {
+      return false;
+    }
+
+    return [
+      'to match',
+      'to start with',
+      'to end with',
+      'to include',
+      'to be truthy',
+      'to be falsy',
+    ].some((pattern) => phrase.includes(pattern));
+  };
+
+  return createBenchmark({
+    assertions: SyncAssertions,
+    filter: isPatternAssertion,
+    label: 'pattern assertions',
+    name: 'pattern',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
+
+/**
+ * Configuration options for benchmark modes.
+ */
+export const BENCH_MODES = {
+  ci: CI_BENCH_CONFIG,
+  comprehensive: COMPREHENSIVE_BENCH_CONFIG,
+  default: DEFAULT_BENCH_CONFIG,
+  quick: QUICK_BENCH_CONFIG,
+} as const;
+
+export type BenchMode = keyof typeof BENCH_MODES;
+
+/**
+ * Run a specific benchmark suite.
+ */
+export const runBenchmarkSuite = async (
+  name: string,
+  createBench: (config?: any) => Bench,
+  mode: BenchMode = 'default',
+): Promise<Bench> => {
+  console.log(
+    `🔧 Running ${colors.yellow}${name}${colors.reset} benchmarks in ${colors.white}${mode}${colors.reset} mode…`,
+  );
+
+  const bench = createBench(BENCH_MODES[mode]);
+  await bench.run();
+
+  return bench;
+};

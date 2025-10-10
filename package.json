@@ -116,9 +116,8 @@
     "tape"
   ],
   "scripts": {
-    "bench": "tsx bench/index.ts",
-    "bench:dev": "tsx --watch bench/index.ts",
-    "bench:runner": "tsx bench/runner.ts",
+    "bench": "tsx bench/runner.ts",
+    "bench:dev": "tsx --watch bench/runner.ts",
     "build": "tshy",
     "build:dev": "tshy --watch",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",

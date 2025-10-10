@@ -7,48 +7,114 @@
  * and modes, useful for CI/CD and development.
  */
 
-import type { BenchMode } from './suites.js';
+import type { Task } from 'tinybench';
 
 import {
+  type BenchMode,
   createAsyncFunctionAssertionsBench,
+  createAsyncSchemaAssertionsBench,
   createSyncFunctionAssertionsBench,
   createSyncSchemaAssertionsBench,
-} from './comprehensive-suites.js';
-import {
-  createCollectionAssertionsBench,
-  createComparisonAssertionsBench,
-  createPatternAssertionsBench,
-  createTypeAssertionsBench,
   runBenchmarkSuite,
-} from './suites.js';
+} from './comprehensive-suites.js';
+import { colors, PERFORMANCE_THRESHOLDS } from './config.js';
 
-// // Handle SIGINT (Ctrl+C) and SIGTERM gracefully
-// let isShuttingDown = false;
+/**
+ * Helper function to format benchmark results for consistent output.
+ */
+export interface BenchmarkResult {
+  average: number;
+  max: number;
+  min: number;
+  name: string;
+  opsPerSec: number;
+  standardDeviation: number;
+}
 
-// const gracefulShutdown = (signal: string) => {
-//   if (isShuttingDown) {
-//     console.log('\n\n💀 \x1b[31mForce killing process...\x1b[0m');
-//     process.exit(1);
-//   }
+/**
+ * Extracts and formats benchmark results from tinybench tasks.
+ */
+export const formatResults = (tasks: Task[]): BenchmarkResult[] => {
+  return tasks.map((task) => {
+    const result = task.result;
+    if (!result) {
+      return {
+        average: 0,
+        max: 0,
+        min: 0,
+        name: task.name,
+        opsPerSec: 0,
+        standardDeviation: 0,
+      };
+    }
 
-//   isShuttingDown = true;
-//   console.log(
-//     `\n\n🛑 \x1b[33mBenchmark interrupted by ${signal} signal (Ctrl+C)\x1b[0m`,
-//   );
-//   console.log('🧹 \x1b[2mCleaning up and exiting...\x1b[0m');
+    return {
+      average: result.latency.mean,
+      max: result.latency.max,
+      min: result.latency.min,
+      name: task.name,
+      opsPerSec: Math.round(1000 / result.latency.mean),
+      standardDeviation: result.latency.sd,
+    };
+  });
+};
 
-//   // Give a brief moment for cleanup, then force exit
-//   setTimeout(() => {
-//     console.log('⚡ \x1b[31mForce exiting after timeout\x1b[0m');
-//     process.exit(1);
-//   }, 1000);
+/**
+ * Checks results against performance thresholds and returns warnings. Uses
+ * suite-based thresholds based on implementation patterns.
+ */
+export const checkPerformance = (
+  results: BenchmarkResult[],
+  thresholds: Record<string, number> = PERFORMANCE_THRESHOLDS,
+): { passed: boolean; warnings: string[] } => {
+  const warnings: string[] = [];
 
-//   process.exit(0);
-// };
+  for (const result of results) {
+    // Extract suite name from task name (format: "assertion [suite-name]")
+    const suiteMatch = result.name.match(/\[(.+?)\]$/);
+    const suiteName = suiteMatch?.[1];
+
+    if (!suiteName || !(suiteName in thresholds)) {
+      // Skip if we can't determine the suite or don't have a threshold for it
+      continue;
+    }
+
+    const threshold = thresholds[suiteName];
+
+    if (threshold === undefined) {
+      // Skip if we don't have a threshold for this suite
+      continue;
+    }
+
+    // Check if ops/sec is below the threshold (performance issue)
+    if (result.opsPerSec < threshold) {
+      // Parse the assertion name to separate the assertion string from the group
+      const groupMatch = result.name.match(/^(.+?)(\s+\[.+?\])$/);
+      if (groupMatch) {
+        const [, assertionString, group] = groupMatch;
+        warnings.push(
+          `${colors.dim}${group}${colors.reset} ${colors.brightGreen}${assertionString}${colors.reset}: ${colors.yellow}${result.opsPerSec}${colors.reset}/${colors.brightWhite}${threshold}${colors.reset} ops/sec${colors.reset}`,
+        );
+      } else {
+        // Fallback for unexpected name format
+        warnings.push(
+          `${colors.brightGreen}${result.name}${colors.reset}: ${colors.yellow}${result.opsPerSec} ops/sec${colors.reset} ${colors.brightWhite}(below threshold: ${colors.yellow}${threshold} ops/sec${colors.brightWhite})${colors.reset}`,
+        );
+      }
+    }
+  }
+
+  return {
+    passed: warnings.length === 0,
+    warnings,
+  };
+};
 
 interface RunnerOptions {
+  checkPerformance: boolean;
   mode: BenchMode;
   suites: string[];
+  table: boolean;
 }
 
 /**
@@ -56,13 +122,13 @@ interface RunnerOptions {
  */
 const AVAILABLE_SUITES = {
   all: 'Run all benchmark suites',
-  'async-function': 'Async function-based assertions',
-  collection: 'Array and object assertions',
-  comparison: 'Equality and comparison assertions',
-  pattern: 'Pattern matching and regex assertions',
-  'sync-function': 'Sync function-based assertions',
-  'sync-schema': 'Sync schema-based assertions',
-  type: 'Basic type checking assertions',
+  'async-function':
+    'Async function-based assertions (promise validation with callbacks)',
+  'async-schema':
+    'Async schema-based assertions (promise validation with schemas)',
+  'sync-function':
+    'Sync function-based assertions (validation with callback functions)',
+  'sync-schema': 'Sync schema-based assertions (validation with Zod schemas)',
 } as const;
 
 /**
@@ -73,6 +139,8 @@ const parseArgs = (): RunnerOptions => {
 
   let mode: BenchMode = 'default';
   let suites: string[] = ['all'];
+  let checkPerformance = false;
+  let table = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -97,13 +165,17 @@ const parseArgs = (): RunnerOptions => {
         suites.push(suite);
       }
       i++; // Skip next arg since we consumed it
+    } else if (arg === '--check') {
+      checkPerformance = true;
+    } else if (arg === '--table') {
+      table = true;
     } else if (arg === '--help') {
       printHelp();
       process.exit(0);
     }
   }
 
-  return { mode, suites };
+  return { checkPerformance, mode, suites, table };
 };
 
 /**
@@ -116,20 +188,22 @@ Bupkis Benchmark Runner
 Usage: npm run bench:runner [options]
 
 Options:
-  --mode <mode>     Benchmark mode: quick, default, comprehensive, ci (default: default)
-  --suite <suite>   Specific suite to run (can be used multiple times)
-  --help           Show this help message
+  --mode <mode>           Benchmark mode: quick, default, comprehensive, ci (default: default)
+  --suite <suite>         Specific suite to run (can be used multiple times)
+  --check                 Check benchmark results against performance thresholds
+  --table                 Output results in table format
+  --help                  Show this help message
 
 Available suites:
 ${Object.entries(AVAILABLE_SUITES)
-  .map(([key, desc]) => `  ${key.padEnd(12)} ${desc}`)
+  .map(([key, desc]) => `  ${key.padEnd(15)} ${desc}`)
   .join('\n')}
 
 Examples:
   npm run bench:runner
   npm run bench:runner -- --mode quick
-  npm run bench:runner -- --suite type --suite collection
-  npm run bench:runner -- --mode comprehensive --suite pattern
+  npm run bench:runner -- --suite sync-function --suite async-function
+  npm run bench:runner -- --mode comprehensive --check
   `);
 };
 
@@ -137,107 +211,115 @@ Examples:
  * Run the specified benchmark suites.
  */
 const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
-  console.log('🚀 Bupkis Performance Benchmark Runner');
-  console.log(`Mode: ${options.mode}`);
-  console.log(`Suites: ${options.suites.join(', ')}`);
+  console.log('🚀 Bupkis Performance Benchmark Runner\n');
+
+  if (options.checkPerformance) {
+    console.log('🔍 Performance checking enabled');
+  }
 
   const startTime = Date.now();
-
-  const suites: Promise<void>[] = [];
+  const benchResults: BenchmarkResult[] = [];
+  const tables: Array<
+    [
+      name: string,
+      results: Array<null | Record<string, number | string | undefined>>,
+    ]
+  > = [];
 
   try {
-    if (options.suites.includes('all') || options.suites.includes('type')) {
-      suites.push(
-        runBenchmarkSuite(
-          'Type Assertions',
-          createTypeAssertionsBench,
-          options.mode,
-        ),
-      );
-    }
-
-    if (
-      options.suites.includes('all') ||
-      options.suites.includes('collection')
-    ) {
-      suites.push(
-        runBenchmarkSuite(
-          'Collection Assertions',
-          createCollectionAssertionsBench,
-          options.mode,
-        ),
-      );
-    }
-
-    if (
-      options.suites.includes('all') ||
-      options.suites.includes('comparison')
-    ) {
-      suites.push(
-        runBenchmarkSuite(
-          'Comparison Assertions',
-          createComparisonAssertionsBench,
-          options.mode,
-        ),
-      );
-    }
-
-    if (options.suites.includes('all') || options.suites.includes('pattern')) {
-      suites.push(
-        runBenchmarkSuite(
-          'Pattern Assertions',
-          createPatternAssertionsBench,
-          options.mode,
-        ),
-      );
-    }
-
-    // New comprehensive assertion benchmarks grouped by implementation
+    // Implementation-based assertion benchmarks grouped by execution strategy
     if (
       options.suites.includes('all') ||
       options.suites.includes('sync-function')
     ) {
-      suites.push(
-        runBenchmarkSuite(
-          'Sync Function-based Assertions',
-          createSyncFunctionAssertionsBench,
-          options.mode,
-        ),
+      const bench = await runBenchmarkSuite(
+        'Sync Function-based Assertions',
+        createSyncFunctionAssertionsBench,
+        options.mode,
       );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Sync Function-based Assertions', bench.table()]);
+      }
     }
 
     if (
       options.suites.includes('all') ||
       options.suites.includes('sync-schema')
     ) {
-      suites.push(
-        runBenchmarkSuite(
-          'Sync Schema-based Assertions',
-          createSyncSchemaAssertionsBench,
-          options.mode,
-        ),
+      const bench = await runBenchmarkSuite(
+        'Sync Schema-based Assertions',
+        createSyncSchemaAssertionsBench,
+        options.mode,
       );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Sync Schema-based Assertions', bench.table()]);
+      }
     }
 
     if (
       options.suites.includes('all') ||
       options.suites.includes('async-function')
     ) {
-      suites.push(
-        runBenchmarkSuite(
-          'Async Function-based Assertions',
-          createAsyncFunctionAssertionsBench,
-          options.mode,
-        ),
+      const bench = await runBenchmarkSuite(
+        'Async Function-based Assertions',
+        createAsyncFunctionAssertionsBench,
+        options.mode,
       );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Async Function-based Assertions', bench.table()]);
+      }
     }
 
-    await Promise.all(suites);
+    if (
+      options.suites.includes('all') ||
+      options.suites.includes('async-schema')
+    ) {
+      const bench = await runBenchmarkSuite(
+        'Async Schema-based Assertions',
+        createAsyncSchemaAssertionsBench,
+        options.mode,
+      );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Async Schema-based Assertions', bench.table()]);
+      }
+    }
 
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
 
     console.log(`\n✅ All benchmarks completed in ${duration.toFixed(2)}s`);
+
+    if (options.table && tables.length) {
+      for (const [name, table] of tables) {
+        console.log(`\n📊 ${name} Results:`);
+        console.table(table);
+      }
+    }
+
+    // Performance checking
+    if (options.checkPerformance && benchResults.length > 0) {
+      console.log('\n🔍 Checking performance against thresholds...');
+      const performanceCheck = checkPerformance(benchResults);
+
+      if (performanceCheck.passed) {
+        console.log('✅ All benchmarks meet performance thresholds');
+      } else {
+        console.log('\n⚠️  Performance warnings:');
+        for (const warning of performanceCheck.warnings) {
+          console.log(`  ${warning}`);
+        }
+
+        // Exit with error code in CI mode if performance check fails
+        if (options.mode === 'ci') {
+          console.log('\n❌ Performance thresholds not met in CI mode');
+          process.exit(1);
+        }
+      }
+    }
   } catch (error) {
     console.error('\n❌ Benchmark failed:', error);
     process.exit(1);
@@ -252,8 +334,5 @@ const main = async (): Promise<void> => {
 
 // Run if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
+  void main();
 }
