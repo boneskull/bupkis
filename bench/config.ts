@@ -5,7 +5,7 @@
  * benchmark suites.
  */
 
-import type { BenchOptions, Task } from 'tinybench';
+import type { BenchOptions } from 'tinybench';
 
 /**
  * Default benchmark configuration optimized for assertion testing.
@@ -43,136 +43,33 @@ export const COMPREHENSIVE_BENCH_CONFIG: BenchOptions = {
  */
 export const CI_BENCH_CONFIG: BenchOptions = {
   iterations: 30,
-  // Longer settling time for virtualized environments
-  setup: () => new Promise((resolve) => setTimeout(resolve, 100)),
   time: 1000,
   warmupIterations: 5,
   warmupTime: 100,
 };
 
 /**
- * Performance thresholds for different types of assertions (in milliseconds).
+ * Performance thresholds for different implementation types (in ops/sec). Based
+ * on the new implementation-pattern-based suite organization.
  */
 export const PERFORMANCE_THRESHOLDS = {
-  basic: 1.0, // Basic type checks
-  collection: 2.0, // Array/object operations
-  comparison: 1.5, // Equality, inequality assertions
-  complex: 5.0, // Complex nested operations
-  regex: 3.0, // Regular expression matching
+  'async-function': 15000, // Async function-based assertions (promise validation with callbacks)
+  'async-schema': 15000, // Async schema-based assertions (promise validation with schemas)
+  'sync-function': 1000, // Sync function-based assertions (validation with callback functions)
+  'sync-schema': 1500, // Sync schema-based assertions (validation with Zod schemas)
 } as const;
 
 /**
- * Test data generators for consistent benchmarking.
+ * ANSI color codes for terminal output formatting.
  */
-export const TEST_DATA = {
-  deepObject: () => ({
-    level1: {
-      level2: {
-        level3: {
-          level4: {
-            value: 'deep value',
-          },
-        },
-      },
-    },
-  }),
-
-  largeArray: (size = 1000) => Array.from({ length: size }, (_, i) => i),
-
-  mixedArray: () => [1, 'string', true, null, { key: 'value' }],
-
-  nestedObject: () => ({
-    user: {
-      emails: ['user@example.com', 'user@work.com'],
-      id: 123,
-      name: 'Test User',
-      settings: { notifications: true, theme: 'dark' },
-    },
-  }),
-
-  simpleObject: () => ({ a: 1, b: 2, c: 3 }),
-
-  stringArray: () => ['apple', 'banana', 'cherry', 'date', 'elderberry'],
+export const colors = {
+  bright: '\x1b[1m',
+  brightCyan: '\x1b[1m\x1b[36m',
+  brightGreen: '\x1b[1m\x1b[32m',
+  brightWhite: '\x1b[1m\x1b[37m',
+  dim: '\x1b[2m',
+  green: '\x1b[32m',
+  reset: '\x1b[0m',
+  white: '\x1b[37m',
+  yellow: '\x1b[33m',
 } as const;
-
-/**
- * Helper function to format benchmark results for consistent output.
- */
-export interface BenchmarkResult {
-  average: number;
-  max: number;
-  min: number;
-  name: string;
-  opsPerSec: number;
-  standardDeviation: number;
-}
-
-/**
- * Extracts and formats benchmark results from tinybench tasks.
- */
-export const formatResults = (tasks: Task[]): BenchmarkResult[] => {
-  return tasks.map((task) => {
-    const result = task.result;
-    if (!result) {
-      return {
-        average: 0,
-        max: 0,
-        min: 0,
-        name: task.name,
-        opsPerSec: 0,
-        standardDeviation: 0,
-      };
-    }
-
-    return {
-      average: result.latency.mean,
-      max: result.latency.max,
-      min: result.latency.min,
-      name: task.name,
-      opsPerSec: Math.round(1000 / result.latency.mean),
-      standardDeviation: result.latency.sd,
-    };
-  });
-};
-
-/**
- * Checks results against performance thresholds and returns warnings.
- */
-export const checkPerformance = (
-  results: BenchmarkResult[],
-  thresholds: Record<string, number> = PERFORMANCE_THRESHOLDS,
-): { passed: boolean; warnings: string[] } => {
-  const warnings: string[] = [];
-
-  for (const result of results) {
-    // Simple heuristic to categorize benchmark types
-    let threshold = thresholds.basic;
-
-    if (result.name.includes('complex') || result.name.includes('nested')) {
-      threshold = thresholds.complex;
-    } else if (
-      result.name.includes('array') ||
-      result.name.includes('object')
-    ) {
-      threshold = thresholds.collection;
-    } else if (result.name.includes('match') || result.name.includes('regex')) {
-      threshold = thresholds.regex;
-    } else if (
-      result.name.includes('equal') ||
-      result.name.includes('comparison')
-    ) {
-      threshold = thresholds.comparison;
-    }
-
-    if (threshold !== undefined && result.average > threshold) {
-      warnings.push(
-        `${result.name}: ${result.average.toFixed(2)}ms (threshold: ${threshold}ms)`,
-      );
-    }
-  }
-
-  return {
-    passed: warnings.length === 0,
-    warnings,
-  };
-};
