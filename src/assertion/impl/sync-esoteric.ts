@@ -13,7 +13,11 @@
 import { z } from 'zod/v4';
 
 import { isNonNullObject } from '../../guards.js';
-import { DictionarySchema, PropertyKeySchema } from '../../schema.js';
+import {
+  DictionarySchema,
+  PropertyKeySchema,
+  UnknownSchema,
+} from '../../schema.js';
 import { createAssertion } from '../create.js';
 
 const { getOwnPropertyDescriptor, isExtensible, isFrozen, isSealed } = Object;
@@ -160,7 +164,7 @@ export const enumerablePropertyAssertion2 = createAssertion(
  */
 export const sealedAssertion = createAssertion(
   ['to be sealed'],
-  z.any().refine((obj) => isSealed(obj)),
+  UnknownSchema.refine((obj) => isSealed(obj)),
 );
 
 /**
@@ -235,5 +239,5 @@ export const frozenAssertion = createAssertion(['to be frozen'], (subject) => {
  */
 export const extensibleAssertion = createAssertion(
   ['to be extensible'],
-  z.any().refine((obj) => isExtensible(obj)),
+  UnknownSchema.refine((obj) => isExtensible(obj)),
 );

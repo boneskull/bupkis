@@ -18,12 +18,28 @@ import { BupkisRegistry } from '../../metadata.js';
 import {
   ArrayLikeSchema,
   AsyncFunctionSchema,
+  BigintSchema,
+  BooleanSchema,
   ConstructibleSchema,
+  DateSchema,
+  ErrorSchema,
   FalsySchema,
   FunctionSchema,
+  InfinitySchema,
+  NegativeInfinitySchema,
+  NegativeNumberSchema,
+  NumberSchema,
+  PositiveNumberSchema,
   PrimitiveSchema,
-  PropertyKeySchema,
+  SetSchema,
+  StringSchema,
+  SymbolSchema,
   TruthySchema,
+  UnknownArraySchema,
+  UnknownRecordSchema,
+  UnknownSchema,
+  WeakMapSchema,
+  WeakSetSchema,
 } from '../../schema.js';
 import { createAssertion } from '../create.js';
 
@@ -43,7 +59,10 @@ const { ownKeys } = Reflect;
  * @bupkisAnchor unknown-to-be-a-string
  * @bupkisAssertionCategory primitives
  */
-export const stringAssertion = createAssertion(['to be a string'], z.string());
+export const stringAssertion = createAssertion(
+  ['to be a string'],
+  StringSchema,
+);
 
 /**
  * Asserts that the subject is a finite number value.
@@ -60,7 +79,7 @@ export const stringAssertion = createAssertion(['to be a string'], z.string());
  */
 export const numberAssertion = createAssertion(
   [['to be a number', 'to be finite']],
-  z.number(),
+  NumberSchema,
 );
 
 /**
@@ -78,7 +97,7 @@ export const numberAssertion = createAssertion(
  */
 export const infiniteAssertion = createAssertion(
   ['to be infinite'],
-  z.literal(Infinity).or(z.literal(-Infinity)),
+  InfinitySchema.or(NegativeInfinitySchema),
 );
 
 /**
@@ -95,7 +114,7 @@ export const infiniteAssertion = createAssertion(
  */
 export const positiveInfinityAssertion = createAssertion(
   ['to be Infinity'],
-  z.literal(Infinity),
+  InfinitySchema,
 );
 
 /**
@@ -112,7 +131,7 @@ export const positiveInfinityAssertion = createAssertion(
  */
 export const negativeInfinityAssertion = createAssertion(
   ['to be -Infinity'],
-  z.literal(-Infinity),
+  NegativeInfinitySchema,
 );
 
 /**
@@ -129,7 +148,7 @@ export const negativeInfinityAssertion = createAssertion(
  */
 export const booleanAssertion = createAssertion(
   [['to be a boolean', 'to be boolean', 'to be a bool']],
-  z.boolean(),
+  BooleanSchema,
 );
 
 /**
@@ -147,7 +166,7 @@ export const booleanAssertion = createAssertion(
  */
 export const positiveAssertion = createAssertion(
   [['to be positive', 'to be a positive number']],
-  z.number().positive(),
+  PositiveNumberSchema,
 );
 
 /**
@@ -165,7 +184,7 @@ export const positiveAssertion = createAssertion(
  */
 export const positiveIntegerAssertion = createAssertion(
   [['to be a positive integer', 'to be a positive int']],
-  z.number().int().positive(),
+  PositiveNumberSchema.int(),
 );
 
 /**
@@ -183,7 +202,7 @@ export const positiveIntegerAssertion = createAssertion(
  */
 export const negativeAssertion = createAssertion(
   [['to be negative', 'to be a negative number']],
-  z.number().negative(),
+  NegativeNumberSchema,
 );
 
 /**
@@ -201,7 +220,7 @@ export const negativeAssertion = createAssertion(
  */
 export const negativeIntegerAssertion = createAssertion(
   [['to be a negative integer', 'to be a negative int']],
-  z.number().int().negative(),
+  NegativeNumberSchema.int(),
 );
 
 /**
@@ -251,7 +270,7 @@ export const falseAssertion = createAssertion(
  */
 export const bigintAssertion = createAssertion(
   [['to be a bigint', 'to be a BigInt']],
-  z.bigint(),
+  BigintSchema,
 );
 
 /**
@@ -268,7 +287,7 @@ export const bigintAssertion = createAssertion(
  */
 export const symbolAssertion = createAssertion(
   [['to be a symbol', 'to be a Symbol']],
-  z.symbol(),
+  SymbolSchema,
 );
 
 /**
@@ -341,7 +360,7 @@ export const integerAssertion = createAssertion(
       'to be a safe int',
     ],
   ],
-  z.number().int(),
+  NumberSchema.int(),
 );
 
 /**
@@ -389,7 +408,7 @@ export const undefinedAssertion = createAssertion(
  */
 export const arrayAssertion = createAssertion(
   [['to be an array', 'to be array']],
-  z.array(z.any()),
+  UnknownArraySchema,
 );
 
 /**
@@ -406,7 +425,7 @@ export const arrayAssertion = createAssertion(
  */
 export const dateAssertion = createAssertion(
   [['to be a date', 'to be a Date']],
-  z.date(),
+  DateSchema,
 );
 
 /**
@@ -509,7 +528,7 @@ export const falsyAssertion = createAssertion(['to be falsy'], FalsySchema);
 export const objectAssertion = createAssertion(
   ['to be an object'],
   z
-    .any()
+    .unknown()
     .nonoptional()
     .refine((value) => typeof value == 'object' && value !== null)
     .describe(
@@ -533,7 +552,7 @@ export const objectAssertion = createAssertion(
  */
 export const recordAssertion = createAssertion(
   [['to be a record', 'to be a plain object']],
-  z.record(PropertyKeySchema, z.unknown()),
+  UnknownRecordSchema,
 );
 
 /**
@@ -574,8 +593,8 @@ export const emptyArrayAssertion = createAssertion(
  * @group Basic Assertions
  */
 export const emptyObjectAssertion = createAssertion(
-  [z.record(z.any(), z.unknown()), 'to be empty'],
-  z.record(z.any(), z.unknown()).refine((obj) => ownKeys(obj).length === 0),
+  [UnknownRecordSchema, 'to be empty'],
+  UnknownRecordSchema.refine((obj) => ownKeys(obj).length === 0),
 );
 
 /**
@@ -592,7 +611,7 @@ export const emptyObjectAssertion = createAssertion(
  */
 export const errorAssertion = createAssertion(
   [['to be an Error', 'to be a Error']],
-  z.instanceof(Error),
+  ErrorSchema,
 );
 
 /**
@@ -608,8 +627,8 @@ export const errorAssertion = createAssertion(
  * @group Basic Assertions
  */
 export const emptyStringAssertion = createAssertion(
-  [z.string(), 'to be empty'],
-  z.string().max(0),
+  [StringSchema, 'to be empty'],
+  StringSchema.max(0),
 );
 
 /**
@@ -625,8 +644,8 @@ export const emptyStringAssertion = createAssertion(
  * @group Basic Assertions
  */
 export const nonEmptyStringAssertion = createAssertion(
-  [z.string(), 'to be non-empty'],
-  z.string().min(1),
+  [StringSchema, 'to be non-empty'],
+  StringSchema.min(1),
 );
 
 /**
@@ -643,7 +662,7 @@ export const nonEmptyStringAssertion = createAssertion(
  */
 export const definedAssertion = createAssertion(
   ['to be defined'],
-  z.unknown().nonoptional(),
+  UnknownSchema.nonoptional(),
 );
 
 /**
@@ -658,10 +677,7 @@ export const definedAssertion = createAssertion(
  *
  * @group Basic Assertions
  */
-export const setAssertion = createAssertion(
-  ['to be a Set'],
-  z.set(z.unknown()),
-);
+export const setAssertion = createAssertion(['to be a Set'], SetSchema);
 
 /**
  * Asserts that the subject is a WeakMap instance.
@@ -677,7 +693,7 @@ export const setAssertion = createAssertion(
  */
 export const weakMapAssertion = createAssertion(
   ['to be a WeakMap'],
-  z.instanceof(WeakMap),
+  WeakMapSchema,
 );
 
 /**
@@ -694,5 +710,5 @@ export const weakMapAssertion = createAssertion(
  */
 export const weakSetAssertion = createAssertion(
   ['to be a WeakSet'],
-  z.instanceof(WeakSet),
+  WeakSetSchema,
 );

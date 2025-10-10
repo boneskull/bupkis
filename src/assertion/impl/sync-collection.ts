@@ -30,6 +30,9 @@ import {
   NonNegativeIntegerSchema,
   PropertyKeySchema,
   SetSchema,
+  UnknownArraySchema,
+  UnknownRecordSchema,
+  UnknownSchema,
 } from '../../schema.js';
 import { has } from '../../util.js';
 import { createAssertion } from '../create.js';
@@ -57,7 +60,7 @@ const { hasOwn, keys } = Object;
  * @bupkisAssertionCategory collections
  */
 export const mapContainsAssertion = createAssertion(
-  [AnyMapSchema, ['to contain', 'to include'], z.unknown()],
+  [AnyMapSchema, ['to contain', 'to include'], UnknownSchema],
   (subject, key) => {
     // WeakMap.has only works with object or symbol keys
     let hasKey: boolean;
@@ -123,9 +126,9 @@ export const mapSizeAssertion = createAssertion(
  */
 export const emptyMapAssertion = createAssertion(
   [MapSchema, 'to be empty'],
-  z
-    .map(z.unknown(), z.unknown())
-    .refine((map) => map.size === 0, { error: 'Expected Map to be empty' }),
+  MapSchema.refine((map) => map.size === 0, {
+    error: 'Expected Map to be empty',
+  }),
 );
 
 /**
@@ -149,7 +152,7 @@ export const emptyMapAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const setContainsAssertion = createAssertion(
-  [AnySetSchema, ['to contain', 'to include'], z.unknown()],
+  [AnySetSchema, ['to contain', 'to include'], UnknownSchema],
   (subject, value) => {
     // WeakSet.has only works with object or symbol values
     if (subject instanceof WeakSet && !isWeakKey(value)) {
@@ -214,7 +217,9 @@ export const setSizeAssertion = createAssertion(
  */
 export const emptySetAssertion = createAssertion(
   [SetSchema, 'to be empty'],
-  z.set(z.unknown()).max(0, { error: 'Expected Set to be empty' }),
+  SetSchema.refine(({ size }) => size === 0, {
+    error: 'Expected Set to be empty',
+  }),
 );
 
 /**
@@ -232,7 +237,7 @@ export const emptySetAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const arrayContainsAssertion = createAssertion(
-  [z.array(z.unknown()), ['to contain', 'to include'], z.unknown()],
+  [UnknownArraySchema, ['to contain', 'to include'], UnknownSchema],
   (subject, value) => {
     if (!subject.includes(value)) {
       return {
@@ -258,19 +263,16 @@ export const arrayContainsAssertion = createAssertion(
  */
 export const arraySizeAssertion = createAssertion(
   [
-    z.array(z.unknown()),
+    UnknownArraySchema,
     ['to have length', 'to have size'],
     NonNegativeIntegerSchema,
   ],
   (_subject, expectedSize) =>
-    z
-      .array(z.unknown())
-      .min(expectedSize, {
-        error: `Expected array to have size ${expectedSize}}`,
-      })
-      .max(expectedSize, {
-        error: `Expected array to have size ${expectedSize}}`,
-      }),
+    UnknownArraySchema.min(expectedSize, {
+      error: `Expected array to have size ${expectedSize}}`,
+    }).max(expectedSize, {
+      error: `Expected array to have size ${expectedSize}}`,
+    }),
 );
 
 /**
@@ -288,8 +290,8 @@ export const arraySizeAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const nonEmptyArrayAssertion = createAssertion(
-  [z.array(z.unknown()), 'to be non-empty'],
-  z.array(z.unknown()).min(1, { error: 'Expected array to be non-empty' }),
+  [UnknownArraySchema, 'to be non-empty'],
+  UnknownArraySchema.min(1, { error: 'Expected array to be non-empty' }),
 );
 
 /**
@@ -463,7 +465,7 @@ export const objectExactKeyAssertion = createAssertion(
  * @bupkisAssertionCategory object
  */
 export const objectSizeAssertion = createAssertion(
-  [z.looseObject({}), 'to have size', NonNegativeIntegerSchema],
+  [UnknownRecordSchema, 'to have size', NonNegativeIntegerSchema],
   (subject, expectedSize) => {
     const actual = keys(subject).length;
     if (actual !== expectedSize) {
@@ -713,7 +715,7 @@ export const setSymmetricDifferenceEqualityAssertion = createAssertion(
  * @bupkisAssertionCategory collections
  */
 export const mapKeyAssertion = createAssertion(
-  [MapSchema, 'to have key', z.unknown()],
+  [MapSchema, 'to have key', UnknownSchema],
   (map, key) => {
     if (!map.has(key)) {
       return {
@@ -744,7 +746,7 @@ export const mapValueAssertion = createAssertion(
   [
     MapSchema,
     ['to have value', 'to contain value', 'to include value'],
-    z.unknown(),
+    UnknownSchema,
   ],
   (map, value) => {
     for (const mapValue of map.values()) {
@@ -786,7 +788,7 @@ export const mapEntryAssertion = createAssertion(
       'to include entry',
       'to include key/value pair',
     ],
-    z.tuple([z.unknown(), z.unknown()]),
+    z.tuple([UnknownSchema, UnknownSchema]),
   ],
   (map, [key, value]) => {
     // WeakMap operations only work with object or symbol keys
@@ -943,7 +945,7 @@ export const collectionSizeBetweenAssertion = createAssertion(
   [
     z.union([MapSchema, SetSchema]),
     'to have size between',
-    z.tuple([z.number(), z.number()]),
+    z.tuple([NonNegativeIntegerSchema, NonNegativeIntegerSchema]),
   ],
   (collection, [min, max]) => {
     const size = collection.size;

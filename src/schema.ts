@@ -1140,6 +1140,11 @@ export const MapSchema = z
   .register(BupkisRegistry, { name: 'map' })
   .describe('A Map instance');
 
+export const WeakMapSchema = z
+  .instanceof(WeakMap)
+  .register(BupkisRegistry, { name: 'weakmap' })
+  .describe('A WeakMap instance');
+
 /**
  * Schema that matches either `Map` or `WeakMap` instances.
  *
@@ -1183,6 +1188,152 @@ export const MapSchema = z
  *
  * @group Schema
  */
-export const AnyMapSchema = MapSchema.or(z.instanceof(WeakMap))
+export const AnyMapSchema = MapSchema.or(WeakMapSchema)
   .register(BupkisRegistry, { name: 'map-or-weakmap' })
   .describe('A Map or WeakMap instance');
+
+export const StringSchema = z
+  .string()
+  .register(BupkisRegistry, { name: 'string' })
+  .describe('A string');
+export const NumberSchema = z
+  .number()
+  .register(BupkisRegistry, { name: 'number' })
+  .describe('A number');
+
+export const InfinitySchema = z
+  .literal(Infinity)
+  .register(BupkisRegistry, { name: 'infinity' })
+  .describe('The number Infinity');
+
+export const NegativeInfinitySchema = z
+  .literal(-Infinity)
+  .register(BupkisRegistry, { name: 'negative-infinity' })
+  .describe('The number -Infinity');
+
+export const BooleanSchema = z
+  .boolean()
+  .register(BupkisRegistry, { name: 'boolean' })
+  .describe('A boolean');
+
+export const PositiveNumberSchema = z
+  .number()
+  .positive()
+  .describe('A positive number')
+  .register(BupkisRegistry, { name: 'positive-number' });
+
+export const NegativeNumberSchema = z
+  .number()
+  .negative()
+  .describe('A negative number')
+  .register(BupkisRegistry, { name: 'negative-number' });
+
+export const BigintSchema = z
+  .bigint()
+  .register(BupkisRegistry, { name: 'bigint' })
+  .describe('A bigint');
+
+export const SymbolSchema = z
+  .symbol()
+  .register(BupkisRegistry, { name: 'symbol' })
+  .describe('A symbol');
+export const UnknownSchema = z
+  .unknown()
+  .register(BupkisRegistry, { name: 'unknown' })
+  .describe('Unknown value');
+
+export const UnknownArraySchema = z
+  .array(UnknownSchema)
+  .register(BupkisRegistry, { name: 'unknown-array' })
+  .describe('An array of unknown values');
+
+export const DateSchema = z
+  .date()
+  .register(BupkisRegistry, { name: 'date' })
+  .describe('A Date');
+
+export const UnknownRecordSchema = z
+  .record(PropertyKeySchema, UnknownSchema)
+  .register(BupkisRegistry, { name: 'record' })
+  .describe('A record with unknown values and property keys');
+
+export const ErrorSchema = z
+  .instanceof(Error)
+  .register(BupkisRegistry, { name: 'error' })
+  .describe('An Error instance');
+
+export const RegexpSchema = z
+  .instanceof(RegExp)
+  .register(BupkisRegistry, { name: 'regexp' })
+  .describe('A RegExp instance');
+
+export const NullSchema = z
+  .null()
+  .register(BupkisRegistry, { name: 'null' })
+  .describe('Null');
+
+export const UndefinedSchema = z
+  .undefined()
+  .register(BupkisRegistry, { name: 'undefined' })
+  .describe('Undefined');
+
+export const WeakSetSchema = z
+  .instanceof(WeakSet)
+  .register(BupkisRegistry, { name: 'weakset' })
+  .describe('A WeakSet instance');
+
+export const WeakRefSchema = z
+  .instanceof(WeakRef)
+  .register(BupkisRegistry, { name: 'weakref' })
+  .describe('A WeakRef instance');
+
+export const AnyObjectSchema = z
+  .looseObject({})
+  .register(BupkisRegistry, { name: 'object' })
+  .describe('An object with unknown properties');
+
+/**
+ * Memoizes {@link createErrorMessageSchema}
+ */
+const errorMessageSchemaCache = new Map<string, z.ZodType>();
+
+/**
+ * Memoizes {@link createErrorMessageRegexSchema}
+ */
+const errorMessageRegexSchemaCache = new WeakMap<RegExp, z.ZodType>();
+
+/**
+ * @function
+ * @internal
+ */
+export const createErrorMessageSchema = (param: string) => {
+  const cached = errorMessageSchemaCache.get(param);
+  if (cached) {
+    return cached;
+  }
+  const schema = z
+    .looseObject({
+      message: z.coerce.string().pipe(z.literal(param)),
+    })
+    .or(z.coerce.string().pipe(z.literal(param)));
+  errorMessageSchemaCache.set(param, schema);
+  return schema;
+};
+
+/**
+ * @function
+ * @internal
+ */
+export const createErrorMessageRegexSchema = (param: RegExp) => {
+  const cached = errorMessageRegexSchemaCache.get(param);
+  if (cached) {
+    return cached;
+  }
+  const schema = z
+    .looseObject({
+      message: z.coerce.string().regex(param),
+    })
+    .or(z.coerce.string().regex(param));
+  errorMessageRegexSchemaCache.set(param, schema);
+  return schema;
+};

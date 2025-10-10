@@ -11,11 +11,11 @@
  *
  * @showGroups
  */
-import { z } from 'zod';
 
 import { DAY_NAMES } from '../../constant.js';
 import {
   DateLikeFormatSchema,
+  DateSchema,
   DurationFormatSchema,
   DurationSchema,
 } from '../../schema.js';
@@ -138,7 +138,7 @@ export const beforeAssertion = createAssertion(
 
     // Use Zod's date validation with max constraint for better error messages
     return {
-      schema: z.date().max(new Date(otherDate.getTime() - 1)),
+      schema: DateSchema.max(new Date(otherDate.getTime() - 1)),
       subject: subjectDate,
     };
   },
@@ -177,7 +177,7 @@ export const afterAssertion = createAssertion(
 
     // Use Zod's date validation with min constraint for better error messages
     return {
-      schema: z.date().min(new Date(otherDate.getTime() + 1)),
+      schema: DateSchema.min(new Date(otherDate.getTime() + 1)),
       subject: subjectDate,
     };
   },
@@ -237,7 +237,7 @@ export const betweenAssertion = createAssertion(
 
     // Use Zod's date validation with min/max constraints for better error messages
     return {
-      schema: z.date().min(startDate).max(endDate),
+      schema: DateSchema.min(startDate).max(endDate),
       subject: subjectDate,
     };
   },
@@ -286,7 +286,7 @@ export const withinFromNowAssertion = createAssertion(
 
     // Use Zod's date validation to ensure it's between now and now + duration
     return {
-      schema: z.date().min(new Date(nowTime)).max(new Date(maxTime)),
+      schema: DateSchema.min(new Date(nowTime)).max(new Date(maxTime)),
       subject: subjectDate,
     };
   },
@@ -330,7 +330,7 @@ export const withinAgoAssertion = createAssertion(
 
     // Use Zod's date validation to ensure it's between now - duration and now
     return {
-      schema: z.date().min(new Date(minTime)).max(new Date(nowTime)),
+      schema: DateSchema.min(new Date(minTime)).max(new Date(nowTime)),
       subject: subjectDate,
     };
   },
@@ -384,7 +384,7 @@ export const atLeastFromNowAssertion = createAssertion(
 
     // Use Zod's date validation to ensure it's at least the duration from now
     return {
-      schema: z.date().min(new Date(minTime)),
+      schema: DateSchema.min(new Date(minTime)),
       subject: subjectDate,
     };
   },
@@ -438,7 +438,7 @@ export const atLeastAgoAssertion = createAssertion(
 
     // Use Zod's date validation to ensure it's at least the duration ago
     return {
-      schema: z.date().max(new Date(maxTime)),
+      schema: DateSchema.max(new Date(maxTime)),
       subject: subjectDate,
     };
   },
@@ -581,7 +581,7 @@ export const inThePastAssertion = createAssertion(
 
     // Use Zod's date validation with max constraint for the past
     return {
-      schema: z.date().max(new Date(now() - 1)), // Must be before now
+      schema: DateSchema.max(new Date(now() - 1)), // Must be before now
       subject: date,
     };
   },
@@ -613,7 +613,7 @@ export const inTheFutureAssertion = createAssertion(
 
     // Use Zod's date validation with min constraint for the future
     return {
-      schema: z.date().min(new Date(now() + 1)), // Must be after now
+      schema: DateSchema.min(new Date(now() + 1)), // Must be after now
       subject: date,
     };
   },
@@ -649,8 +649,6 @@ export const weekendAssertion = createAssertion(
 
     if (!isWeekend) {
       return {
-        actual: DAY_NAMES[day],
-        expected: 'Saturday or Sunday',
         message: `Expected date to be a weekend (Saturday or Sunday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
@@ -687,8 +685,6 @@ export const weekdayAssertion = createAssertion(
 
     if (!isWeekday) {
       return {
-        actual: DAY_NAMES[day],
-        expected: 'Monday through Friday',
         message: `Expected date to be a weekday (Monday through Friday in UTC), but it was ${DAY_NAMES[day]} in UTC`,
       };
     }
