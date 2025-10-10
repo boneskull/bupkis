@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.11.0...bupkis-v0.11.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* **assertions:** remove non-deterministic date assertions ([e1569c3](https://github.com/boneskull/bupkis/commit/e1569c3c85572782e2bfe0bb9ecac89b9f2b4f49)), closes [#146](https://github.com/boneskull/bupkis/issues/146)
+
 ## [0.11.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.10.6...bupkis-v0.11.0) (2025-10-06)
 
 
