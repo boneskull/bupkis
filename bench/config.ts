@@ -5,12 +5,12 @@
  * benchmark suites.
  */
 
-import type { Options } from 'tinybench';
+import type { BenchOptions, Task } from 'tinybench';
 
 /**
  * Default benchmark configuration optimized for assertion testing.
  */
-export const DEFAULT_BENCH_CONFIG: Options = {
+export const DEFAULT_BENCH_CONFIG: BenchOptions = {
   iterations: 100,
   time: 1000,
   warmupIterations: 10,
@@ -20,7 +20,7 @@ export const DEFAULT_BENCH_CONFIG: Options = {
 /**
  * Configuration for quick/development benchmarks.
  */
-export const QUICK_BENCH_CONFIG: Options = {
+export const QUICK_BENCH_CONFIG: BenchOptions = {
   iterations: 50,
   time: 500,
   warmupIterations: 5,
@@ -30,7 +30,7 @@ export const QUICK_BENCH_CONFIG: Options = {
 /**
  * Configuration for comprehensive/CI benchmarks.
  */
-export const COMPREHENSIVE_BENCH_CONFIG: Options = {
+export const COMPREHENSIVE_BENCH_CONFIG: BenchOptions = {
   iterations: 200,
   time: 2000,
   warmupIterations: 20,
@@ -41,7 +41,7 @@ export const COMPREHENSIVE_BENCH_CONFIG: Options = {
  * Configuration optimized for CI environments with limited resources. Focuses
  * on relative performance and consistency over absolute numbers.
  */
-export const CI_BENCH_CONFIG: Options = {
+export const CI_BENCH_CONFIG: BenchOptions = {
   iterations: 30,
   // Longer settling time for virtualized environments
   setup: () => new Promise((resolve) => setTimeout(resolve, 100)),
@@ -110,25 +110,29 @@ export interface BenchmarkResult {
 /**
  * Extracts and formats benchmark results from tinybench tasks.
  */
-export const formatResults = (
-  tasks: Array<{
-    name: string;
-    result?: {
-      max?: number;
-      mean?: number;
-      min?: number;
-      sd?: number;
+export const formatResults = (tasks: Task[]): BenchmarkResult[] => {
+  return tasks.map((task) => {
+    const result = task.result;
+    if (!result) {
+      return {
+        average: 0,
+        max: 0,
+        min: 0,
+        name: task.name,
+        opsPerSec: 0,
+        standardDeviation: 0,
+      };
+    }
+
+    return {
+      average: result.latency.mean,
+      max: result.latency.max,
+      min: result.latency.min,
+      name: task.name,
+      opsPerSec: Math.round(1000 / result.latency.mean),
+      standardDeviation: result.latency.sd,
     };
-  }>,
-): BenchmarkResult[] => {
-  return tasks.map((task) => ({
-    average: (task.result?.mean as number) ?? 0,
-    max: (task.result?.max as number) ?? 0,
-    min: (task.result?.min as number) ?? 0,
-    name: task.name,
-    opsPerSec: Math.round(1000 / ((task.result?.mean as number) ?? 1)),
-    standardDeviation: (task.result?.sd as number) ?? 0,
-  }));
+  });
 };
 
 /**
