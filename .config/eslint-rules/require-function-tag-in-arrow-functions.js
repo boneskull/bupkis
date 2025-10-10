@@ -386,5 +386,4 @@ export default ESLintUtils.RuleCreator.withoutDocs({
     ],
     type: 'suggestion',
   },
-  name: 'require-function-tag-in-arrow-functions',
 });
