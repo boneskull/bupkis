@@ -191,7 +191,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
 }
 `;
 
-exports[`Sync Collection Assertion Error Snapshots > \"{object} 'to have size' {nonnegative-integer}\" [object-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [object-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
+exports[`Sync Collection Assertion Error Snapshots > \"{record} 'to have size' {nonnegative-integer}\" [record-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [record-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected object to have 3 keys, but it has 1 keys",
   "generatedMessage": false,
@@ -200,7 +200,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{object} 'to have size' {
   "actual": 1,
   "expected": 3,
   "diff": "simple",
-  "assertionId": "object-to-have-size-nonnegative_integer-3s3p"
+  "assertionId": "record-to-have-size-nonnegative_integer-3s3p"
 }
 `;
 

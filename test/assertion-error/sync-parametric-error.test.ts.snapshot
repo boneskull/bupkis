@@ -231,9 +231,9 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 
 }
 `;
 
-exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' / 'to deeply equal' {unknown}\" [object-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [object-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
+exports[`Sync Parametric Assertion Error Snapshots > \"{record} 'to deep equal' / 'to deeply equal' {unknown}\" [record-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [record-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{object} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
+  "message": "Assertion \\"{record} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[2m  Object {\\u001b[22m\\n\\u001b[2m    \\"a\\": 1,\\u001b[22m\\n\\u001b[32m-   \\"b\\": 3,\\u001b[39m\\n\\u001b[31m+   \\"b\\": 2,\\u001b[39m\\n\\u001b[2m  }\\u001b[22m",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -246,7 +246,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{object} 'to deep equal' 
     "b": 3
   },
   "diff": "simple",
-  "assertionId": "object-to-deep-equal-to-deeply-equal-unknown-3s3p"
+  "assertionId": "record-to-deep-equal-to-deeply-equal-unknown-3s3p"
 }
 `;
 
