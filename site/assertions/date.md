@@ -67,28 +67,6 @@ expect('invalid-date', 'not to be a valid date');
 expect(NaN, 'not to be date-like');
 ```
 
-### `{unknown} to be today`
-
-**Success**:
-
-```js
-expect(new Date(), 'to be today'); // passes if run today
-expect(new Date().toISOString().split('T')[0], 'to be today');
-```
-
-**Failure**:
-
-```js
-expect(new Date('2022-01-01'), 'to be today');
-// AssertionError: Expected 2022-01-01T00:00:00.000Z to be today
-```
-
-**Negation**:
-
-```js
-expect(new Date('2022-01-01'), 'not to be today');
-```
-
 ### `{date-like} to be before {date-like}`
 
 **Success**:
@@ -173,114 +151,6 @@ expect(
 );
 ```
 
-### `{date-like} to be within {duration} from now`
-
-**Success**:
-
-```js
-expect(new Date(), 'to be within', '1 hour', 'from now');
-expect(new Date(Date.now() - 30000), 'to be within', '1 minute', 'from now'); // 30 seconds ago
-```
-
-**Failure**:
-
-```js
-expect(
-  new Date(Date.now() - 3600000),
-  'to be within',
-  '30 minutes',
-  'from now',
-);
-// AssertionError: Expected date to be within 30 minutes, from now
-```
-
-**Negation**:
-
-```js
-expect(
-  new Date(Date.now() - 3600000),
-  'not to be within',
-  '30 minutes',
-  'from now',
-);
-```
-
-### `{date-like} to be within {duration} ago`
-
-**Success**:
-
-```js
-expect(new Date(Date.now() - 1800000), 'to be within', '1 hour', 'ago'); // 30 minutes ago
-expect(new Date(Date.now() - 60000), 'to be within', '5 minutes', 'ago'); // 1 minute ago
-```
-
-**Failure**:
-
-```js
-expect(new Date(Date.now() + 1800000), 'to be within', '1 hour', 'ago'); // future date
-// AssertionError: Expected future date to be within 1 hour, ago
-```
-
-**Negation**:
-
-```js
-expect(new Date(Date.now() + 1800000), 'not to be within', '1 hour', 'ago');
-```
-
-### `{date-like} to be at least {duration} from now`
-
-**Success**:
-
-```js
-expect(new Date(Date.now() + 7200000), 'to be at least', '1 hour', 'from now'); // 2 hours from now
-expect(
-  new Date(Date.now() + 86400000),
-  'to be at least',
-  '12 hours',
-  'from now',
-); // 1 day from now
-```
-
-**Failure**:
-
-```js
-expect(new Date(Date.now() + 1800000), 'to be at least', '1 hour', 'from now'); // 30 minutes from now
-// AssertionError: Expected date to be at least 1 hour, from now
-```
-
-**Negation**:
-
-```js
-expect(
-  new Date(Date.now() + 1800000),
-  'not to be at least',
-  '1 hour',
-  'from now',
-);
-```
-
-### `{date-like} to be at least {duration} ago`
-
-**Success**:
-
-```js
-expect(new Date(Date.now() - 7200000), 'to be at least', '1 hour', 'ago'); // 2 hours ago
-expect(new Date(Date.now() - 86400000), 'to be at least', '12 hours', 'ago'); // 1 day ago
-```
-
-**Failure**:
-
-```js
-expect(new Date(Date.now() - 1800000), 'to be at least', '1 hour', 'ago'); // 30 minutes ago
-// AssertionError: Expected date to be at least 1 hour, ago
-```
-
-**Negation**:
-
-```js
-expect(new Date(Date.now() - 1800000), 'not to be at least', '1 hour', 'ago');
-```
-
 ### `{date-like} to be the same date as {date-like}`
 
 **Success**:
@@ -339,52 +209,6 @@ expect(date1, 'to equal', date2, 'within', '100 milliseconds');
 
 ```js
 expect(date1, 'not to equal', date2, 'within', '100 milliseconds');
-```
-
-### `{unknown} to be in the past`
-
-**Success**:
-
-```js
-expect(new Date('2022-01-01'), 'to be in the past');
-expect(new Date(Date.now() - 1000), 'to be in the past'); // 1 second ago
-expect('2020-01-01', 'to be in the past');
-```
-
-**Failure**:
-
-```js
-expect(new Date('2030-01-01'), 'to be in the past');
-// AssertionError: Expected 2030-01-01T00:00:00.000Z to be in the past
-```
-
-**Negation**:
-
-```js
-expect(new Date('2030-01-01'), 'not to be in the past');
-```
-
-### `{unknown} to be in the future`
-
-**Success**:
-
-```js
-expect(new Date('2030-01-01'), 'to be in the future');
-expect(new Date(Date.now() + 1000), 'to be in the future'); // 1 second from now
-expect('2030-12-31', 'to be in the future');
-```
-
-**Failure**:
-
-```js
-expect(new Date('2022-01-01'), 'to be in the future');
-// AssertionError: Expected 2022-01-01T00:00:00.000Z to be in the future
-```
-
-**Negation**:
-
-```js
-expect(new Date('2022-01-01'), 'not to be in the future');
 ```
 
 ### `{unknown} to be a weekend`

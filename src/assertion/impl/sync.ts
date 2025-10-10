@@ -86,20 +86,13 @@ import {
 } from './sync-collection.js';
 import {
   afterAssertion,
-  atLeastAgoAssertion,
-  atLeastFromNowAssertion,
   beforeAssertion,
   betweenAssertion,
   equalWithinAssertion,
-  inTheFutureAssertion,
-  inThePastAssertion,
   sameDateAssertion,
-  todayAssertion,
   validDateAssertion,
   weekdayAssertion,
   weekendAssertion,
-  withinAgoAssertion,
-  withinFromNowAssertion,
 } from './sync-date.js';
 import {
   enumerablePropertyAssertion,
@@ -148,20 +141,13 @@ import {
  */
 export const SyncDateAssertions = [
   afterAssertion,
-  atLeastAgoAssertion,
-  atLeastFromNowAssertion,
   beforeAssertion,
   betweenAssertion,
   equalWithinAssertion,
-  inTheFutureAssertion,
-  inThePastAssertion,
   sameDateAssertion,
-  todayAssertion,
   validDateAssertion,
   weekdayAssertion,
   weekendAssertion,
-  withinAgoAssertion,
-  withinFromNowAssertion,
 ] as const;
 
 /**

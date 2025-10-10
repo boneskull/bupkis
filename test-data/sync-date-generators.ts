@@ -6,22 +6,6 @@ import { type GeneratorParams } from '../test/property/property-test-config.js';
 import { extractPhrases } from '../test/property/property-test-util.js';
 
 /**
- * Generates past dates
- */
-export const pastDateGenerator = fc.date({
-  max: new Date(Date.now() - 5000), // At least 5 seconds ago to avoid timing issues
-  noInvalidDate: true,
-});
-
-/**
- * Generates future dates
- */
-export const futureDateGenerator = fc.date({
-  min: new Date(Date.now() + 5000), // At least 5 seconds from now to avoid timing issues
-  noInvalidDate: true,
-});
-
-/**
  * Generates weekend dates (Saturday or Sunday)
  */
 export const weekendDateGenerator = fc
@@ -41,10 +25,6 @@ export const weekdayDateGenerator = fc
     return day >= 1 && day <= 5; // Monday through Friday
   });
 
-/**
- * Generates dates that are known to be today (for testing)
- */
-const todayDateGenerator = fc.constant(new Date());
 /**
  * Generates valid date-like values (Date objects, ISO strings, timestamps)
  */
@@ -84,40 +64,6 @@ export const SyncDateGenerators = new Map<AnyAssertion, GeneratorParams>([
       })
       .map(([subject, other]) => [subject, 'to be after', other]),
   ],
-
-  [
-    assertions.atLeastAgoAssertion,
-    fc
-      .tuple(
-        fc.date({
-          max: new Date(Date.now() - 7200000), // 2 hours ago
-          min: new Date(Date.now() - 86400000), // 1 day ago
-          noInvalidDate: true,
-        }),
-        fc.constant('1 hour'),
-      )
-      .map(([date, duration]) => [date, 'to be at least', duration, 'ago']),
-  ],
-
-  [
-    assertions.atLeastFromNowAssertion,
-    fc
-      .tuple(
-        fc.date({
-          max: new Date(Date.now() + 86400000), // 1 day from now
-          min: new Date(Date.now() + 7200000), // 2 hours from now
-          noInvalidDate: true,
-        }),
-        fc.constant('1 hour'),
-      )
-      .map(([date, duration]) => [
-        date,
-        'to be at least',
-        duration,
-        'from now',
-      ]),
-  ],
-
   [
     assertions.beforeAssertion,
     fc
@@ -181,20 +127,6 @@ export const SyncDateGenerators = new Map<AnyAssertion, GeneratorParams>([
       }),
   ],
   [
-    assertions.inTheFutureAssertion,
-    [
-      futureDateGenerator,
-      fc.constantFrom(...extractPhrases(assertions.inTheFutureAssertion)),
-    ],
-  ],
-  [
-    assertions.inThePastAssertion,
-    [
-      pastDateGenerator,
-      fc.constantFrom(...extractPhrases(assertions.inThePastAssertion)),
-    ],
-  ],
-  [
     assertions.sameDateAssertion,
     fc
       .date({ noInvalidDate: true })
@@ -203,13 +135,6 @@ export const SyncDateGenerators = new Map<AnyAssertion, GeneratorParams>([
         return fc.tuple(fc.constant(baseDate), fc.constant(sameDate));
       })
       .map(([subject, other]) => [subject, 'to be the same date as', other]),
-  ],
-  [
-    assertions.todayAssertion,
-    [
-      todayDateGenerator,
-      fc.constantFrom(...extractPhrases(assertions.todayAssertion)),
-    ],
   ],
   [
     assertions.validDateAssertion,
@@ -231,29 +156,5 @@ export const SyncDateGenerators = new Map<AnyAssertion, GeneratorParams>([
       weekendDateGenerator,
       fc.constantFrom(...extractPhrases(assertions.weekendAssertion)),
     ],
-  ],
-  [
-    assertions.withinAgoAssertion,
-    fc
-      .tuple(
-        fc.date({
-          max: new Date(Date.now() - 10000), // At least 10 seconds ago
-          min: new Date(Date.now() - 1800000), // 30 minutes ago
-          noInvalidDate: true,
-        }),
-        fc.constant('1 hour'),
-      )
-      .map(([date, duration]) => [date, 'to be within', duration, 'ago']),
-  ],
-  [
-    assertions.withinFromNowAssertion,
-    fc
-      .tuple(
-        fc
-          .integer({ max: 1800000, min: 1000 })
-          .map((offsetMs) => new Date(Date.now() + offsetMs)), // 1 second to 30 minutes from now
-        fc.constant('1 hour'),
-      )
-      .map(([date, duration]) => [date, 'to be within', duration, 'from now']),
   ],
 ]);
