@@ -14,7 +14,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [a
 }
 `;
 
-exports[`Sync Basic Assertion Error Snapshots > \"{object} 'to be empty'\" [object-to-be-empty-2s2p] > should throw a consistent AssertionError [object-to-be-empty-2s2p] <snapshot> 1`] = `
+exports[`Sync Basic Assertion Error Snapshots > \"{record} 'to be empty'\" [record-to-be-empty-2s2p] > should throw a consistent AssertionError [record-to-be-empty-2s2p] <snapshot> 1`] = `
 {
   "message": "Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]",
   "name": "UnknownAssertionError",
