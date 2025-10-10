@@ -14,13 +14,16 @@
  */
 
 import { inspect } from 'node:util';
-import { z } from 'zod/v4';
+import { type z } from 'zod/v4';
 
 import { InvalidObjectSchemaError } from '../../error.js';
 import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ConstructibleSchema,
+  createErrorMessageRegexSchema,
+  createErrorMessageSchema,
   FunctionSchema,
+  UnknownSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
 import {
@@ -162,8 +165,6 @@ export const functionRejectWithTypeAssertion = createAsyncAssertion(
     const { error, result } = await trapAsyncFnError(subject);
     if (error === undefined) {
       return {
-        actual: 'function fulfilled',
-        expect: 'function rejected',
         message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
@@ -215,8 +216,6 @@ export const promiseRejectWithTypeAssertion = createAsyncAssertion(
     const { error, result } = await trapPromiseError(subject);
     if (error === undefined) {
       return {
-        actual: 'Promise fulfilled',
-        expect: 'Promise rejected',
         message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
@@ -265,13 +264,11 @@ export const promiseRejectWithTypeAssertion = createAsyncAssertion(
  * @group Parametric Assertions (Async)
  */
 export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
-  [FunctionSchema, ['to reject with error satisfying'], z.any()],
+  [FunctionSchema, ['to reject with error satisfying'], UnknownSchema],
   async (subject, param) => {
     const { error, result } = await trapAsyncFnError(subject);
     if (error === undefined) {
       return {
-        actual: 'function fulfilled',
-        expect: 'function to reject',
         message: `Expected function to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
@@ -279,17 +276,9 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
     let schema: undefined | z.ZodType;
     // TODO: can valueToSchema handle the first two conditional branches?
     if (isString(param)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)));
+      schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param));
+      schema = createErrorMessageRegexSchema(param);
     } else if (isNonNullObject(param)) {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     }
@@ -335,30 +324,24 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
  * @group Parametric Assertions (Async)
  */
 export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
-  [WrappedPromiseLikeSchema, ['to reject with error satisfying'], z.any()],
+  [
+    WrappedPromiseLikeSchema,
+    ['to reject with error satisfying'],
+    UnknownSchema,
+  ],
   async (subject, param) => {
     const { error, result } = await trapPromiseError(subject);
     if (error === undefined) {
       return {
-        actual: 'Promise fulfilled',
-        expect: 'Promise rejected',
         message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
     let schema: undefined | z.ZodType;
     // TODO: can valueToSchema handle the first two conditional branches?
     if (isString(param)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().pipe(z.literal(param)),
-        })
-        .or(z.coerce.string().pipe(z.literal(param)));
+      schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
-      schema = z
-        .looseObject({
-          message: z.coerce.string().regex(param),
-        })
-        .or(z.coerce.string().regex(param));
+      schema = createErrorMessageRegexSchema(param);
     } else if (isNonNullObject(param)) {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     }
@@ -407,7 +390,7 @@ export const promiseResolveWithValueSatisfyingAssertion = createAsyncAssertion(
   [
     WrappedPromiseLikeSchema,
     ['to fulfill with value satisfying', 'to resolve with value satisfying'],
-    z.any(),
+    UnknownSchema,
   ],
   async (promise, param) => {
     let value: unknown;
@@ -415,8 +398,6 @@ export const promiseResolveWithValueSatisfyingAssertion = createAsyncAssertion(
       value = await promise;
     } catch (err) {
       return {
-        actual: 'Promise rejected',
-        expect: 'Promise to fulfill',
         message: `Expected Promise to fulfill, but it rejected with ${inspect(
           err,
         )}`,
@@ -462,7 +443,7 @@ export const functionFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
   [
     FunctionSchema,
     ['to fulfill with value satisfying', 'to resolve with value satisfying'],
-    z.any(),
+    UnknownSchema,
   ],
   async (subject, param) => {
     let value: unknown;
@@ -470,8 +451,6 @@ export const functionFulfillWithValueSatisfyingAssertion = createAsyncAssertion(
       value = await subject();
     } catch (err) {
       return {
-        actual: 'function rejected',
-        expect: 'function fulfilled',
         message: `Expected function to fulfill, but it rejected with ${inspect(
           err,
         )}`,

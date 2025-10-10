@@ -19,13 +19,34 @@ import { z } from 'zod/v4';
 import { BupkisError, InvalidObjectSchemaError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
+  AnyObjectSchema,
   ArrayLikeSchema,
+  BigintSchema,
+  BooleanSchema,
   ConstructibleSchema,
+  createErrorMessageRegexSchema,
+  createErrorMessageSchema,
+  DateSchema,
+  ErrorSchema,
   FunctionSchema,
+  MapSchema,
   NonNegativeIntegerSchema,
+  NullSchema,
+  NumberSchema,
   RegExpSchema,
+  SetSchema,
+  StringSchema,
+  SymbolSchema,
+  UndefinedSchema,
+  UnknownArraySchema,
+  UnknownRecordSchema,
+  UnknownSchema,
+  WeakMapSchema,
+  WeakRefSchema,
+  WeakSetSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
+import { type Constructor } from '../../types.js';
 import {
   valueToSchema,
   valueToSchemaOptionsForDeepEqual,
@@ -78,7 +99,7 @@ const knownTypes = freeze(
  */
 export const instanceOfAssertion = createAssertion(
   [['to be an instance of', 'to be a', 'to be an'], ConstructibleSchema],
-  (_, ctor) => z.instanceof(ctor),
+  (_, ctor) => createInstanceOfSchema(ctor),
 );
 
 /**
@@ -96,7 +117,7 @@ export const instanceOfAssertion = createAssertion(
  */
 export const typeOfAssertion = createAssertion(
   [
-    z.any(),
+    UnknownSchema,
     ['to be a', 'to be an', 'to have type'],
     z.enum(
       [...knownTypes].flatMap((t) => [t, t.toLowerCase()]) as [
@@ -110,44 +131,44 @@ export const typeOfAssertion = createAssertion(
     // these first three are names that are _not_ results of the `typeof` operator; i.e. `typeof x` will never return these strings
     switch (type) {
       case 'array':
-        return z.array(z.any());
+        return UnknownArraySchema;
       case 'bigint':
-        return z.bigint();
+        return BigintSchema;
       case 'boolean':
-        return z.boolean();
+        return BooleanSchema;
       case 'date':
-        return z.date();
+        return DateSchema;
       case 'error':
-        return z.instanceof(Error);
+        return ErrorSchema;
       case 'function':
-        return z.function();
+        return FunctionSchema;
       case 'map':
-        return z.instanceof(Map);
+        return MapSchema;
       case 'null':
-        return z.null();
+        return NullSchema;
       case 'number':
-        return z.number();
+        return NumberSchema;
       case 'object':
-        return z.looseObject({});
+        return AnyObjectSchema;
       case 'promise':
         return WrappedPromiseLikeSchema;
       case 'regex': // fallthrough
       case 'regexp':
-        return z.instanceof(RegExp);
+        return RegExpSchema;
       case 'set':
-        return z.instanceof(Set);
+        return SetSchema;
       case 'string':
-        return z.string();
+        return StringSchema;
       case 'symbol':
-        return z.symbol();
+        return SymbolSchema;
       case 'undefined':
-        return z.undefined();
+        return UndefinedSchema;
       case 'weakmap':
-        return z.instanceof(WeakMap);
+        return WeakMapSchema;
       case 'weakref':
-        return z.instanceof(WeakRef);
+        return WeakRefSchema;
       case 'weakset':
-        return z.instanceof(WeakSet);
+        return WeakSetSchema;
       // c8 ignore next 2
       default:
         throw new BupkisError(`Unknown "type": "${type}"`);
@@ -168,8 +189,8 @@ export const typeOfAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberGreaterThanAssertion = createAssertion(
-  [z.number(), 'to be greater than', z.number()],
-  (_, other) => z.number().gt(other),
+  [NumberSchema, 'to be greater than', NumberSchema],
+  (_, other) => NumberSchema.gt(other),
 );
 
 /**
@@ -185,8 +206,8 @@ export const numberGreaterThanAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberLessThanAssertion = createAssertion(
-  [z.number(), ['to be less than', 'to be lt'], z.number()],
-  (_, other) => z.number().lt(other),
+  [NumberSchema, ['to be less than', 'to be lt'], NumberSchema],
+  (_, other) => NumberSchema.lt(other),
 );
 
 /**
@@ -204,11 +225,11 @@ export const numberLessThanAssertion = createAssertion(
  */
 export const numberGreaterThanOrEqualAssertion = createAssertion(
   [
-    z.number(),
+    NumberSchema,
     ['to be greater than or equal to', 'to be at least', 'to be gte'],
-    z.number(),
+    NumberSchema,
   ],
-  (_, other) => z.number().gte(other),
+  (_, other) => NumberSchema.gte(other),
 );
 
 /**
@@ -226,11 +247,11 @@ export const numberGreaterThanOrEqualAssertion = createAssertion(
  */
 export const numberLessThanOrEqualAssertion = createAssertion(
   [
-    z.number(),
+    NumberSchema,
     ['to be less than or equal to', 'to be at most', 'to be lte'],
-    z.number(),
+    NumberSchema,
   ],
-  (_, other) => z.number().lte(other),
+  (_, other) => NumberSchema.lte(other),
 );
 
 /**
@@ -246,12 +267,10 @@ export const numberLessThanOrEqualAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberWithinRangeAssertion = createAssertion(
-  [z.number(), ['to be within', 'to be between'], z.number(), z.number()],
+  [NumberSchema, ['to be within', 'to be between'], NumberSchema, NumberSchema],
   (subject, min, max) => {
     if (subject < min || subject > max) {
       return {
-        actual: subject,
-        expected: `number between ${min} and ${max}`,
         message: `Expected ${subject} to be within range [${min}, ${max}]`,
       };
     }
@@ -272,7 +291,7 @@ export const numberWithinRangeAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberCloseToAssertion = createAssertion(
-  [z.number(), 'to be close to', z.number(), z.number().optional()],
+  [NumberSchema, 'to be close to', NumberSchema, NumberSchema.optional()],
   (subject, expected, tolerance = 1e-9) => {
     const diff = abs(subject - expected);
     if (diff > tolerance) {
@@ -299,12 +318,10 @@ export const numberCloseToAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringGreaterThanAssertion = createAssertion(
-  [z.string(), 'to be greater than', z.string()],
+  [StringSchema, 'to be greater than', StringSchema],
   (subject, other) => {
     if (!(subject > other)) {
       return {
-        actual: subject,
-        expected: `string greater than "${other}"`,
         message: `Expected "${subject}" to be greater than "${other}"`,
       };
     }
@@ -325,12 +342,10 @@ export const stringGreaterThanAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringLessThanAssertion = createAssertion(
-  [z.string(), 'to be less than', z.string()],
+  [StringSchema, 'to be less than', StringSchema],
   (subject, other) => {
     if (!(subject < other)) {
       return {
-        actual: subject,
-        expected: `string less than "${other}"`,
         message: `Expected "${subject}" to be less than "${other}"`,
       };
     }
@@ -352,12 +367,10 @@ export const stringLessThanAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringGreaterThanOrEqualAssertion = createAssertion(
-  [z.string(), 'to be greater than or equal to', z.string()],
+  [StringSchema, 'to be greater than or equal to', StringSchema],
   (subject, other) => {
     if (!(subject >= other)) {
       return {
-        actual: subject,
-        expected: `string greater than or equal to "${other}"`,
         message: `Expected "${subject}" to be greater than or equal to "${other}"`,
       };
     }
@@ -379,12 +392,10 @@ export const stringGreaterThanOrEqualAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringLessThanOrEqualAssertion = createAssertion(
-  [z.string(), 'to be less than or equal to', z.string()],
+  [StringSchema, 'to be less than or equal to', StringSchema],
   (subject, other) => {
     if (!(subject <= other)) {
       return {
-        actual: subject,
-        expected: `string less than or equal to "${other}"`,
         message: `Expected "${subject}" to be less than or equal to "${other}"`,
       };
     }
@@ -404,12 +415,10 @@ export const stringLessThanOrEqualAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringBeginsWithAssertion = createAssertion(
-  [z.string(), ['to begin with', 'to start with'], z.string()],
+  [StringSchema, ['to begin with', 'to start with'], StringSchema],
   (subject, prefix) => {
     if (!subject.startsWith(prefix)) {
       return {
-        actual: subject,
-        expected: `string beginning with "${prefix}"`,
         message: `Expected "${subject}" to begin with "${prefix}"`,
       };
     }
@@ -429,12 +438,10 @@ export const stringBeginsWithAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringEndsWithAssertion = createAssertion(
-  [z.string(), 'to end with', z.string()],
+  [StringSchema, 'to end with', StringSchema],
   (subject, suffix) => {
     if (!subject.endsWith(suffix)) {
       return {
-        actual: subject,
-        expected: `string ending with "${suffix}"`,
         message: `Expected "${subject}" to end with "${suffix}"`,
       };
     }
@@ -454,7 +461,7 @@ export const stringEndsWithAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const oneOfAssertion = createAssertion(
-  ['to be one of', z.array(z.any())],
+  ['to be one of', UnknownArraySchema],
   (subject, values) => {
     if (!values.includes(subject)) {
       return {
@@ -505,7 +512,7 @@ export const functionArityAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const errorMessageAssertion = createAssertion(
-  [z.instanceof(Error), 'to have message', z.string()],
+  [ErrorSchema, 'to have message', StringSchema],
   (subject, expectedMessage) => {
     if (subject.message !== expectedMessage) {
       return {
@@ -535,12 +542,10 @@ export const errorMessageAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const errorMessageMatchingAssertion = createAssertion(
-  [z.instanceof(Error), 'to have message matching', RegExpSchema],
+  [ErrorSchema, 'to have message matching', RegExpSchema],
   (subject, pattern) => {
     if (!pattern.test(subject.message)) {
       return {
-        actual: subject.message,
-        expected: `message matching ${pattern}`,
         message: `Expected error message "${subject.message}" to match ${pattern}`,
       };
     }
@@ -571,7 +576,7 @@ export const strictEqualityAssertion = createAssertion(
       'to strictly equal',
       'is strictly equal to',
     ],
-    z.unknown(),
+    UnknownSchema,
   ],
   (subject, value) => {
     if (subject !== value) {
@@ -597,7 +602,7 @@ export const strictEqualityAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const objectDeepEqualAssertion = createAssertion(
-  [z.looseObject({}), ['to deep equal', 'to deeply equal'], z.any()],
+  [UnknownRecordSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
   (_, expected) => valueToSchema(expected, valueToSchemaOptionsForDeepEqual),
 );
 
@@ -614,7 +619,7 @@ export const objectDeepEqualAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const arrayDeepEqualAssertion = createAssertion(
-  [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], z.any()],
+  [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
   (_, expected) => {
     return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
   },
@@ -643,8 +648,7 @@ export const functionThrowsAssertion = createAssertion(
     const { error, result } = trapError(subject);
     if (error === undefined) {
       return {
-        actual: result,
-        message: `Expected function to throw, but it did not`,
+        message: `Expected function to throw, but it fulfilled with ${inspect(result)}`,
       };
     }
   },
@@ -680,9 +684,7 @@ export const functionThrowsTypeAssertion = createAssertion(
     const { error, result } = trapError(subject);
     if (error === undefined) {
       return {
-        actual: result,
-        expected: `to throw instance of ${ctor.name}`,
-        message: 'Expected function to throw, but it did not',
+        message: `Expected function to throw, but fulfilled with ${inspect(result)}`,
       };
     }
     if (!isA(error, ctor)) {
@@ -736,7 +738,7 @@ export const functionThrowsTypeAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const functionThrowsSatisfyingAssertion = createAssertion(
-  [FunctionSchema, ['to throw', 'to throw error satisfying'], z.any()],
+  [FunctionSchema, ['to throw', 'to throw error satisfying'], UnknownSchema],
   (subject, param) => {
     const { error } = trapError(subject);
     if (error === undefined) {
@@ -747,20 +749,12 @@ export const functionThrowsSatisfyingAssertion = createAssertion(
 
     if (isString(param)) {
       return {
-        schema: z
-          .looseObject({
-            message: z.coerce.string().pipe(z.literal(param)),
-          })
-          .or(z.coerce.string().pipe(z.literal(param))),
+        schema: createErrorMessageSchema(param),
         subject: error,
       };
     } else if (isA(param, RegExp)) {
       return {
-        schema: z
-          .looseObject({
-            message: z.coerce.string().regex(param),
-          })
-          .or(z.coerce.string().regex(param)),
+        schema: createErrorMessageRegexSchema(param),
         subject: error,
       };
     } else if (isNonNullObject(param)) {
@@ -810,44 +804,34 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
     ['to throw a', 'to throw an'],
     ConstructibleSchema,
     'satisfying',
-    z.any(),
+    UnknownSchema,
   ],
   (subject, ctor, param) => {
     const { error, result } = trapError(subject);
     if (error === undefined) {
       return {
-        actual: result,
-        expected: `to throw instance of ${ctor.name}`,
-        message: 'Expected function to throw, but it did not',
+        message: `Expected function to throw, but it fulfilled with ${inspect(result)}`,
       };
     }
     if (!isA(error, ctor)) {
       return {
-        actual: error,
-        expected: `instance of ${ctor.name}`,
         message: isError(error)
           ? `Expected function to throw an instance of ${ctor.name}, but it threw ${(error as Error).constructor.name}`
-          : `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${error as unknown}`,
+          : `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${inspect(error)}`,
       };
     }
     let schema: undefined | z.ZodType;
     // TODO: can valueToSchema handle the first two conditional branches?
     if (isString(param)) {
-      schema = z.looseObject({
-        message: z.coerce.string().pipe(z.literal(param)),
-      });
-      // .or(z.coerce.string().pipe(z.literal(param)));
+      schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
-      schema = z.looseObject({
-        message: z.coerce.string().regex(param),
-      });
-      // .or(z.coerce.string().regex(param));
+      schema = createErrorMessageRegexSchema(param);
     } else if (isNonNullObject(param)) {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
     }
     if (!schema) {
       throw new InvalidObjectSchemaError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
+        `Invalid parameter schema: ${inspect(param)}`,
         { schema: param },
       );
     }
@@ -875,15 +859,13 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
  */
 export const stringIncludesAssertion = createAssertion(
   [
-    z.string(),
+    StringSchema,
     ['includes', 'contains', 'to include', 'to contain'],
-    z.string(),
+    StringSchema,
   ],
   (subject, expected) => {
     if (!subject.includes(expected)) {
       return {
-        actual: subject,
-        expected: `string including "${expected}"`,
         message: `Expected "${subject}" to include "${expected}"`,
       };
     }
@@ -903,7 +885,7 @@ export const stringIncludesAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const stringMatchesAssertion = createAssertion(
-  [z.string(), 'to match', RegExpSchema],
+  [StringSchema, 'to match', RegExpSchema],
   (subject, regex) => regex.test(subject),
 );
 
@@ -924,9 +906,9 @@ export const stringMatchesAssertion = createAssertion(
  */
 export const objectSatisfiesAssertion = createAssertion(
   [
-    z.looseObject({}).nonoptional(),
+    AnyObjectSchema.nonoptional(),
     ['to satisfy', 'to be like', 'satisfies'],
-    z.any(),
+    UnknownSchema,
   ],
   (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
 );
@@ -938,13 +920,33 @@ export const objectSatisfiesAssertion = createAssertion(
  * @example
  *
  * ```typescript
- * expect([1, 2, 3], 'to satisfy', [1, z.number(), 3]); // passes
- * expect([1, 'two'], 'to be like', [1, z.number()]); // fails
+ * expect([1, 2, 3], 'to satisfy', [1, NumberSchema, 3]); // passes
+ * expect([1, 'two'], 'to be like', [1, NumberSchema]); // fails
  * ```
  *
  * @group Parametric Assertions (Sync)
  */
 export const arraySatisfiesAssertion = createAssertion(
-  [ArrayLikeSchema, ['to satisfy', 'to be like'], z.any()],
+  [ArrayLikeSchema, ['to satisfy', 'to be like'], UnknownSchema],
   (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
 );
+
+/**
+ * Memoizes {@link createInstanceOfSchema}
+ */
+const createInstanceOfSchemaCache = new WeakMap<Constructor, z.ZodCustom>();
+
+/**
+ * @function
+ */
+const createInstanceOfSchema = <T extends Constructor>(
+  ctor: T,
+): z.ZodCustom<T, T> => {
+  const cached = createInstanceOfSchemaCache.get(ctor);
+  if (cached) {
+    return cached as z.ZodCustom<T, T>;
+  }
+  const schema = z.instanceof(ctor);
+  createInstanceOfSchemaCache.set(ctor, schema);
+  return schema;
+};

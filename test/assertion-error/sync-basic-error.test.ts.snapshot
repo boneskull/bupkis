@@ -1,17 +1,3 @@
-exports[`Sync Basic Assertion Error Snapshots > \"{Record<any, unknown>} 'to be empty'\" [record_any-unknown-to-be-empty-2s2p] > should throw a consistent AssertionError [record_any-unknown-to-be-empty-2s2p] <snapshot> 1`] = `
-{
-  "message": "Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    {
-      "foo": "bar"
-    },
-    "to be an empty object"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
-}
-`;
-
 exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [arraylike-to-be-empty-2s2p] > should throw a consistent AssertionError [arraylike-to-be-empty-2s2p] <snapshot> 1`] = `
 {
   "message": "Invalid arguments. No assertion matched: [ [ 1, 2, 3 ], 'to be an empty array' ]",
@@ -23,6 +9,20 @@ exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [a
       3
     ],
     "to be an empty array"
+  ],
+  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+}
+`;
+
+exports[`Sync Basic Assertion Error Snapshots > \"{object} 'to be empty'\" [object-to-be-empty-2s2p] > should throw a consistent AssertionError [object-to-be-empty-2s2p] <snapshot> 1`] = `
+{
+  "message": "Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]",
+  "name": "UnknownAssertionError",
+  "args": [
+    {
+      "foo": "bar"
+    },
+    "to be an empty object"
   ],
   "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
 }
@@ -103,12 +103,11 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a RegExp' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a Set'\" [unknown-to-be-a-set-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-set-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a Set'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- <set>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a Set'\\" failed:\\nInput not instance of Set",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
-  "expected": "<set>",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-set-2s1p"
 }

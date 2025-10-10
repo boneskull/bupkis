@@ -86,8 +86,6 @@ exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekday'\" [
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "Sunday",
-  "expected": "Monday through Friday",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-weekday-2s1p"
 }
@@ -99,8 +97,6 @@ exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a weekend'\" [
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "Tuesday",
-  "expected": "Saturday or Sunday",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-weekend-2s1p"
 }
