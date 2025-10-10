@@ -78,17 +78,6 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   ],
 ]);
 
-// Time-relative assertions that cannot be snapshot tested due to non-deterministic timestamps
-const timeRelativeAssertions = [
-  assertions.atLeastAgoAssertion,
-  assertions.atLeastFromNowAssertion,
-  assertions.inTheFutureAssertion,
-  assertions.inThePastAssertion,
-  assertions.todayAssertion,
-  assertions.withinAgoAssertion,
-  assertions.withinFromNowAssertion,
-];
-
 describe('Sync Date Assertion Error Snapshots', () => {
   it(`should test all available assertions in SyncDateAssertions excepting time-relative ones`, () => {
     expect(
@@ -97,8 +86,6 @@ describe('Sync Date Assertion Error Snapshots', () => {
       'SyncDateAssertions',
       'from',
       SyncDateAssertions,
-      'excepting',
-      timeRelativeAssertions,
     );
   });
 
