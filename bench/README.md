@@ -34,9 +34,11 @@ npm run bench:runner
 npm run bench:runner -- --mode quick --suite comprehensive
 
 # Specific implementation class benchmarks
-npm run bench:runner -- --suite sync-function    # 73 function-based sync assertions
-npm run bench:runner -- --suite sync-schema      # 44 schema-based sync assertions
-npm run bench:runner -- --suite async-function   # 10 function-based async assertions
+npm run bench:runner -- --suite sync-function          # 66 function-based sync assertions (all)
+npm run bench:runner -- --suite sync-function-pure     # 7 pure function sync assertions (fastest)
+npm run bench:runner -- --suite sync-function-schema   # 59 schema-returning function sync assertions
+npm run bench:runner -- --suite sync-schema            # 44 schema-based sync assertions
+npm run bench:runner -- --suite async-function         # 8 function-based async assertions
 
 # Traditional categorical suites
 npm run bench:runner -- --suite type collection comparison pattern
@@ -56,26 +58,41 @@ These suites benchmark **ALL assertions** grouped by their implementation classe
 #### **`comprehensive`** - Complete Analysis
 
 - Assertion Implementation Distribution:
-  - Sync Function-based: 73 assertions
+  - Sync Function-based: 66 assertions (pure: 7, schema: 59)
   - Sync Schema-based: 44 assertions
-  - Async Function-based: 10 assertions
+  - Async Function-based: 8 assertions
   - Async Schema-based: 0 assertions
-  - **Total: 127 assertions**
+  - **Total: 118 assertions**
 
-#### **`sync-function`** - Function-based Sync Assertions
+#### **`sync-function`** - All Function-based Sync Assertions
 
-- Tests assertions that use callback functions for validation
+- Tests all assertions that use callback functions for validation (66 total)
+- Includes both pure and schema-returning function implementations
 - Example task names: `"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}" [sync-function]`
+
+#### **`sync-function-pure`** - Pure Function Sync Assertions (NEW)
+
+- Tests 7 assertions that return boolean or AssertionFailure objects directly
+- Generally the fastest assertion type due to minimal overhead
+- Examples: Set operations (`'to have union'`, `'to have intersection'`) and function error validation
+- Performance threshold: 1200 ops/sec
+
+#### **`sync-function-schema`** - Schema-returning Function Sync Assertions (NEW)
+
+- Tests 59 assertions that return Zod schemas or AssertionParseRequest objects
+- More complex than pure functions but still function-based implementations
+- Examples: Collection operations, type checking, comparison assertions
+- Performance threshold: 800 ops/sec
 
 #### **`sync-schema`** - Schema-based Sync Assertions
 
-- Tests assertions that use Zod schemas for validation
-- Generally faster than function-based equivalents
+- Tests 44 assertions that use Zod schemas for validation
+- Generally faster than function-based equivalents due to optimized schema execution
 - Example: `"{unknown} 'to be a string'" [sync-schema]`
 
 #### **`async-function`** - Function-based Async Assertions
 
-- Tests Promise-based assertions with callback functions
+- Tests 8 Promise-based assertions with callback functions
 - Includes reject/resolve patterns with parameter validation
 
 #### **`async-schema`** - Schema-based Async Assertions
@@ -106,7 +123,18 @@ These suites benchmark **ALL assertions** grouped by their implementation classe
 
 ## Performance Thresholds
 
-The benchmark system includes configurable performance thresholds:
+The benchmark system includes configurable performance thresholds by implementation type:
+
+### Implementation-based Thresholds
+
+- **sync-function**: 1000 ops/sec (general function-based sync assertions)
+- **sync-function-pure**: 1200 ops/sec (pure function assertions - highest threshold)
+- **sync-function-schema**: 800 ops/sec (schema-returning function assertions)
+- **sync-schema**: 1500 ops/sec (pure schema-based assertions)
+- **async-function**: 15000 ops/sec (async function-based assertions)
+- **async-schema**: 15000 ops/sec (async schema-based assertions)
+
+### Legacy Categorical Thresholds
 
 - **Basic assertions**: 1.0ms threshold
 - **Collection operations**: 2.0ms threshold
@@ -114,7 +142,25 @@ The benchmark system includes configurable performance thresholds:
 - **Complex operations**: 5.0ms threshold
 - **Regex operations**: 3.0ms threshold
 
-Benchmarks that exceed these thresholds will generate performance warnings.
+Benchmarks that exceed these thresholds will generate performance warnings during execution with `--check` flag.
+
+## Suite Overlap Resolution
+
+The benchmark runner automatically handles overlapping suite selections to prevent duplicate execution:
+
+- **Parent-Child Relationships**: If you select both `sync-function` and its child suites (`sync-function-pure`, `sync-function-schema`), the runner will automatically remove the child suites and only execute the parent suite
+- **Deduplication Feedback**: The runner provides clear messages about which suites were removed due to overlap
+- **Efficient Execution**: This ensures each assertion is benchmarked exactly once per run
+
+Examples:
+
+```bash
+# This will only run sync-function (child suites are automatically removed)
+npm run bench:runner -- --suite sync-function --suite sync-function-pure
+
+# This will run both child suites independently
+npm run bench:runner -- --suite sync-function-pure --suite sync-function-schema
+```
 
 ## Configuration Modes
 
