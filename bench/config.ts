@@ -56,6 +56,8 @@ export const PERFORMANCE_THRESHOLDS = {
   'async-function': 15000, // Async function-based assertions (promise validation with callbacks)
   'async-schema': 15000, // Async schema-based assertions (promise validation with schemas)
   'sync-function': 1000, // Sync function-based assertions (validation with callback functions)
+  'sync-function-pure': 1200, // Pure sync function assertions (return AssertionFailure/boolean)
+  'sync-function-schema': 800, // Schema-based sync function assertions (return Zod schema/AssertionParseRequest)
   'sync-schema': 1500, // Sync schema-based assertions (validation with Zod schemas)
 } as const;
 
