@@ -32,6 +32,7 @@ import {
   SyncParametricGenerators,
 } from '../test-data/index.js';
 import { type GeneratorParams } from '../test/property/property-test-config.js';
+import { getSyncFunctionAssertions } from './assertion-classifier.js';
 import {
   CI_BENCH_CONFIG,
   colors,
@@ -376,6 +377,52 @@ export const createSyncSchemaAssertionsBench = (): Bench =>
       }
     },
   });
+
+/**
+ * Create benchmarks for sync function-based assertions that return pure values.
+ * Tests assertions that use callback functions returning boolean or
+ * AssertionFailure.
+ */
+export const createSyncFunctionPureAssertionsBench = (): Bench => {
+  const { pure } = getSyncFunctionAssertions();
+
+  return createBenchmark({
+    assertions: pure,
+    filter: () => true, // Already filtered by getSyncFunctionAssertions
+    label: 'sync function-based pure assertions',
+    name: 'sync-function-pure',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
+
+/**
+ * Create benchmarks for sync function-based assertions that return schemas.
+ * Tests assertions that use callback functions returning Zod schemas or
+ * AssertionParseRequest.
+ */
+export const createSyncFunctionSchemaAssertionsBench = (): Bench => {
+  const { schema } = getSyncFunctionAssertions();
+
+  return createBenchmark({
+    assertions: schema,
+    filter: () => true, // Already filtered by getSyncFunctionAssertions
+    label: 'sync function-based schema assertions',
+    name: 'sync-function-schema',
+    taskRunner: (assertion, testData) => {
+      try {
+        expect(...testData);
+      } catch (error) {
+        warnUnexpectedException(assertion, error);
+      }
+    },
+  });
+};
 
 /**
  * Create benchmarks for async function-based assertions. Tests assertions that

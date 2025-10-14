@@ -14,6 +14,8 @@ import {
   createAsyncFunctionAssertionsBench,
   createAsyncSchemaAssertionsBench,
   createSyncFunctionAssertionsBench,
+  createSyncFunctionPureAssertionsBench,
+  createSyncFunctionSchemaAssertionsBench,
   createSyncSchemaAssertionsBench,
   runBenchmarkSuite,
 } from './comprehensive-suites.js';
@@ -128,6 +130,10 @@ const AVAILABLE_SUITES = {
     'Async schema-based assertions (promise validation with schemas)',
   'sync-function':
     'Sync function-based assertions (validation with callback functions)',
+  'sync-function-pure':
+    'pure sync function assertions (return AssertionFailure/boolean)',
+  'sync-function-schema':
+    'schema-based sync function assertions (return Zod schema/AssertionParseRequest)',
   'sync-schema': 'Sync schema-based assertions (validation with Zod schemas)',
 } as const;
 
@@ -154,6 +160,11 @@ const parseArgs = (): RunnerOptions => {
         modeArg === 'comprehensive'
       ) {
         mode = modeArg;
+      } else {
+        console.error(
+          `❌ Error: Invalid mode '${modeArg}'. Available modes: ci, quick, default, comprehensive`,
+        );
+        process.exit(1);
       }
       i++; // Skip next arg since we consumed it
     } else if (arg === '--suite' && i + 1 < args.length) {
@@ -162,6 +173,13 @@ const parseArgs = (): RunnerOptions => {
       }
       const suite = args[i + 1];
       if (suite) {
+        // Validate suite name
+        if (!Object.hasOwnProperty.call(AVAILABLE_SUITES, suite)) {
+          console.error(
+            `❌ Error: Invalid suite '${suite}'. Available suites: ${Object.keys(AVAILABLE_SUITES).join(', ')}`,
+          );
+          process.exit(1);
+        }
         suites.push(suite);
       }
       i++; // Skip next arg since we consumed it
@@ -208,6 +226,36 @@ Examples:
 };
 
 /**
+ * Resolves suite overlaps by removing child suites when parent suites are
+ * present. This prevents duplicate execution when hierarchical suites are
+ * selected.
+ *
+ * @param suites - Array of suite names to resolve
+ * @returns Resolved suite names with overlaps removed
+ */
+const resolveSuiteOverlaps = (suites: string[]): string[] => {
+  const resolvedSuites = [...suites];
+
+  // If sync-function is present, remove its child suites to prevent duplication
+  if (resolvedSuites.includes('sync-function')) {
+    const childSuites = ['sync-function-pure', 'sync-function-schema'];
+    const removedSuites = childSuites.filter((suite) =>
+      resolvedSuites.includes(suite),
+    );
+
+    if (removedSuites.length > 0) {
+      console.log(
+        `ℹ️  Deduplication: Removed ${removedSuites.join(', ')} (overridden by sync-function)`,
+      );
+    }
+
+    return resolvedSuites.filter((suite) => !childSuites.includes(suite));
+  }
+
+  return resolvedSuites;
+};
+
+/**
  * Run the specified benchmark suites.
  */
 const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
@@ -215,6 +263,19 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
 
   if (options.checkPerformance) {
     console.log('🔍 Performance checking enabled');
+  }
+
+  // Resolve suite overlaps to prevent duplicate execution
+  const resolvedSuites = resolveSuiteOverlaps(options.suites);
+  const resolvedOptions = { ...options, suites: resolvedSuites };
+
+  // Show which suites will be executed
+  if (resolvedSuites.length === 1 && resolvedSuites[0] === 'all') {
+    console.log('📊 Running all benchmark suites\n');
+  } else {
+    console.log(
+      `📊 Running ${resolvedSuites.length} suite${resolvedSuites.length === 1 ? '' : 's'}: ${resolvedSuites.join(', ')}\n`,
+    );
   }
 
   const startTime = Date.now();
@@ -229,8 +290,8 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
   try {
     // Implementation-based assertion benchmarks grouped by execution strategy
     if (
-      options.suites.includes('all') ||
-      options.suites.includes('sync-function')
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('sync-function')
     ) {
       const bench = await runBenchmarkSuite(
         'Sync Function-based Assertions',
@@ -243,9 +304,40 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
       }
     }
 
+    // New granular sync-function suites
     if (
-      options.suites.includes('all') ||
-      options.suites.includes('sync-schema')
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('sync-function-pure')
+    ) {
+      const bench = await runBenchmarkSuite(
+        'Sync Function-based Pure Assertions',
+        createSyncFunctionPureAssertionsBench,
+        options.mode,
+      );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Sync Function-based Pure Assertions', bench.table()]);
+      }
+    }
+
+    if (
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('sync-function-schema')
+    ) {
+      const bench = await runBenchmarkSuite(
+        'Sync Function-based Schema Assertions',
+        createSyncFunctionSchemaAssertionsBench,
+        options.mode,
+      );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['Sync Function-based Schema Assertions', bench.table()]);
+      }
+    }
+
+    if (
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('sync-schema')
     ) {
       const bench = await runBenchmarkSuite(
         'Sync Schema-based Assertions',
@@ -259,8 +351,8 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
     }
 
     if (
-      options.suites.includes('all') ||
-      options.suites.includes('async-function')
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('async-function')
     ) {
       const bench = await runBenchmarkSuite(
         'Async Function-based Assertions',
@@ -274,8 +366,8 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
     }
 
     if (
-      options.suites.includes('all') ||
-      options.suites.includes('async-schema')
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('async-schema')
     ) {
       const bench = await runBenchmarkSuite(
         'Async Schema-based Assertions',
@@ -336,3 +428,6 @@ const main = async (): Promise<void> => {
 if (import.meta.url === `file://${process.argv[1]}`) {
   void main();
 }
+
+// Export for testing
+export { AVAILABLE_SUITES, resolveSuiteOverlaps };
