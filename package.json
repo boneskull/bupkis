@@ -207,7 +207,7 @@
     "typedoc-plugin-dt-links": "2.0.24",
     "typedoc-plugin-extras": "4.0.1",
     "typedoc-plugin-mdn-links": "5.0.10",
-    "typedoc-plugin-redirect": "1.2.0",
+    "typedoc-plugin-redirect": "1.2.1",
     "typedoc-plugin-zod": "1.4.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.0"
