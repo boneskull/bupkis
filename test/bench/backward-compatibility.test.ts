@@ -49,7 +49,7 @@ describe('Backward Compatibility', () => {
       const { resolve } = await import('node:path');
 
       const suitesPath = pathToFileURL(
-        resolve(process.cwd(), 'bench/comprehensive-suites.ts'),
+        resolve(process.cwd(), 'bench/suites.ts'),
       ).href;
       const { createSyncFunctionAssertionsBench } = await import(suitesPath);
 
@@ -133,7 +133,7 @@ describe('Backward Compatibility', () => {
       const { resolve } = await import('node:path');
 
       const suitesPath = pathToFileURL(
-        resolve(process.cwd(), 'bench/comprehensive-suites.ts'),
+        resolve(process.cwd(), 'bench/suites.ts'),
       ).href;
       const suites = await import(suitesPath);
 

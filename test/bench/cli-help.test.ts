@@ -88,7 +88,7 @@ describe('CLI Help Output', () => {
       suiteCount = 0;
     }
 
-    // Should have original 5 suites + 2 new ones = 7 total
-    expect(suiteCount, 'to equal', 7);
+    // Should have original 5 suites + 3 new ones (including value-to-schema) = 8 total
+    expect(suiteCount, 'to equal', 8);
   });
 });

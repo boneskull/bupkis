@@ -47,6 +47,7 @@ import type {
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
+import type { ValueToSchemaOptions } from './value-to-schema.js';
 
 import { type kExpectIt } from './constant.js';
 
@@ -109,6 +110,65 @@ export interface BaseExpect {
 }
 
 /**
+ * Configuration for valueToSchema benchmark generation.
+ */
+export interface BenchmarkConfig {
+  /** Optional filter for input categories */
+  categories?: string[];
+  /** Complexity levels to test */
+  complexityLevels: ComplexityLevel[];
+  /** Number of benchmark iterations (1-10000) */
+  iterations: number;
+  /** ValueToSchemaOptions combinations to test */
+  options?: Partial<ValueToSchemaOptions>[];
+  /** Number of test data samples to generate (10-10000) */
+  sampleSize: number;
+  /** Benchmark timeout in milliseconds (1000-300000) */
+  timeout: number;
+  /** Number of warmup iterations (1-100) */
+  warmupIterations: number;
+}
+
+/**
+ * Type representing a dot-notation or bracket-notation keypath for accessing
+ * nested object properties. Uses recursive template literal types to validate
+ * keypath syntax.
+ *
+ * Supports paths like:
+ *
+ * - 'foo.bar'
+ * - 'foo[0]'
+ * - 'foo["bar-baz"]'
+ * - 'foo.bar[1].baz'
+ *
+ * @public
+ */
+
+/**
+ * Complete benchmark result.
+ */
+export interface BenchmarkResult {
+  /** Computed insights and bottleneck identification */
+  analysis: PerformanceAnalysis;
+  /** Environment details when benchmark was run */
+  executionContext: ExecutionContext;
+  /** Total execution time in milliseconds */
+  executionTime: number;
+  /** Metadata about the benchmark run */
+  metadata: {
+    nodeVersion: string;
+    timestamp: string;
+    version: string;
+  };
+  /** Individual measurement results */
+  results: PerformanceMetrics[];
+  /** Benchmark suite identifier */
+  suiteId: string;
+}
+
+export type * from './assertion/assertion-types.js';
+
+/**
  * The main API as returned by a {@link UseFn}.
  *
  * @template BaseSyncAssertions Base set of synchronous
@@ -164,19 +224,9 @@ export interface Bupkis<
 }
 
 /**
- * Type representing a dot-notation or bracket-notation keypath for accessing
- * nested object properties. Uses recursive template literal types to validate
- * keypath syntax.
- *
- * Supports paths like:
- *
- * - 'foo.bar'
- * - 'foo[0]'
- * - 'foo["bar-baz"]'
- * - 'foo.bar[1].baz'
- *
- * @public
+ * Complexity levels for test data generation.
  */
+export type ComplexityLevel = 'complex' | 'medium' | 'simple';
 
 /**
  * Helper type to concatenate two tuples
@@ -187,8 +237,6 @@ export type Concat<
   TupleA extends readonly unknown[],
   TupleB extends readonly unknown[],
 > = readonly [...TupleA, ...TupleB];
-
-export type * from './assertion/assertion-types.js';
 
 /**
  * A constructor based on {@link TypeFestConstructor type-fest's Constructor}
@@ -207,6 +255,34 @@ export type DefFromZodType<T extends z.core.$ZodType | z.ZodType> =
     : T extends z.core.$ZodType
       ? T['_zod']['def']
       : never;
+
+/**
+ * Execution context for benchmark runs.
+ */
+export interface ExecutionContext {
+  /** CPU model */
+  cpuModel: string;
+  /** Total memory */
+  memoryTotal: number;
+  /** Node.js version */
+  nodeVersion: string;
+  /** Platform information */
+  platform: string;
+}
+
+/**
+ * Execution time statistics.
+ */
+export interface ExecutionTimeStats {
+  /** Mean execution time */
+  mean: number;
+  /** Median execution time */
+  median: number;
+  /** 95th percentile execution time */
+  p95: number;
+  /** 99th percentile execution time */
+  p99: number;
+}
 
 /**
  * The main synchronous assertion function.
@@ -683,6 +759,22 @@ export type FilterSyncAssertions<
   : readonly [];
 
 /**
+ * Options for test data generation.
+ */
+export interface GeneratorOptions {
+  /** Whether to include edge cases (NaN, Infinity, etc.) */
+  includeEdgeCases?: boolean;
+  /** Maximum array size */
+  maxArrayLength?: number;
+  /** Maximum nesting depth for recursive structures */
+  maxDepth?: number;
+  /** Maximum object property count */
+  maxObjectProperties?: number;
+  /** Optional seed for reproducible generation */
+  seedValue?: number;
+}
+
+/**
  * Represents a dot-notation or bracket-notation keypath for accessing nested
  * object properties.
  *
@@ -764,6 +856,23 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
     : readonly [];
 
 /**
+ * @groupDescription Benchmark Types
+ * Types for valueToSchema() benchmark functionality.
+ */
+
+/**
+ * Memory usage statistics.
+ */
+export interface MemoryStats {
+  /** External memory */
+  external: number;
+  /** Total heap memory */
+  heapTotal: number;
+  /** Heap memory used */
+  heapUsed: number;
+}
+
+/**
  * Makes tuple types accept both mutable and readonly variants.
  *
  * This utility type creates a union of both mutable and readonly versions of a
@@ -825,6 +934,57 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
  * @see {@link MapExpectSlots} for how negation is incorporated into function signatures
  */
 export type Negation<S extends string> = `not ${S}`;
+
+/**
+ * Performance analysis results.
+ */
+export interface PerformanceAnalysis {
+  /** Identified bottlenecks */
+  bottlenecks: Array<{
+    category: string;
+    impact: 'high' | 'low' | 'medium';
+    opsPerSecond: number;
+    reason: string;
+  }>;
+  /** Statistical outliers */
+  outliers: Array<{
+    category: string;
+    deviation: number;
+    options: ValueToSchemaOptions;
+    value: number;
+  }>;
+  /** Summary statistics */
+  summary: {
+    averageOpsPerSecond: number;
+    fastestCategory: string;
+    slowestCategory: string;
+    totalExecutionTime: number;
+  };
+  /** Performance trends */
+  trends: Array<{
+    description: string;
+    factor: string;
+    impact: number;
+  }>;
+}
+
+/**
+ * Performance metrics for a benchmark run.
+ */
+export interface PerformanceMetrics {
+  /** Timing statistics */
+  executionTime: ExecutionTimeStats;
+  /** Category of input being measured */
+  inputCategory: string;
+  /** Memory allocation data (if available) */
+  memoryUsage?: MemoryStats;
+  /** Throughput measurement (operations per second) */
+  operationsPerSecond: number;
+  /** Configuration used for this measurement */
+  options: ValueToSchemaOptions;
+  /** When measurement was taken */
+  timestamp: Date;
+}
 
 /**
  * Converts `AssertionParts` to complete function parameter types for expect

@@ -1,12 +1,12 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { PERFORMANCE_THRESHOLDS } from '../../bench/config.js';
 import {
   createSyncFunctionPureAssertionsBench,
   createSyncFunctionSchemaAssertionsBench,
   runBenchmarkSuite,
-} from '../../bench/comprehensive-suites.js';
-import { PERFORMANCE_THRESHOLDS } from '../../bench/config.js';
+} from '../../bench/suites.js';
 
 describe('performance validation for pure vs schema assertions', () => {
   it('should demonstrate that pure assertions generally outperform schema assertions', async () => {

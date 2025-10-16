@@ -9,6 +9,7 @@
 
 import type { Task } from 'tinybench';
 
+import { colors, PERFORMANCE_THRESHOLDS } from './config.js';
 import {
   type BenchMode,
   createAsyncFunctionAssertionsBench,
@@ -18,8 +19,8 @@ import {
   createSyncFunctionSchemaAssertionsBench,
   createSyncSchemaAssertionsBench,
   runBenchmarkSuite,
-} from './comprehensive-suites.js';
-import { colors, PERFORMANCE_THRESHOLDS } from './config.js';
+} from './suites.js';
+import { createValueToSchemaBench } from './value-to-schema-suite.js';
 
 /**
  * Helper function to format benchmark results for consistent output.
@@ -37,28 +38,20 @@ export interface BenchmarkResult {
  * Extracts and formats benchmark results from tinybench tasks.
  */
 export const formatResults = (tasks: Task[]): BenchmarkResult[] => {
-  return tasks.map((task) => {
-    const result = task.result;
-    if (!result) {
-      return {
-        average: 0,
-        max: 0,
-        min: 0,
-        name: task.name,
-        opsPerSec: 0,
-        standardDeviation: 0,
-      };
-    }
+  return tasks
+    .filter((task) => task.result && task.result.latency)
+    .map((task) => {
+      const result = task.result!;
 
-    return {
-      average: result.latency.mean,
-      max: result.latency.max,
-      min: result.latency.min,
-      name: task.name,
-      opsPerSec: Math.round(1000 / result.latency.mean),
-      standardDeviation: result.latency.sd,
-    };
-  });
+      return {
+        average: result.latency.mean,
+        max: result.latency.max,
+        min: result.latency.min,
+        name: task.name,
+        opsPerSec: Math.round(1000 / result.latency.mean),
+        standardDeviation: result.latency.sd,
+      };
+    });
 };
 
 /**
@@ -135,6 +128,7 @@ const AVAILABLE_SUITES = {
   'sync-function-schema':
     'schema-based sync function assertions (return Zod schema/AssertionParseRequest)',
   'sync-schema': 'Sync schema-based assertions (validation with Zod schemas)',
+  'value-to-schema': 'ValueToSchema function performance benchmarks',
 } as const;
 
 /**
@@ -377,6 +371,21 @@ const runBenchmarks = async (options: RunnerOptions): Promise<void> => {
       benchResults.push(...formatResults(bench.tasks));
       if (options.table) {
         tables.push(['Async Schema-based Assertions', bench.table()]);
+      }
+    }
+
+    if (
+      resolvedOptions.suites.includes('all') ||
+      resolvedOptions.suites.includes('value-to-schema')
+    ) {
+      const bench = await runBenchmarkSuite(
+        'ValueToSchema Function Benchmarks',
+        createValueToSchemaBench,
+        options.mode,
+      );
+      benchResults.push(...formatResults(bench.tasks));
+      if (options.table) {
+        tables.push(['ValueToSchema Function Benchmarks', bench.table()]);
       }
     }
 

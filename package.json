@@ -118,6 +118,8 @@
   "scripts": {
     "bench": "tsx bench/runner.ts",
     "bench:dev": "tsx --watch bench/runner.ts",
+    "bench:value-to-schema": "tsx bench/runner.ts --suites=value-to-schema",
+    "bench:value-to-schema:dev": "tsx --watch bench/runner.ts --suites=value-to-schema",
     "build": "tshy",
     "build:dev": "tshy --watch",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
