@@ -7,7 +7,7 @@ category: Assertions
 
 These are the most basic expectations about the _type_ of a subject.
 
-### `{unknown} to be a string`
+### {unknown} to be a string
 
 **Success**:
 
@@ -28,7 +28,7 @@ expect(42, 'to be a string');
 expect(42, 'not to be a string');
 ```
 
-### `{unknown} to be a boolean`
+### {unknown} to be a boolean
 
 > ✏️ Aliases:
 >
@@ -56,7 +56,7 @@ expect(0, 'to be a boolean');
 expect(0, 'not to be a boolean');
 ```
 
-### `{unknown} to be a number`
+### {unknown} to be a number
 
 > ✏️ Aliases:
 >
@@ -88,7 +88,7 @@ expect(NaN, 'not to be a number');
 expect(Infinity, 'not to be a number');
 ```
 
-### `{unknown} to be a bigint`
+### {unknown} to be a bigint
 
 **Success**:
 
@@ -109,7 +109,7 @@ expect(42, 'to be a bigint');
 expect(42, 'not to be a bigint');
 ```
 
-### `{unknown} to be a symbol`
+### {unknown} to be a symbol
 
 **Success**:
 
@@ -130,7 +130,7 @@ expect('foo', 'to be a symbol');
 expect('foo', 'not to be a symbol');
 ```
 
-### `{unknown} to be null`
+### {unknown} to be null
 
 **Success**:
 
@@ -151,7 +151,7 @@ expect(undefined, 'to be null');
 expect(undefined, 'not to be null');
 ```
 
-### `{unknown} to be undefined`
+### {unknown} to be undefined
 
 **Success**:
 
@@ -172,7 +172,7 @@ expect(null, 'to be undefined');
 expect(null, 'not to be undefined');
 ```
 
-### `{unknown} to be a primitive`
+### {unknown} to be a primitive
 
 **Success**:
 

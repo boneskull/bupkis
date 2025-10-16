@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test functions, their behavior, and properties.
 
-### `{unknown} to be a function`
+### {unknown} to be a function
 
 **Success**:
 
@@ -52,7 +52,7 @@ expect(function () {}, 'to be an async function');
 expect(function () {}, 'not to be an async function');
 ```
 
-### `{unknown} to be a constructor`
+### {unknown} to be a constructor
 
 > ✏️ Aliases:
 >
@@ -88,7 +88,7 @@ expect(fn, 'to be a class');
 expect(fn, 'not to be a class');
 ```
 
-### `{function} to have arity {nonnegative-integer}`
+### {function} to have arity {nonnegative-integer}
 
 **Success**:
 
@@ -118,7 +118,7 @@ expect(greet, 'to have arity', 2);
 expect(greet, 'not to have arity', 2);
 ```
 
-### `{function} to throw [{any}]`
+### {function} to throw [{any}]
 
 > ✏️ Aliases:
 >
@@ -202,7 +202,7 @@ expect(
 );
 ```
 
-### `{function} to throw a {constructor}`
+### {function} to throw a {constructor}
 
 > ✏️ Aliases:
 >
@@ -254,7 +254,7 @@ expect(
 );
 ```
 
-### `{function} to throw a {constructor} satisfying {any}`
+### {function} to throw a {constructor} satisfying {any}
 
 > ✏️ Aliases:
 >

@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test objects, their properties, and object-specific behaviors.
 
-### `{unknown} to be an object`
+### {unknown} to be an object
 
 **Success**:
 
@@ -33,7 +33,7 @@ expect('hello', 'not to be an object');
 expect(null, 'not to be an object');
 ```
 
-### `{unknown} to be a record`
+### {unknown} to be a record
 
 > ✏️ Aliases:
 >
@@ -61,7 +61,7 @@ expect(new Date(), 'to be a record');
 expect([], 'not to be a record');
 ```
 
-### &lt;object&gt; to be empty
+### {object} to be empty
 
 **Success**:
 
@@ -82,7 +82,7 @@ expect({ a: 1 }, 'to be empty');
 expect({ a: 1 }, 'not to be empty');
 ```
 
-### `{object} to have keys {array}`
+### {object} to have keys {array}
 
 > ✏️ Aliases:
 >
@@ -229,7 +229,7 @@ expect(obj, 'not to have exact key', 'missing');
 expect(obj, 'not to have exact property', 'nested.prop'); // no traversal
 ```
 
-### `{object} to have a null prototype`
+### {object} to have a null prototype
 
 > ✏️ Aliases:
 >
@@ -256,7 +256,7 @@ expect({}, 'to have a null prototype');
 expect({}, 'not to have a null prototype');
 ```
 
-### `{string | number | symbol} to be an enumerable property of {non-null}`
+### {string | number | symbol} to be an enumerable property of {non-null}
 
 > ✏️ Aliases:
 >
@@ -287,7 +287,7 @@ expect('b', 'to be an enumerable property of', obj);
 expect('b', 'not to be an enumerable property of', obj);
 ```
 
-### `{unknown} to be sealed`
+### {unknown} to be sealed
 
 **Success**:
 
@@ -310,7 +310,7 @@ expect({}, 'to be sealed');
 expect({}, 'not to be sealed');
 ```
 
-### {`unknown} to be frozen`
+### {unknown} to be frozen
 
 **Success**:
 
@@ -333,7 +333,7 @@ expect({}, 'to be frozen');
 expect({}, 'not to be frozen');
 ```
 
-### `{unknown} to be extensible`
+### {unknown} to be extensible
 
 **Success**:
 
@@ -356,7 +356,7 @@ expect(obj, 'to be extensible');
 expect(obj, 'not to be extensible');
 ```
 
-### `{object} to satisfy {any}`
+### {object} to satisfy {any}
 
 > ✏️ Aliases:
 >

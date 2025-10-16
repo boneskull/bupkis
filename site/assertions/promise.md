@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions all expect a `Promise` subject. Use `expectAsync()` for these assertions.
 
-### `{Promise} to resolve`
+### {Promise} to resolve
 
 > ✏️ Aliases:
 >
@@ -37,7 +37,7 @@ await expectAsync(Promise.reject('error'), 'to resolve');
 await expectAsync(Promise.reject('error'), 'not to resolve');
 ```
 
-### `{Promise} to reject`
+### {Promise} to reject
 
 **Success**:
 
@@ -64,7 +64,7 @@ await expectAsync(Promise.resolve(42), 'to reject');
 await expectAsync(Promise.resolve(42), 'not to reject');
 ```
 
-### `{Promise} to reject with a {constructor}`
+### {Promise} to reject with a {constructor}
 
 > ✏️ Aliases:
 >
@@ -108,7 +108,7 @@ await expectAsync(
 );
 ```
 
-### `{Promise} to reject with error satisfying {any}`
+### {Promise} to reject with error satisfying {any}
 
 > 👉 See [`{object} to satisfy {any}`](object.md#object-to-satisfy-any)
 
@@ -158,7 +158,7 @@ await expectAsync(
 );
 ```
 
-### `{Promise} to resolve with value satisfying {any}`
+### {Promise} to resolve with value satisfying {any}
 
 > ✏️ Aliases:
 >

@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test `Error` objects and their properties. If the subject _looks like_ an `Error` but is not an instance of `Error`, these assertions will be unavailable.
 
-### `{unknown} to be an Error`
+### {unknown} to be an Error
 
 > ✏️ Aliases:
 >
@@ -35,7 +35,7 @@ expect('error message', 'to be an Error');
 expect('error message', 'not to be an Error');
 ```
 
-### `{Error} to have message {string}`
+### {Error} to have message {string}
 
 **Success**:
 
@@ -61,7 +61,7 @@ expect(error, 'to have message', 'Expected message');
 expect(error, 'not to have message', 'Expected message');
 ```
 
-### `{Error} to have message matching {RegExp}`
+### {Error} to have message matching {RegExp}
 
 **Success**:
 

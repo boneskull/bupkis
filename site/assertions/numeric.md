@@ -7,11 +7,11 @@ category: Assertions
 
 These assertions test numeric values, ranges, and mathematical relationships.
 
-### `{unknown} to be a number`
+### {unknown} to be a number
 
 > 👉 See [to be a number](primitive.md#unknown-to-be-a-number)
 
-### `{unknown} to be infinite`
+### {unknown} to be infinite
 
 **Success**:
 
@@ -33,7 +33,7 @@ expect(42, 'to be infinite');
 expect(42, 'not to be infinite');
 ```
 
-### `{unknown} to be Infinity`
+### {unknown} to be Infinity
 
 **Success**:
 
@@ -54,7 +54,7 @@ expect(-Infinity, 'to be Infinity');
 expect(-Infinity, 'not to be Infinity');
 ```
 
-### `{unknown} to be -Infinity`
+### {unknown} to be -Infinity
 
 **Success**:
 
@@ -75,7 +75,7 @@ expect(Infinity, 'to be -Infinity');
 expect(Infinity, 'not to be -Infinity');
 ```
 
-### `{unknown} to be positive`
+### {unknown} to be positive
 
 > ✏️ Aliases:
 >
@@ -104,7 +104,7 @@ expect(-5, 'not to be positive');
 expect(0, 'not to be positive');
 ```
 
-### `{unknown} to be a positive integer`
+### {unknown} to be a positive integer
 
 > ✏️ Aliases:
 >
@@ -132,7 +132,7 @@ expect(-5, 'to be a positive integer');
 expect(3.14, 'not to be a positive integer');
 ```
 
-### `{unknown} to be negative`
+### {unknown} to be negative
 
 > ✏️ Aliases:
 >
@@ -161,7 +161,7 @@ expect(5, 'not to be negative');
 expect(0, 'not to be negative');
 ```
 
-### `{unknown} to be a negative integer`
+### {unknown} to be a negative integer
 
 > ✏️ Aliases:
 >
@@ -189,7 +189,7 @@ expect(5, 'to be a negative integer');
 expect(-3.14, 'not to be a negative integer');
 ```
 
-### `{unknown} to be NaN`
+### {unknown} to be NaN
 
 **Success**:
 
@@ -211,7 +211,7 @@ expect(42, 'to be NaN');
 expect(42, 'not to be NaN');
 ```
 
-### `{unknown} to be an integer`
+### {unknown} to be an integer
 
 > ✏️ Aliases:
 >
@@ -241,7 +241,7 @@ expect(3.14, 'to be an integer');
 expect(3.14, 'not to be an integer');
 ```
 
-### `{unknown} to be greater than {number}`
+### {unknown} to be greater than {number}
 
 **Success**:
 
@@ -263,7 +263,7 @@ expect(5, 'to be greater than', 10);
 expect(5, 'not to be greater than', 10);
 ```
 
-### `{unknown} to be less than {number}`
+### {unknown} to be less than {number}
 
 > ✏️ Aliases:
 >
@@ -290,7 +290,7 @@ expect(10, 'to be less than', 5);
 expect(10, 'not to be less than', 5);
 ```
 
-### `{unknown} to be greater than or equal to {number}`
+### {unknown} to be greater than or equal to {number}
 
 > ✏️ Aliases:
 >
@@ -318,7 +318,7 @@ expect(5, 'to be greater than or equal to', 10);
 expect(5, 'not to be greater than or equal to', 10);
 ```
 
-### `{unknown} to be less than or equal to {number}`
+### {unknown} to be less than or equal to {number}
 
 > ✏️ Aliases:
 >
@@ -346,7 +346,7 @@ expect(15, 'to be less than or equal to', 10);
 expect(15, 'not to be less than or equal to', 10);
 ```
 
-### `{number} to be within {number} and {number}`
+### {number} to be within {number} and {number}
 
 > ✏️ Aliases:
 >
@@ -375,7 +375,7 @@ expect(15, 'to be within', 1, 10);
 expect(15, 'not to be within', 1, 10);
 ```
 
-### `{number} to be close to {number} within {number}`
+### {number} to be close to {number} within {number}
 
 > ℹ️ The first number is the _subject_, the second number is the _target_, and the third number is the _tolerance_.
 

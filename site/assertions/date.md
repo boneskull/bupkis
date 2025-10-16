@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test Date objects, time-related values, durations, and temporal relationships.
 
-### `{unknown} to be a Date`
+### {unknown} to be a Date
 
 > ✏️ Aliases:
 >
@@ -37,7 +37,7 @@ expect('2024-01-01', 'not to be a date');
 expect(1704067200000, 'not to be a Date');
 ```
 
-### `{unknown} to be a valid date`
+### {unknown} to be a valid date
 
 > ✏️ Aliases:
 >
@@ -67,7 +67,7 @@ expect('invalid-date', 'not to be a valid date');
 expect(NaN, 'not to be date-like');
 ```
 
-### `{date-like} to be before {date-like}`
+### {date-like} to be before {date-like}
 
 **Success**:
 
@@ -90,7 +90,7 @@ expect(new Date('2023-01-01'), 'to be before', new Date('2022-01-01'));
 expect(new Date('2023-01-01'), 'not to be before', new Date('2022-01-01'));
 ```
 
-### `{date-like} to be after {date-like}`
+### {date-like} to be after {date-like}
 
 **Success**:
 
@@ -113,7 +113,7 @@ expect(new Date('2022-01-01'), 'to be after', new Date('2023-01-01'));
 expect(new Date('2022-01-01'), 'not to be after', new Date('2023-01-01'));
 ```
 
-### `{date-like} to be between {date-like} and {date-like}`
+### {date-like} to be between {date-like} and {date-like}
 
 **Success**:
 
@@ -151,7 +151,7 @@ expect(
 );
 ```
 
-### `{date-like} to be the same date as {date-like}`
+### {date-like} to be the same date as {date-like}
 
 **Success**:
 
@@ -185,7 +185,7 @@ expect(
 );
 ```
 
-### `{date-like} to equal {date-like} within {duration}`
+### {date-like} to equal {date-like} within {duration}
 
 **Success**:
 
@@ -211,7 +211,7 @@ expect(date1, 'to equal', date2, 'within', '100 milliseconds');
 expect(date1, 'not to equal', date2, 'within', '100 milliseconds');
 ```
 
-### `{unknown} to be a weekend`
+### {unknown} to be a weekend
 
 Tests whether the date represents a weekend day (Saturday or Sunday) **in UTC**.
 
@@ -236,7 +236,7 @@ expect(new Date('2023-01-09'), 'to be a weekend'); // Monday in UTC
 expect(new Date('2023-01-09'), 'not to be a weekend'); // Monday in UTC
 ```
 
-### `{unknown} to be a weekday`
+### {unknown} to be a weekday
 
 Tests whether the date represents a weekday (Monday through Friday) **in UTC**.
 

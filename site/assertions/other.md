@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions are the odd ducks. We don't have the mental stamina to categorize them properly.
 
-### `{unknown} to be truthy`
+### {unknown} to be truthy
 
 > ✏️ Aliases:
 >
@@ -44,7 +44,7 @@ expect('', 'not to exist');
 expect(false, 'not to be ok');
 ```
 
-### `{unknown} to be falsy`
+### {unknown} to be falsy
 
 **Success**:
 
@@ -74,7 +74,7 @@ expect('hello', 'not to be falsy');
 expect(true, 'not to be falsy');
 ```
 
-### `{unknown} to be defined`
+### {unknown} to be defined
 
 **Success**:
 

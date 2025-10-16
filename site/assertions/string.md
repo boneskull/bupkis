@@ -7,11 +7,11 @@ category: Assertions
 
 These assertions test strings, regular expressions, and pattern matching.
 
-### `{unknown} to be a string`
+### {unknown} to be a string
 
 > 👉 See [to be a string](primitive.md#unknown-to-be-a-string)
 
-### `{unknown} to be a RegExp`
+### {unknown} to be a RegExp
 
 > ✏️ Aliases:
 >
@@ -40,7 +40,7 @@ expect('hello', 'to be a RegExp');
 expect('hello', 'not to be a RegExp');
 ```
 
-### `{string} to begin with {string}`
+### {string} to begin with {string}
 
 > ✏️ Aliases:
 >
@@ -67,7 +67,7 @@ expect('hello world', 'to begin with', 'world');
 expect('hello world', 'not to begin with', 'world');
 ```
 
-### `{string} to end with {string}`
+### {string} to end with {string}
 
 **Success**:
 
@@ -89,7 +89,7 @@ expect('hello world', 'to end with', 'hello');
 expect('hello world', 'not to end with', 'hello');
 ```
 
-### `{string} to match {RegExp}`
+### {string} to match {RegExp}
 
 **Success**:
 
@@ -112,7 +112,7 @@ expect('hello', 'to match', /\d+/);
 expect('hello', 'not to match', /\d+/);
 ```
 
-### `{string} to be empty`
+### {string} to be empty
 
 **Success**:
 
@@ -133,7 +133,7 @@ expect('hello', 'to be empty');
 expect('hello', 'not to be empty');
 ```
 
-### `{string} to be non-empty`
+### {string} to be non-empty
 
 Functionally identical to ["not to be empty"](#string-to-be-empty).
 
@@ -159,7 +159,7 @@ expect('', 'to be non-empty');
 expect('', 'not to be non-empty');
 ```
 
-### `{string} includes {string}`
+### {string} includes {string}
 
 > ✏️ Aliases:
 >

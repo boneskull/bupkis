@@ -7,7 +7,7 @@ category: Assertions
 
 These assertions test equality, identity, and value comparisons.
 
-### `{unknown} to equal {any}`
+### {unknown} to equal {any}
 
 > ✏️ Aliases:
 >
@@ -44,7 +44,7 @@ expect(42, 'not to be', '42');
 expect({}, 'not to equal', {});
 ```
 
-### `{unknown} to deep equal {any}`
+### {unknown} to deep equal {any}
 
 > ✏️ Aliases:
 >
@@ -72,7 +72,7 @@ expect({ a: 1 }, 'to deep equal', { a: 1, b: 2 });
 expect({ a: 1 }, 'not to deep equal', { a: 1, b: 2 });
 ```
 
-### `{unknown} to be one of {array}`
+### {unknown} to be one of {array}
 
 **Success**:
 
@@ -94,7 +94,7 @@ expect(5, 'to be one of', [1, 2, 3]);
 expect(5, 'not to be one of', [1, 2, 3]);
 ```
 
-### `{unknown} to be an instance of {constructor}`
+### {unknown} to be an instance of {constructor}
 
 > ✏️ Aliases:
 >
@@ -123,7 +123,7 @@ expect('hello', 'to be an instance of', Number);
 expect('hello', 'not to be an instance of', Number);
 ```
 
-### `{unknown} to be a {intrinsic-type}`
+### {unknown} to be a {intrinsic-type}
 
 > ✏️ Aliases:
 >
