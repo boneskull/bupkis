@@ -22,18 +22,18 @@ const SOURCE_DIR = fileURLToPath(new URL('../site/media/', import.meta.url));
  */
 const CATEGORY_DOC_MAP = freeze(
   /** @type {const} */ ({
-    async: 'Promise_Assertions.html',
-    collections: 'Collections_Assertions.html',
-    date: 'Date___Time_Assertions.html',
-    equality: 'Equality___Comparison_Assertions.html',
-    error: 'Error_Assertions.html',
-    function: 'Function_Assertions.html',
-    numeric: 'Numeric_Assertions.html',
-    object: 'Object_Assertions.html',
-    other: 'Other_Assertions.html',
-    primitives: 'Primitive_Assertions.html',
-    promise: 'Promise_Assertions.html',
-    strings: 'String___Pattern_Assertions.html',
+    async: 'Promise_Assertions',
+    collections: 'Collections_Assertions',
+    date: 'Date___Time_Assertions',
+    equality: 'Equality___Comparison_Assertions',
+    error: 'Error_Assertions',
+    function: 'Function_Assertions',
+    numeric: 'Numeric_Assertions',
+    object: 'Object_Assertions',
+    other: 'Other_Assertions',
+    primitives: 'Primitive_Assertions',
+    promise: 'Promise_Assertions',
+    strings: 'String___Pattern_Assertions',
   }),
 );
 
