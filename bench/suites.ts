@@ -44,7 +44,7 @@ import {
 /**
  * Configuration for benchmark creation
  */
-interface BenchmarkConfig {
+export interface BenchmarkConfig {
   assertions: readonly AnyAssertion[];
   filter: (assertion: AnyAssertion) => boolean;
   label: string;
@@ -58,7 +58,7 @@ interface BenchmarkConfig {
 /**
  * Factory function to create event handlers with timeout management
  */
-const createEventHandlers = (benchmarkName: string) => {
+export const createEventHandlers = (benchmarkName: string) => {
   const taskTimeouts = new Map<string, NodeJS.Timeout>();
 
   const startHandler = () => {
@@ -125,7 +125,7 @@ const createEventHandlers = (benchmarkName: string) => {
 /**
  * Factory function to create a benchmark with standardized setup
  */
-const createBenchmark = (config: BenchmarkConfig): Bench => {
+export const createBenchmark = (config: BenchmarkConfig): Bench => {
   const bench = new Bench(DEFAULT_BENCH_CONFIG);
   const filteredAssertions = config.assertions.filter(config.filter);
 
@@ -161,11 +161,6 @@ const createBenchmark = (config: BenchmarkConfig): Bench => {
       const taskName = `${assertion} [${config.name}]`;
 
       bench.add(taskName, () => config.taskRunner(assertion, [...testData]));
-
-      // Add timeout handling for individual tasks
-      // task.addEventListener('start', () => {
-      //   handlers.createTaskTimeout(taskName);
-      // });
     }
   }
 
@@ -461,167 +456,6 @@ export const createAsyncSchemaAssertionsBench = (): Bench =>
       }
     },
   });
-
-/**
- * Create benchmarks for basic type assertions using test data generators.
- * Replaces the hardcoded createTypeAssertionsBench from suites.ts.
- */
-export const createTypeAssertionsBench = (): Bench => {
-  // Filter for basic type checking assertions
-  const isBasicTypeAssertion = (assertion: AnyAssertion): boolean => {
-    const phrase = getPrimaryPhrase(assertion);
-    if (!phrase) {
-      return false;
-    }
-
-    return [
-      'to be a string',
-      'to be a number',
-      'to be a boolean',
-      'to be an array',
-      'to be an object',
-      'to be null',
-      'to be undefined',
-      'to be defined',
-      'to be a bigint',
-      'to be a date',
-      'to be a class',
-      'to be a function',
-      'to be an async function',
-    ].some((pattern) => phrase.includes(pattern));
-  };
-
-  return createBenchmark({
-    assertions: SyncAssertions,
-    filter: isBasicTypeAssertion,
-    label: 'basic type assertions',
-    name: 'type',
-    taskRunner: (assertion, testData) => {
-      try {
-        expect(...testData);
-      } catch (error) {
-        warnUnexpectedException(assertion, error);
-      }
-    },
-  });
-};
-
-/**
- * Create benchmarks for collection-based assertions using test data generators.
- * Replaces the hardcoded createCollectionAssertionsBench from suites.ts.
- */
-export const createCollectionAssertionsBench = (): Bench => {
-  // Filter for collection operations (arrays, objects, etc.)
-  const isCollectionAssertion = (assertion: AnyAssertion): boolean => {
-    const phrase = getPrimaryPhrase(assertion);
-    if (!phrase) {
-      return false;
-    }
-
-    return [
-      'to contain',
-      'to have key',
-      'to have length',
-      'to have size',
-      'to be empty',
-      'to have property',
-      'to include',
-    ].some((pattern) => phrase.includes(pattern));
-  };
-
-  return createBenchmark({
-    assertions: SyncAssertions,
-    filter: isCollectionAssertion,
-    label: 'collection assertions',
-    name: 'collection',
-    taskRunner: (assertion, testData) => {
-      try {
-        expect(...testData);
-      } catch (error) {
-        warnUnexpectedException(assertion, error);
-      }
-    },
-  });
-};
-
-/**
- * Create benchmarks for equality and comparison assertions using test data
- * generators. Replaces the hardcoded createComparisonAssertionsBench from
- * suites.ts.
- */
-export const createComparisonAssertionsBench = (): Bench => {
-  // Filter for equality and comparison operations
-  const isComparisonAssertion = (assertion: AnyAssertion): boolean => {
-    const phrase = getPrimaryPhrase(assertion);
-    if (!phrase) {
-      return false;
-    }
-
-    return [
-      'to equal',
-      'to be greater than',
-      'to be less than',
-      'to be greater than or equal to',
-      'to be less than or equal to',
-      'to be close to',
-      'to deep equal',
-      'to satisfy',
-      'to satisfies',
-    ].some((pattern) => phrase.includes(pattern));
-  };
-
-  return createBenchmark({
-    assertions: SyncAssertions,
-    filter: isComparisonAssertion,
-    label: 'comparison assertions',
-    name: 'comparison',
-    taskRunner: (assertion, testData) => {
-      try {
-        expect(...testData);
-      } catch (error) {
-        warnUnexpectedException(assertion, error);
-      }
-    },
-  });
-};
-
-/**
- * Create benchmarks for pattern matching and regex assertions using test data
- * generators. Replaces the hardcoded createPatternAssertionsBench from
- * suites.ts.
- */
-export const createPatternAssertionsBench = (): Bench => {
-  // Filter for pattern matching and string operations
-  const isPatternAssertion = (assertion: AnyAssertion): boolean => {
-    const phrase = getPrimaryPhrase(assertion);
-    if (!phrase) {
-      return false;
-    }
-
-    return [
-      'to match',
-      'to start with',
-      'to end with',
-      'to include',
-      'to be truthy',
-      'to be falsy',
-    ].some((pattern) => phrase.includes(pattern));
-  };
-
-  return createBenchmark({
-    assertions: SyncAssertions,
-    filter: isPatternAssertion,
-    label: 'pattern assertions',
-    name: 'pattern',
-    taskRunner: (assertion, testData) => {
-      try {
-        expect(...testData);
-      } catch (error) {
-        warnUnexpectedException(assertion, error);
-      }
-    },
-  });
-};
 
 /**
  * Configuration options for benchmark modes.

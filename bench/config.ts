@@ -59,6 +59,7 @@ export const PERFORMANCE_THRESHOLDS = {
   'sync-function-pure': 1200, // Pure sync function assertions (return AssertionFailure/boolean)
   'sync-function-schema': 800, // Schema-based sync function assertions (return Zod schema/AssertionParseRequest)
   'sync-schema': 1500, // Sync schema-based assertions (validation with Zod schemas)
+  'value-to-schema': 5000, // ValueToSchema function benchmarks
 } as const;
 
 /**
