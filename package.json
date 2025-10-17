@@ -178,8 +178,8 @@
     "@types/node": "24.7.2",
     "@types/slug": "5.0.9",
     "@types/wallabyjs": "0.0.15",
-    "@typescript-eslint/typescript-estree": "8.46.0",
-    "@typescript-eslint/utils": "8.46.0",
+    "@typescript-eslint/typescript-estree": "8.46.1",
+    "@typescript-eslint/utils": "8.46.1",
     "c8": "10.1.3",
     "cspell": "9.2.1",
     "escape-string-regexp": "5.0.0",
@@ -210,7 +210,7 @@
     "typedoc-plugin-redirect": "1.2.1",
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.0"
+    "typescript-eslint": "8.46.1"
   },
   "publishConfig": {
     "access": "public",
