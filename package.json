@@ -143,7 +143,7 @@
     "profile:benchmarks": "tsx scripts/profile-benchmarks.ts",
     "profile:property": "node --cpu-prof --cpu-prof-dir=.profiles --import tsx --test \"test/property/**/*.test.ts\"",
     "profile:test": "run-s test:profile",
-    "test": "run-s \"test:base -- \\\"test/assertion-error/**/*.test.ts\\\" \\\"test/core/**/*.test.ts\\\" \\\"test/error/**/*.test.ts\\\" \\\"test/property/!(assertion-classification|performance-validation).test.ts\\\" \\\"test/*.test.ts\\\"\"",
+    "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
     "test:bench": "run-s \"test:base -- \\\"test/bench/**/*.test.ts\\\" \\\"test/assertion/*suite*.test.ts\\\" \\\"test/property/assertion-classification.test.ts\\\" \\\"test/property/performance-validation.test.ts\\\"\"",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",

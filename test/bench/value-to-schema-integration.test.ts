@@ -25,11 +25,7 @@ describe('valueToSchema benchmark integration', () => {
       expect(suites['value-to-schema'], 'to contain', 'ValueToSchema');
     } else {
       // Suite should be available
-      expect(
-        true,
-        'to be false',
-        'AVAILABLE_SUITES should exist and include value-to-schema',
-      );
+      expect.fail('AVAILABLE_SUITES should exist and include value-to-schema');
     }
   });
 
@@ -46,7 +42,7 @@ describe('valueToSchema benchmark integration', () => {
       const suites = runner.AVAILABLE_SUITES as Record<string, string>;
       expect('value-to-schema' in suites, 'to be true');
     } else {
-      expect(true, 'to be false', 'AVAILABLE_SUITES should exist');
+      expect.fail('AVAILABLE_SUITES should exist');
     }
   });
 
@@ -114,7 +110,7 @@ describe('valueToSchema benchmark integration', () => {
       expect(mockResult.analysis, 'to be an object');
     } catch (_error) {
       // Tests are expected to work even in TDD phase for structure
-      expect(true, 'to be false', 'Structure test should not fail');
+      expect.fail('Structure test should not fail');
     }
   });
 });
