@@ -157,7 +157,7 @@ export const createNestedStructureGenerators = (
  * Creates generators for array types. These test array handling paths in
  * valueToSchema.
  */
-export const createArrayGenerators = (options: GeneratorOptions = {}) => {
+const createArrayGenerators = (options: GeneratorOptions = {}) => {
   const { includeEdgeCases = false, maxArrayLength = 10 } = options;
 
   const baseGenerators = {
@@ -183,7 +183,7 @@ export const createArrayGenerators = (options: GeneratorOptions = {}) => {
  * Creates generators for plain object types. These test object handling paths
  * in valueToSchema.
  */
-export const createObjectGenerators = (options: GeneratorOptions = {}) => {
+const createObjectGenerators = (options: GeneratorOptions = {}) => {
   const { includeEdgeCases = false, maxObjectProperties = 10 } = options;
 
   const baseGenerators = {
