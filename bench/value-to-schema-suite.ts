@@ -24,6 +24,9 @@ import { valueToSchemaGeneratorFactory } from '../test-data/value-to-schema-gene
 import { colors, DEFAULT_BENCH_CONFIG } from './config.js';
 import { createEventHandlers } from './suites.js';
 
+const P95_Z_SCORE = 1.645;
+const P99_Z_SCORE = 2.326;
+
 /**
  * Creates a benchmark suite for valueToSchema() function. Follows the standard
  * benchmark creation pattern used by assertion benchmarks.
@@ -168,10 +171,14 @@ export const runValueToSchemaBenchmark = async (
     if (task && task.result && taskConfig) {
       results.push({
         executionTime: {
-          mean: task.result.latency.mean * 1000, // Convert to milliseconds
-          median: task.result.latency.mean * 1000, // Use mean as approximation for median
-          p95: task.result.latency.mean * 1.2 * 1000, // Approximate p95
-          p99: task.result.latency.mean * 1.5 * 1000, // Approximate p99
+          mean: task.result.latency.mean * 1000,
+          median: task.result.latency.mean * 1000,
+          p95:
+            (task.result.latency.mean + P95_Z_SCORE * task.result.latency.sd) *
+            1000,
+          p99:
+            (task.result.latency.mean + P99_Z_SCORE * task.result.latency.sd) *
+            1000,
         },
         inputCategory: taskConfig.category,
         memoryUsage: {
@@ -179,7 +186,7 @@ export const runValueToSchemaBenchmark = async (
           heapTotal: process.memoryUsage().heapTotal,
           heapUsed: process.memoryUsage().heapUsed,
         },
-        operationsPerSecond: task.result.hz || 0,
+        operationsPerSecond: task.result.throughput.mean || 0,
         options: taskConfig.options,
         timestamp: new Date(),
       });
@@ -230,7 +237,7 @@ export const generateTestData = (
     const limitedCount = Math.min(count, 50);
 
     // Generate test data using fast-check with type casting
-    const samples = fc.sample(generator as fc.Arbitrary<unknown>, limitedCount);
+    const samples = fc.sample(generator, limitedCount);
 
     const generationTime = Date.now() - startTime;
 
