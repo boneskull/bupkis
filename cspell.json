@@ -74,7 +74,9 @@
     "qwen",
     "pytest",
     "TKTK",
-    "chema"
+    "chema",
+    "valuetoschema",
+    "hexa"
   ],
   "words": [
     "bupkis",
@@ -84,7 +86,6 @@
     "nevermind",
     "pataphysical",
     "primordials",
-    "granularities",
-    "valuetoschema"
+    "granularities"
   ]
 }
