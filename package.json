@@ -118,6 +118,8 @@
   "scripts": {
     "bench": "tsx bench/runner.ts",
     "bench:dev": "tsx --watch bench/runner.ts",
+    "bench:value-to-schema": "tsx bench/runner.ts --suites=value-to-schema",
+    "bench:value-to-schema:dev": "tsx --watch bench/runner.ts --suites=value-to-schema",
     "build": "tshy",
     "build:dev": "tshy --watch",
     "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
@@ -143,6 +145,7 @@
     "profile:test": "run-s test:profile",
     "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
+    "test:bench": "run-s \"test:base -- \\\"test/bench/**/*.test.ts\\\" \\\"test/assertion/*suite*.test.ts\\\" \\\"test/property/assertion-classification.test.ts\\\" \\\"test/property/performance-validation.test.ts\\\"\"",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
     "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
     "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",
