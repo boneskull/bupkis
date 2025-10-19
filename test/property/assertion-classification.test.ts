@@ -17,11 +17,15 @@ describe('assertion classification properties', () => {
 
         // All assertions should be either pure or schema, never both
         const allIds = new Set([
-          ...classification.pure.map((a) => a.id),
-          ...classification.schema.map((a) => a.id),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          ...classification.pure.map((a: any) => a.id),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          ...classification.schema.map((a: any) => a.id),
         ]);
-        const pureIds = new Set(classification.pure.map((a) => a.id));
-        const schemaIds = new Set(classification.schema.map((a) => a.id));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        const pureIds = new Set(classification.pure.map((a: any) => a.id));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        const schemaIds = new Set(classification.schema.map((a: any) => a.id));
 
         // No overlaps between pure and schema
         const intersection = new Set(
@@ -99,8 +103,10 @@ describe('assertion classification properties', () => {
         const classification2 = getSyncFunctionAssertions();
 
         // Compare pure assertion IDs
-        const pure1Ids = new Set(classification1.pure.map((a) => a.id));
-        const pure2Ids = new Set(classification2.pure.map((a) => a.id));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        const pure1Ids = new Set(classification1.pure.map((a: any) => a.id));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        const pure2Ids = new Set(classification2.pure.map((a: any) => a.id));
         assert.deepEqual(
           [...pure1Ids].sort(),
           [...pure2Ids].sort(),
@@ -108,8 +114,14 @@ describe('assertion classification properties', () => {
         );
 
         // Compare schema assertion IDs
-        const schema1Ids = new Set(classification1.schema.map((a) => a.id));
-        const schema2Ids = new Set(classification2.schema.map((a) => a.id));
+        const schema1Ids = new Set(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          classification1.schema.map((a: any) => a.id),
+        );
+        const schema2Ids = new Set(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          classification2.schema.map((a: any) => a.id),
+        );
         assert.deepEqual(
           [...schema1Ids].sort(),
           [...schema2Ids].sort(),
