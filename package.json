@@ -124,7 +124,7 @@
     "docs:build": "typedoc --cleanOutputDir --treatWarningsAsErrors",
     "docs:dev": "run-p \"docs:build -- --watch\" docs:serve",
     "docs:serve": "serve docs",
-    "lint": "run-p lint:eslint lint:types lint:knip lint:markdown lint:spelling",
+    "lint": "run-p -sl --aggregate-output lint:eslint lint:types lint:knip lint:markdown lint:spelling",
     "lint:commit": "commitlint",
     "lint:eslint": "eslint .",
     "lint:fix": "run-s \"lint:eslint -- --fix\"",
@@ -226,7 +226,8 @@
       ".wallaby.js",
       "**/*.cts",
       "**/*.d.ts",
-      "site/media/**/*"
+      "site/media/**/*",
+      "worktrees/**/*"
     ],
     "tags": [
       "-knipignore"

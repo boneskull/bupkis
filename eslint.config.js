@@ -201,6 +201,7 @@ export default defineConfig(
       '*.snapshot',
       '.tshy/**/*',
       '.tmp/**/*',
+      'worktrees/**/*',
     ],
   },
 );

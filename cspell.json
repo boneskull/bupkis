@@ -28,7 +28,8 @@
     "coverage",
     "dist",
     "docs",
-    "node_modules"
+    "node_modules",
+    "worktrees"
   ],
   "ignoreRandomStrings": true,
   "ignoreWords": [
