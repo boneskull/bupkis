@@ -13,7 +13,7 @@ import type { GeneratorOptions } from '../src/types.js';
  * Creates generators for primitive values (string, number, boolean, etc.).
  * These test the basic type detection and schema creation paths.
  */
-export const createPrimitiveGenerators = (options: GeneratorOptions = {}) => {
+const createPrimitiveGenerators = (options: GeneratorOptions = {}) => {
   const { includeEdgeCases = false } = options;
 
   const baseGenerators = {
@@ -47,9 +47,7 @@ export const createPrimitiveGenerators = (options: GeneratorOptions = {}) => {
  * Creates generators for special primitive values that might have specific
  * handling in valueToSchema (symbols, bigints, etc.).
  */
-export const createSpecialPrimitiveGenerators = (
-  options: GeneratorOptions = {},
-) => {
+const createSpecialPrimitiveGenerators = (options: GeneratorOptions = {}) => {
   const { includeEdgeCases = false } = options;
 
   const baseGenerators = {
@@ -74,9 +72,7 @@ export const createSpecialPrimitiveGenerators = (
  * Creates generators for builtin object types (Date, RegExp, Error, etc.).
  * These test object type detection and handling.
  */
-export const createBuiltinObjectGenerators = (
-  options: GeneratorOptions = {},
-) => {
+const createBuiltinObjectGenerators = (options: GeneratorOptions = {}) => {
   const { includeEdgeCases = false } = options;
 
   const baseGenerators = {
@@ -108,9 +104,7 @@ export const createBuiltinObjectGenerators = (
  * Creates generators for nested structures (objects with objects, arrays with
  * arrays). These test deep recursion and complex structure handling.
  */
-export const createNestedStructureGenerators = (
-  options: GeneratorOptions = {},
-) => {
+const createNestedStructureGenerators = (options: GeneratorOptions = {}) => {
   const {
     includeEdgeCases = false,
     maxArrayLength = 10,
