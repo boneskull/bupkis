@@ -1,6 +1,6 @@
 {
-  "name": "bupkis.zip",
-  "short_name": "bupkis",
+  "background_color": "#ffffff",
+  "display": "standalone",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ed2024",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "name": "bupkis.zip",
+  "short_name": "bupkis",
+  "theme_color": "#ed2024"
 }

@@ -1,7 +1,22 @@
 ---
 mode: 'agent'
 model: Claude Sonnet 4
-tools: ['codebase', 'usages', 'think', 'problems', 'testFailure', 'openSimpleBrowser', 'findTestFiles', 'searchResults', 'githubRepo', 'runTests', 'editFiles', 'search', 'runTasks']
+tools:
+  [
+    'codebase',
+    'usages',
+    'think',
+    'problems',
+    'testFailure',
+    'openSimpleBrowser',
+    'findTestFiles',
+    'searchResults',
+    'githubRepo',
+    'runTests',
+    'editFiles',
+    'search',
+    'runTasks',
+  ]
 description: 'Generate a docstring for the selected code'
 ---
 
@@ -48,5 +63,3 @@ The rest of these instructions will assume TypeScript or JavaScript sources and 
 - Any text _within a paragraph_ that refers to another symbol (such as a type, function, class, etc.) should use the inline `{@link ...}` tag (if the symbol is in scope) and wrap in backticks otherwise. Any filenames should also be linked using `file://` URLs.
 
 - You cannot reference a symbol tagged `@internal` from the docstring of a non-`@internal` symbol _except_ within a `@privateRemarks` block tag.
-
-
