@@ -29,7 +29,8 @@
     "dist",
     "docs",
     "node_modules",
-    "worktrees"
+    "worktrees",
+    "specs"
   ],
   "ignoreRandomStrings": true,
   "ignoreWords": [
