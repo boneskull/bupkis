@@ -5,11 +5,11 @@ category: Guides
 
 <h2><span class="bupkis">Bupkis</span>: Basic Usage</h2>
 
-This guide covers the fundamentals of using <span class="bupkis">BUPKIS</span> for assertions in your tests.
+So you want to use <span class="bupkis">BUPKIS</span> to write some assertions. Good. _Excellent_, even. This guide will get you started without the usual nonsense you'd find in other assertion libraries' documentation.
 
 ### Installation
 
-Install <span class="bupkis">BUPKIS</span> as a development dependency:
+If you're here, you likely know this part:
 
 ```bash
 npm install bupkis -D
@@ -17,25 +17,27 @@ npm install bupkis -D
 
 ### Prerequisites
 
-<span class="bupkis">BUPKIS</span> requires Node.js version **^20.19.0 || ^22.12.0 || >=23**.
+<span class="bupkis">BUPKIS</span> requires Node.js version **^20.19.0 || ^22.12.0 || >=23**. Take it or leave it.
 
-The library supports both **ESM** and **CommonJS** module systems, so you can use it with any modern Node.js project setup.
+The library supports both **ESM** and **CommonJS** module systems, because we're not ~~monsters~~ ~~pedants~~ _ideologues_ about this sort of thing.
 
 ### Importing
 
-<span class="bupkis">BUPKIS</span> provides different import strategies depending on your needs:
+We know—you just want to write some damn tests. But <span class="bupkis">BUPKIS</span> offers different import strategies because ~~we couldn't decide~~ different use cases demand different approaches:
 
 #### Quick Start: Just Expect
 
-If you want to start using assertions immediately with the built-in library:
+The most common case—you just want to make some assertions and get on with your life:
 
 ```ts
 import { expect } from 'bupkis';
+
+expect('hello', 'to be a string');
 ```
 
 #### Full Import: Building Custom Assertions
 
-For creating custom assertions and accessing all utilities:
+When you're ready to get fancy with custom assertions (and you _will_ be):
 
 ```ts
 import {
@@ -50,7 +52,7 @@ import {
 
 #### Namespace Imports
 
-You can also import organized namespaces:
+<span class="bupkis">BUPKIS</span> contains a lot of lovely exports:
 
 ```ts
 import { expect, assertion, guards, schema, util, error } from 'bupkis';
@@ -62,11 +64,13 @@ const myAssertion = assertion.createAssertion(['to be rad'], z.boolean());
 if (guards.isString(value)) {
   // value is guaranteed to be a string
 }
+
+schema.PropertyKeySchema.parse({}); // fails; not a number, symbol or string
 ```
 
 ## Basic Assertion Usage
 
-<span class="bupkis">BUPKIS</span> uses a natural language API instead of method chaining. Here's how it works in a typical test:
+Right. So. <span class="bupkis">BUPKIS</span> doesn't do the pretty-much-universally-reviled-in-2025-method-concatenation-thing. We've discussed this in the `README`, but it bears repeating: we buck the hell out of that busted trend. Here's a practical example using some sort of familiar test framework:
 
 ```ts
 import { expect } from 'bupkis';
@@ -85,23 +89,23 @@ describe('Basic assertions', () => {
   });
 
   it('should support negation', () => {
+    // prepend assertions with "not"
     expect(42, 'not to be a string');
     expect('hello', 'not to equal', 'goodbye');
   });
 
-  it('should work with objects', () => {
+  it('should partially match objects', () => {
     const user = { name: 'Alice', age: 30 };
 
-    expect(user, 'to be an object');
-    expect(user, 'to have property', 'name');
-    expect(user, 'to satisfy', { name: 'Alice' });
+    // concatenate assertions with "and"
+    expect(user, 'to be an object', 'and', 'to satisfy', { name: 'Alice' });
   });
 });
 ```
 
 ### Negation with "not"
 
-<span class="bupkis">BUPKIS</span> supports natural negation by prefixing assertions with `"not "`. This makes it easy to assert the opposite of any condition:
+Every assertion in <span class="bupkis">BUPKIS</span> can be negated. _Every. Single. One._ Just slap a `"not "` in front of your phrase and you're good. No need to remember separate "not" methods and no guilt about the flagrant abuse of getters:
 
 ```ts
 describe('Negation examples', () => {
@@ -127,76 +131,70 @@ describe('Negation examples', () => {
 });
 ```
 
-Negation works with **all** assertion types in <span class="bupkis">BUPKIS</span>. Simply prefix any assertion phrase with `"not "` and it will assert the opposite condition.
+Yes, it works with **all** assertion types. _Even your custom ones._
 
-### Chaining with "and"
+### Concatenation with "and"
 
-You can chain multiple assertions on the same value using `"and"`. This allows you to validate multiple conditions in a single, readable statement:
+Now here's where things get interesting. You can concatenate¹ multiple ("multiple" meaning _n_) assertions together using `"and"`:
 
 ```ts
-describe('Assertion chaining', () => {
-  it('should chain multiple type and value checks', () => {
-    // Chain type and range checks
+describe('Assertion concatenation', () => {
+  it('should concatenate multiple type and value checks', () => {
+    // Concatenate type and range checks
     expect(42, 'to be a number', 'and', 'to be greater than', 0);
     expect('hello', 'to be a string', 'and', 'to have length', 5);
 
-    // Chain multiple range conditions
+    // Concatenate multiple range conditions
     expect(25, 'to be greater than', 18, 'and', 'to be less than', 65);
   });
 
-  it('should chain object assertions', () => {
+  it('should concatenate object assertions', () => {
     const user = { name: 'Alice', age: 30, role: 'admin' };
 
     expect(user, 'to be an object', 'and', 'to have property', 'name');
     expect(user.name, 'to be a string', 'and', 'to contain', 'Alice');
   });
 
-  it('should chain array assertions', () => {
+  it('should concatenate again and again. love it!', () => {
     const numbers = [1, 2, 3, 4, 5];
 
-    expect(numbers, 'to be an array', 'and', 'to have length', 5);
-    expect(numbers, 'to contain', 3, 'and', 'to not contain', 10);
-  });
-
-  it('should work with complex chaining', () => {
-    const config = {
-      database: { host: 'localhost', port: 5432 },
-      features: ['auth', 'logging'],
-    };
-
     expect(
-      config.database.port,
-      'to be a number',
-      'and',
-      'to be between',
-      1024,
-      65535,
-    );
-    expect(
-      config.features,
+      numbers,
       'to be an array',
       'and',
-      'to have length greater than',
-      1,
+      'to have length',
+      5,
+      'and',
+      'to contain',
+      3,
+      'and',
+      'not to contain',
+      10,
     );
   });
 });
 ```
 
-#### Chaining Rules
+> ¹ _Author's note_: Carefully avoiding the use of "chain" here.
+
+#### Concatenation Rules
+
+Some things you need to know:
 
 - Use `"and"` to separate multiple assertions on the same subject
-- Each assertion after `"and"` applies to the original subject value
-- You can chain as many assertions as needed: `expect(value, assertion1, 'and', assertion2, 'and', assertion3)`
-- Chaining works with both regular and negated assertions
-- All chained assertions must pass for the overall assertion to succeed
+- Each assertion after `"and"` applies to the _original subject value_ (_not_ the result of the previous assertion)
+- Concatenate as many as you want: `expect(value, assertion1, 'and', assertion2, 'and', assertion3, ...)`
+- Works with both regular and negated assertions (because _of course it does_)
+- "And" is not "or"; _all_ concatenated assertions must pass for the overall assertion to succeed
 
-#### Chaining vs. Multiple Statements
+> **What about "or"?** It doesn't seem practically useful to us—this is for _testing_, after all—but if you have a use case, please [let us know](https://github.com/boneskull/bupkis/issues/new).
 
-Chaining provides several benefits over separate assertion statements:
+#### Concatenation vs. Multiple Statements
+
+You don't _have_ to concatenate assertions; it's mainly just a stylistic preference. The behavior is _exactly the same_ either way.
 
 ```ts
-// Using chaining (recommended for related conditions)
+// Using concatenation (recommended for related conditions)
 expect(age, 'to be a number', 'and', 'to be between', 18, 65);
 
 // Using separate statements (fine for unrelated conditions)
@@ -204,39 +202,11 @@ expect(age, 'to be a number');
 expect(age, 'to be between', 18, 65);
 ```
 
-Choose chaining when the assertions are logically related and you want them grouped together. Use separate statements when the assertions test different aspects of your code.
-
 ## Embeddable Assertions
 
-<span class="bupkis">BUPKIS</span> provides a powerful feature called **embeddable assertions** through the `expect.it()` function. This allows you to create reusable assertion functions that can be embedded within complex object patterns, particularly useful with the `'to satisfy'` assertion.
+You aren't ready for this, but: **embeddable assertions**. The dark-grey-magic `expect.it()` function lets you create assertions which can be used _within_ assertions supporting the "to satisfy" pattern. _How did you live without this?_
 
-### Basic Embeddable Assertions
-
-The `expect.it()` function creates an assertion function that can be used later:
-
-```ts
-import { expect } from 'bupkis';
-
-describe('Embeddable assertions', () => {
-  it('should create reusable assertion functions', () => {
-    // Create an embeddable assertion
-    const isString = expect.it('to be a string');
-    const isPositiveNumber = expect.it('to be greater than', 0);
-
-    // Use them directly
-    isString('hello'); // ✓ Passes
-    isPositiveNumber(42); // ✓ Passes
-
-    // These would fail:
-    // isString(123); // ✗ AssertionError
-    // isPositiveNumber(-5); // ✗ AssertionError
-  });
-});
-```
-
-### Embeddable Assertions in Object Patterns
-
-The real power comes when using embeddable assertions within object patterns for complex validation:
+Here, have some _absurdly expressive validation_ for complex structures:
 
 ```ts
 describe('Object pattern validation', () => {
@@ -265,92 +235,9 @@ describe('Object pattern validation', () => {
         lastLogin: expect.it('to match', /^\d{4}-\d{2}-\d{2}$/),
         preferences: {
           theme: expect.it('to be one of', ['light', 'dark']),
-          notifications: expect.it('to be a boolean'),
+          notifications: expect.it('to be a boolean', 'and', 'to be true'), // redundant, but proving a point
         },
       },
-    });
-  });
-});
-```
-
-### Mixing Pattern Types
-
-You can mix different types of patterns within the same object:
-
-```ts
-describe('Mixed pattern validation', () => {
-  it('should support mixed pattern types', () => {
-    const apiResponse = {
-      status: 'success',
-      data: {
-        id: 12345,
-        title: 'Important Document',
-        tags: ['urgent', 'review'],
-      },
-      timestamp: '2024-01-15T10:30:00Z',
-    };
-
-    expect(apiResponse, 'to satisfy', {
-      status: 'success', // Exact value match
-      data: {
-        id: expect.it('to be a number'), // Type assertion
-        title: expect.it('to contain', 'Document'), // Content assertion
-        tags: [expect.it('to be a string')], // Array element assertion
-      },
-      timestamp: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/, // RegExp pattern
-    });
-  });
-});
-```
-
-### Advanced Embeddable Patterns
-
-Embeddable assertions work with all <span class="bupkis">BUPKIS</span> assertion types, including complex ones:
-
-```ts
-describe('Advanced embeddable patterns', () => {
-  it('should support complex assertion types', () => {
-    const config = {
-      database: {
-        host: 'localhost',
-        port: 5432,
-        credentials: {
-          username: 'admin',
-          password: 'secret123',
-        },
-      },
-      features: ['auth', 'logging', 'monitoring'],
-    };
-
-    expect(config, 'to satisfy', {
-      database: {
-        host: expect.it('to be a string'),
-        port: expect.it('to be between', 1024, 65535),
-        credentials: expect.it('to be an object'),
-      },
-      features: expect.it('to have length greater than', 2),
-    });
-  });
-
-  it('should support nested object assertions', () => {
-    const product = {
-      name: 'Laptop',
-      price: 999.99,
-      specs: {
-        cpu: 'Intel i7',
-        ram: '16GB',
-        storage: '512GB SSD',
-      },
-    };
-
-    expect(product, 'to satisfy', {
-      name: expect.it('to be a string'),
-      price: expect.it('to be a number'),
-      specs: expect.it('to satisfy', {
-        cpu: expect.it('to contain', 'Intel'),
-        ram: expect.it('to match', /^\d+GB$/),
-        storage: expect.it('to be a string'),
-      }),
     });
   });
 });
@@ -358,81 +245,108 @@ describe('Advanced embeddable patterns', () => {
 
 ### Benefits of Embeddable Assertions
 
-1. **Reusability**: Create assertion functions once and use them across multiple tests
-2. **Flexibility**: Mix different pattern types (exact values, RegExp, assertions) in the same object
-3. **Composability**: Nest assertions within other assertions for complex validation
-4. **Type Safety**: Full TypeScript support with proper type inference
-5. **Readable Patterns**: Express complex validation rules in a natural, readable way
+1. **Flexibility**: Mix exact values, RegExps, and assertions however you want
+2. **Composability**: Nest assertions within other assertions—turtles all the way down
+3. **Type Safety**: _Of course._
+4. **Readable Patterns**: Express complex validation without making your eyes bleed
 
-The embeddable assertions feature makes <span class="bupkis">BUPKIS</span> particularly powerful for API response validation, configuration testing, and any scenario where you need to validate complex nested data structures.
+This feature makes <span class="bupkis">BUPKIS</span> particularly powerful for API response validation, configuration testing, and any scenario where you need to validate complex nested data structures. In other words: _the stuff you actually do in real tests_.
 
-### Assertion Errors
+> While embeddable assertions are _freaking awesome_, you might get even more mileage out of [Custom Assertions](./custom-assertion.md).
 
-When an assertion fails, <span class="bupkis">BUPKIS</span> throws a standard `AssertionError` that's compatible with all major testing frameworks. Here are real examples of what these errors look like:
+### Drawbacks of Embeddable Assertions
 
-#### Simple Type Mismatch
+1. None whatsoever.
+
+## Assertion Errors
+
+When an assertion goes south, <span class="bupkis">BUPKIS</span> throws a proper `AssertionError` explaining exactly what went wrong. It even diffs stuff for you. Here's what they look like:
+
+### Simple Type Mismatch
 
 ```ts
 expect(42, 'to be a string');
-// AssertionError: Assertion "{unknown} 'to be a string'" failed: Invalid input: expected string, received number
+// AssertionError: Assertion "{unknown} 'to be a string'" failed:
+//   Comparing two different types of values. Expected string but received number.
+//
 // actual: 42
-// expected: []
+// expected: "42"
 ```
 
-#### Value Comparison
+### Value Comparison
 
 ```ts
-expect('hello', 'to equal', 'goodbye');
-// AssertionError: Expected 'hello' to equal 'goodbye'
-// actual: hello
-// expected: goodbye
+expect({ foo: 'bar' }, 'to equal', { foo: 'baz' });
+// AssertionError: Assertion "{unknown} 'to be' / 'to equal' / 'equals' / 'is' /
+//   'is equal to' / 'to strictly equal' / 'is strictly equal to' {unknown}" failed:
+// - expected  - 1
+// + actual    + 1
+//
+//   Object {
+// -   "foo": "baz",
+// +   "foo": "bar",
+//   }
 ```
 
-#### Array Length Mismatch
+### Array Length Mismatch
 
 ```ts
 expect([1, 2, 3], 'to have length', 5);
-// AssertionError: Assertion "{array} 'to have length' {number}" failed for arguments: [ [ 1, 2, 3 ], 'to have length', 5 ]
+// AssertionError: Assertion "{unknown-array} 'to have length' / 'to have size'
+//   {nonnegative-integer}" failed:
+// - expected  - 2
+// + actual    + 0
+//
+//   Array [
+//     1,
+//     2,
+//     3,
+// -   null,
+// -   null,
+//   ]
 ```
 
-#### Complex Object Validation
+### Complex Object Validation
 
 ```ts
-const user = { name: 'Alice', age: 30, role: 'user' };
-expect(user, 'to satisfy', {
-  name: 'Bob',
-  age: 25,
-  role: 'admin',
-  department: 'engineering',
-});
-// AssertionError: Assertion "{object}! 'to satisfy' / 'to be like' {object}" failed: ; department: Invalid input: expected string, received undefined
-// actual: {
-//   "name": "Alice",
-//   "age": 30,
-//   "role": "user"
-// }
-// expected: {
-//   "name": "Bob",
-//   "age": 25,
-//   "role": "admin",
-//   "department": "engineering"
-// }
+expect({ a: 1, b: 2 }, 'to satisfy', { a: 1, b: 3 });
+// AssertionError: Assertion "{object!} 'to satisfy' / 'to be like' / 'satisfies'
+//   {unknown}" failed:
+// - expected  - 1
+// + actual    + 1
+//
+//   Object {
+//     "a": 1,
+// -   "b": 3,
+// +   "b": 2,
+//   }
 ```
 
-#### Error Properties
+### Error Properties
 
-All <span class="bupkis">BUPKIS</span> assertion errors include these standard properties:
+<span class="bupkis">BUPKIS</span>' `AssertionError` is a subclass of [Node.js' `AssertionError`](https://nodejs.org/api/assert.html#class-assertassertionerror), so it includes the standard properties:
 
-- **`name`**: Always `'AssertionError'` for compatibility with testing frameworks
-- **`message`**: Human-readable description of what went wrong
-- **`actual`**: The value that was tested (when available)
-- **`expected`**: The expected value or pattern (when available)
+- **`name`**: Always `'AssertionError'` so your test framework doesn't get confused
+- **`code`**: `'ERR_ASSERTION'` for standard Node.js compatibility
+- **`message`**: What actually went wrong, in ~~English~~ ~~human language~~ _words you can understand_
+- **`actual`**: The value that was tested (only when it makes sense)
+- **`expected`**: The expected value or pattern (ditto)
+- **`diff`**: No idea what this is, but it's there!
 
-The error messages are powered by Zod's validation system, providing detailed context about exactly why an assertion failed.
+Plus some <span class="bupkis">BUPKIS</span>-specific goodies:
 
-### Next Steps
+- **`assertionId`**: A unique identifier for the assertion that failed (useful for debugging)
+- **`Symbol(bupkis-error)`**: A unique symbol that we use internally. You can't have it.
 
-- **[About Assertions](../reference/assertions.md)** - Learn more about Assertions
-- **[Custom Assertions](./custom-assertion.md)** - Learn how to create your own assertion types
+When assertion implementations use Zod schemas, the error messages are powered by Zod's validation system. This means you get detailed context about _exactly_ why an assertion failed—including proper diffs for complex objects and arrays. No more cryptic "expected truthy value" nonsense. _Do not_ ask how this works.
 
-The natural language approach makes tests more readable and self-documenting. Instead of remembering method names like `toBeInstanceOf()` or `toHaveProperty()`, you write what you mean: `'to be an instance of'` or `'to have property'`.
+## Next Steps
+
+- **[About Assertions](../reference/assertions.md)** - Learn more about what assertions are available
+- **[Custom Assertions](./custom-assertion.md)** - Learn how to create your own. Be creative!
+
+That's it. You now know how to use <span class="bupkis">BUPKIS</span>. The natural language approach makes your tests more readable and self-documenting—instead of memorizing method names like `toBeInstanceOf()` or `toHaveProperty()`, you just write what you mean: `'to be an instance of'` or `'to have property'`.
+
+> If you write what you mean but receive an error with code `ERR_BUPKIS_UNKNOWN_ASSERTION`, please [let us know](https://github.com/boneskull/bupkis/issues/new) and we'll see if it makes sense to update the assertion.
+>
+> As of Oct 19 2025, overwriting builtin assertions is _undefined behavior_ which should scare you off.
