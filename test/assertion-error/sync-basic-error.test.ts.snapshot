@@ -1,78 +1,82 @@
 exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [arraylike-to-be-empty-2s2p] > should throw a consistent AssertionError [arraylike-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ [ 1, 2, 3 ], 'to be an empty array' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    [
-      1,
-      2,
-      3
-    ],
-    "to be an empty array"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Expected array-like to have length 0, but had length 3",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 3,
+  "expected": 0,
+  "diff": "simple",
+  "assertionId": "arraylike-to-be-empty-2s2p"
 }
 `;
 
 exports[`Sync Basic Assertion Error Snapshots > \"{record} 'to be empty'\" [record-to-be-empty-2s2p] > should throw a consistent AssertionError [record-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ { foo: 'bar' }, 'to be an empty object' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    {
-      "foo": "bar"
-    },
-    "to be an empty object"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{record} 'to be empty'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "foo": "bar"
+  },
+  "expected": {
+    "foo": "bar"
+  },
+  "diff": "simple",
+  "assertionId": "record-to-be-empty-2s2p"
 }
 `;
 
 exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be empty'\" [string-to-be-empty-2s2p] > should throw a consistent AssertionError [string-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ 'hello', 'to be an empty string' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    "hello",
-    "to be an empty string"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{string} 'to be empty'\\" failed:\\n\\u001b[32m- expected  - 0\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[31m+ hello\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "expected": "",
+  "diff": "simple",
+  "assertionId": "string-to-be-empty-2s2p"
 }
 `;
 
 exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be non-empty'\" [string-to-be-non_empty-2s2p] > should throw a consistent AssertionError [string-to-be-non_empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ '', 'to be a non empty string' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    "",
-    "to be a non empty string"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{string} 'to be non-empty'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[32m- x\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "",
+  "expected": "x",
+  "diff": "simple",
+  "assertionId": "string-to-be-non_empty-2s2p"
 }
 `;
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be -Infinity'\" [unknown-to-be-_infinity-2s1p] > should throw a consistent AssertionError [unknown-to-be-_infinity-2s1p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ Infinity, 'to be negative infinity' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    null,
-    "to be negative infinity"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{unknown} 'to be -Infinity'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- -Infinity\\u001b[39m\\n\\u001b[31m+ Infinity\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": null,
+  "expected": null,
+  "diff": "simple",
+  "assertionId": "unknown-to-be-_infinity-2s1p"
 }
 `;
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be Infinity'\" [unknown-to-be-infinity-2s1p] > should throw a consistent AssertionError [unknown-to-be-infinity-2s1p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ -Infinity, 'to be positive infinity' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    null,
-    "to be positive infinity"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{unknown} 'to be Infinity'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- Infinity\\u001b[39m\\n\\u001b[31m+ -Infinity\\u001b[39m",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": null,
+  "expected": null,
+  "diff": "simple",
+  "assertionId": "unknown-to-be-infinity-2s1p"
 }
 `;
 
@@ -293,13 +297,13 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a symbol' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an Error' / 'to be a Error'\" [unknown-to-be-an-error-to-be-a-error-2s1p] > should throw a consistent AssertionError [unknown-to-be-an-error-to-be-a-error-2s1p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ 'hello', 'to be an error' ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    "hello",
-    "to be an error"
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{unknown} 'to be an Error' / 'to be a Error'\\" failed:\\nInput not instance of Error",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": "hello",
+  "diff": "simple",
+  "assertionId": "unknown-to-be-an-error-to-be-a-error-2s1p"
 }
 `;
 
