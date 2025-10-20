@@ -109,14 +109,16 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw' / 'to throw error satisfying' {unknown}\" [function-to-throw-to-throw-error-satisfying-unknown-3s3p] > should throw a consistent AssertionError [function-to-throw-to-throw-error-satisfying-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ [Function: fn], 'to throw matching', /expected/ ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    null,
-    "to throw matching",
-    {}
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Assertion \\"{function} 'to throw' / 'to throw error satisfying' {unknown}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mobject\\u001b[39m.",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {
+    "message": "wrong message"
+  },
+  "expected": "<string matching pattern>",
+  "diff": "simple",
+  "assertionId": "function-to-throw-to-throw-error-satisfying-unknown-3s3p"
 }
 `;
 
@@ -198,17 +200,12 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be less than
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' / 'to be between' {number} {number}\" [number-to-be-within-to-be-between-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-within-to-be-between-number-number-4s4p] <snapshot> 1`] = `
 {
-  "message": "Invalid arguments. No assertion matched: [ 15, 'to be within range', [ 1, 10 ] ]",
-  "name": "UnknownAssertionError",
-  "args": [
-    15,
-    "to be within range",
-    [
-      1,
-      10
-    ]
-  ],
-  "code": "ERR_BUPKIS_UNKNOWN_ASSERTION"
+  "message": "Expected 15 to be within range [1, 10]",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "number-to-be-within-to-be-between-number-number-4s4p"
 }
 `;
 

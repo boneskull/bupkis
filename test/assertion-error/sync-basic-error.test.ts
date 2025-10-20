@@ -59,25 +59,25 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.emptyArrayAssertion,
     () => {
-      expect([1, 2, 3], 'to be an empty array');
+      expect([1, 2, 3], 'to be empty');
     },
   ],
   [
     assertions.emptyObjectAssertion,
     () => {
-      expect({ foo: 'bar' }, 'to be an empty object');
+      expect({ foo: 'bar' }, 'to be empty');
     },
   ],
   [
     assertions.emptyStringAssertion,
     () => {
-      expect('hello', 'to be an empty string');
+      expect('hello', 'to be empty');
     },
   ],
   [
     assertions.errorAssertion,
     () => {
-      expect('hello', 'to be an error');
+      expect('hello', 'to be an Error');
     },
   ],
   [
@@ -125,7 +125,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.negativeInfinityAssertion,
     () => {
-      expect(Infinity, 'to be negative infinity');
+      expect(Infinity, 'to be -Infinity');
     },
   ],
   [
@@ -137,7 +137,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.nonEmptyStringAssertion,
     () => {
-      expect('', 'to be a non empty string');
+      expect('', 'to be non-empty');
     },
   ],
   [
@@ -167,7 +167,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.positiveInfinityAssertion,
     () => {
-      expect(-Infinity, 'to be positive infinity');
+      expect(-Infinity, 'to be Infinity');
     },
   ],
   [

@@ -69,7 +69,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
       const fn = () => {
         throw new Error('wrong message');
       };
-      expect(fn, 'to throw matching', /expected/);
+      expect(fn, 'to throw error satisfying', /expected/);
     },
   ],
   [
@@ -137,7 +137,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
   [
     assertions.numberWithinRangeAssertion,
     () => {
-      expect(15, 'to be within range', [1, 10]);
+      expect(15, 'to be within', 1, 10);
     },
   ],
   [
