@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.12.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.11.1...bupkis-v0.12.0) (2025-10-24)
+
+
+### Features
+
+* add Standard Schema V1 support for validation library interoperability ([d537cf2](https://github.com/boneskull/bupkis/commit/d537cf299e46aa53203bd6890bafbdbdb98cb825))
+
+
+### Bug Fixes
+
+* **diff:** fix diff output for incomparable types ([7ccc041](https://github.com/boneskull/bupkis/commit/7ccc0412a4e5c30a922fddd4b9a20368c3a8f077))
+* **test:** update snapshots ([b5005c1](https://github.com/boneskull/bupkis/commit/b5005c13358dd5ae91fd0b6d09a99b842dfdbc79))
+
 ## [0.11.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.11.0...bupkis-v0.11.1) (2025-10-10)
 
 ### Bug Fixes
