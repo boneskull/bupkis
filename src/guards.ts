@@ -19,6 +19,7 @@
 import { type z } from 'zod/v4';
 
 import type { PhraseLiteralChoice } from './assertion/assertion-types.js';
+import type { StandardSchemaV1 } from './standard-schema.js';
 import type {
   AssertionPart,
   Constructor,
@@ -78,6 +79,34 @@ export function isZodType<T extends keyof ZodTypeMap>(
 
   return (value as z.ZodType).def.type === type;
 }
+
+/**
+ * Returns `true` if the given value implements the Standard Schema v1
+ * interface.
+ *
+ * This guard checks for the presence of the `~standard` property with the
+ * required shape (version 1, vendor, validate function). It can detect any
+ * Standard Schema compliant library including Zod v4 (which implements the
+ * spec).
+ *
+ * @function
+ * @param value - Value to test
+ * @returns Whether the value is a Standard Schema v1 instance
+ * @see {@link https://standardschema.dev | Standard Schema Specification}
+ */
+export const isStandardSchema = (value: unknown): value is StandardSchemaV1 => {
+  return (
+    isObject(value) &&
+    '~standard' in value &&
+    isObject(value['~standard']) &&
+    'version' in value['~standard'] &&
+    value['~standard'].version === 1 &&
+    'vendor' in value['~standard'] &&
+    typeof value['~standard'].vendor === 'string' &&
+    'validate' in value['~standard'] &&
+    typeof value['~standard'].validate === 'function'
+  );
+};
 
 /**
  * Type guard for a plain object.

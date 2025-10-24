@@ -9,7 +9,7 @@ import { z } from 'zod/v4';
 
 import type { AssertionFailure, AssertionParseRequest } from './types.js';
 
-import { isZodType } from './guards.js';
+import { isStandardSchema, isZodType } from './guards.js';
 
 /**
  * Schema for {@link AssertionFailure}.
@@ -45,6 +45,24 @@ const ZodTypeSchema = z
   })
   .describe('A Zod schema within AssertionParts');
 
+/**
+ * @internal
+ */
+const StandardSchemaSchema = z
+  .custom(isStandardSchema, {
+    error: 'Must be a Standard Schema v1',
+  })
+  .describe('A Standard Schema v1 within AssertionParts');
+
+/**
+ * Schema that accepts either Zod or Standard Schema validators.
+ *
+ * @internal
+ */
+const SchemaSchema = z
+  .union([ZodTypeSchema, StandardSchemaSchema])
+  .describe('A Zod schema or Standard Schema v1');
+
 /** @internal */
 const BaseAssertionParseRequestSchema = z.object({
   subject: z.unknown().describe('The subject value to be validated'),
@@ -56,15 +74,13 @@ const BaseAssertionParseRequestSchema = z.object({
 const AssertionParseRequestSchema: z.ZodType<AssertionParseRequest> = z.union([
   z.object({
     ...BaseAssertionParseRequestSchema.shape,
-    schema: ZodTypeSchema.describe('The sync Zod schema to validate against'),
+    schema: SchemaSchema.describe('The sync schema to validate against'),
   }),
   z.object({
     ...BaseAssertionParseRequestSchema.shape,
-    asyncSchema: ZodTypeSchema.describe(
-      'The async Zod schema to validate against',
-    ),
+    asyncSchema: SchemaSchema.describe('The async schema to validate against'),
   }),
-]);
+]) as z.ZodType<AssertionParseRequest>;
 
 /**
  * @internal
@@ -90,13 +106,13 @@ const PhraseLiteralChoiceSchema = z
  */
 const AssertionImplSchemaSync = z
   .union([
-    ZodTypeSchema,
+    SchemaSchema,
     z.function({
       input: z.tuple([z.unknown()], z.unknown()),
       output: z.union([
         z.void(),
         z.boolean(),
-        ZodTypeSchema,
+        SchemaSchema,
         AssertionFailureSchema,
         AssertionParseRequestSchema,
       ]),
@@ -106,18 +122,18 @@ const AssertionImplSchemaSync = z
 
 const AssertionImplSchemaAsync = z
   .union([
-    ZodTypeSchema,
+    SchemaSchema,
     z.function({
       input: z.tuple([z.unknown()], z.unknown()),
       output: z.union([
         z.void(),
         z.boolean(),
-        ZodTypeSchema,
+        SchemaSchema,
         AssertionFailureSchema,
         AssertionParseRequestSchema,
         z.promise(z.void()),
         z.promise(z.boolean()),
-        z.promise(ZodTypeSchema),
+        z.promise(SchemaSchema),
         z.promise(AssertionFailureSchema),
         z.promise(AssertionParseRequestSchema),
       ]),
@@ -130,23 +146,27 @@ const AssertionImplSchemaAsync = z
  */
 const AssertionPartsSchema = z
   .array(
-    z.union([PhraseLiteralSchema, PhraseLiteralChoiceSchema, ZodTypeSchema]),
+    z.union([PhraseLiteralSchema, PhraseLiteralChoiceSchema, SchemaSchema]),
   )
   .min(1, { error: 'At least one part is required for an assertion' })
   .refine(
     (parts) => {
-      // Special validation for 'and': it can only appear if followed by a ZodType
+      // Special validation for 'and': it can only appear if followed by a schema
       for (let i = 0; i < parts.length; i++) {
         if (parts[i] === 'and') {
-          // 'and' must be followed by another part, and that part must be a ZodType
-          if (i === parts.length - 1 || !isZodType(parts[i + 1])) {
+          // 'and' must be followed by another part, and that part must be a schema
+          const nextPart = parts[i + 1];
+          if (
+            i === parts.length - 1 ||
+            !(isZodType(nextPart) || isStandardSchema(nextPart))
+          ) {
             return false;
           }
         }
       }
       return true;
     },
-    { error: '"and" can only appear when followed by a Zod schema' },
+    { error: '"and" can only appear when followed by a schema' },
   )
   .describe('Assertion "parts" which define the input of an assertion');
 

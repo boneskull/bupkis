@@ -32,12 +32,12 @@ describe('slotify()', () => {
       });
     });
 
-    describe('when the AssertionParts contain a phrase literal "and" not followed by a Zod schema', () => {
+    describe('when the AssertionParts contain a phrase literal "and" not followed by a schema', () => {
       it('should throw', () => {
         const parts = ['to be a foo', 'and', 'to be a bar'] as const;
         expect(() => slotify(parts), 'to throw', {
           code: 'ERR_BUPKIS_ASSERTION_IMPL',
-          message: /must be followed by a Zod schema/,
+          message: /must be followed by a schema/,
         });
       });
 
@@ -46,7 +46,7 @@ describe('slotify()', () => {
           const parts = ['to be a foo', 'and'] as const;
           expect(() => slotify(parts), 'to throw', {
             code: 'ERR_BUPKIS_ASSERTION_IMPL',
-            message: /must be followed by a Zod schema/,
+            message: /must be followed by a schema/,
           });
         });
       });
@@ -58,8 +58,7 @@ describe('slotify()', () => {
         // @ts-expect-error testing invalid input
         expect(() => slotify(parts), 'to throw', {
           code: 'ERR_BUPKIS_ASSERTION_IMPL',
-          message:
-            /Expected Zod schema, phrase literal, or phrase literal choice/,
+          message: /Expected schema, phrase literal, or phrase literal choice/,
         });
       });
     });

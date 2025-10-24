@@ -47,6 +47,7 @@ import type {
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
+import type { StandardSchemaV1 } from './standard-schema.js';
 import type { ValueToSchemaOptions } from './value-to-schema.js';
 
 import { type kExpectIt } from './constant.js';
@@ -167,6 +168,7 @@ export interface BenchmarkResult {
 }
 
 export type * from './assertion/assertion-types.js';
+export type { StandardSchemaV1 };
 
 /**
  * The main API as returned by a {@link UseFn}.

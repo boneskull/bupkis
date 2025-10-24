@@ -23,6 +23,20 @@ export * from './error.js';
 export * as schema from './schema.js';
 
 /**
+ * Re-export of Standard Schema v1 types for use in custom assertion
+ * implementations.
+ *
+ * @see {@link https://standardschema.dev | Standard Schema Specification}
+ */
+export type { StandardSchemaV1 } from './standard-schema.js';
+
+/**
+ * Re-export of {@link https://zod.dev Zod v4} for use in custom assertion
+ * implementations.
+ */
+export { z };
+
+/**
  * Re-export of most (all?) types defined within <span
  * class="bupkis">Bupkis</span>.
  *
@@ -35,16 +49,12 @@ export * as schema from './schema.js';
 export type * as types from './types.js';
 
 /**
- * Re-export of {@link https://zod.dev Zod v4} for use in custom assertion
- * implementations.
- */
-export { z };
-
-/**
  * @primaryExport
  */
 export type {
   AssertionFailure,
+  AssertionStandardSchemaAsync,
+  AssertionStandardSchemaSync,
   Bupkis,
   CreateAssertionFn,
   CreateAsyncAssertionFn,

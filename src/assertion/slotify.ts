@@ -24,6 +24,7 @@ import {
   isPhrase,
   isPhraseLiteral,
   isPhraseLiteralChoice,
+  isStandardSchema,
   isZodType,
 } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
@@ -101,26 +102,47 @@ export const slotify = <const Parts extends AssertionParts>(
       }
       result.push(createPhraseLiteralSchema(part));
     } else if (typeof part === 'string' && part === 'and') {
-      // Special case: "and" is allowed when followed by a ZodType (for conjunctify)
-      if (index + 1 >= parts.length || !isZodType(parts[index + 1])) {
+      // Special case: "and" is allowed when followed by a schema (Zod or Standard Schema)
+      const nextPart = parts[index + 1];
+      if (
+        index + 1 >= parts.length ||
+        !(isZodType(nextPart) || isStandardSchema(nextPart))
+      ) {
         throw new AssertionImplementationError(
-          `"and" at parts[${index}] must be followed by a Zod schema but was followed by ${
+          `"and" at parts[${index}] must be followed by a schema but was followed by ${
             index + 1 >= parts.length
               ? 'nothing'
-              : `${inspect(parts[index + 1])} (${typeof parts[index + 1]})`
+              : `${inspect(nextPart)} (${typeof nextPart})`
           }`,
         );
       }
       result.push(createPhraseLiteralSchema(part));
     } else {
-      if (!isZodType(part)) {
+      // Schema parts: either Zod or Standard Schema
+      if (isZodType(part)) {
+        result.push(part);
+      } else if (isStandardSchema(part)) {
+        // Convert Standard Schema to Zod schema for slotification
+        // Slots use Zod's safeParse, so we need a Zod wrapper
+        const zodWrapper = z.custom(
+          (value: unknown) => {
+            const validationResult = part['~standard'].validate(value);
+            // Must be synchronous for slots
+            if (validationResult instanceof Promise) {
+              return false;
+            }
+            return !validationResult.issues;
+          },
+          { error: `Failed Standard Schema validation` },
+        );
+        result.push(zodWrapper);
+      } else {
         throw new AssertionImplementationError(
-          `Expected Zod schema, phrase literal, or phrase literal choice at parts[${index}] but received ${inspect(
+          `Expected schema, phrase literal, or phrase literal choice at parts[${index}] but received ${inspect(
             part,
           )} (${typeof part})`,
         );
       }
-      result.push(part);
     }
     return result;
   }) as unknown as AssertionSlots<Parts>;
