@@ -3,7 +3,13 @@ import z from 'zod/v4';
 
 import { kStringLiteral } from '../constant.js';
 import { AssertionError, AssertionImplementationError } from '../error.js';
-import { isA, isBoolean, isError, isZodType } from '../guards.js';
+import {
+  isA,
+  isBoolean,
+  isError,
+  isStandardSchema,
+  isZodType,
+} from '../guards.js';
 import {
   isAssertionFailure,
   isAssertionParseRequest,
@@ -141,6 +147,20 @@ export class BupkisAssertionFunctionAsync<
         }
         throw error;
       }
+    } else if (isStandardSchema(result)) {
+      const validationResult = result['~standard'].validate(parsedValues[0]);
+      const finalResult =
+        validationResult instanceof Promise
+          ? await validationResult
+          : validationResult;
+
+      if (finalResult.issues) {
+        throw this.fromStandardSchemaIssues(
+          finalResult.issues,
+          stackStartFn,
+          parsedValues,
+        );
+      }
     } else if (isBoolean(result)) {
       if (!result) {
         throw new AssertionError({
@@ -152,14 +172,32 @@ export class BupkisAssertionFunctionAsync<
       throw this.fromZodError(result, stackStartFn, parsedValues);
     } else if (isAssertionParseRequest(result)) {
       const { asyncSchema, schema, subject } = result;
-      let zodResult: z.ZodSafeParseResult<unknown>;
-      if (schema) {
-        zodResult = schema.safeParse(subject);
-      } else {
-        zodResult = asyncSchema.safeParse(subject);
-      }
-      if (!zodResult.success) {
-        throw this.fromZodError(zodResult.error, stackStartFn, subject);
+      const schemaToUse = schema ?? asyncSchema;
+
+      if (isZodType(schemaToUse)) {
+        let zodResult: z.ZodSafeParseResult<unknown>;
+        if (schema) {
+          zodResult = schemaToUse.safeParse(subject);
+        } else {
+          zodResult = await schemaToUse.safeParseAsync(subject);
+        }
+        if (!zodResult.success) {
+          throw this.fromZodError(zodResult.error, stackStartFn, subject);
+        }
+      } else if (isStandardSchema(schemaToUse)) {
+        const validationResult = schemaToUse['~standard'].validate(subject);
+        const finalResult =
+          validationResult instanceof Promise
+            ? await validationResult
+            : validationResult;
+
+        if (finalResult.issues) {
+          throw this.fromStandardSchemaIssues(
+            finalResult.issues,
+            stackStartFn,
+            subject,
+          );
+        }
       }
     } else if (isAssertionFailure(result)) {
       throw new AssertionError({
@@ -213,11 +251,13 @@ export class BupkisAssertionSchemaAsync<
 
     if (cachedValidation && !cachedValidation.success) {
       // Subject validation failed during parseValuesAsync, throw the cached error
-      throw this.fromZodError(
-        cachedValidation.error,
-        stackStartFn,
-        parsedValues,
-      );
+      if ('error' in cachedValidation) {
+        throw this.fromZodError(
+          cachedValidation.error,
+          stackStartFn,
+          parsedValues,
+        );
+      }
     }
 
     // Fall back to standard validation if no cached result

@@ -75,7 +75,7 @@ import type {
 } from './assertion-types.js';
 
 import { AssertionImplementationError } from '../error.js';
-import { isFunction, isZodType } from '../guards.js';
+import { isFunction, isStandardSchema, isZodType } from '../guards.js';
 import {
   CreateAssertionInputSchema,
   CreateAssertionInputSchemaAsync,
@@ -84,6 +84,8 @@ import {
   BupkisAssertionFunctionAsync,
   BupkisAssertionSchemaAsync,
 } from './assertion-async.js';
+import { BupkisAssertionStandardSchemaAsync } from './assertion-standard-schema-async.js';
+import { BupkisAssertionStandardSchemaSync } from './assertion-standard-schema-sync.js';
 import {
   BupkisAssertionFunctionSync,
   BupkisAssertionSchemaSync,
@@ -125,14 +127,16 @@ export const createAssertion: CreateAssertionFn = <
   const slots = slotify<Parts>(parts);
 
   if (isZodType(impl)) {
-    return new BupkisAssertionSchemaSync(parts, slots, impl);
+    return new BupkisAssertionSchemaSync(parts, slots, impl as any);
+  } else if (isStandardSchema(impl)) {
+    return new BupkisAssertionStandardSchemaSync(parts, slots, impl);
   } else if (isFunction(impl)) {
     return new BupkisAssertionFunctionSync(parts, slots, impl);
   }
   // should be impossible if CreateAssertionInputSchema is correct
   /* c8 ignore next */
   throw new AssertionImplementationError(
-    'Assertion implementation must be a function, Zod schema or Zod schema factory',
+    'Assertion implementation must be a function, Zod schema, or Standard Schema',
   );
 };
 
@@ -167,13 +171,15 @@ export const createAsyncAssertion: CreateAsyncAssertionFn = <
   const slots = slotify<Parts>(parts);
 
   if (isZodType(impl)) {
-    return new BupkisAssertionSchemaAsync(parts, slots, impl);
+    return new BupkisAssertionSchemaAsync(parts, slots, impl as any);
+  } else if (isStandardSchema(impl)) {
+    return new BupkisAssertionStandardSchemaAsync(parts, slots, impl);
   } else if (isFunction(impl)) {
     return new BupkisAssertionFunctionAsync(parts, slots, impl);
   }
   // should be impossible if CreateAssertionInputSchemaAsync is correct
   /* c8 ignore next */
   throw new AssertionImplementationError(
-    'Assertion implementation must be a function, Zod schema or Zod schema factory',
+    'Assertion implementation must be a function, Zod schema, or Standard Schema',
   );
 };

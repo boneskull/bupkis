@@ -16,7 +16,13 @@ import {
   AssertionImplementationError,
   UnexpectedAsyncError,
 } from '../error.js';
-import { isBoolean, isError, isPromiseLike, isZodType } from '../guards.js';
+import {
+  isBoolean,
+  isError,
+  isPromiseLike,
+  isStandardSchema,
+  isZodType,
+} from '../guards.js';
 import {
   isAssertionFailure,
   isAssertionParseRequest,
@@ -178,6 +184,23 @@ export class BupkisAssertionFunctionSync<
       if (!zodResult.success) {
         throw this.fromZodError(zodResult.error, stackStartFn, parsedValues);
       }
+    } else if (isStandardSchema(result)) {
+      const validationResult = result['~standard'].validate(parsedValues[0]);
+      if (validationResult instanceof Promise) {
+        validationResult.catch(() => {
+          /* prevent unhandled rejection */
+        });
+        throw new UnexpectedAsyncError(
+          `Standard Schema returned a Promise; use expectAsync() instead of expect()`,
+        );
+      }
+      if (validationResult.issues) {
+        throw this.fromStandardSchemaIssues(
+          validationResult.issues,
+          stackStartFn,
+          parsedValues,
+        );
+      }
     } else if (isBoolean(result)) {
       if (!result) {
         throw new AssertionError({
@@ -194,9 +217,34 @@ export class BupkisAssertionFunctionSync<
           `Sync assertion ${this} returned an async schema in its AssertionParseRequest`,
         );
       }
-      const zodResult = schema.safeParse(subject);
-      if (!zodResult.success) {
-        throw this.fromZodError(zodResult.error, stackStartFn, subject);
+      if (!schema) {
+        throw new AssertionImplementationError(
+          `Sync assertion ${this} returned AssertionParseRequest without schema`,
+        );
+      }
+
+      if (isZodType(schema)) {
+        const zodResult = schema.safeParse(subject);
+        if (!zodResult.success) {
+          throw this.fromZodError(zodResult.error, stackStartFn, subject);
+        }
+      } else if (isStandardSchema(schema)) {
+        const validationResult = schema['~standard'].validate(subject);
+        if (validationResult instanceof Promise) {
+          validationResult.catch(() => {
+            /* prevent unhandled rejection */
+          });
+          throw new AssertionImplementationError(
+            `Sync assertion ${this} returned a schema with async validation in AssertionParseRequest`,
+          );
+        }
+        if (validationResult.issues) {
+          throw this.fromStandardSchemaIssues(
+            validationResult.issues,
+            stackStartFn,
+            subject,
+          );
+        }
       }
     } else if (isAssertionFailure(result)) {
       throw new AssertionError({
@@ -250,12 +298,19 @@ export class BupkisAssertionSchemaSync<
 
     if (cachedValidation) {
       if (!cachedValidation.success) {
-        // Subject validation failed during parseValues, throw the cached error
-        throw this.fromZodError(
-          cachedValidation.error,
-          stackStartFn,
-          parsedValues,
-        );
+        if ('error' in cachedValidation) {
+          throw this.fromZodError(
+            cachedValidation.error,
+            stackStartFn,
+            parsedValues,
+          );
+        } else if ('issues' in cachedValidation) {
+          throw this.fromStandardSchemaIssues(
+            cachedValidation.issues,
+            stackStartFn,
+            parsedValues,
+          );
+        }
       }
       // Subject validation passed, nothing more to do
       return;

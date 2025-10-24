@@ -19,6 +19,7 @@
 import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
 import { type z } from 'zod/v4';
 
+import type { StandardSchemaV1 } from '../standard-schema.js';
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
 /**
@@ -56,7 +57,8 @@ export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
  */
 export type AnyAsyncAssertion =
   | AssertionFunctionAsync<any, any, any>
-  | AssertionSchemaAsync<any, any, any>;
+  | AssertionSchemaAsync<any, any, any>
+  | AssertionStandardSchemaAsync<any, any, any>;
 
 /**
  * Non-empty tuple type containing any asynchronous assertions.
@@ -80,7 +82,8 @@ export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
  */
 export type AnySyncAssertion =
   | AssertionFunctionSync<any, any, any>
-  | AssertionSchemaSync<any, any, any>;
+  | AssertionSchemaSync<any, any, any>
+  | AssertionStandardSchemaSync<any, any, any>;
 
 /**
  * Non-empty tuple type containing any synchronous assertions.
@@ -237,7 +240,7 @@ export type AssertionImpl<Parts extends AssertionParts> =
  *
  * This encompasses both function-based and schema-based implementations for
  * asynchronous assertions, providing a type-safe way to handle async assertion
- * logic.
+ * logic including Standard Schema validators.
  *
  * @template Parts - The assertion parts defining the structure
  * @group Assertion Implementation
@@ -246,7 +249,8 @@ export type AssertionImpl<Parts extends AssertionParts> =
  */
 export type AssertionImplAsync<Parts extends AssertionParts> =
   | AssertionImplFnAsync<Parts>
-  | AssertionImplSchemaAsync<Parts>;
+  | AssertionImplSchemaAsync<Parts>
+  | StandardSchemaV1;
 
 /**
  * The implementation of an assertion as an async function.
@@ -274,12 +278,16 @@ export type AssertionImplFnAsync<Parts extends AssertionParts> = (
 /**
  * The return type of an assertion implementation function.
  *
+ * Functions can return various types to indicate validation results, including
+ * Standard Schema validators for dynamic validation.
+ *
  * @group Assertion Implementation
  */
 export type AssertionImplFnReturnType<Parts extends AssertionParts> =
   | AssertionFailure
   | AssertionParseRequest
   | boolean
+  | StandardSchemaV1<ParsedSubject<Parts>>
   | void
   | z.ZodError
   | z.ZodType<ParsedSubject<Parts>>;
@@ -375,7 +383,8 @@ export type AssertionImplSchemaSync<Parts extends AssertionParts> =
  *
  * This represents either a function-based or schema-based implementation for
  * synchronous assertions. Function implementations provide custom validation
- * logic, while schema implementations use Zod schemas for validation.
+ * logic, while schema implementations use Zod schemas or Standard Schema
+ * validators.
  *
  * @template Parts - The assertion parts tuple defining the assertion structure
  * @group Assertion Implementation
@@ -385,12 +394,15 @@ export type AssertionImplSchemaSync<Parts extends AssertionParts> =
  */
 export type AssertionImplSync<Parts extends AssertionParts> =
   | AssertionImplFnSync<Parts>
-  | AssertionImplSchemaSync<Parts>;
+  | AssertionImplSchemaSync<Parts>
+  | StandardSchemaV1;
 
 /**
- * When you want to use a Zod schema in an assertion implementation function
- * against some value that _isn't_ the subject, you can return this object and
- * <span class="bupkis">BUPKIS</span> will do it for you (with better diffs).
+ * When you want to use a schema in an assertion implementation function against
+ * some value that _isn't_ the subject, you can return this object and <span
+ * class="bupkis">BUPKIS</span> will do it for you (with better diffs).
+ *
+ * Supports both Zod schemas and Standard Schema v1 compliant validators.
  *
  * @group Assertion Creation
  */
@@ -398,12 +410,12 @@ export type AssertionParseRequest = {
   subject: unknown;
 } & (
   | {
-      asyncSchema: z.ZodType;
+      asyncSchema: StandardSchemaV1 | z.ZodType;
       schema?: never;
     }
   | {
       asyncSchema?: never;
-      schema: z.ZodType;
+      schema: StandardSchemaV1 | z.ZodType;
     }
 );
 
@@ -412,7 +424,8 @@ export type AssertionParseRequest = {
  *
  * An assertion part can be either a phrase (string literal or choice of
  * literals) that describes the natural language portion of the assertion, or a
- * Zod schema that defines validation constraints for assertion arguments.
+ * schema (Zod or Standard Schema) that defines validation constraints for
+ * assertion arguments.
  *
  * @example
  *
@@ -425,6 +438,9 @@ export type AssertionParseRequest = {
  *
  * // Zod schema for validation
  * type Part3 = z.ZodString;
+ *
+ * // Standard Schema for validation
+ * type Part4 = StandardSchemaV1<string>;
  * ```
  *
  * @group Internal Assertion Types
@@ -432,7 +448,7 @@ export type AssertionParseRequest = {
  * @see {@link AssertionParts} for complete assertion structure
  * @see {@link AssertionSlot} for compiled slot representation
  */
-export type AssertionPart = Phrase | z.ZodType;
+export type AssertionPart = Phrase | StandardSchemaV1 | z.ZodType;
 
 /**
  * Non-empty tuple type representing the complete structure of an assertion.
@@ -608,6 +624,46 @@ export type AssertionSlots<Parts extends AssertionParts = AssertionParts> =
     : never;
 
 /**
+ * An asynchronous assertion implemented using a Standard Schema v1 validator.
+ *
+ * This interface represents async assertions where the implementation is a
+ * Standard Schema compliant validator that may perform asynchronous
+ * validation.
+ *
+ * @template Parts - The assertion parts tuple defining structure
+ * @template Impl - The Standard Schema implementation
+ * @template Slots - The derived validation slots
+ * @group Internal Assertion Interfaces
+ */
+export interface AssertionStandardSchemaAsync<
+  Parts extends AssertionParts,
+  Impl extends StandardSchemaV1,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionAsync<Parts, Impl, Slots> {
+  impl: Impl;
+}
+
+/**
+ * A synchronous assertion implemented using a Standard Schema v1 validator.
+ *
+ * This interface represents assertions where the implementation is a Standard
+ * Schema compliant validator (from any library such as Valibot, ArkType,
+ * etc.).
+ *
+ * @template Parts - The assertion parts tuple defining structure
+ * @template Impl - The Standard Schema implementation
+ * @template Slots - The derived validation slots
+ * @group Internal Assertion Interfaces
+ */
+export interface AssertionStandardSchemaSync<
+  Parts extends AssertionParts,
+  Impl extends StandardSchemaV1,
+  Slots extends AssertionSlots<Parts>,
+> extends AssertionSync<Parts, Impl, Slots> {
+  impl: Impl;
+}
+
+/**
  * A synchronous assertion of no specific implementation type.
  *
  * @group Internal Assertion Interfaces
@@ -730,6 +786,25 @@ export type BuiltinSyncAssertions = typeof SyncAssertions;
 export interface CreateAssertionFn {
   /**
    * Create a synchronous `Assertion` from {@link AssertionParts | parts} and a
+   * Standard Schema validator.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a Standard Schema
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionStandardSchemaSync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends StandardSchemaV1,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+  ): AssertionStandardSchemaSync<Parts, Impl, Slots>;
+
+  /**
+   * Create a synchronous `Assertion` from {@link AssertionParts | parts} and a
    * {@link z.ZodType | Zod schema}.
    *
    * @template Parts Parts defining the shape of the assertion, including
@@ -772,6 +847,25 @@ export interface CreateAssertionFn {
  * @group Core API
  */
 export interface CreateAsyncAssertionFn {
+  /**
+   * Create an async `Assertion` from {@link AssertionParts | parts} and a
+   * Standard Schema validator.
+   *
+   * @template Parts Parts defining the shape of the assertion, including
+   *   Phrases and Zod schemas
+   * @template Impl Assertion implementation as a Standard Schema
+   * @template Slots Inferred slots based on the provided `Parts`
+   * @returns New `AssertionStandardSchemaAsync` object
+   */
+  <
+    const Parts extends AssertionParts,
+    Impl extends StandardSchemaV1,
+    Slots extends AssertionSlots<Parts>,
+  >(
+    parts: Parts,
+    impl: Impl,
+  ): AssertionStandardSchemaAsync<Parts, Impl, Slots>;
+
   /**
    * Create an async {@link Assertion} from {@link AssertionParts | parts} and an
    * {@link z.ZodType | Zod schema}.
@@ -946,6 +1040,8 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
    * Optional cached subject validation result for optimized schema assertions.
    * When present, indicates that subject validation was already performed
    * during parseValues() and doesn't need to be repeated in execute().
+   *
+   * Supports both Zod errors and Standard Schema issues.
    */
   subjectValidationResult?:
     | {
@@ -954,6 +1050,10 @@ export interface ParsedResultSuccess<Parts extends AssertionParts>
       }
     | {
         error: z.ZodError;
+        success: false;
+      }
+    | {
+        issues: ReadonlyArray<StandardSchemaV1.Issue>;
         success: false;
       };
   success: true;

@@ -24,6 +24,7 @@ import {
 import { AssertionError, InvalidMetadataError } from '../error.js';
 import { isZodType } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
+import { type StandardSchemaV1 } from '../standard-schema.js';
 import { type DefFromZodType } from '../types.js';
 import {
   type Assertion,
@@ -179,6 +180,45 @@ export abstract class BupkisAssertion<
           : expand(slot, true),
       )
       .join(' ')}"`;
+  }
+
+  /**
+   * Translates Standard Schema issues into an {@link AssertionError} with a
+   * human-friendly message.
+   *
+   * @param issues The Standard Schema issues from validation failure
+   * @param stackStartFn The function to start the stack trace from
+   * @param values Values which caused the error
+   * @returns New `AssertionError`
+   */
+  protected fromStandardSchemaIssues<Values>(
+    issues: ReadonlyArray<StandardSchemaV1.Issue>,
+    stackStartFn: (...args: any[]) => any,
+    values: Values,
+  ): AssertionError {
+    const subject: unknown = isArray(values) ? values[0] : values;
+
+    const issueMessages = issues
+      .map((issue) => {
+        const pathStr = issue.path
+          ? `at ${issue.path
+              .map((segment) =>
+                typeof segment === 'object' && 'key' in segment
+                  ? segment.key
+                  : segment,
+              )
+              .join('.')}: `
+          : '';
+        return `  ${pathStr}${issue.message}`;
+      })
+      .join('\n');
+
+    return new AssertionError({
+      actual: subject,
+      id: this.id,
+      message: `Assertion ${this} failed:\n${issueMessages}`,
+      stackStartFn,
+    });
   }
 
   /**
