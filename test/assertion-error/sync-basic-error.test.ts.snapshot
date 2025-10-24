@@ -245,12 +245,11 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a positive in
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a primitive'\" [unknown-to-be-a-primitive-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-primitive-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a primitive'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mobject\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a primitive'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": {},
-  "expected": "<string matching pattern>",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-primitive-2s1p"
 }
@@ -394,12 +393,11 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be falsy'\" [unk
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be infinite'\" [unknown-to-be-infinite-2s1p] > should throw a consistent AssertionError [unknown-to-be-infinite-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be infinite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be infinite'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 42,
-  "expected": "<value matching union schema>",
   "diff": "simple",
   "assertionId": "unknown-to-be-infinite-2s1p"
 }

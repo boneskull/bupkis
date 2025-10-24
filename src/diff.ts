@@ -66,17 +66,13 @@ export const extractDiffValues = (
               if (typeof expected === 'object' && expected !== null) {
                 expected = {
                   ...(expected as Record<string, unknown>),
-                  [missingKey as string]: '<missing>',
+                  [missingKey as string]: undefined,
                 };
               }
             } else if (filteredPath.length > 0) {
               const actualValue = getValueAtPath(actual, filteredPath);
               if (actualValue === undefined) {
-                expected = setValueAtPath(
-                  expected,
-                  filteredPath,
-                  '<missing value>',
-                );
+                expected = setValueAtPath(expected, filteredPath, undefined);
               }
             }
             break;
@@ -107,32 +103,21 @@ export const extractDiffValues = (
           }
 
           case 'invalid_union': {
-            const actualValue = getValueAtPath(actual, filteredPath);
-
-            if (filteredPath.length === 0) {
-              if (typeof actualValue === 'object' && actualValue !== null) {
-                expected = '<string matching pattern>';
-              } else if (typeof actualValue === 'string') {
-                expected = '<object satisfying schema>';
-              } else {
-                expected = '<value matching union schema>';
-              }
-            } else {
-              expected = setValueAtPath(
-                expected,
-                filteredPath,
-                '<value matching union schema>',
-              );
-            }
-            break;
+            // Union errors contain multiple sub-errors for each branch.
+            // We can't determine a single "expected" value, so bail out
+            // and let Zod's error message show all the union branch errors.
+            return { actual: undefined, expected: undefined };
           }
 
           case 'invalid_value': {
-            const correctedValue =
-              issue.values && issue.values.length > 0
-                ? issue.values[0]
-                : '<valid value>';
-            expected = setValueAtPath(expected, filteredPath, correctedValue);
+            // Only use the corrected value if we have a concrete value from the schema
+            if (issue.values && issue.values.length > 0) {
+              const correctedValue = issue.values[0];
+              expected = setValueAtPath(expected, filteredPath, correctedValue);
+            } else {
+              // No concrete value available, bail out to Zod's error message
+              return { actual: undefined, expected: undefined };
+            }
             break;
           }
 

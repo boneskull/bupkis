@@ -69,12 +69,11 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to equal' {date-li
 
 exports[`Sync Date Assertion Error Snapshots > \"{unknown} 'to be a valid date' / 'to be date-like'\" [unknown-to-be-a-valid-date-to-be-date_like-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-valid-date-to-be-date_like-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a valid date' / 'to be date-like'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- <object satisfying schema>\\u001b[39m\\n\\u001b[31m+ not-a-date\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a valid date' / 'to be date-like'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "not-a-date",
-  "expected": "<object satisfying schema>",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-valid-date-to-be-date_like-2s1p"
 }

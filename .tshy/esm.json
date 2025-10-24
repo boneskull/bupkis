@@ -1,13 +1,15 @@
 {
-  "compilerOptions": {
-    "outDir": "../.tshy-build/esm"
-  },
-  "exclude": ["../src/package.json"],
   "extends": "./build.json",
   "include": [
     "../src/**/*.ts",
     "../src/**/*.mts",
     "../src/**/*.tsx",
     "../src/**/*.json"
-  ]
+  ],
+  "exclude": [
+    "../src/package.json"
+  ],
+  "compilerOptions": {
+    "outDir": "../.tshy-build/esm"
+  }
 }

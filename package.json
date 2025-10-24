@@ -264,6 +264,7 @@
       "prettier --write",
       "cspell"
     ],
+    "!**/.tshy/**/*.json": [],
     "**/!(.github/prompts)/*.md": [
       "prettier --write",
       "cspell"

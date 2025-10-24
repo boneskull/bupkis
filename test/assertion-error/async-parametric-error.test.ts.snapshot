@@ -60,14 +60,13 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject wi
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with error satisfying' {unknown}\" [function-to-reject-with-error-satisfying-unknown-3s3p] (with regex parameter) > should throw a consistent AssertionError [function-to-reject-with-error-satisfying-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{function} 'to reject with error satisfying' {unknown}\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mobject\\u001b[39m.",
+  "message": "Assertion \\"{function} 'to reject with error satisfying' {unknown}\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": {
     "message": "wrong message"
   },
-  "expected": "<string matching pattern>",
   "diff": "simple",
   "assertionId": "function-to-reject-with-error-satisfying-unknown-3s3p"
 }
