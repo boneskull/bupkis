@@ -199,7 +199,7 @@ export default defineConfig(
       'dist',
       'coverage',
       '*.snapshot',
-      '.tshy/**/*',
+      '.zshy/**/*',
       '.tmp/**/*',
       'worktrees/**/*',
     ],

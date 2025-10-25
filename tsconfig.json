@@ -17,5 +17,6 @@
     "target": "esnext",
     "types": ["node"],
     "verbatimModuleSyntax": false
-  }
+  },
+  "include": ["src/**/*"]
 }
