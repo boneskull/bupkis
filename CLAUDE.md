@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Building and Testing
 
-- `npm run build` - Dual CJS/ESM build using tshy
+- `npm run build` - Dual CJS/ESM build using zshy
 - `npm run build:dev` - Watch mode build
 - `npm test` - Run core test suite (Node.js built-in test runner)
 - `npm run test:property` - Property-based tests with fast-check (1 minute timeout)
@@ -145,7 +145,7 @@ expect(actual, 'not to be', expected);
 
 - **Zod v4** - Validation library (peer dependency)
 - **tsx** - TypeScript execution
-- **tshy** - Dual CJS/ESM build system
+- **zshy** - Dual CJS/ESM build system
 
 **Development:**
 

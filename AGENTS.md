@@ -29,7 +29,7 @@
 - `npm test` - Run all tests (Node.js built-in test runner + tsx)
 - `npm run test:property` - Property-based tests with fast-check (1m timeout)
 - `npm run test:base -- test/<file>.test.ts` - Run specific test files
-- `npm run build` - Dual CJS/ESM build with tshy
+- `npm run build` - Dual CJS/ESM build with zshy
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run lint:types` - TypeScript type checking
 

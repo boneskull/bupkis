@@ -19,7 +19,7 @@
     ".coverage",
     ".profiles",
     ".tmp",
-    ".tshy-build",
+    ".zshy-build",
     ".vscode",
     "*.snapshot",
     "*.svg",
@@ -78,7 +78,8 @@
     "chema",
     "valuetoschema",
     "hexa",
-    "slotification"
+    "slotification",
+    "zshy"
   ],
   "words": [
     "bupkis",
