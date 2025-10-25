@@ -242,7 +242,7 @@ npm install bupkis -D
 - [Unexpected][] is the main inspiration for <strong><span class="bupkis">BUPKIS</span></strong>. However, creating types for this library was exceedingly difficult (and was in fact the first thing we tried). Despite that drawback, we found it exquisitely usable.
 - [Zod][] is a popular object validation library upon which <strong><span class="bupkis">BUPKIS</span></strong> builds many of its own assertions.
 - [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, we mean. How about _in addition to_ itself? Yes. Thank you!
-- [tshy][] from Isaac Schlueter. Thanks for making dual ESM/CJS packages easy and not too fancy.
+- [zshy][] from Colin McDonnell. Thanks for making dual ESM/CJS packages easy and not too fancy.
 - [TypeDoc][] it really documents the hell out of TypeScript projects.
 - [@cjihrig](https://github.com/cjihrig) and other Node.js contributors for the thoughtfulness put into [`node:test`](https://nodejs.org/api/test.html) that make it my current test-runner-of-choice.
 
@@ -263,7 +263,7 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 [custom-assertion-function]: https://bupkis.zip/custom-assertions#static-assertions-function-style
 [create-a-custom-assertion]: https://bupkis.zip/custom-assertions
 [assertion-reference]: https://bupkis.zip/assertions
-[tshy]: https://github.com/isaacs/tshy
+[zshy]: https://github.com/GregOnNet/zshy
 [typedoc]: https://typedoc.org
 [embeddable assertions]: https://bupkis.zip/documents/Basic_Usage#embeddable-assertions
 [unexpected-to-satisfy]: https://unexpected.js.org/assertions/any/to-satisfy/

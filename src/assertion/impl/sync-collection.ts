@@ -1,3 +1,6 @@
+// do not remove; otherwise zshy will not resolve the .d.ts file; it must be referenced directly
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="./shims.d.ts" />
 /**
  * Collection-based assertions for arrays, objects, Maps, and Sets.
  *
