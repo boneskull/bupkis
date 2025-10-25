@@ -217,7 +217,8 @@
     "typedoc-plugin-redirect": "1.2.1",
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.2"
+    "typescript-eslint": "8.46.2",
+    "valibot": "1.1.0"
   },
   "publishConfig": {
     "access": "public",

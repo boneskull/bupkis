@@ -325,7 +325,11 @@ export type AssertionImplPart<Part extends AssertionPart> = Part extends
   ? never
   : Part extends z.ZodPromise
     ? Promise<z.infer<Part>>
-    : z.infer<Part>;
+    : Part extends z.ZodType
+      ? z.infer<Part>
+      : Part extends StandardSchemaV1
+        ? StandardSchemaV1.InferOutput<Part>
+        : never;
 
 /**
  * Maps {@link AssertionParts} to their corresponding {@link AssertionImplPart}.
@@ -548,7 +552,17 @@ export interface AssertionSchemaSync<
  * - String literals become branded phrase literal slots
  * - String literal choices become branded phrase choice slots
  * - Zod types are preserved as-is
+ * - Standard Schema validators become Zod types (see note below)
  * - Invalid parts become `never`
+ *
+ * **Important:** Standard Schema parts are typed as `z.ZodType` because at
+ * runtime they are wrapped in `z.custom()` by `slotify`. This type reflects the
+ * **runtime reality** rather than the input type. The wrapper allows slots to
+ * use Zod's `.safeParse()` and `.def` properties uniformly, while the Standard
+ * Schema's actual validation is called internally.
+ *
+ * **Order matters:** Must check `z.ZodType` before `StandardSchemaV1` because
+ * Zod v4 implements Standard Schema v1, so all Zod types would match both.
  *
  * @example
  *
@@ -561,6 +575,9 @@ export interface AssertionSchemaSync<
  *
  * // Zod type -> preserved
  * type Slot3 = AssertionSlot<z.ZodString>; // z.ZodString
+ *
+ * // Standard Schema -> wrapped at runtime
+ * type Slot4 = AssertionSlot<v.string()>; // z.ZodType (generic, not specific wrapper type)
  * ```
  *
  * @template Part - The assertion part to convert to a slot
@@ -568,6 +585,7 @@ export interface AssertionSchemaSync<
  * @see {@link PhraseLiteralSlot} for string literal slots
  * @see {@link PhraseLiteralChoiceSlot} for choice-based slots
  * @see {@link AssertionSlots} for complete slot tuples
+ * @see `slotify` for the runtime transformation that wraps Standard Schema validators
  */
 export type AssertionSlot<Part extends AssertionPart> = Part extends string
   ? PhraseLiteralSlot<Part>
@@ -575,7 +593,9 @@ export type AssertionSlot<Part extends AssertionPart> = Part extends string
     ? PhraseLiteralChoiceSlot<Part>
     : Part extends z.ZodType
       ? Part
-      : never;
+      : Part extends StandardSchemaV1
+        ? z.ZodType
+        : never;
 
 /**
  * Tuple type representing all validation slots derived from assertion parts.
