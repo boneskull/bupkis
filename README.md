@@ -263,7 +263,7 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 [custom-assertion-function]: https://bupkis.zip/custom-assertions#static-assertions-function-style
 [create-a-custom-assertion]: https://bupkis.zip/custom-assertions
 [assertion-reference]: https://bupkis.zip/assertions
-[zshy]: https://github.com/GregOnNet/zshy
+[zshy]: https://github.com/colinhacks/zshy
 [typedoc]: https://typedoc.org
 [embeddable assertions]: https://bupkis.zip/documents/Basic_Usage#embeddable-assertions
 [unexpected-to-satisfy]: https://unexpected.js.org/assertions/any/to-satisfy/
