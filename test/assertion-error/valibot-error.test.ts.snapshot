@@ -1,6 +1,6 @@
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be greater than' {custom}\" [custom-to-be-greater-than-custom-3s3p] > should throw a consistent AssertionError [custom-to-be-greater-than-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 3\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 3",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -13,7 +13,7 @@ exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be greater than' {cu
 
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be less than' {custom}\" [custom-to-be-less-than-custom-3s3p] > should throw a consistent AssertionError [custom-to-be-less-than-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 5\\u001b[39m\\n\\u001b[31m+ 10\\u001b[39m",
+  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 10",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -61,7 +61,7 @@ exports[`Valibot Assertion Error Snapshots > \"{custom} 'to contain' {custom}\" 
 
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to have length' {custom}\" [custom-to-have-length-custom-3s3p] > should throw a consistent AssertionError [custom-to-have-length-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown-array} 'to have length' / 'to have size' {nonnegative-integer}\\" failed:\\n\\u001b[32m- expected  - 2\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[2m  Array [\\u001b[22m\\n\\u001b[2m    1,\\u001b[22m\\n\\u001b[2m    2,\\u001b[22m\\n\\u001b[2m    3,\\u001b[22m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[32m-   null,\\u001b[39m\\n\\u001b[2m  ]\\u001b[22m",
+  "message": "Assertion \\"{unknown-array} 'to have length' / 'to have size' {nonnegative-integer}\\" failed:\\n- expected  - 2\\n+ actual    + 0\\n\\n  Array [\\n    1,\\n    2,\\n    3,\\n-   null,\\n-   null,\\n  ]",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -96,7 +96,7 @@ exports[`Valibot Assertion Error Snapshots > \"{custom} 'to have property' {cust
 
 exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a boolean'\" [unknown-to-be-a-boolean-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-boolean-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mboolean\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected boolean but received string.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -109,7 +109,7 @@ exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a boolean'\" [un
 
 exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a number'\" [unknown-to-be-a-number-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-number-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected number but received string.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -122,7 +122,7 @@ exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a number'\" [unk
 
 exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a string'\" [unknown-to-be-a-string-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-string-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected string but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -135,7 +135,7 @@ exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be a string'\" [unk
 
 exports[`Valibot Assertion Error Snapshots > \"{unknown} 'to be an array'\" [unknown-to-be-an-array-2s1p] > should throw a consistent AssertionError [unknown-to-be-an-array-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32marray\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected array but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

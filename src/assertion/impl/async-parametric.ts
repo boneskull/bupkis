@@ -100,7 +100,7 @@ export const promiseResolveAssertion = createAsyncAssertion(
  * @group Parametric Assertions (Async)
  */
 export const functionRejectAssertion = createAsyncAssertion(
-  [FunctionSchema, 'to reject'],
+  [FunctionSchema, ['to reject', 'to be rejected']],
   async (subject) => {
     const { error, result } = await trapAsyncFnError(subject);
     if (error === undefined) {
@@ -124,7 +124,7 @@ export const functionRejectAssertion = createAsyncAssertion(
  * @group Parametric Assertions (Async)
  */
 export const promiseRejectAssertion = createAsyncAssertion(
-  [WrappedPromiseLikeSchema, 'to reject'],
+  [WrappedPromiseLikeSchema, ['to reject', 'to be rejected']],
   async (subject) => {
     const { error, result } = await trapPromiseError(subject);
     if (error === undefined) {
@@ -158,7 +158,12 @@ export const promiseRejectAssertion = createAsyncAssertion(
 export const functionRejectWithTypeAssertion = createAsyncAssertion(
   [
     FunctionSchema,
-    ['to reject with a', 'to reject with an'],
+    [
+      'to reject with a',
+      'to reject with an',
+      'to be rejected with a',
+      'to be rejected with an',
+    ],
     ConstructibleSchema,
   ],
   async (subject, ctor) => {
@@ -209,7 +214,12 @@ export const functionRejectWithTypeAssertion = createAsyncAssertion(
 export const promiseRejectWithTypeAssertion = createAsyncAssertion(
   [
     WrappedPromiseLikeSchema,
-    ['to reject with a', 'to reject with an'],
+    [
+      'to reject with a',
+      'to reject with an',
+      'to be rejected with a',
+      'to be rejected with an',
+    ],
     ConstructibleSchema,
   ],
   async (subject, ctor) => {
@@ -264,7 +274,11 @@ export const promiseRejectWithTypeAssertion = createAsyncAssertion(
  * @group Parametric Assertions (Async)
  */
 export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
-  [FunctionSchema, ['to reject with error satisfying'], UnknownSchema],
+  [
+    FunctionSchema,
+    ['to reject with error satisfying', 'to be rejected with error satisfying'],
+    UnknownSchema,
+  ],
   async (subject, param) => {
     const { error, result } = await trapAsyncFnError(subject);
     if (error === undefined) {
@@ -326,7 +340,7 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
 export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
   [
     WrappedPromiseLikeSchema,
-    ['to reject with error satisfying'],
+    ['to reject with error satisfying', 'to be rejected with error satisfying'],
     UnknownSchema,
   ],
   async (subject, param) => {
