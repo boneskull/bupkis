@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.0...bupkis-v0.12.1) (2025-10-26)
+
+
+### Bug Fixes
+
+* **assertions:** function bodies of std. schema assertions now correctly infer arg types ([97a239e](https://github.com/boneskull/bupkis/commit/97a239e692a5dce73ae7282c5b68a911541223fe))
+
 ## [0.12.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.11.1...bupkis-v0.12.0) (2025-10-24)
 
 
