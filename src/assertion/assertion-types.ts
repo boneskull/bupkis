@@ -55,10 +55,7 @@ export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
  * @see {@link AssertionFunctionAsync} for function-based async assertions
  * @see {@link AssertionSchemaAsync} for schema-based async assertions
  */
-export type AnyAsyncAssertion =
-  | AssertionFunctionAsync<any, any, any>
-  | AssertionSchemaAsync<any, any, any>
-  | AssertionStandardSchemaAsync<any, any, any>;
+export type AnyAsyncAssertion = AssertionAsync<any, any, any>;
 
 /**
  * Non-empty tuple type containing any asynchronous assertions.
@@ -80,10 +77,7 @@ export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
  * @see {@link AssertionFunctionSync} for function-based sync assertions
  * @see {@link AssertionSchemaSync} for schema-based sync assertions
  */
-export type AnySyncAssertion =
-  | AssertionFunctionSync<any, any, any>
-  | AssertionSchemaSync<any, any, any>
-  | AssertionStandardSchemaSync<any, any, any>;
+export type AnySyncAssertion = AssertionSync<any, any, any>;
 
 /**
  * Non-empty tuple type containing any synchronous assertions.
@@ -763,10 +757,8 @@ export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
  * providing type information for all async assertion implementations included
  * in the framework by default.
  *
- * @internal
  * @group Builtin Assertions
  * @see {@link AsyncAssertions} for the actual assertion implementations
- * @see {@link BuiltinAsyncAssertion} for individual assertion types
  */
 export type BuiltinAsyncAssertions = typeof AsyncAssertions;
 
@@ -791,10 +783,8 @@ export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
  * providing type information for all synchronous assertion implementations
  * included in the framework by default.
  *
- * @internal
  * @group Builtin Assertions
  * @see {@link SyncAssertions} for the actual assertion implementations
- * @see {@link BuiltinSyncAssertion} for individual assertion types
  */
 export type BuiltinSyncAssertions = typeof SyncAssertions;
 
@@ -1131,9 +1121,12 @@ export type ParsedSubject<Parts extends AssertionParts> =
  * @see {@link AssertionImpl} for how these values are consumed
  */
 export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
-  MaybeEmptyParsedValues<Parts> extends readonly []
-    ? never
-    : MaybeEmptyParsedValues<Parts>;
+  // Check if Parts is 'any' type - only true when Parts is 'any' because 0 extends (1 & any) = 0 extends any = true
+  0 extends 1 & Parts
+    ? readonly unknown[]
+    : MaybeEmptyParsedValues<Parts> extends readonly []
+      ? never
+      : MaybeEmptyParsedValues<Parts>;
 
 /**
  * Union type combining both phrase literal types.

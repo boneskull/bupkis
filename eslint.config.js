@@ -173,7 +173,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['test/**/*.test.ts', 'test/**/*.macro.ts'],
+    files: ['test/**/*.test.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -202,6 +202,7 @@ export default defineConfig(
       '.zshy/**/*',
       '.tmp/**/*',
       'worktrees/**/*',
+      'test-d/**/*',
     ],
   },
 );
