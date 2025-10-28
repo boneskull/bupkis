@@ -13,7 +13,7 @@ exports[`Sync Esoteric Assertion Error Snapshots > \"{property-key} 'to be an en
 
 exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown!} 'to have enumerable property' {property-key}\" [unknown-to-have-enumerable-property-property_key-3s3p] > should throw a consistent AssertionError [unknown-to-have-enumerable-property-property_key-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown!} 'to have enumerable property' {property-key}\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "message": "Assertion \\"{unknown!} 'to have enumerable property' {property-key}\\" failed:\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -30,7 +30,7 @@ exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown!} 'to have enumera
 
 exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be extensible'\" [unknown-to-be-extensible-2s1p] > should throw a consistent AssertionError [unknown-to-be-extensible-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be extensible'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "message": "Assertion \\"{unknown} 'to be extensible'\\" failed:\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -56,7 +56,7 @@ exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be frozen'\" 
 
 exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be sealed'\" [unknown-to-be-sealed-2s1p] > should throw a consistent AssertionError [unknown-to-be-sealed-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be sealed'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "message": "Assertion \\"{unknown} 'to be sealed'\\" failed:\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -73,7 +73,7 @@ exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be sealed'\" 
 
 exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to have a null prototype' / 'to be a dictionary'\" [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] > should throw a consistent AssertionError [unknown-to-have-a-null-prototype-to-be-a-dictionary-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "message": "Assertion \\"{unknown} 'to have a null prototype' / 'to be a dictionary'\\" failed:\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

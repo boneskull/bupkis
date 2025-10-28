@@ -6,7 +6,7 @@
  */
 
 import { type it } from 'node:test';
-import { inspect } from 'node:util';
+import { inspect, stripVTControlCharacters } from 'node:util';
 
 import { type AssertionError, FailAssertionError } from '../../src/error.js';
 import { isError, isPromiseLike } from '../../src/guards.js';
@@ -47,7 +47,7 @@ export const errorSerializer = (error: Error): string => {
 
     const result: Record<string, unknown> = {
       // @ts-expect-error - message is not enumerable on NodeAssertionError
-      message: error.message,
+      message: stripVTControlCharacters(error.message),
       ...rest,
     };
 

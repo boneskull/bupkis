@@ -13,7 +13,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [a
 
 exports[`Sync Basic Assertion Error Snapshots > \"{record} 'to be empty'\" [record-to-be-empty-2s2p] > should throw a consistent AssertionError [record-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{record} 'to be empty'\\" failed:\\n\\u001b[2mCompared values have no visual difference.\\u001b[22m",
+  "message": "Assertion \\"{record} 'to be empty'\\" failed:\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -30,7 +30,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{record} 'to be empty'\" [reco
 
 exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be empty'\" [string-to-be-empty-2s2p] > should throw a consistent AssertionError [string-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{string} 'to be empty'\\" failed:\\n\\u001b[32m- expected  - 0\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[31m+ hello\\u001b[39m",
+  "message": "Assertion \\"{string} 'to be empty'\\" failed:\\n- expected  - 0\\n+ actual    + 1\\n\\n+ hello",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -43,7 +43,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be empty'\" [stri
 
 exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be non-empty'\" [string-to-be-non_empty-2s2p] > should throw a consistent AssertionError [string-to-be-non_empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{string} 'to be non-empty'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 0\\u001b[39m\\n\\n\\u001b[32m- x\\u001b[39m",
+  "message": "Assertion \\"{string} 'to be non-empty'\\" failed:\\n- expected  - 1\\n+ actual    + 0\\n\\n- x",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -56,7 +56,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{string} 'to be non-empty'\" [
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be -Infinity'\" [unknown-to-be-_infinity-2s1p] > should throw a consistent AssertionError [unknown-to-be-_infinity-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be -Infinity'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- -Infinity\\u001b[39m\\n\\u001b[31m+ Infinity\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be -Infinity'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- -Infinity\\n+ Infinity",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -69,7 +69,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be -Infinity'\" 
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be Infinity'\" [unknown-to-be-infinity-2s1p] > should throw a consistent AssertionError [unknown-to-be-infinity-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be Infinity'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- Infinity\\u001b[39m\\n\\u001b[31m+ -Infinity\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be Infinity'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- Infinity\\n+ -Infinity",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -82,7 +82,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be Infinity'\" [
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be NaN'\" [unknown-to-be-nan-2s1p] > should throw a consistent AssertionError [unknown-to-be-nan-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be NaN'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be NaN'\\" failed:\\n  Comparing two different types of values. Expected string but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -143,7 +143,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakSet'\" 
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a bigint' / 'to be a BigInt'\" [unknown-to-be-a-bigint-to-be-a-bigint-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-bigint-to-be-a-bigint-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a bigint' / 'to be a BigInt'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a bigint' / 'to be a BigInt'\\" failed:\\n  Comparing two different types of values. Expected string but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -156,7 +156,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a bigint' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\" [unknown-to-be-a-boolean-to-be-boolean-to-be-a-bool-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-boolean-to-be-boolean-to-be-a-bool-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mboolean\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a boolean' / 'to be boolean' / 'to be a bool'\\" failed:\\n  Comparing two different types of values. Expected boolean but received string.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -181,7 +181,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a class' / 't
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a date' / 'to be a Date'\" [unknown-to-be-a-date-to-be-a-date-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-date-to-be-a-date-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a date' / 'to be a Date'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- <date>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a date' / 'to be a Date'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- <date>\\n+ hello",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -206,7 +206,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a function'\"
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a negative integer' / 'to be a negative int'\" [unknown-to-be-a-negative-integer-to-be-a-negative-int-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-negative-integer-to-be-a-negative-int-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a negative integer' / 'to be a negative int'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a negative integer' / 'to be a negative int'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 0\\n+ 5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -219,7 +219,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a negative in
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a number' / 'to be finite'\" [unknown-to-be-a-number-to-be-finite-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-number-to-be-finite-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mnumber\\u001b[39m but received \\u001b[31mstring\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a number' / 'to be finite'\\" failed:\\n  Comparing two different types of values. Expected number but received string.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -232,7 +232,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a number' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a positive integer' / 'to be a positive int'\" [unknown-to-be-a-positive-integer-to-be-a-positive-int-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-positive-integer-to-be-a-positive-int-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a positive integer' / 'to be a positive int'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a positive integer' / 'to be a positive int'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 0\\n+ -5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -257,7 +257,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a primitive'\
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a record' / 'to be a plain object'\" [unknown-to-be-a-record-to-be-a-plain-object-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-record-to-be-a-plain-object-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a record' / 'to be a plain object'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31marray\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a record' / 'to be a plain object'\\" failed:\\n  Comparing two different types of values. Expected string but received array.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -270,7 +270,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a record' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a string'\" [unknown-to-be-a-string-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-string-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be a string'\\" failed:\\n  Comparing two different types of values. Expected string but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -283,7 +283,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a string'\" [
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a symbol' / 'to be a Symbol'\" [unknown-to-be-a-symbol-to-be-a-symbol-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-symbol-to-be-a-symbol-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a symbol' / 'to be a Symbol'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- <symbol>\\u001b[39m\\n\\u001b[31m+ hello\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be a symbol' / 'to be a Symbol'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- <symbol>\\n+ hello",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -308,7 +308,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an Error' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an array' / 'to be array'\" [unknown-to-be-an-array-to-be-array-2s1p] > should throw a consistent AssertionError [unknown-to-be-an-array-to-be-array-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32marray\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be an array' / 'to be array'\\" failed:\\n  Comparing two different types of values. Expected array but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -332,7 +332,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an async func
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\" [unknown-to-be-an-integer-to-be-a-safe-integer-to-be-an-int-to-be-a-safe-int-2s1p] > should throw a consistent AssertionError [unknown-to-be-an-integer-to-be-a-safe-integer-to-be-an-int-to-be-a-safe-int-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\" failed:\\n  Comparing two different types of values. Expected \\u001b[32mstring\\u001b[39m but received \\u001b[31mnumber\\u001b[39m.",
+  "message": "Assertion \\"{unknown} 'to be an integer' / 'to be a safe integer' / 'to be an int' / 'to be a safe int'\\" failed:\\n  Comparing two different types of values. Expected string but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -368,7 +368,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be defined'\" [u
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be false'\" [unknown-to-be-false-2s1p] > should throw a consistent AssertionError [unknown-to-be-false-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be false'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- false\\u001b[39m\\n\\u001b[31m+ true\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be false'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- false\\n+ true",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -405,7 +405,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be infinite'\" [
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be negative' / 'to be a negative number'\" [unknown-to-be-negative-to-be-a-negative-number-2s1p] > should throw a consistent AssertionError [unknown-to-be-negative-to-be-a-negative-number-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be negative' / 'to be a negative number'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ 5\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be negative' / 'to be a negative number'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 0\\n+ 5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -429,7 +429,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be null'\" [unkn
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be positive' / 'to be a positive number'\" [unknown-to-be-positive-to-be-a-positive-number-2s1p] > should throw a consistent AssertionError [unknown-to-be-positive-to-be-a-positive-number-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be positive' / 'to be a positive number'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- 0\\u001b[39m\\n\\u001b[31m+ -5\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be positive' / 'to be a positive number'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 0\\n+ -5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -442,7 +442,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be positive' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be true'\" [unknown-to-be-true-2s1p] > should throw a consistent AssertionError [unknown-to-be-true-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be true'\\" failed:\\n\\u001b[32m- expected  - 1\\u001b[39m\\n\\u001b[31m+ actual    + 1\\u001b[39m\\n\\n\\u001b[32m- true\\u001b[39m\\n\\u001b[31m+ false\\u001b[39m",
+  "message": "Assertion \\"{unknown} 'to be true'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- true\\n+ false",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
