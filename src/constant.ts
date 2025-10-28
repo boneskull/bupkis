@@ -48,8 +48,6 @@ export const kBupkisNegatedAssertionError: unique symbol = Symbol(
 
 /**
  * Symbol used to flag a function as an `expect.it` executor.
- *
- * @internal
  */
 export const kExpectIt: unique symbol = Symbol('bupkis-expect-it');
 
@@ -82,15 +80,11 @@ export const KEYPATH_REGEX =
 
 /**
  * Symbol used to flag a function as a Bupkis-thrown error.
- *
- * @internal
  */
 export const kBupkisError: unique symbol = Symbol('bupkis-error');
 
 /**
  * Assertion ID of a `FailAssertionError`.
- *
- * @internal
  */
 export const FAIL = 'FAIL' as const;
 

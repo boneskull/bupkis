@@ -5,6 +5,7 @@
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
+    "lib": ["ES2023"],
     "module": "nodenext",
     "moduleDetection": "force",
     "noImplicitOverride": true,
