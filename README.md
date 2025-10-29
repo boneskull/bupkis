@@ -171,7 +171,7 @@ To formalize the conventions at a high level:
 
 ### Custom Assertions Built With Standard Schema V1
 
-<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard-schema]-compliant validation library, including [Zod][], [Valibot][], [ArkType][], [Effect Schema][], and many others.
+<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard schema]-compliant validation library, including [Zod][], [Valibot][], [ArkType][], [Effect Schema][], and many others.
 
 Most of the built-in assertions are implemented using Zod schemas, but you can use **any** Standard Schema V1 library to create custom assertions. <strong><span class="bupkis">BUPKIS</span></strong> extends this capability to you regardless of your preferred validation library.
 
@@ -203,7 +203,7 @@ expect('skiball lavatory', 'to be a string');
 >
 > The `expect()`/`expectAsync()` functions returned by `use()` are fully type-safe and aware of your custom assertions. Each `expect()`/`expectAsync()` function has a `.use()` method as well; this allows you to compose multiple sets of assertions together (like from several assertion plugin packages).
 
-**Any [Standard Schema V1][standard-schema] library makes it extremely easy to create most custom assertions**. Whether you prefer [Zod][], [Valibot][], [ArkType][], or another compliant library, they all work seamlessly. But despite their power, validation libraries can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
+**Any [Standard Schema V1][standard schema] library makes it extremely easy to create most custom assertions**. Whether you prefer [Zod][], [Valibot][], [ArkType][], or another compliant library, they all work seamlessly. But despite their power, validation libraries can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
 
 👉 For an assiduous guide on creating assertions, read [Guide: How to Create a Custom Assertion][create-a-custom-assertion].
 
@@ -221,7 +221,7 @@ We have tried to make <strong><span class="bupkis">BUPKIS</span></strong> is as 
 
 **Node.js**: ^20.19.0, ^22.12.0, >=23
 
-<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard-schema]-compliant validation library. It has a peer dependency on [Zod][] v4+ (which implements Standard Schema V1), but will install it as an optional dependency if you are not already using it. You can also use [Valibot][], [ArkType][], [Effect Schema][], or any other Standard Schema V1 library.
+<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard schema]-compliant validation library. It has a peer dependency on [Zod][] v4+ (which implements Standard Schema V1), but will install it as an optional dependency if you are not already using it. You can also use [Valibot][], [ArkType][], [Effect Schema][], or any other Standard Schema V1 library.
 
 <strong><span class="bupkis">BUPKIS</span></strong> ships as a dual CJS/ESM package.
 
@@ -257,7 +257,7 @@ TODO: think of good reason and fill in later
 
 Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
-[standard-schema]: https://standardschema.dev
+[standard schema]: https://standardschema.dev
 [zod]: https://zod.dev
 [valibot]: https://valibot.dev
 [arktype]: https://arktype.io
