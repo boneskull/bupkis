@@ -228,17 +228,17 @@
     "*.{ts,cts,js,cjs,yml,json5}": [
       "eslint --fix",
       "prettier --write",
-      "cspell"
+      "cspell lint --no-must-find-files"
     ],
     "**/!(package-lock).json": [
       "eslint --fix",
       "prettier --write",
-      "cspell"
+      "cspell lint --no-must-find-files"
     ],
     "!**/.zshy/**/*.json": [],
     "**/!(.github/prompts)/*.md": [
       "prettier --write",
-      "cspell"
+      "cspell lint --no-must-find-files"
     ]
   },
   "prettier": {
