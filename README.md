@@ -169,9 +169,11 @@ To formalize the conventions at a high level:
 
   _How about them apples._
 
-### Custom Assertions Built With Zod
+### Custom Assertions Built With Standard Schema V1
 
-[Zod][] is a popular object validation library which does some heavy lifting for <strong><span class="bupkis">BUPKIS</span></strong>—most of the built-in assertions are implemented using Zod schemas. And so <strong><span class="bupkis">BUPKIS</span></strong> extends this capability to you.
+<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard-schema]-compliant validation library, including [Zod][], [Valibot][], [ArkType][], [Effect Schema][], and many others.
+
+Most of the built-in assertions are implemented using Zod schemas, but you can use **any** Standard Schema V1 library to create custom assertions. <strong><span class="bupkis">BUPKIS</span></strong> extends this capability to you regardless of your preferred validation library.
 
 An example will be illuminating. What follows is a ~~stupid~~ ~~quick~~ _stupid_ example of a creating and "registering" a basic assertion _which can be invoked using two different phrases_:
 
@@ -201,7 +203,7 @@ expect('skiball lavatory', 'to be a string');
 >
 > The `expect()`/`expectAsync()` functions returned by `use()` are fully type-safe and aware of your custom assertions. Each `expect()`/`expectAsync()` function has a `.use()` method as well; this allows you to compose multiple sets of assertions together (like from several assertion plugin packages).
 
-**Zod makes it extremely easy to create most custom assertions**. But despite its power, it can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
+**Any [Standard Schema V1][standard-schema] library makes it extremely easy to create most custom assertions**. Whether you prefer [Zod][], [Valibot][], [ArkType][], or another compliant library, they all work seamlessly. But despite their power, validation libraries can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
 
 👉 For an assiduous guide on creating assertions, read [Guide: How to Create a Custom Assertion][create-a-custom-assertion].
 
@@ -219,7 +221,7 @@ We have tried to make <strong><span class="bupkis">BUPKIS</span></strong> is as 
 
 **Node.js**: ^20.19.0, ^22.12.0, >=23
 
-<strong><span class="bupkis">BUPKIS</span></strong> has a peer dependency on [Zod][] v4+, but will install it as an optional dependency if you are not already using it.
+<strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard-schema]-compliant validation library. It has a peer dependency on [Zod][] v4+ (which implements Standard Schema V1), but will install it as an optional dependency if you are not already using it. You can also use [Valibot][], [ArkType][], [Effect Schema][], or any other Standard Schema V1 library.
 
 <strong><span class="bupkis">BUPKIS</span></strong> ships as a dual CJS/ESM package.
 
@@ -240,7 +242,8 @@ npm install bupkis -D
 ## Acknowledgements
 
 - [Unexpected][] is the main inspiration for <strong><span class="bupkis">BUPKIS</span></strong>. However, creating types for this library was exceedingly difficult (and was in fact the first thing we tried). Despite that drawback, we found it exquisitely usable.
-- [Zod][] is a popular object validation library upon which <strong><span class="bupkis">BUPKIS</span></strong> builds many of its own assertions.
+- [Standard Schema][] for creating a unified interface that allows <strong><span class="bupkis">BUPKIS</span></strong> to work with any compliant validation library.
+- [Zod][] is a popular object validation library upon which <strong><span class="bupkis">BUPKIS</span></strong> builds many of its built-in assertions. Special thanks to Colin McDonnell for implementing Standard Schema V1.
 - [fast-check][]: Thanks to Nicholas Dubien for this library. There is **no better library** for an assertion library to use to test itself! Well, besides itself, we mean. How about _in addition to_ itself? Yes. Thank you!
 - [zshy][] from Colin McDonnell. Thanks for making dual ESM/CJS packages easy and not too fancy.
 - [TypeDoc][] it really documents the hell out of TypeScript projects.
@@ -254,7 +257,11 @@ TODO: think of good reason and fill in later
 
 Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
+[standard-schema]: https://standardschema.dev
 [zod]: https://zod.dev
+[valibot]: https://valibot.dev
+[arktype]: https://arktype.io
+[effect schema]: https://effect.website/docs/schema/introduction
 [docs]: https://bupkis.zip
 [basic-usage]: https://bupkis.zip/usage
 [unexpected]: https://unexpected.js.org
