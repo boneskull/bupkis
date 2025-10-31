@@ -222,8 +222,8 @@ export abstract class BupkisAssertion<
   }
 
   /**
-   * Translates a {@link z.ZodError} into an {@link AssertionError} with a
-   * human-friendly message.
+   * Translates a `ZodError` into an {@link AssertionError} with a human-friendly
+   * message.
    *
    * @remarks
    * This does not handle parameterized assertions with more than one parameter

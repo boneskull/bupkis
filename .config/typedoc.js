@@ -30,6 +30,7 @@ export default {
     '../src/util.ts',
     '../src/guards.ts',
   ],
+  excludeExternals: true,
   excludeInternal: true,
   excludePrivate: true,
   externalSymbolLinkMappings: {

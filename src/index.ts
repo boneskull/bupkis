@@ -12,6 +12,10 @@
  * ```ts
  * import { expect, expectAsync, z, createAssertion } from 'bupkis';
  * ```
+ *
+ * {@link https://zod.dev | Zod v4} is exported as `z` if you aren't already
+ * using a {@link https://standardschema.dev | Standard Schema V1}-compatible
+ * validation library.
  */
 
 import { z } from 'zod/v4';

@@ -347,7 +347,7 @@ If a function-style assertion must indicate failure, it can:
 1. _Return_ a Zod schema (**strongly recommended** if feasible)
 2. _Return_ a {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} function containing a Zod schema and a `subject` to parse (**strongly recommended** if feasible). This is only needed if the subject you want to parse is not the same `subject` as passed to the assertion function implementation.
 3. _Return_ an {@link bupkis!types.AssertionFailure | AssertionFailure} object to indicate failure with details (_only recommended if 1. or 2. is infeasible_)
-4. _Return_ a {@link bupkis!z.ZodError | ZodError} object to indicate failure with details (_not recommended_, but could be worse; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
+4. _Return_ a `ZodError` object to indicate failure with details (_not recommended_, but could be worse; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
 5. _Throw/reject_ a `ZodError` (_not recommended_; only slightly worse than previous; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
 6. _Throw/reject_ an `AssertionError` (_not recommended_; prefer returning an {@link bupkis!types.AssertionFailure | AssertionFailure})
 7. _Return_ `false` to indicate failure (_avoid_; the resulting `AssertionError` will be generic and unhelpful)
