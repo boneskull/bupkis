@@ -2,7 +2,6 @@
  * Defines Bupkis' Zod metadata registry
  *
  * @packageDocumentation
- * @internal
  */
 
 import { z } from 'zod/v4';

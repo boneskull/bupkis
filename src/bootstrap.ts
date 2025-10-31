@@ -33,23 +33,20 @@ const bootstrap = (): {
 
 const api = bootstrap();
 
-const {
-  /**
-   * The main synchronous assertion function which can execute only built-in
-   * assertions.
-   *
-   * @function
-   * @group Core API
-   */
-  expect,
-  /**
-   * The main asynchronous assertion function which can execute only built-in
-   * assertions.
-   *
-   * @function
-   * @group Core API
-   */
-  expectAsync,
-} = api;
+/**
+ * The main synchronous assertion function which can execute only built-in
+ * assertions.
+ *
+ * @function
+ * @group Core API
+ */
+export const expect: Expect<typeof SyncAssertions> = api.expect;
 
-export { expect, expectAsync };
+/**
+ * The main asynchronous assertion function which can execute only built-in
+ * assertions.
+ *
+ * @function
+ * @group Core API
+ */
+export const expectAsync: ExpectAsync<typeof AsyncAssertions> = api.expectAsync;

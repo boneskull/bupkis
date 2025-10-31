@@ -14,8 +14,6 @@ const { freeze } = Object;
 /**
  * Symbol flagging the value as a Bupkis-created string literal, which will be
  * omitted from the parameters to an `AssertionImpl`.
- *
- * @internal
  */
 
 export const kStringLiteral: unique symbol = Symbol('bupkis:string-literal');
