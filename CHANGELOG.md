@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.1...bupkis-v0.12.2) (2025-10-31)
+
+
+### Bug Fixes
+
+* fix type declarations ([341fd21](https://github.com/boneskull/bupkis/commit/341fd2122acdd07bb90535cdf5bf60254a4c5357))
+
 ## [0.12.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.0...bupkis-v0.12.1) (2025-10-26)
 
 
