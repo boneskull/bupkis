@@ -54,7 +54,20 @@ describe('expect', () => {
   });
 
   it('should have it property for deferred assertions', () => {
-    expectAssignable<(...args: any[]) => any>(expect.it);
+    // Test that expect.it accepts various assertion signatures
+    const isString = expect.it('to be a string');
+    const isGreaterThan = expect.it('to be greater than', 5);
+    const matches = expect.it('to match', /test/);
+    const isArray = expect.it('to be an array');
+
+    // Verify return types are properly typed ExpectItExecutor functions
+    expectType<(subject: unknown) => void>(isString);
+    expectType<(subject: number) => void>(isGreaterThan);
+    expectType<(subject: string) => void>(matches);
+    expectType<(subject: unknown) => void>(isArray);
+
+    // Verify expect.it itself has proper overload signatures
+    expectAssignable<typeof expect.it>(expect.it);
   });
 });
 
@@ -80,7 +93,18 @@ describe('expectAsync', () => {
   });
 
   it('should have it property for deferred async assertions', () => {
-    expectAssignable<(...args: any[]) => any>(expectAsync.it);
+    // Test that expectAsync.it accepts various assertion signatures
+    const isString = expectAsync.it('to be a string');
+    const resolves = expectAsync.it('to resolve');
+    const rejectsWith = expectAsync.it('to reject with a', TypeError);
+
+    // Verify return types are properly typed ExpectItExecutorAsync functions
+    expectType<(subject: unknown) => Promise<void>>(isString);
+    expectType<(subject: Promise<unknown>) => Promise<void>>(resolves);
+    expectType<(subject: Promise<unknown>) => Promise<void>>(rejectsWith);
+
+    // Verify expectAsync.it itself has proper overload signatures
+    expectAssignable<typeof expectAsync.it>(expectAsync.it);
   });
 });
 
