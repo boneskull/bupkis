@@ -2,7 +2,6 @@
   "compilerOptions": {
     "declaration": true,
     "declarationMap": true,
-    "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "lib": ["ES2023"],
