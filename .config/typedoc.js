@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { OptionDefaults } from 'typedoc';
 
 /**
- * @import {TypeDocOptions} from 'typedoc'
+ * @import {TypeDocOptions} from "typedoc"
  */
 
 const customFooterHtml = readFileSync(

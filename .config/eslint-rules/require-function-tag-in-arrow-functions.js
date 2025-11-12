@@ -11,7 +11,7 @@ import {
 } from '@typescript-eslint/utils';
 
 /**
- * @import {TSESTree} from '@typescript-eslint/typescript-estree';
+ * @import {TSESTree} from "@typescript-eslint/typescript-estree"
  */
 /**
  * ESLint rule to require `@function` tag in JSDoc comments for arrow functions

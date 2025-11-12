@@ -12,7 +12,7 @@ import { Converter, PageEvent, ReflectionKind, RendererEvent } from 'typedoc';
 const { freeze, fromEntries } = Object;
 
 /**
- * @import {Application} from 'typedoc'
+ * @import {Application} from "typedoc"
  */
 
 const SOURCE_DIR = fileURLToPath(new URL('../site/media/', import.meta.url));
