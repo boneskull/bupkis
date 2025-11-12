@@ -63,11 +63,11 @@ describe('type guard property tests', () => {
             () => {
               expect.fail('Should not have been called');
             },
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
             async () => {
               expect.fail('Should not have been called');
             },
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
             async () => {
               expect.fail('Should not have been called');
             },
