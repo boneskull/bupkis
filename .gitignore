@@ -160,3 +160,4 @@ docs
 worktrees/*
 !worktrees/README.md
 
+.claude/settings.local.json
