@@ -54,6 +54,11 @@
       "types": "./dist/diff.d.cts",
       "import": "./dist/diff.js",
       "require": "./dist/diff.cjs"
+    },
+    "./snapshot": {
+      "types": "./dist/snapshot/index.d.cts",
+      "import": "./dist/snapshot/index.js",
+      "require": "./dist/snapshot/index.cjs"
     }
   },
   "files": [
@@ -129,6 +134,7 @@
   "dependencies": {
     "debug": "^4.4.1",
     "jest-diff": "30.2.0",
+    "json-stable-stringify": "1.3.0",
     "set.prototype.difference": "^1.1.7",
     "set.prototype.intersection": "^1.1.7",
     "set.prototype.isdisjointfrom": "^1.1.5",
@@ -219,6 +225,7 @@
         "src/schema.ts",
         "src/guards.ts",
         "src/diff.ts",
+        "src/snapshot/index.ts",
         "test-data/index.ts",
         "bench/**/*.bench.ts"
       ]
@@ -261,7 +268,8 @@
       "./guards": "./src/guards.ts",
       "./assertions": "./src/assertion/index.ts",
       ".": "./src/index.ts",
-      "./diff": "./src/diff.ts"
+      "./diff": "./src/diff.ts",
+      "./snapshot": "./src/snapshot/index.ts"
     }
   }
 }

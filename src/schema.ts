@@ -1337,3 +1337,11 @@ export const createErrorMessageRegexSchema = (param: RegExp) => {
   errorMessageRegexSchemaCache.set(param, schema);
   return schema;
 };
+
+/**
+ * Schema for snapshot options.
+ */
+export const SnapshotOptionsSchema = z.object({
+  hint: z.string().optional(),
+  serializer: z.any().optional(),
+});

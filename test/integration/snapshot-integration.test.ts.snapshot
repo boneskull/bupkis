@@ -1,0 +1,263 @@
+exports[`Snapshot Integration Tests > chaining with other assertions > should chain snapshots with other assertions 1`] = `
+{
+  "age": 30,
+  "email": "alice@example.com",
+  "name": "Alice"
+}
+`;
+
+exports[`Snapshot Integration Tests > chaining with other assertions > should chain with type assertions 1`] = `
+"test string"
+`;
+
+exports[`Snapshot Integration Tests > circular references > should handle circular array references 1`] = `
+[
+  1,
+  2,
+  3,
+  "[Circular]"
+]
+`;
+
+exports[`Snapshot Integration Tests > circular references > should handle circular object references 1`] = `
+{
+  "name": "circular",
+  "self": "[Circular]"
+}
+`;
+
+exports[`Snapshot Integration Tests > error handling > should work with Error objects 1`] = `
+{
+  "message": "Test error message",
+  "name": "CustomError"
+}
+`;
+
+exports[`Snapshot Integration Tests > error handling > should work with custom error properties 1`] = `
+{
+  "code": "ERR_TYPE",
+  "message": "Type mismatch",
+  "name": "TypeError",
+  "statusCode": 400
+}
+`;
+
+exports[`Snapshot Integration Tests > real-world scenarios > should snapshot API response shape 1`] = `
+{
+  "data": {
+    "meta": {
+      "page": 1,
+      "pageSize": 10,
+      "total": 2
+    },
+    "users": [
+      {
+        "email": "alice@example.com",
+        "id": 1,
+        "name": "Alice",
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "email": "bob@example.com",
+        "id": 2,
+        "name": "Bob",
+        "roles": [
+          "user"
+        ]
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/json",
+    "x-request-id": "abc-123"
+  },
+  "status": 200
+}
+`;
+
+exports[`Snapshot Integration Tests > real-world scenarios > should snapshot component output 1`] = `
+{
+  "props": {
+    "children": [
+      {
+        "props": {
+          "children": "User Profile"
+        },
+        "type": "h2"
+      },
+      {
+        "props": {
+          "children": "Name: Alice"
+        },
+        "type": "p"
+      },
+      {
+        "props": {
+          "children": "Edit",
+          "onClick": "[Function]"
+        },
+        "type": "button"
+      }
+    ],
+    "className": "user-card"
+  },
+  "type": "div"
+}
+`;
+
+exports[`Snapshot Integration Tests > real-world scenarios > should snapshot configuration objects 1`] = `
+{
+  "database": {
+    "host": "localhost",
+    "name": "test-db",
+    "port": 5432,
+    "type": "postgres"
+  },
+  "features": {
+    "authentication": true,
+    "caching": false,
+    "rateLimit": true
+  },
+  "logging": {
+    "format": "json",
+    "level": "info",
+    "outputs": [
+      "console",
+      "file"
+    ]
+  },
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "protocol": "http"
+  }
+}
+`;
+
+exports[`Snapshot Integration Tests > special types > should handle Dates 1`] = `
+"2025-01-12T00:00:00.000Z"
+`;
+
+exports[`Snapshot Integration Tests > special types > should handle Maps 1`] = `
+{
+  "__type": "Map",
+  "entries": [
+    [
+      "key1",
+      "value1"
+    ],
+    [
+      "key2",
+      {
+        "nested": "value"
+      }
+    ]
+  ]
+}
+`;
+
+exports[`Snapshot Integration Tests > special types > should handle RegExp 1`] = `
+"/test.*pattern/gi"
+`;
+
+exports[`Snapshot Integration Tests > special types > should handle Sets 1`] = `
+{
+  "__type": "Set",
+  "values": [
+    1,
+    2,
+    3,
+    "string",
+    {
+      "obj": "value"
+    }
+  ]
+}
+`;
+
+exports[`Snapshot Integration Tests > with custom serializers > should handle custom serializer for complex objects 1`] = `
+{
+  "creditCard": "XXXX-XXXX-XXXX-XXXX",
+  "email": "user@example.com",
+  "id": 123,
+  "password": "[REDACTED]"
+}
+`;
+
+exports[`Snapshot Integration Tests > with custom serializers > should use custom serializer when provided 1`] = `
+{
+  "public": "visible",
+  "secret": "[REDACTED]"
+}
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should create and match snapshots with node:test context 1`] = `
+{
+  "age": 30,
+  "name": "Alice",
+  "roles": [
+    "admin",
+    "user"
+  ]
+}
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle arrays 1`] = `
+[
+  1,
+  2,
+  3,
+  {
+    "nested": "value"
+  },
+  [
+    "deep",
+    "array"
+  ]
+]
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle booleans 1`] = `
+true
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle complex nested objects 1`] = `
+{
+  "metadata": {
+    "createdAt": "2025-01-12T00:00:00.000Z",
+    "tags": [
+      "important",
+      "urgent"
+    ]
+  },
+  "user": {
+    "profile": {
+      "name": "Bob",
+      "settings": {
+        "notifications": true,
+        "theme": "dark"
+      }
+    }
+  }
+}
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle null 1`] = `
+null
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle numbers 1`] = `
+42
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should handle primitives 1`] = `
+"simple string"
+`;
+
+exports[`Snapshot Integration Tests > with node:test > should support different phrase variations 1`] = `
+{
+  "test": "value"
+}
+`;

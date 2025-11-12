@@ -12,6 +12,7 @@
 
 export * from './async-parametric.js';
 export * from './async.js';
+export * from './snapshot.js';
 export * from './sync-basic.js';
 export * from './sync-collection.js';
 export * from './sync-date.js';

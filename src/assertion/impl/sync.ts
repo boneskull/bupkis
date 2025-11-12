@@ -13,6 +13,7 @@
  * @showGroups
  */
 
+import { snapshotAssertion, snapshotAssertionWithOptions } from './snapshot.js';
 import {
   arrayAssertion,
   asyncFunctionAssertion,
@@ -284,6 +285,16 @@ export const SyncCollectionAssertions = [
 ] as const;
 
 /**
+ * Tuple of snapshot-related synchronous assertions.
+ *
+ * @group Assertion Collections
+ */
+export const SyncSnapshotAssertions = [
+  snapshotAssertion,
+  snapshotAssertionWithOptions,
+] as const;
+
+/**
  * Tuple of all built-in synchronous assertions.
  *
  * @group Assertion Collections
@@ -294,8 +305,10 @@ export const SyncAssertions = [
   ...SyncParametricAssertions,
   ...SyncEsotericAssertions,
   ...SyncDateAssertions,
+  ...SyncSnapshotAssertions,
 ] as const;
 
+export * from './snapshot.js';
 // Re-export collection tuples for compatibility
 // Re-export all individual assertions for convenience
 export * from './sync-basic.js';

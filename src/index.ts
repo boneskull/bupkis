@@ -27,6 +27,18 @@ export * from './error.js';
 export * as schema from './schema.js';
 
 /**
+ * Re-export of snapshot testing types for convenient access.
+ *
+ * For full snapshot API, import from 'bupkis/snapshot'.
+ */
+export type {
+  SnapshotAdapter,
+  SnapshotContext,
+  SnapshotOptions,
+  SnapshotSerializer,
+} from './snapshot/adapter.js';
+
+/**
  * Re-export of Standard Schema v1 types for use in custom assertion
  * implementations.
  *

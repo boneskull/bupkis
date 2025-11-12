@@ -26,11 +26,13 @@ export default {
   tests: [
     '.tmp/**/*.test.ts',
     'test/**/*.test.ts',
-    '!test/assertion-error/**/*',
     '!.tshy-build/**',
     '!node_modules/**',
     '!dist/**',
-    // tshy-ism
-    '!src/node_modules/bupkis/**',
+
+    // snapshot tests, which wallaby struggles with
+    '!test/assertion-error/**/*',
+    '!test/integration/snapshot-integration.test.ts',
+    '!test/snapshot/**/*.test.ts',
   ],
 };

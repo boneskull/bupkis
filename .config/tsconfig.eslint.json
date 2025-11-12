@@ -4,6 +4,7 @@
     "checkJs": true,
     "noEmit": true
   },
+  "exclude": ["../test/**/*.snap.cjs"],
   "extends": "../tsconfig.json",
   "include": [
     "../src/**/*.ts",
