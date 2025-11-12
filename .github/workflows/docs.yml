@@ -3,8 +3,22 @@ name: Deploy Documentation
 on:
   push:
     branches: [main]
+    paths:
+      - 'README.md'
+      - 'ROADMAP.md'
+      - 'CHANGELOG.md'
+      - 'site/**'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'README.md'
+      - 'ROADMAP.md'
+      - 'CHANGELOG.md'
+      - 'site/**'
+      - '.github/workflows/docs.yml'
+  release:
+    types: [published]
   # Allow manual triggering
   workflow_dispatch:
 
@@ -53,8 +67,8 @@ jobs:
 
   # Deployment job
   deploy:
-    # Only deploy on main branch pushes (not PRs)
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Only deploy on main branch pushes (not PRs) or releases
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'release'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
