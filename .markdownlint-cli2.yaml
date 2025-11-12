@@ -23,7 +23,9 @@ ignores:
   - '.tmp/**/*.md'
   - '.claude-skills/**/*.md'
   - 'specs/**/*.md'
-  - 'worktrees/**/*.md'
+  - '.worktrees/**/*.md'
+  - '.claude/**/*.md'
+  - '.plans/**/*.md'
 outputFormatters:
   - - 'markdownlint-cli2-formatter-pretty'
     - appendLink: true
