@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.2...bupkis-v0.13.0) (2025-11-13)
+
+
+### Features
+
+* **assertions:** implement snapshot testing ([fc3ebff](https://github.com/boneskull/bupkis/commit/fc3ebff8c03e190fcd293ba0859a38fde2a2343e))
+
 ## [0.12.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.1...bupkis-v0.12.2) (2025-10-31)
 
 
