@@ -258,6 +258,98 @@ This feature makes <span class="bupkis">BUPKIS</span> particularly powerful for 
 
 1. None whatsoever.
 
+## Snapshot Testing
+
+> 🆕 **New in v0.13.0**
+
+<span class="bupkis">BUPKIS</span> includes snapshot testing support for capturing and comparing complex output. Instead of manually asserting every property of a large object, you create a snapshot that gets automatically validated on future runs.
+
+**Currently Supported:**
+
+- **node:test** - Native `assert.snapshot()` integration
+- **Mocha** - Custom snapshot storage
+- **Other frameworks** - Explicit snapshot names
+
+**Coming Soon:**
+
+- Jest and Vitest support (planned for future releases)
+
+### Basic Snapshot Usage
+
+```ts
+import test from 'node:test';
+import { expect } from 'bupkis';
+
+test('component renders correctly', (t) => {
+  const output = {
+    type: 'div',
+    props: { className: 'container' },
+    children: ['Hello, World!'],
+  };
+
+  // First run creates snapshot, subsequent runs validate against it
+  expect(output, 'to match snapshot', t);
+});
+```
+
+### Custom Serialization
+
+Redact volatile data like timestamps or IDs using a custom serializer:
+
+```ts
+test('handles sensitive data', (t) => {
+  const user = {
+    username: 'alice',
+    password: 'secret123',
+    createdAt: Date.now(),
+  };
+
+  expect(user, 'to match snapshot', t, 'with options', {
+    serializer: (value) =>
+      JSON.stringify(
+        {
+          ...value,
+          password: '[REDACTED]',
+          createdAt: '[TIMESTAMP]',
+        },
+        null,
+        2,
+      ),
+  });
+});
+```
+
+### Multiple Snapshots Per Test
+
+Use the `hint` option to create multiple snapshots in a single test:
+
+```ts
+test('multi-step workflow', (t) => {
+  const step1 = { status: 'pending' };
+  expect(step1, 'to match snapshot', t, 'with options', { hint: 'step-1' });
+
+  const step2 = { status: 'processing' };
+  expect(step2, 'to match snapshot', t, 'with options', { hint: 'step-2' });
+
+  const step3 = { status: 'complete' };
+  expect(step3, 'to match snapshot', t, 'with options', { hint: 'step-3' });
+});
+```
+
+### Updating Snapshots
+
+When your code changes intentionally, update snapshots with:
+
+```bash
+# node:test
+node --test --test-update-snapshots
+
+# Other frameworks
+BUPKIS_UPDATE_SNAPSHOTS=1 npm test
+```
+
+> **Learn more:** See the [Snapshot Assertions](../assertions/snapshots.md) reference for complete details.
+
 ## Assertion Errors
 
 When an assertion goes south, <span class="bupkis">BUPKIS</span> throws a proper `AssertionError` explaining exactly what went wrong. It even diffs stuff for you. Here's what they look like:

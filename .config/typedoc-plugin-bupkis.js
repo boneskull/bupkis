@@ -33,6 +33,7 @@ const CATEGORY_DOC_MAP = freeze(
     other: 'Other_Assertions',
     primitives: 'Primitive_Assertions',
     promise: 'Promise_Assertions',
+    snapshot: 'Snapshot_Assertions',
     strings: 'String___Pattern_Assertions',
   }),
 );

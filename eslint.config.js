@@ -18,7 +18,7 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         extraFileExtensions: ['.json5', '.jsonc'],
-        project: './.config/tsconfig.eslint.json',
+        project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -182,7 +182,13 @@ export default defineConfig(
     },
   },
   {
-    files: ['.config/*.js', '/*.js', '/.*.js', 'scripts/*.js'],
+    files: [
+      '.config/*.js',
+      '/*.js',
+      '/.*.js',
+      'scripts/*.js',
+      '.claude/skills/**/*.js',
+    ],
     languageOptions: {
       globals: globals.node,
     },
