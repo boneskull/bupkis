@@ -18,7 +18,7 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         extraFileExtensions: ['.json5', '.jsonc'],
-        project: './.config/tsconfig.eslint.json',
+        project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },

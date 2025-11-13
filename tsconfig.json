@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,
@@ -18,5 +21,18 @@
     "types": ["node"],
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*"]
+  "exclude": ["../test/**/*.snap.cjs"],
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "test-data/**/*.ts",
+    "bench/**/*.ts",
+    ".wallaby.js",
+    "eslint.config.js",
+    ".commitlintrc.js",
+    ".config/typedoc*.js",
+    "scripts/*",
+    "eslint-rules/*.js",
+    ".claude/skills/**/*.js"
+  ]
 }
