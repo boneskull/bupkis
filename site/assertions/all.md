@@ -14,3 +14,4 @@ category: Assertions
 {@include ./error.md}
 {@include ./date.md}
 {@include ./promise.md}
+{@include ./snapshots.md}

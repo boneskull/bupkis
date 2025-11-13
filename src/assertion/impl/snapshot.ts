@@ -197,6 +197,51 @@ export const snapshotAssertion = createAssertion(
   },
 );
 
+/**
+ * Asserts that a value matches a stored snapshot with custom options.
+ *
+ * This is an extended version of {@link snapshotAssertion} that accepts explicit
+ * options for serialization and snapshot naming via the `with options` syntax.
+ *
+ * @example Snapshot with custom serializer using 'with options'
+ *
+ * ```typescript
+ * import test from 'node:test';
+ * import { expect } from 'bupkis';
+ *
+ * test('redacts sensitive fields', (t) => {
+ *   const data = { username: 'alice', password: 'secret123' };
+ *
+ *   expect(data, 'to match snapshot', t, 'with options', {
+ *     serializer: (value: any) =>
+ *       JSON.stringify({ ...value, password: '[REDACTED]' }, null, 2),
+ *   });
+ * });
+ * ```
+ *
+ * @example Multiple snapshots with hints using 'with options'
+ *
+ * ```typescript
+ * test('workflow stages', (t) => {
+ *   const stage1 = { phase: 'init' };
+ *   expect(stage1, 'to match snapshot', t, 'with options', {
+ *     hint: 'stage-1',
+ *   });
+ *
+ *   const stage2 = { phase: 'processing' };
+ *   expect(stage2, 'to match snapshot', t, 'with options', {
+ *     hint: 'stage-2',
+ *   });
+ * });
+ * ```
+ *
+ * @param subject - The value to snapshot (any type)
+ * @param context - Test context object or explicit snapshot name
+ * @param options - Serialization and naming options
+ * @group Snapshot Assertions
+ * @bupkisAnchor unknown-to-match-snapshot-with-options
+ * @bupkisAssertionCategory snapshot
+ */
 export const snapshotAssertionWithOptions = createAssertion(
   [
     z.unknown(),

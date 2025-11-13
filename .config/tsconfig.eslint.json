@@ -16,6 +16,7 @@
     "../.commitlintrc.js",
     "./typedoc*.js",
     "../scripts/*",
-    "./eslint-rules/*.js"
+    "./eslint-rules/*.js",
+    "../.claude/skills/**/*.js"
   ]
 }

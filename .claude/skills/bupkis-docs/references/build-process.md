@@ -1,0 +1,408 @@
+# Documentation Build Process
+
+## Overview
+
+The Bupkis documentation build process uses TypeDoc with custom plugins to generate a comprehensive documentation site from source code JSDoc comments and hand-written documentation pages.
+
+## Build Commands
+
+### Production Build
+
+```bash
+npm run docs:build
+```
+
+**What it does:**
+
+- Runs TypeDoc with strict configuration
+- Cleans output directory (`docs/`)
+- Treats warnings as errors (`--treatWarningsAsErrors`)
+- Processes custom JSDoc tags (`@bupkisAnchor`, `@bupkisAssertionCategory`, `@bupkisRedirect`)
+- Generates redirects for assertions
+- Copies media files from `site/media/` to `docs/media/`
+- Replaces navigation links with icons (GitHub, npm)
+
+**Output:** `docs/` directory (gitignored)
+
+### Development Build with Watch
+
+```bash
+npm run docs:dev
+```
+
+**What it does:**
+
+- Runs `docs:build` in watch mode (rebuilds on file changes)
+- Serves the `docs/` directory locally
+- Parallel execution: build watcher + local server
+
+**Use for:**
+
+- Iterative documentation updates
+- Testing changes in real-time
+- Local preview before committing
+
+### Serve Documentation
+
+```bash
+npm run docs:serve
+```
+
+**What it does:**
+
+- Serves the `docs/` directory locally using `serve`
+- No build/watch; only serves existing output
+
+**Use for:**
+
+- Viewing already-built documentation
+- Testing navigation and links without rebuilding
+
+---
+
+## Build Configuration
+
+### TypeDoc Configuration
+
+**Location:** `typedoc.json` or `package.json` (look for `typedoc` field)
+
+**Key Settings:**
+
+- `entryPoints`: Source files to document (typically `src/**/*.ts`)
+- `out`: Output directory (`docs/`)
+- `cleanOutputDir: true`: Remove old files before build
+- `treatWarningsAsErrors: true`: Strict mode for production
+- `plugin`: Custom plugins including `.config/typedoc-plugin-bupkis.js`
+- `navigationLinks`: GitHub and npm links
+
+### Custom Plugin Configuration
+
+**Plugin:** `.config/typedoc-plugin-bupkis.js`
+
+**Features:**
+
+1. **Media File Copying**
+   - Source: `site/media/`
+   - Destination: `docs/media/`
+   - Triggered: `RendererEvent.END`
+
+2. **Dynamic Redirect Generation**
+   - Source: JSDoc tags in `src/assertion/impl/*.ts`
+   - Mechanism: `typedoc-plugin-redirect`
+   - Format: `assertions/<name>/` → `documents/<Category>#<anchor>`
+
+3. **Navigation Link Icons**
+   - Replaces text links with icon spans
+   - Applies to: GitHub and npm links
+   - Triggered: `PageEvent.END`
+
+---
+
+## Build Process Flow
+
+### Step 1: Initialization
+
+- TypeDoc loads configuration
+- Custom plugin registers event listeners
+- Output directory is cleaned (if `cleanOutputDir: true`)
+
+### Step 2: Conversion Phase
+
+**Event:** `Converter.EVENT_CREATE_DECLARATION`
+
+For each declaration:
+
+1. Check if it's a variable with assertion type
+2. Extract JSDoc block tags:
+   - `@bupkisAnchor`
+   - `@bupkisAssertionCategory`
+   - `@bupkisRedirect` (optional)
+3. Validate category against `CATEGORY_DOC_MAP`
+4. Register redirect for later processing
+5. Log: `Registered redirect for <name>: <path> ➡️ <target>`
+
+**Event:** `Converter.EVENT_END`
+
+- Apply all collected redirects to TypeDoc options
+- Update `redirects` configuration with dynamic entries
+
+### Step 3: Rendering Phase
+
+**Event:** `RendererEvent.BEGIN`
+
+- TypeDoc generates HTML pages from documentation structure
+- Processes hand-written pages from `site/`
+
+**Event:** `PageEvent.END` (for each page)
+
+- Replace navigation link text with icon spans
+- Applies to: `navigationLinks.GitHub`, `navigationLinks.npm`
+
+**Event:** `RendererEvent.END`
+
+- Copy all files from `site/media/` to `docs/media/`
+- Log each file copied: `Copied site/media/<file> to docs/media/<file>`
+
+### Step 4: Completion
+
+- Build succeeds (exit code 0) or fails (non-zero)
+- Logs summary of generated pages, redirects, and files copied
+
+---
+
+## Directory Structure
+
+### Input Directories
+
+**Source Code:**
+
+```
+src/
+├── assertion/
+│   ├── impl/             ← Assertion implementations with JSDoc tags
+│   │   ├── sync-basic.ts
+│   │   ├── sync-collection.ts
+│   │   ├── sync-parametric.ts
+│   │   ├── async-parametric.ts
+│   │   └── ...
+│   └── ...
+└── ...
+```
+
+**Hand-Written Documentation:**
+
+```
+site/
+├── about/                ← About pages
+├── assertions/           ← Assertion documentation (supplemental)
+├── guide/                ← User guides
+├── media/                ← Images, logos, icons (copied to docs/media/)
+└── reference/            ← Reference documentation
+```
+
+### Output Directory
+
+**Generated Documentation:**
+
+```
+docs/                     ← gitignored
+├── assets/               ← TypeDoc CSS, JS, icons
+├── documents/            ← Generated API documentation pages
+│   ├── Primitive_Assertions.html
+│   ├── Collections_Assertions.html
+│   ├── Function_Assertions.html
+│   └── ...
+├── media/                ← Copied from site/media/
+│   ├── logo.png
+│   └── ...
+├── assertions/           ← Redirect pages (generated by plugin)
+│   ├── to-throw/
+│   ├── unknown-to-be-a-string/
+│   └── ...
+└── index.html            ← Homepage
+```
+
+---
+
+## Build Outputs & Logs
+
+### Successful Build
+
+**Example Log:**
+
+```
+[Info] Will copy all files in site/media/ to docs/media/
+[Info] Registered redirect for stringAssertion: assertions/unknown-to-be-a-string/ ➡️ documents/Primitive_Assertions#unknown-to-be-a-string
+[Info] Registered redirect for functionThrowsAssertion: assertions/to-throw/ ➡️ documents/Function_Assertions#function-to-throw-any
+[Info] Copied site/media/logo.png to docs/media/logo.png
+[Info] Documentation generated at docs/
+```
+
+**Indicators:**
+
+- No errors or warnings
+- All redirects registered
+- Media files copied
+- Exit code: 0
+
+### Build with Warnings
+
+**Example Log:**
+
+```
+[Warn] Unknown category "invalid-category" for assertion someAssertion
+[Warn] Comment for <symbol> includes @bupkisAnchor but no @bupkisAssertionCategory
+```
+
+**Action:**
+
+- Review warnings
+- Fix JSDoc tags
+- Rebuild
+
+**Note:** With `--treatWarningsAsErrors`, warnings cause build failure.
+
+### Build Failure
+
+**Common Causes:**
+
+1. **TypeScript Errors:** Source code doesn't compile
+2. **Invalid Configuration:** Malformed `typedoc.json`
+3. **Plugin Error:** Custom plugin throws exception
+4. **Missing Files:** Referenced files don't exist
+5. **Syntax Errors:** Malformed JSDoc comments
+
+**Debug Steps:**
+
+1. Run `npm run docs:build` to see full error output
+2. Check TypeScript compilation: `npm run build`
+3. Validate `typedoc.json` syntax
+4. Review custom plugin logs
+5. Fix errors and rebuild
+
+---
+
+## Strict Mode
+
+**Enabled by:** `--treatWarningsAsErrors` flag
+
+**Effect:**
+
+- Warnings are elevated to errors
+- Build fails if any warnings occur
+- Ensures documentation quality and completeness
+
+**Common Warnings:**
+
+- Undocumented exports
+- Invalid JSDoc tags
+- Missing type annotations
+- Broken links
+- Unknown categories in `@bupkisAssertionCategory`
+
+**Best Practice:** Always run with strict mode enabled in production builds.
+
+---
+
+## Media File Handling
+
+**Source Directory:** `site/media/`
+
+**Supported Files:**
+
+- Images: `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.webp`
+- Icons: `.ico`
+- Other assets: Any file type
+
+**Behavior:**
+
+- All files copied recursively from `site/media/` to `docs/media/`
+- Happens at `RendererEvent.END` (after all pages generated)
+- Overwrites existing files in `docs/media/`
+
+**Usage in Documentation:**
+
+```markdown
+![Logo](media/logo.png)
+```
+
+**Plugin Code:**
+
+```javascript
+app.renderer.on(RendererEvent.END, () => {
+  for (const file of fs.readdirSync(SOURCE_DIR)) {
+    const sourceFile = path.join(SOURCE_DIR, file);
+    const destFile = path.join(mediaDir, file);
+    fs.cpSync(sourceFile, destFile);
+    app.logger.info(`Copied ${sourceFile} to ${destFile}`);
+  }
+});
+```
+
+---
+
+## Navigation Link Icons
+
+**Configuration:** `navigationLinks` in TypeDoc config
+
+**Example:**
+
+```json
+{
+  "navigationLinks": {
+    "GitHub": "https://github.com/boneskull/bupkis",
+    "npm": "https://www.npmjs.com/package/bupkis"
+  }
+}
+```
+
+**Transformation:**
+
+- **Before:** `<a href="...">GitHub</a>`
+- **After:** `<a href="..." title="bupkis on GitHub"><span class="icon-github" aria-label="GitHub"></span></a>`
+
+**CSS Classes:**
+
+- `.icon-github` for GitHub links
+- `.icon-npm` for npm links
+
+**Plugin Code:**
+
+```javascript
+app.renderer.on(PageEvent.END, (page) => {
+  if ('GitHub' in navigationLinks) {
+    page.contents = page.contents.replace(
+      `<a href="${navigationLinks.GitHub}">GitHub</a>`,
+      `<a href="${navigationLinks.GitHub}" title="bupkis on GitHub"><span class="icon-github" aria-label="GitHub"></span></a>`,
+    );
+  }
+  // Similar for npm...
+});
+```
+
+---
+
+## Troubleshooting
+
+### Build Fails Silently
+
+- **Check:** Exit code of `npm run docs:build`
+- **Check:** Console output for errors/warnings
+- **Try:** Run TypeDoc directly: `npx typedoc`
+
+### Redirects Not Generated
+
+- **Check:** JSDoc tags are present and correct
+- **Check:** Variable is exported with assertion type
+- **Check:** Build logs for `Registered redirect` messages
+- **Review:** `.config/typedoc-plugin-bupkis.js` for plugin errors
+
+### Media Files Not Copied
+
+- **Check:** Files exist in `site/media/`
+- **Check:** Build completed successfully (copy happens at END event)
+- **Review:** Build logs for `Copied site/media/...` messages
+
+### Warnings Treated as Errors
+
+- **Check:** `--treatWarningsAsErrors` flag is set
+- **Fix:** Resolve all warnings before build
+- **Temporary:** Remove flag for debugging (not recommended for production)
+
+### Slow Builds
+
+- **Cause:** Large number of files, complex type inference
+- **Solution:** Use `docs:dev` for incremental builds during development
+- **Optimization:** Configure TypeDoc to exclude unnecessary files
+
+---
+
+## Best Practices
+
+1. **Always Use Strict Mode:** Run with `--treatWarningsAsErrors` to catch issues early
+2. **Validate Before Commit:** Run `npm run docs:build` before committing documentation changes
+3. **Use Development Mode:** Run `npm run docs:dev` during active documentation work
+4. **Check Build Logs:** Review logs for redirect registration and warnings
+5. **Test Locally:** Use `docs:serve` to preview documentation before deploying
+6. **Keep Media Organized:** Store all documentation assets in `site/media/`
+7. **Document JSDoc Tags:** Always include `@bupkisAnchor` and `@bupkisAssertionCategory` for new assertions

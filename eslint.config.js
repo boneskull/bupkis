@@ -182,7 +182,13 @@ export default defineConfig(
     },
   },
   {
-    files: ['.config/*.js', '/*.js', '/.*.js', 'scripts/*.js'],
+    files: [
+      '.config/*.js',
+      '/*.js',
+      '/.*.js',
+      'scripts/*.js',
+      '.claude/skills/**/*.js',
+    ],
     languageOptions: {
       globals: globals.node,
     },
