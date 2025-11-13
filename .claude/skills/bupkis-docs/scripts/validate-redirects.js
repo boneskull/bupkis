@@ -49,6 +49,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -136,7 +137,11 @@ const parseRedirects = (buildLogs) => {
   for (const line of buildLogs) {
     const match = pattern.exec(line);
     if (match) {
-      const targetPath = match[3];
+      const [_, name, redirectPath, targetPath] = match;
+      if (!targetPath) {
+        continue;
+      }
+      /** @type {string | undefined} */
       let targetDocument = targetPath;
       let targetAnchor = null;
 
@@ -145,11 +150,11 @@ const parseRedirects = (buildLogs) => {
       }
 
       redirects.push({
-        name: match[1],
-        redirectPath: match[2],
-        targetAnchor,
-        targetDocument,
-        targetPath: match[3],
+        name: /** @type {string} */ (name),
+        redirectPath: /** @type {string} */ (redirectPath),
+        targetAnchor: /** @type {string | null} */ (targetAnchor),
+        targetDocument: /** @type {string} */ (targetDocument),
+        targetPath,
       });
     }
   }
@@ -253,12 +258,30 @@ const outputJSON = (redirects, port) => {
  * @returns {Promise<number>}
  */
 const main = async () => {
-  const args = process.argv.slice(2);
-  const shouldBuild = args.includes('--build');
-  const portIndex = args.indexOf('--port');
-  const port = portIndex !== -1 ? parseInt(args[portIndex + 1], 10) : 8080;
-  const formatIndex = args.indexOf('--format');
-  const format = formatIndex !== -1 ? args[formatIndex + 1] : 'instructions';
+  const { values } = parseArgs({
+    options: {
+      build: {
+        default: false,
+        type: 'boolean',
+      },
+      format: {
+        default: 'instructions',
+        type: 'string',
+      },
+      port: {
+        default: '8080',
+        type: 'string',
+      },
+    },
+  });
+
+  const shouldBuild = values.build ?? false;
+  const port = parseInt(values.port ?? '8080', 10);
+  const format = values.format ?? 'instructions';
+
+  if (isNaN(port)) {
+    throw new Error(`Invalid port: ${values.port}`);
+  }
 
   // Check if docs directory exists
   const docsDir = resolve(PROJECT_ROOT, 'docs');
