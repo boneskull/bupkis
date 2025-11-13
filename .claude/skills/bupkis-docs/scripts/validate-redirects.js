@@ -73,7 +73,7 @@ const colors = {
  * @returns {Promise<CommandResult>}
  */
 const runCommand = (command, args = []) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     const proc = spawn(command, args, {
       cwd: PROJECT_ROOT,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -88,6 +88,10 @@ const runCommand = (command, args = []) =>
 
     proc.stderr?.on('data', (data) => {
       stderr += String(data);
+    });
+
+    proc.on('error', (error) => {
+      reject(error);
     });
 
     proc.on('close', (exitCode) => {
