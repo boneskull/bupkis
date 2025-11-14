@@ -155,9 +155,7 @@ docs
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/tasks.json
-.claude-skills
 .modestbench/
-worktrees/*
-!worktrees/README.md
 
 .claude/settings.local.json
+.worktrees
