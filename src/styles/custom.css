@@ -1,0 +1,387 @@
+/*
+ * BUPKIS Custom Theme for Starlight
+ * Adapted from bupkis-theme.css
+ */
+
+/*
+ * Font definitions - Twentieth Century Bold
+ */
+
+@font-face {
+  font-family: 'Twentieth Century';
+  src: url('/Twentieth-Century-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 100%;
+  ascent-override: normal;
+  descent-override: normal;
+  line-gap-override: normal;
+}
+
+/*
+ * CSS Custom Properties - BUPKIS Brand Colors
+ */
+
+:root {
+  /* BUPKIS Brand Colors */
+  --bupkis-red: #fd0303;
+  --bupkis-red-muted: #e60000;
+  --bupkis-red-light: #ff6b6b;
+  --bupkis-black: #020202;
+  --bupkis-white: #f6f6f6;
+  --bupkis-gray-dark: #515151;
+  --bupkis-gray-medium: #808080;
+  --bupkis-gray-warm: #b3b3b3;
+  --bupkis-white-smoke: #f4f4f4;
+  --bupkis-gray-light: #dcdcdc;
+  --bupkis-gray-darker: #2a2a2a;
+  --bupkis-gray-darkest: #040404;
+
+  /* Twentieth Century font utilities */
+  --bupkis-font-family: 'Twentieth Century', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --bupkis-font-weight: bold;
+  --bupkis-caps-transform: uppercase;
+  --bupkis-caps-spacing: 0.04em;
+}
+
+/*
+ * Starlight Theme Overrides - Light Mode
+ */
+
+:root {
+  --sl-color-accent: var(--bupkis-red);
+  --sl-color-accent-low: #ffe6e6;
+  --sl-color-accent-high: var(--bupkis-red-muted);
+
+  --sl-color-text: var(--bupkis-black);
+  --sl-color-text-accent: var(--bupkis-red);
+
+  --sl-color-bg: var(--bupkis-white);
+  --sl-color-bg-nav: #fdfdfd;
+  --sl-color-bg-sidebar: #f8f8f8;
+
+  --sl-color-gray-1: var(--bupkis-white);
+  --sl-color-gray-2: var(--bupkis-white-smoke);
+  --sl-color-gray-3: var(--bupkis-gray-light);
+  --sl-color-gray-4: var(--bupkis-gray-warm);
+  --sl-color-gray-5: var(--bupkis-gray-medium);
+  --sl-color-gray-6: var(--bupkis-gray-dark);
+}
+
+/*
+ * Starlight Theme Overrides - Dark Mode
+ */
+
+:root[data-theme='dark'] {
+  --sl-color-accent: var(--bupkis-red-light);
+  --sl-color-accent-low: #3a1212;
+  --sl-color-accent-high: var(--bupkis-red);
+
+  --sl-color-text: var(--bupkis-white);
+  --sl-color-text-accent: var(--bupkis-red-light);
+
+  --sl-color-bg: #0a0a0a;
+  --sl-color-bg-nav: var(--bupkis-black);
+  --sl-color-bg-sidebar: #151515;
+
+  --sl-color-gray-1: var(--bupkis-gray-darkest);
+  --sl-color-gray-2: var(--bupkis-gray-darker);
+  --sl-color-gray-3: var(--bupkis-gray-dark);
+  --sl-color-gray-4: var(--bupkis-gray-medium);
+  --sl-color-gray-5: var(--bupkis-gray-warm);
+  --sl-color-gray-6: var(--bupkis-white-smoke);
+}
+
+/*
+ * Typography - Twentieth Century for Titles
+ */
+
+/* Site title in header */
+.site-title {
+  font-family: var(--bupkis-font-family) !important;
+  font-weight: var(--bupkis-font-weight) !important;
+  text-transform: var(--bupkis-caps-transform) !important;
+  letter-spacing: var(--bupkis-caps-spacing) !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* BUPKIS spans in content */
+span.bupkis,
+.bupkis {
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  text-transform: var(--bupkis-caps-transform);
+  letter-spacing: var(--bupkis-caps-spacing);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.1em;
+}
+
+h2 span.bupkis {
+  font-size: 1.1em;
+}
+
+p span.bupkis {
+  font-weight: bold;
+}
+
+/*
+ * Hero Section Typography
+ */
+
+.hero h1,
+.hero .tagline {
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  text-transform: var(--bupkis-caps-transform);
+  letter-spacing: var(--bupkis-caps-spacing);
+}
+
+/*
+ * Custom Buttons - BUPKIS Red Accent
+ */
+
+.action.primary {
+  background-color: var(--bupkis-red);
+  border-color: var(--bupkis-red);
+  color: var(--bupkis-white);
+}
+
+.action.primary:hover {
+  background-color: var(--bupkis-red-muted);
+  border-color: var(--bupkis-red-muted);
+}
+
+:root[data-theme='dark'] .action.primary {
+  background-color: var(--bupkis-red-light);
+  border-color: var(--bupkis-red-light);
+  color: var(--bupkis-black);
+}
+
+:root[data-theme='dark'] .action.primary:hover {
+  background-color: var(--bupkis-red);
+  border-color: var(--bupkis-red);
+}
+
+/*
+ * Links
+ */
+
+a {
+  color: var(--bupkis-red);
+}
+
+a:hover {
+  color: var(--bupkis-red-muted);
+}
+
+:root[data-theme='dark'] a {
+  color: var(--bupkis-red-light);
+}
+
+:root[data-theme='dark'] a:hover {
+  color: var(--bupkis-red);
+}
+
+/*
+ * Code Blocks
+ */
+
+code,
+pre {
+  border-radius: 6px;
+}
+
+/*
+ * Lists - Custom Bullet Points (Hexagon)
+ */
+
+.sl-markdown-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sl-markdown-content ul > li {
+  position: relative;
+  padding: 0 0 0 1.25em;
+}
+
+.sl-markdown-content ul > li::before {
+  content: '⬢';
+  position: absolute;
+  left: 0;
+  top: -0.1em;
+  font-size: 0.9em;
+  color: var(--bupkis-gray-darker);
+}
+
+:root[data-theme='dark'] .sl-markdown-content ul > li::before {
+  color: var(--bupkis-gray-warm);
+}
+
+/*
+ * Blockquotes
+ */
+
+.sl-markdown-content blockquote {
+  margin: 1.5em 0;
+  padding: 0.5em 1.5em;
+  border-left: 4px solid var(--bupkis-gray-light);
+  background-color: var(--bupkis-white-smoke);
+}
+
+:root[data-theme='dark'] .sl-markdown-content blockquote {
+  border-left: 4px solid var(--bupkis-gray-darker);
+  background-color: var(--bupkis-gray-darkest);
+}
+
+/*
+ * Tables
+ */
+
+table {
+  margin: 1em 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+th {
+  background-color: var(--sl-color-bg-sidebar);
+}
+
+tr:nth-child(2n) {
+  background-color: var(--sl-color-gray-2);
+}
+
+/*
+ * Cards (if using Starlight components)
+ */
+
+.card {
+  border-radius: 6px;
+}
+
+/*
+ * Search
+ */
+
+.search-input {
+  border-radius: 6px;
+  border: 1px solid var(--bupkis-red);
+}
+
+.search-input:focus {
+  outline-color: var(--bupkis-red);
+}
+
+/*
+ * Sidebar Navigation
+ */
+
+.sidebar a {
+  border-radius: 6px;
+}
+
+.sidebar a:hover {
+  background-color: color-mix(in srgb, var(--bupkis-gray-medium), transparent 90%);
+}
+
+.sidebar a[aria-current='page'] {
+  background-color: color-mix(in srgb, var(--bupkis-red), transparent 85%);
+  color: var(--sl-color-text);
+  font-weight: 600;
+}
+
+/*
+ * Focus States
+ */
+
+:focus-visible {
+  outline-color: var(--bupkis-red);
+}
+
+/*
+ * Horizontal Rules
+ */
+
+hr {
+  border-color: var(--bupkis-gray-light);
+}
+
+:root[data-theme='dark'] hr {
+  border-color: var(--bupkis-gray-darker);
+}
+
+/*
+ * Utility Classes
+ */
+
+.twentieth-century {
+  font-family: var(--bupkis-font-family);
+  font-weight: var(--bupkis-font-weight);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bupkis-red-border {
+  border: 1px solid var(--bupkis-red);
+  border-radius: 6px;
+  padding: 0.5em 1em;
+}
+
+:root[data-theme='light'] .bupkis-red-border {
+  background-color: var(--bupkis-white);
+  color: var(--bupkis-black);
+}
+
+:root[data-theme='dark'] .bupkis-red-border {
+  background-color: var(--bupkis-black);
+  color: var(--bupkis-white);
+}
+
+/*
+ * Small Text
+ */
+
+small {
+  font-size: 0.9em;
+}
+
+/*
+ * Improve line height for readability
+ */
+
+.sl-markdown-content {
+  line-height: 1.6;
+}
+
+/*
+ * Header spacing
+ */
+
+.sl-markdown-content h2 {
+  margin-top: 3rem;
+}
+
+.sl-markdown-content h2:first-child {
+  margin-top: 0;
+}
+
+.sl-markdown-content h3 {
+  margin-top: 2rem;
+}
+
+/*
+ * Code in headings and inline
+ */
+
+:is(h1, h2, h3, h4, h5, h6) code {
+  padding: 0.1em 0.3em;
+  font-size: 0.9em;
+}
