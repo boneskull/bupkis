@@ -152,7 +152,7 @@
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
     "@eslint/js": "9.39.1",
-    "@stylistic/eslint-plugin": "5.5.0",
+    "@stylistic/eslint-plugin": "5.6.0",
     "@types/node": "24.10.1",
     "@types/slug": "5.0.9",
     "@types/wallabyjs": "0.0.15",
