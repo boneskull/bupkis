@@ -206,7 +206,7 @@
       "**/*.cts",
       "**/*.d.ts",
       "site/media/**/*",
-      "worktrees/**/*",
+      ".worktrees/**/*",
       "test-d/**/*.test-d.ts"
     ],
     "tags": [
