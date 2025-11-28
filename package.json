@@ -188,7 +188,7 @@
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "5.9.3",
     "typescript-eslint": "8.47.0",
-    "valibot": "1.1.0",
+    "valibot": "1.2.0",
     "zshy": "0.6.0"
   },
   "publishConfig": {
