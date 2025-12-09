@@ -3,7 +3,7 @@ title: Basic Usage
 category: Guides
 ---
 
-<h2><span class="bupkis">Bupkis</span>: Basic Usage</h2>
+## <span class="bupkis">Bupkis</span>: Basic Usage
 
 So you want to use <span class="bupkis">BUPKIS</span> to write some assertions. Good. _Excellent_, even. This guide will get you started without the usual nonsense you'd find in other assertion libraries' documentation.
 
