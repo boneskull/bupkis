@@ -176,10 +176,94 @@ export const valueToSchema = (
       }
 
       if (value instanceof Map) {
+        if (literalPrimitives) {
+          const expectedMap = value as Map<unknown, unknown>;
+          const expectedEntries = [...expectedMap.entries()];
+          const entrySchemas = expectedEntries.map(([k, v]) => ({
+            key: valueToSchema(
+              k,
+              { ...options, _currentDepth: _currentDepth + 1 },
+              visited,
+            ),
+            value: valueToSchema(
+              v,
+              { ...options, _currentDepth: _currentDepth + 1 },
+              visited,
+            ),
+          }));
+
+          return z.custom<Map<unknown, unknown>>(
+            (val) => {
+              if (!(val instanceof Map)) {
+                return false;
+              }
+              if (val.size !== expectedMap.size) {
+                return false;
+              }
+
+              const actualEntries = [...val.entries()];
+              for (let i = 0; i < expectedEntries.length; i++) {
+                const [_expectedKey, _expectedValue] = expectedEntries[i]!;
+                const actualEntry = actualEntries.find(([ak]) => {
+                  const keySchema = entrySchemas[i]!.key;
+                  return keySchema.safeParse(ak).success;
+                });
+                if (!actualEntry) {
+                  return false;
+                }
+                const valueSchema = entrySchemas[i]!.value;
+                if (!valueSchema.safeParse(actualEntry[1]).success) {
+                  return false;
+                }
+              }
+              return true;
+            },
+            {
+              message: `Expected Map with ${expectedMap.size} entries matching the expected structure`,
+            },
+          );
+        }
         return z.instanceof(Map);
       }
 
       if (value instanceof Set) {
+        if (literalPrimitives) {
+          const expectedSet = value as Set<unknown>;
+          const expectedValues = [...expectedSet.values()];
+          const valueSchemas = expectedValues.map((v) =>
+            valueToSchema(
+              v,
+              { ...options, _currentDepth: _currentDepth + 1 },
+              visited,
+            ),
+          );
+
+          return z.custom<Set<unknown>>(
+            (val) => {
+              if (!(val instanceof Set)) {
+                return false;
+              }
+              if (val.size !== expectedSet.size) {
+                return false;
+              }
+
+              const actualValues = [...val.values()];
+              for (let i = 0; i < expectedValues.length; i++) {
+                const schema = valueSchemas[i]!;
+                const found = actualValues.some(
+                  (av) => schema.safeParse(av).success,
+                );
+                if (!found) {
+                  return false;
+                }
+              }
+              return true;
+            },
+            {
+              message: `Expected Set with ${expectedSet.size} values matching the expected structure`,
+            },
+          );
+        }
         return z.instanceof(Set);
       }
 

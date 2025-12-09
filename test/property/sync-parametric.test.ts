@@ -335,6 +335,33 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
+    assertions.mapDeepEqualAssertion,
+    {
+      invalid: {
+        generators: fc
+          .array(fc.tuple(fc.string(), fc.integer()), {
+            minLength: 1,
+            size: 'small',
+          })
+          .chain((entries) =>
+            fc.tuple(
+              fc.constant(new Map(entries)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.mapDeepEqualAssertion),
+              ),
+              fc.constant(new Map([...entries, ['__different_key__', 999]])),
+            ),
+          ),
+      },
+      valid: {
+        generators: SyncParametricGenerators.get(
+          assertions.mapDeepEqualAssertion,
+        )!,
+      },
+    },
+  ],
+
+  [
     assertions.numberCloseToAssertion,
     {
       invalid: {
@@ -562,6 +589,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       },
       valid: {
         generators: SyncParametricGenerators.get(assertions.oneOfAssertion)!,
+      },
+    },
+  ],
+
+  [
+    assertions.setDeepEqualAssertion,
+    {
+      invalid: {
+        generators: fc
+          .array(fc.integer(), { minLength: 1, size: 'small' })
+          .chain((values) =>
+            fc.tuple(
+              fc.constant(new Set(values)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.setDeepEqualAssertion),
+              ),
+              fc.constant(new Set(['__different_value__', ...values])),
+            ),
+          ),
+      },
+      valid: {
+        generators: SyncParametricGenerators.get(
+          assertions.setDeepEqualAssertion,
+        )!,
       },
     },
   ],

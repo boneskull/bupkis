@@ -105,6 +105,12 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
+    assertions.mapDeepEqualAssertion,
+    () => {
+      expect(new Map([['a', 1]]), 'to deeply equal', new Map([['a', 2]]));
+    },
+  ],
+  [
     assertions.numberCloseToAssertion,
     () => {
       expect(10, 'to be close to', 5, 2);
@@ -156,6 +162,12 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     assertions.oneOfAssertion,
     () => {
       expect(5, 'to be one of', [1, 2, 3]);
+    },
+  ],
+  [
+    assertions.setDeepEqualAssertion,
+    () => {
+      expect(new Set([1, 2, 3]), 'to deeply equal', new Set([1, 2, 4]));
     },
   ],
   [

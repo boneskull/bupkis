@@ -626,6 +626,62 @@ export const arrayDeepEqualAssertion = createAssertion(
 );
 
 /**
+ * Assertion for testing deep equality between Map instances.
+ *
+ * @example
+ *
+ * ```typescript
+ * const map1 = new Map([
+ *   ['a', 1],
+ *   ['b', 2],
+ * ]);
+ * const map2 = new Map([
+ *   ['a', 1],
+ *   ['b', 2],
+ * ]);
+ * expect(map1, 'to deep equal', map2); // passes
+ *
+ * const map3 = new Map([['a', 1]]);
+ * expect(map1, 'to deeply equal', map3); // fails
+ * ```
+ *
+ * @group Parametric Assertions (Sync)
+ * @bupkisAnchor map-to-deep-equal
+ * @bupkisAssertionCategory collections
+ */
+export const mapDeepEqualAssertion = createAssertion(
+  [MapSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
+  (_, expected) => {
+    return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+  },
+);
+
+/**
+ * Assertion for testing deep equality between Set instances.
+ *
+ * @example
+ *
+ * ```typescript
+ * const set1 = new Set([1, 2, 3]);
+ * const set2 = new Set([1, 2, 3]);
+ * expect(set1, 'to deep equal', set2); // passes
+ *
+ * const set3 = new Set([1, 2]);
+ * expect(set1, 'to deeply equal', set3); // fails
+ * ```
+ *
+ * @group Parametric Assertions (Sync)
+ * @bupkisAnchor set-to-deep-equal
+ * @bupkisAssertionCategory collections
+ */
+export const setDeepEqualAssertion = createAssertion(
+  [SetSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
+  (_, expected) => {
+    return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+  },
+);
+
+/**
  * Assertion for testing if a function throws an error when called.
  *
  * @example

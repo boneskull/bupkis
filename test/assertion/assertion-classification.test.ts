@@ -49,7 +49,7 @@ describe('Assertion Classification', () => {
     expect(hasExpectedAPI, 'to be true');
   });
 
-  it('should categorize all 68 sync-function assertions', async () => {
+  it('should categorize all sync-function assertions', async () => {
     // This test ensures the classification covers all current sync-function assertions
     // Based on T001, there are 68 sync-function assertions that need classification
     let totalClassified = 0;
@@ -63,7 +63,7 @@ describe('Assertion Classification', () => {
       totalClassified = 0;
     }
 
-    // This will pass since T010 correctly classifies all 66 assertions
-    expect(totalClassified, 'to equal', 68);
+    // This will pass since T010 correctly classifies all assertions
+    expect(totalClassified, 'to equal', 70);
   });
 });
