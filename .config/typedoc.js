@@ -86,7 +86,7 @@ export default {
     './typedoc-plugin-bupkis.js',
     'typedoc-plugin-mdn-links',
     'typedoc-plugin-zod',
-    // 'typedoc-plugin-dt-links',
+    'typedoc-plugin-dt-links',
     'typedoc-plugin-extras',
   ],
   preserveWatchOutput: true,
