@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.13.0...bupkis-v0.14.0) (2025-12-10)
+
+
+### Features
+
+* **assertions:** add "deep equal" for Map and Set ([#262](https://github.com/boneskull/bupkis/issues/262)) ([8a6b959](https://github.com/boneskull/bupkis/commit/8a6b95995b0eb37f28aa8afdbf42bcf2234f9d28))
+
 ## [0.13.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.12.2...bupkis-v0.13.0) (2025-11-13)
 
 
