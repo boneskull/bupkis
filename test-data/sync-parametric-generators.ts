@@ -264,6 +264,45 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
       ),
   ],
   [
+    assertions.mapDeepEqualAssertion,
+    fc
+      .array(
+        fc.tuple(
+          fc.oneof(fc.string(), fc.integer()),
+          filteredAnything.filter(
+            (v) => typeof v !== 'function' && !(v instanceof Map),
+          ),
+        ),
+        { minLength: 1, size: 'small' },
+      )
+      .chain((entries) => {
+        const expected = new Map(entries);
+        return fc.tuple(
+          fc.constant(new Map(entries)),
+          fc.constantFrom(...extractPhrases(assertions.mapDeepEqualAssertion)),
+          fc.constant(expected),
+        );
+      }),
+  ],
+  [
+    assertions.setDeepEqualAssertion,
+    fc
+      .array(
+        filteredAnything.filter(
+          (v) => typeof v !== 'function' && !(v instanceof Set),
+        ),
+        { minLength: 1, size: 'small' },
+      )
+      .chain((values) => {
+        const expected = new Set(values);
+        return fc.tuple(
+          fc.constant(new Set(values)),
+          fc.constantFrom(...extractPhrases(assertions.setDeepEqualAssertion)),
+          fc.constant(expected),
+        );
+      }),
+  ],
+  [
     assertions.objectSatisfiesAssertion,
     fc
       .object({ depthSize: 'small' })

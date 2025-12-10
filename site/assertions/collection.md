@@ -214,6 +214,52 @@ expect(map, 'to be empty');
 expect(map, 'not to be empty');
 ```
 
+### {Map} to deep equal {Map}
+
+> ✏️ Aliases:
+>
+>     {Map} to deep equal {Map}
+>     {Map} to deeply equal {Map}
+
+Tests that two Maps have the same keys and values using deep equality comparison.
+
+**Success**:
+
+```js
+const map1 = new Map([
+  ['a', 1],
+  ['b', { nested: 'value' }],
+]);
+const map2 = new Map([
+  ['a', 1],
+  ['b', { nested: 'value' }],
+]);
+expect(map1, 'to deep equal', map2);
+```
+
+**Failure**:
+
+```js
+const map1 = new Map([
+  ['a', 1],
+  ['b', 2],
+]);
+const map2 = new Map([
+  ['a', 1],
+  ['b', 3],
+]);
+expect(map1, 'to deep equal', map2);
+// AssertionError: Expected Map to deep equal Map
+```
+
+**Negation**:
+
+```js
+const map1 = new Map([['a', 1]]);
+const map2 = new Map([['a', 2]]);
+expect(map1, 'not to deep equal', map2);
+```
+
 ### {Set} to contain {any}
 
 > ✏️ Aliases:
@@ -286,6 +332,40 @@ expect(set, 'to be empty');
 
 ```js
 expect(set, 'not to be empty');
+```
+
+### {Set} to deep equal {Set}
+
+> ✏️ Aliases:
+>
+>     {Set} to deep equal {Set}
+>     {Set} to deeply equal {Set}
+
+Tests that two Sets have the same values using deep equality comparison.
+
+**Success**:
+
+```js
+const set1 = new Set([1, 2, { nested: 'value' }]);
+const set2 = new Set([1, 2, { nested: 'value' }]);
+expect(set1, 'to deep equal', set2);
+```
+
+**Failure**:
+
+```js
+const set1 = new Set([1, 2, 3]);
+const set2 = new Set([1, 2, 4]);
+expect(set1, 'to deep equal', set2);
+// AssertionError: Expected Set to deep equal Set
+```
+
+**Negation**:
+
+```js
+const set1 = new Set([1, 2, 3]);
+const set2 = new Set([1, 2, 4]);
+expect(set1, 'not to deep equal', set2);
 ```
 
 ### {unknown} to be a Set

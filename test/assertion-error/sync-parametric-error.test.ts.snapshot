@@ -132,6 +132,19 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw'\" [
 }
 `;
 
+exports[`Sync Parametric Assertion Error Snapshots > \"{map} 'to deep equal' / 'to deeply equal' {unknown}\" [map-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [map-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{map} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\nCompared values have no visual difference.",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {},
+  "diff": "simple",
+  "assertionId": "map-to-deep-equal-to-deeply-equal-unknown-3s3p"
+}
+`;
+
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to' {number} {number?}\" [number-to-be-close-to-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-close-to-number-number-4s4p] <snapshot> 1`] = `
 {
   "message": "Expected 10 to be close to 5 (within 2), but difference was 5",
@@ -243,6 +256,19 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{record} 'to deep equal' 
   },
   "diff": "simple",
   "assertionId": "record-to-deep-equal-to-deeply-equal-unknown-3s3p"
+}
+`;
+
+exports[`Sync Parametric Assertion Error Snapshots > \"{set} 'to deep equal' / 'to deeply equal' {unknown}\" [set-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [set-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{set} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\nCompared values have no visual difference.",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": {},
+  "expected": {},
+  "diff": "simple",
+  "assertionId": "set-to-deep-equal-to-deeply-equal-unknown-3s3p"
 }
 `;
 
