@@ -164,7 +164,7 @@
     "eslint": "9.39.2",
     "eslint-plugin-jsonc": "2.21.0",
     "eslint-plugin-perfectionist": "5.0.0",
-    "fast-check": "4.4.0",
+    "fast-check": "4.5.0",
     "globals": "16.5.0",
     "husky": "9.1.7",
     "knip": "5.75.2",
