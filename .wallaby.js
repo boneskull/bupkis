@@ -15,7 +15,6 @@ export default {
     '!test/**/*.test.ts',
     'package.json',
     '!**/*.cts',
-    '!.tshy-build/**',
     { instrument: false, pattern: 'test/fixture/**' },
     '!src/node_modules/bupkis/**',
     { instrument: false, pattern: 'test/**/*.test.ts.snapshot' },
@@ -26,7 +25,6 @@ export default {
   tests: [
     '.tmp/**/*.test.ts',
     'test/**/*.test.ts',
-    '!.tshy-build/**',
     '!node_modules/**',
     '!dist/**',
 

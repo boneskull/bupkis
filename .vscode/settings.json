@@ -14,8 +14,6 @@
   "markdownlint.configFile": ".markdownlint-cli2.yaml",
   "prettier.useEditorConfig": true,
   "search.exclude": {
-    ".tshy": true,
-    ".tshy-build*": true,
     "dist": true
   },
   "typescript.tsdk": "node_modules/typescript/lib"
