@@ -171,7 +171,10 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
       invalid: {
         generators: [
           fc
-            .dictionary(fc.string(), filteredAnything)
+            .dictionary(
+              fc.string().filter((s) => s !== '__proto__'),
+              filteredAnything,
+            )
             .filter((obj) => Object.keys(obj).length > 0),
           fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
         ],

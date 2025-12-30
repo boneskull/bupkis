@@ -70,20 +70,6 @@ export const SyncBasicGenerators = new Map<AnyAssertion, GeneratorParams>([
     ],
   ],
   [
-    assertions.emptyArrayAssertion,
-    [
-      fc.constant([]),
-      fc.constantFrom(...extractPhrases(assertions.emptyArrayAssertion)),
-    ],
-  ],
-  [
-    assertions.emptyObjectAssertion,
-    [
-      fc.constant({}),
-      fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
-    ],
-  ],
-  [
     assertions.emptyObjectAssertion,
     [
       fc.constant({}),
