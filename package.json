@@ -241,7 +241,6 @@
       "prettier --write",
       "cspell lint --no-must-find-files"
     ],
-    "!**/.zshy/**/*.json": [],
     "**/!(.github/prompts)/*.md": [
       "prettier --write",
       "cspell lint --no-must-find-files"
