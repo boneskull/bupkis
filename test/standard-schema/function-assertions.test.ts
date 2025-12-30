@@ -324,7 +324,7 @@ describe('Standard Schema - Function Assertions', () => {
         (n) => ({
           schema: {
             '~standard': {
-              validate: (value) => {
+              validate: (value: unknown) => {
                 return typeof value === 'number' && value > 0
                   ? { value }
                   : { issues: [{ message: 'Must be positive' }] };
