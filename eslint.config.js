@@ -13,7 +13,7 @@ import requireIntrinsicDestructuring from './.config/eslint-rules/require-intrin
 export default defineConfig(
   jsPlugin.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
-  perfectionist.configs['recommended-natural'],
+  /** @type {any} */ (perfectionist.configs?.['recommended-natural'] ?? []),
   {
     languageOptions: {
       parserOptions: {
