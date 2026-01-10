@@ -374,48 +374,39 @@ const setValueAtPath = (
     obj = typeof path[0] === 'number' ? [] : {};
   }
 
-  if (isArray(obj)) {
-    const result = [...(obj as unknown[])];
-    const [head, ...tail] = path;
+  const [head, ...tail] = path;
+  if (head === undefined) {
+    return obj;
+  }
 
-    if (head !== undefined) {
-      if (tail.length === 0) {
-        result[head as number] = value;
-      } else {
-        result[head as number] = setValueAtPath(
-          result[head as number],
+  const newValue =
+    tail.length === 0
+      ? value
+      : setValueAtPath(
+          (obj as Record<number | string, unknown>)[head],
           tail,
           value,
         );
-      }
-    }
 
-    return result;
-  } else {
-    let result: Record<number | string, unknown>;
-
-    if (obj instanceof Error) {
-      result = {};
-      for (const prop of getOwnPropertyNames(obj)) {
-        if (prop !== 'stack') {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          result[prop] = (obj as any)[prop];
-        }
-      }
-    } else {
-      result = { ...(obj as Record<string, unknown>) };
-    }
-
-    const [head, ...tail] = path;
-
-    if (head !== undefined) {
-      if (tail.length === 0) {
-        result[head] = value;
-      } else {
-        result[head] = setValueAtPath(result[head], tail, value);
-      }
-    }
-
+  if (isArray(obj)) {
+    const result = [...(obj as unknown[])];
+    result[head as number] = newValue;
     return result;
   }
+
+  let result: Record<number | string, unknown>;
+  if (obj instanceof Error) {
+    result = {};
+    for (const prop of getOwnPropertyNames(obj)) {
+      if (prop !== 'stack') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        result[prop] = (obj as any)[prop];
+      }
+    }
+  } else {
+    result = { ...(obj as Record<string, unknown>) };
+  }
+
+  result[head] = newValue;
+  return result;
 };

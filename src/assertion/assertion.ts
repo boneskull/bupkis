@@ -53,8 +53,7 @@ export abstract class BupkisAssertion<
   Parts extends AssertionParts,
   Impl extends AssertionImpl<Parts>,
   Slots extends AssertionSlots<Parts>,
-> implements Assertion<Parts, Impl, Slots>
-{
+> implements Assertion<Parts, Impl, Slots> {
   readonly id: string;
 
   constructor(
@@ -274,6 +273,32 @@ export abstract class BupkisAssertion<
         stackStartFn,
       });
     }
+  }
+
+  /**
+   * Checks if this is a "simple schema assertion" - one where subject
+   * validation can be optimized by validating against the impl schema
+   * directly.
+   *
+   * Simple assertions have:
+   *
+   * - A first slot that accepts any/unknown type (subject slot)
+   * - All remaining slots are string literals (the assertion phrase)
+   *
+   * @returns True if this is a simple schema assertion
+   */
+  protected isSimpleSchemaAssertion(): boolean {
+    const hasSubjectSlot =
+      this.slots.length > 0 &&
+      (this.slots[0]?.def.type === 'unknown' ||
+        this.slots[0]?.def.type === 'any');
+
+    const allOtherSlotsAreLiterals = this.slots.slice(1).every((slot) => {
+      const meta = BupkisRegistry.get(slot) ?? {};
+      return kStringLiteral in meta;
+    });
+
+    return hasSubjectSlot && allOtherSlotsAreLiterals;
   }
 
   protected maybeParseValuesArgMismatch<Args extends readonly unknown[]>(
