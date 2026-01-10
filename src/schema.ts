@@ -955,6 +955,36 @@ export const DurationFormatSchema = z
  *
  * @group Schema
  */
+/**
+ * Duration unit multipliers in milliseconds. Units are stored lowercase for
+ * case-insensitive matching.
+ */
+const DURATION_MULTIPLIERS: Record<string, number> = {
+  d: 24 * 60 * 60 * 1000,
+  day: 24 * 60 * 60 * 1000,
+  days: 24 * 60 * 60 * 1000,
+  h: 60 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+  hours: 60 * 60 * 1000,
+  m: 60 * 1000,
+  millisecond: 1,
+  milliseconds: 1,
+  minute: 60 * 1000,
+  minutes: 60 * 1000,
+  month: 30 * 24 * 60 * 60 * 1000, // Approximate
+  months: 30 * 24 * 60 * 60 * 1000, // Approximate
+  ms: 1,
+  s: 1000,
+  second: 1000,
+  seconds: 1000,
+  w: 7 * 24 * 60 * 60 * 1000,
+  week: 7 * 24 * 60 * 60 * 1000,
+  weeks: 7 * 24 * 60 * 60 * 1000,
+  y: 365 * 24 * 60 * 60 * 1000, // Approximate
+  year: 365 * 24 * 60 * 60 * 1000, // Approximate
+  years: 365 * 24 * 60 * 60 * 1000, // Approximate
+};
+
 export const DurationSchema = DurationFormatSchema.transform(
   (duration: string): number => {
     const match = duration.trim().match(DURATION_REGEX);
@@ -965,42 +995,13 @@ export const DurationSchema = DurationFormatSchema.transform(
 
     const [, amountStr, unit] = match;
     const amount = parseInt(amountStr!, 10);
+    const multiplier = DURATION_MULTIPLIERS[unit!.toLowerCase()];
 
-    switch (unit!.toLowerCase()) {
-      case 'd':
-      case 'day':
-      case 'days':
-        return amount * 24 * 60 * 60 * 1000;
-      case 'h':
-      case 'hour':
-      case 'hours':
-        return amount * 60 * 60 * 1000;
-      case 'm':
-      case 'minute':
-      case 'minutes':
-        return amount * 60 * 1000;
-      case 'millisecond':
-      case 'milliseconds':
-      case 'ms':
-        return amount;
-      case 'month':
-      case 'months':
-        return amount * 30 * 24 * 60 * 60 * 1000; // Approximate
-      case 's':
-      case 'second':
-      case 'seconds':
-        return amount * 1000;
-      case 'w':
-      case 'week':
-      case 'weeks':
-        return amount * 7 * 24 * 60 * 60 * 1000;
-      case 'y':
-      case 'year':
-      case 'years':
-        return amount * 365 * 24 * 60 * 60 * 1000; // Approximate
-      default:
-        throw new Error(`Unrecognized duration unit: ${unit}`); // Should never happen
+    if (multiplier === undefined) {
+      throw new Error(`Unrecognized duration unit: ${unit}`); // Should never happen
     }
+
+    return amount * multiplier;
   },
 )
   .register(BupkisRegistry, { name: 'duration' })

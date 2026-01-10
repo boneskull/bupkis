@@ -1,7 +1,6 @@
 import { inspect } from 'util';
 import z from 'zod/v4';
 
-import { kStringLiteral } from '../constant.js';
 import { AssertionError, AssertionImplementationError } from '../error.js';
 import {
   isA,
@@ -14,7 +13,6 @@ import {
   isAssertionFailure,
   isAssertionParseRequest,
 } from '../internal-schema.js';
-import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionAsync,
   type AssertionFunctionAsync,
@@ -32,10 +30,10 @@ import {
 import { BupkisAssertion } from './assertion.js';
 
 export abstract class BupkisAssertionAsync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplAsync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertion<Parts, Impl, Slots>
   implements AssertionAsync<Parts, Impl, Slots>
 {
@@ -106,10 +104,10 @@ export abstract class BupkisAssertionAsync<
  */
 
 export class BupkisAssertionFunctionAsync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplFnAsync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplFnAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertionAsync<Parts, Impl, Slots>
   implements AssertionFunctionAsync<Parts, Impl, Slots>
 {
@@ -231,10 +229,10 @@ export class BupkisAssertionFunctionAsync<
  */
 
 export class BupkisAssertionSchemaAsync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplSchemaAsync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplSchemaAsync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertionAsync<Parts, Impl, Slots>
   implements AssertionSchemaAsync<Parts, Impl, Slots>
 {
@@ -346,26 +344,5 @@ export class BupkisAssertionSchemaAsync<
     }
 
     return result;
-  }
-
-  /**
-   * Determines if this assertion can be optimized (simple single-subject
-   * schema). Only simple assertions like ['to be a string'] with z.string()
-   * qualify.
-   */
-  private isSimpleSchemaAssertion(): boolean {
-    // Only optimize if we have exactly one subject slot + string literal slots
-    // and no complex argument processing
-    const hasSubjectSlot =
-      this.slots.length > 0 &&
-      (this.slots[0]?.def.type === 'unknown' ||
-        this.slots[0]?.def.type === 'any');
-
-    const allOtherSlotsAreLiterals = this.slots.slice(1).every((slot) => {
-      const meta = BupkisRegistry.get(slot) ?? {};
-      return kStringLiteral in meta;
-    });
-
-    return hasSubjectSlot && allOtherSlotsAreLiterals;
   }
 }

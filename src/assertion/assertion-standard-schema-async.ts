@@ -18,8 +18,6 @@ import type {
   ParsedValues,
 } from './assertion-types.js';
 
-import { kStringLiteral } from '../constant.js';
-import { BupkisRegistry } from '../metadata.js';
 import { BupkisAssertion } from './assertion.js';
 
 /**
@@ -35,10 +33,10 @@ import { BupkisAssertion } from './assertion.js';
  * @template Slots - The derived validation slots
  */
 export class BupkisAssertionStandardSchemaAsync<
-    Parts extends AssertionParts,
-    Impl extends StandardSchemaV1,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends StandardSchemaV1,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertion<Parts, Impl, Slots>
   implements AssertionStandardSchemaAsync<Parts, Impl, Slots>
 {
@@ -173,30 +171,5 @@ export class BupkisAssertionStandardSchemaAsync<
     }
 
     return result;
-  }
-
-  /**
-   * Determines if this is a simple schema assertion eligible for optimization.
-   *
-   * Returns true when the assertion has:
-   *
-   * - Exactly one subject slot (unknown/any type)
-   * - Only phrase literal slots after the subject
-   * - No complex argument processing
-   *
-   * @returns True if optimization can be applied
-   */
-  private isSimpleSchemaAssertion(): boolean {
-    const hasSubjectSlot =
-      this.slots.length > 0 &&
-      (this.slots[0]?.def.type === 'unknown' ||
-        this.slots[0]?.def.type === 'any');
-
-    const allOtherSlotsAreLiterals = this.slots.slice(1).every((slot) => {
-      const meta = BupkisRegistry.get(slot) ?? {};
-      return kStringLiteral in meta;
-    });
-
-    return hasSubjectSlot && allOtherSlotsAreLiterals;
   }
 }

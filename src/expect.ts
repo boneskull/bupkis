@@ -239,45 +239,9 @@ export function createExpectAsyncFunction<
     // Fallback: if all conjunctified attempts failed and we actually split on "and",
     // try different permutations of rejoining the split parts
     if (argsMatrix.length > 1) {
-      // Generate all possible ways to rejoin the split arguments
-      const rejoinPermutations: (readonly unknown[])[] = [];
+      const allAssertions = [...(expect?.assertions ?? []), ...assertions];
+      const rejoinPermutations = generateRejoinPermutations(argsMatrix, args);
 
-      // For each possible split point, try joining adjacent parts with "and"
-      for (let i = 0; i < argsMatrix.length - 1; i++) {
-        // Join parts i and i+1 with "and"
-        const rejoinedParts: unknown[][] = [];
-
-        // Add parts before the join point
-        for (let j = 0; j < i; j++) {
-          rejoinedParts.push([...argsMatrix[j]!]);
-        }
-
-        // Join the two parts at the split point
-        const leftPart = argsMatrix[i]!;
-        const rightPart = argsMatrix[i + 1]!;
-        const joinedPart = [...leftPart, 'and', ...rightPart.slice(1)]; // Skip subject from right part
-        rejoinedParts.push(joinedPart);
-
-        // Add parts after the join point
-        for (let j = i + 2; j < argsMatrix.length; j++) {
-          rejoinedParts.push([...argsMatrix[j]!]);
-        }
-
-        // If we only have one part after rejoining, it's a single assertion
-        if (rejoinedParts.length === 1) {
-          rejoinPermutations.push(rejoinedParts[0]!);
-        } else {
-          // Multiple parts - this creates a new matrix to process
-          for (const part of rejoinedParts) {
-            rejoinPermutations.push(part);
-          }
-        }
-      }
-
-      // Also try the original unsplit arguments as the final permutation
-      rejoinPermutations.push(args);
-
-      // Try each permutation
       for (const permutation of rejoinPermutations) {
         const { isNegated, processedArgs } = maybeProcessNegation(permutation);
         const candidates: Array<{
@@ -285,10 +249,7 @@ export function createExpectAsyncFunction<
           parseResult: ParsedResult<AssertionParts>;
         }> = [];
 
-        for (const assertion of [
-          ...(expect?.assertions ?? []),
-          ...assertions,
-        ]) {
+        for (const assertion of allAssertions) {
           const parseResult = await assertion.parseValuesAsync(processedArgs);
           const { exactMatch, parsedValues, success } = parseResult;
 
@@ -517,48 +478,13 @@ export function createExpectSyncFunction<
     if (foundCount >= argsMatrix.length) {
       return;
     }
+
     // Fallback: if all conjunctified attempts failed and we actually split on "and",
     // try different permutations of rejoining the split parts
     if (argsMatrix.length > 1) {
-      // Generate all possible ways to rejoin the split arguments
-      const rejoinPermutations: (readonly unknown[])[] = [];
+      const allAssertions = [...(expect?.assertions ?? []), ...assertions];
+      const rejoinPermutations = generateRejoinPermutations(argsMatrix, args);
 
-      // For each possible split point, try joining adjacent parts with "and"
-      for (let i = 0; i < argsMatrix.length - 1; i++) {
-        // Join parts i and i+1 with "and"
-        const rejoinedParts: unknown[][] = [];
-
-        // Add parts before the join point
-        for (let j = 0; j < i; j++) {
-          rejoinedParts.push([...argsMatrix[j]!]);
-        }
-
-        // Join the two parts at the split point
-        const leftPart = argsMatrix[i]!;
-        const rightPart = argsMatrix[i + 1]!;
-        const joinedPart = [...leftPart, 'and', ...rightPart.slice(1)]; // Skip subject from right part
-        rejoinedParts.push(joinedPart);
-
-        // Add parts after the join point
-        for (let j = i + 2; j < argsMatrix.length; j++) {
-          rejoinedParts.push([...argsMatrix[j]!]);
-        }
-
-        // If we only have one part after rejoining, it's a single assertion
-        if (rejoinedParts.length === 1) {
-          rejoinPermutations.push(rejoinedParts[0]!);
-        } else {
-          // Multiple parts - this creates a new matrix to process
-          for (const part of rejoinedParts) {
-            rejoinPermutations.push(part);
-          }
-        }
-      }
-
-      // Also try the original unsplit arguments as the final permutation
-      rejoinPermutations.push(args);
-
-      // Try each permutation
       for (const permutation of rejoinPermutations) {
         const { isNegated, processedArgs } = maybeProcessNegation(permutation);
         const candidates: Array<{
@@ -566,10 +492,7 @@ export function createExpectSyncFunction<
           parseResult: ParsedResult<AssertionParts>;
         }> = [];
 
-        for (const assertion of [
-          ...(expect?.assertions ?? []),
-          ...assertions,
-        ]) {
+        for (const assertion of allAssertions) {
           const parseResult = assertion.parseValues(processedArgs);
           const { exactMatch, parsedValues, success } = parseResult;
 
@@ -636,45 +559,15 @@ const execute = <
   isNegated: boolean,
   parseResult?: ParsedResult<Parts>,
 ): void => {
+  try {
+    assertion.execute(parsedValues, args, stackStartFn, parseResult);
+  } catch (error) {
+    handleAssertionError(error, assertion, isNegated);
+    return;
+  }
+
   if (isNegated) {
-    // negation logic
-    try {
-      assertion.execute(parsedValues, args, stackStartFn, parseResult);
-    } catch (error) {
-      // success!
-      if (AssertionError.isAssertionError(error)) {
-        return;
-      }
-
-      if (AssertionImplementationError.isAssertionImplementationError(error)) {
-        throw error;
-      }
-
-      throw new AssertionImplementationError(
-        `Assertion ${assertion} threw a non-AssertionError`,
-        { cause: error },
-      );
-    }
-
-    // if we reach here, then the assertion passed when it should have failed, so:
-    throw new NegatedAssertionError({
-      id: assertion.id,
-      message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
-      stackStartFn,
-    });
-  } else {
-    try {
-      assertion.execute(parsedValues, args, stackStartFn, parseResult);
-    } catch (error) {
-      if (AssertionError.isAssertionError(error)) {
-        throw error;
-      }
-
-      throw new AssertionImplementationError(
-        `Assertion ${assertion} threw a non-AssertionError`,
-        { cause: error },
-      );
-    }
+    throwNegatedAssertionPassedError(assertion, stackStartFn);
   }
 };
 
@@ -703,52 +596,67 @@ const executeAsync = async <
   isNegated: boolean,
   parseResult?: ParsedResult<Parts>,
 ): Promise<void> => {
-  if (isNegated) {
-    // negation logic
-    try {
-      await assertion.executeAsync(
-        parsedValues,
-        args,
-        stackStartFn,
-        parseResult,
-      );
-    } catch (error) {
-      // success!
-      if (AssertionError.isAssertionError(error)) {
-        return;
-      }
-
-      throw new AssertionImplementationError(
-        `Assertion ${assertion} threw a non-AssertionError`,
-        { cause: error },
-      );
-    }
-
-    // if we reach here, then the assertion passed when it should have failed, so:
-    throw new NegatedAssertionError({
-      id: assertion.id,
-      message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
-      stackStartFn,
-    });
-  } else {
-    try {
-      await assertion.executeAsync(
-        parsedValues,
-        args,
-        stackStartFn,
-        parseResult,
-      );
-    } catch (error) {
-      if (AssertionError.isAssertionError(error)) {
-        throw error;
-      }
-
-      throw new AssertionImplementationError(
-        `Assertion ${assertion} threw a non-AssertionError`,
-        { cause: error },
-      );
-    }
+  try {
+    await assertion.executeAsync(parsedValues, args, stackStartFn, parseResult);
+  } catch (error) {
+    handleAssertionError(error, assertion, isNegated);
+    return;
   }
+
+  if (isNegated) {
+    throwNegatedAssertionPassedError(assertion, stackStartFn);
+  }
+};
+
+/**
+ * Handles errors thrown during assertion execution.
+ *
+ * @function
+ * @param error - The error that was thrown
+ * @param assertion - The assertion that threw the error
+ * @param isNegated - Whether the assertion was negated
+ * @returns Void if error should be swallowed (negated assertion success)
+ * @throws The original error if it's an AssertionError (non-negated case)
+ * @throws AssertionImplementationError if error is unexpected
+ */
+const handleAssertionError = (
+  error: unknown,
+  assertion: { id: string; toString(): string },
+  isNegated: boolean,
+): void => {
+  if (AssertionError.isAssertionError(error)) {
+    if (isNegated) {
+      return;
+    }
+    throw error;
+  }
+
+  if (AssertionImplementationError.isAssertionImplementationError(error)) {
+    throw error;
+  }
+
+  throw new AssertionImplementationError(
+    `Assertion ${assertion} threw a non-AssertionError`,
+    { cause: error },
+  );
+};
+
+/**
+ * Throws a NegatedAssertionError when a negated assertion unexpectedly passes.
+ *
+ * @function
+ * @param assertion - The assertion that passed
+ * @param stackStartFn - Function for stack trace management
+ */
+const throwNegatedAssertionPassedError = (
+  assertion: { id: string; toString(): string },
+  stackStartFn: (...args: any[]) => any,
+): never => {
+  throw new NegatedAssertionError({
+    id: assertion.id,
+    message: `Expected assertion ${assertion} to fail (due to negation), but it passed`,
+    stackStartFn,
+  });
 };
 
 /**
@@ -810,6 +718,60 @@ const conjunctify = (args: readonly unknown[]): (readonly unknown[])[] => {
     }
   }
   return argsMatrix;
+};
+
+/**
+ * Generates all possible ways to rejoin args that were split on "and".
+ *
+ * This is used as a fallback when conjunctified attempts fail - we try
+ * different permutations of rejoining the split parts to handle assertions that
+ * use "and" as part of their phrase (e.g., "to be greater than X and less than
+ * Y").
+ *
+ * @function
+ * @param argsMatrix The matrix of split arguments
+ * @param originalArgs The original unsplit arguments
+ * @returns Array of permutations to try
+ * @internal
+ */
+const generateRejoinPermutations = (
+  argsMatrix: (readonly unknown[])[],
+  originalArgs: readonly unknown[],
+): (readonly unknown[])[] => {
+  const permutations: (readonly unknown[])[] = [];
+
+  for (let i = 0; i < argsMatrix.length - 1; i++) {
+    const rejoinedParts: unknown[][] = [];
+
+    // Add parts before the join point
+    for (let j = 0; j < i; j++) {
+      rejoinedParts.push([...argsMatrix[j]!]);
+    }
+
+    // Join the two parts at the split point
+    const leftPart = argsMatrix[i]!;
+    const rightPart = argsMatrix[i + 1]!;
+    const joinedPart = [...leftPart, 'and', ...rightPart.slice(1)];
+    rejoinedParts.push(joinedPart);
+
+    // Add parts after the join point
+    for (let j = i + 2; j < argsMatrix.length; j++) {
+      rejoinedParts.push([...argsMatrix[j]!]);
+    }
+
+    if (rejoinedParts.length === 1) {
+      permutations.push(rejoinedParts[0]!);
+    } else {
+      for (const part of rejoinedParts) {
+        permutations.push(part);
+      }
+    }
+  }
+
+  // Also try the original unsplit arguments as the final permutation
+  permutations.push(originalArgs);
+
+  return permutations;
 };
 
 /**
@@ -887,19 +849,12 @@ export function createBaseExpect<
   T extends AnySyncAssertions,
   U extends AnyAsyncAssertions,
 >(syncAssertions: T, asyncAssertions: U, type: 'async' | 'sync') {
-  return type === 'sync'
-    ? {
-        assertions: syncAssertions,
-        createAssertion,
-        createAsyncAssertion,
-        fail,
-        use: createUse(syncAssertions, asyncAssertions),
-      }
-    : {
-        assertions: asyncAssertions,
-        createAssertion,
-        createAsyncAssertion,
-        fail,
-        use: createUse(syncAssertions, asyncAssertions),
-      };
+  const assertions = type === 'sync' ? syncAssertions : asyncAssertions;
+  return {
+    assertions,
+    createAssertion,
+    createAsyncAssertion,
+    fail,
+    use: createUse(syncAssertions, asyncAssertions),
+  };
 }
