@@ -28,7 +28,6 @@
     "coverage",
     "dist",
     "packages/**/dist",
-    "packages/**/.tshy-build",
     "docs",
     "node_modules",
     "worktrees",

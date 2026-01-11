@@ -1,10 +1,5 @@
 {
-  "exclude": [
-    "**/node_modules",
-    "**/dist",
-    "**/.tshy-build",
-    "**/test/**/*.snap.cjs"
-  ],
+  "exclude": ["**/node_modules", "**/dist", "**/test/**/*.snap.cjs"],
   "extends": "./.config/tsconfig.base.json",
   "include": [
     ".wallaby.js",

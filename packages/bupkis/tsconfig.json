@@ -1,5 +1,5 @@
 {
-  "exclude": ["dist", ".tshy-build", "node_modules", "**/test/**/*.snap.cjs"],
+  "exclude": ["dist", "node_modules", "**/test/**/*.snap.cjs"],
   "extends": "../../.config/tsconfig.base.json",
   "include": [
     "src/**/*.ts",
