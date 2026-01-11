@@ -131,7 +131,6 @@ export interface PropertyTestConfigVariantSyncGenerators extends PropertyTestCon
   generators: GeneratorParams;
 }
 
-// Shared schema for PropertyTestConfigParameters
 const PropertyTestConfigParametersSchema = z.looseObject({
   runSize: z.enum(['small', 'medium', 'large']).optional(),
 });
@@ -140,21 +139,15 @@ const PropertyTestConfigParametersSchema = z.looseObject({
  * Zod schema for {@link PropertyTestConfigVariant}
  */
 export const PropertyTestConfigVariantSchema = z.union([
-  // PropertyTestConfigVariantSyncGenerators
   z.object({
     ...PropertyTestConfigParametersSchema.shape,
-    generators: z.union([
-      z.any(), // fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
-      z.array(z.any()), // readonly [subject: fc.Arbitrary<any>, phrase: fc.Arbitrary<string>, ...fc.Arbitrary<any>[]]
-    ]),
+    generators: z.union([z.any(), z.array(z.any())]),
   }),
-  // PropertyTestConfigVariantAsyncGenerators
   z.object({
     ...PropertyTestConfigParametersSchema.shape,
     async: z.literal(true),
     generators: z.union([z.any(), z.array(z.any())]),
   }),
-  // PropertyTestConfigVariantProperty<T>
   z.object({
     ...PropertyTestConfigParametersSchema.shape,
     property: z.function({
@@ -162,7 +155,6 @@ export const PropertyTestConfigVariantSchema = z.union([
       output: z.custom<fc.IProperty<any> | fc.IPropertyWithHooks<any>>(),
     }),
   }),
-  // PropertyTestConfigVariantAsyncProperty<T>
   z.object({
     ...PropertyTestConfigParametersSchema.shape,
     asyncProperty: z.function({

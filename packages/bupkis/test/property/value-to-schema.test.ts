@@ -11,20 +11,21 @@
  * @packageDocumentation
  */
 
-import fc from 'fast-check';
-import { describe, it } from 'node:test';
-
-import { SatisfactionError } from '../../src/error.js';
-import { hasKeyDeep, hasValueDeep } from '../../src/util.js';
-import {
-  valueToSchema,
-  type ValueToSchemaOptions,
-} from '../../src/value-to-schema.js';
 import {
   calculateNumRuns,
   filteredAnything,
   filteredObject,
-} from './property-test-util.js';
+  hasKeyDeep,
+  hasValueDeep,
+} from '@bupkis/property-testing';
+import fc from 'fast-check';
+import { describe, it } from 'node:test';
+
+import { SatisfactionError } from '../../src/error.js';
+import {
+  valueToSchema,
+  type ValueToSchemaOptions,
+} from '../../src/value-to-schema.js';
 
 const numRuns = calculateNumRuns();
 

@@ -1,13 +1,13 @@
+import {
+  extractPhrases,
+  type GeneratorParams,
+  safeRegexStringFilter,
+} from '@bupkis/property-testing';
 import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/async-parametric.js';
 import { type AnyAssertion } from '../src/types.js';
-import { type GeneratorParams } from '../test/property/property-test-config.js';
-import {
-  extractPhrases,
-  safeRegexStringFilter,
-} from '../test/property/property-test-util.js';
 
 export const AsyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>(
   [

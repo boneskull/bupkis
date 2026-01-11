@@ -1,7 +1,7 @@
+import { hasKeyDeep, hasValueDeep } from '@bupkis/property-testing';
 import { describe, it } from 'node:test';
 
 import { expect } from '../src/index.js';
-import { hasKeyDeep, hasValueDeep } from '../src/util.js';
 
 describe('util', () => {
   describe('hasKeyDeep()', () => {

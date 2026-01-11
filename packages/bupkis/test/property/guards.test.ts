@@ -1,15 +1,15 @@
 /* eslint-disable func-style */
 /* eslint-disable prefer-arrow-callback */
+import {
+  calculateNumRuns,
+  filteredAnything,
+  filteredObject,
+} from '@bupkis/property-testing';
 import * as fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { expect } from '../../src/bootstrap.js';
 import { isConstructible } from '../../src/guards.js';
-import {
-  calculateNumRuns,
-  filteredAnything,
-  filteredObject,
-} from './property-test-util.js';
 
 const numRuns = calculateNumRuns();
 

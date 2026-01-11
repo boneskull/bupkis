@@ -1,9 +1,8 @@
+import { extractPhrases, type GeneratorParams } from '@bupkis/property-testing';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/sync-date.js';
 import { type AnyAssertion } from '../src/types.js';
-import { type GeneratorParams } from '../test/property/property-test-config.js';
-import { extractPhrases } from '../test/property/property-test-util.js';
 
 /**
  * Generates weekend dates (Saturday or Sunday)

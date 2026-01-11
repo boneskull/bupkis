@@ -8,12 +8,12 @@
  * @packageDocumentation
  */
 
+import { calculateNumRuns } from '@bupkis/property-testing';
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 import { z } from 'zod';
 
 import { AssertionError, createAsyncAssertion, use } from '../../src/index.js';
-import { calculateNumRuns } from './property-test-util.js';
 
 const numRuns = calculateNumRuns('small');
 

@@ -1,3 +1,11 @@
+import {
+  createPropertyTestHarness,
+  extractPhrases,
+  filteredAnything,
+  getVariants,
+  type PropertyTestConfig,
+  type PropertyTestConfigParameters,
+} from '@bupkis/property-testing';
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
@@ -5,17 +13,9 @@ import * as assertions from '../../src/assertion/impl/sync-collection.js';
 import { SyncCollectionAssertions } from '../../src/assertion/index.js';
 import { type AnyAssertion } from '../../src/types.js';
 import { SyncCollectionGenerators } from '../../test-data/sync-collection-generators.js';
-import { expect } from '../custom-assertions.js';
-import {
-  type PropertyTestConfig,
-  type PropertyTestConfigParameters,
-} from './property-test-config.js';
-import {
-  extractPhrases,
-  filteredAnything,
-  getVariants,
-  runVariant,
-} from './property-test-util.js';
+import { expect, expectAsync } from '../custom-assertions.js';
+
+const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 
 /**
  * Shared state for WeakMap/WeakSet testing
