@@ -100,6 +100,7 @@
     "docs:build": "typedoc --options ../../.config/typedoc.js --cleanOutputDir --treatWarningsAsErrors",
     "docs:dev": "run-p \"docs:build -- --watch\" docs:serve",
     "docs:serve": "serve ../../docs",
+    "prepare": "zshy",
     "profile:analyze": "tsx scripts/analyze-profiles.ts",
     "profile:benchmarks": "tsx scripts/profile-benchmarks.ts",
     "profile:property": "node --cpu-prof --cpu-prof-dir=.profiles --import tsx --test \"test/property/**/*.test.ts\"",

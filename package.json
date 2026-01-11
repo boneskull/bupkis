@@ -26,7 +26,7 @@
     "lint:staged": "lint-staged",
     "lint:types": "tsc --noEmit",
     "lint:types:dev": "tsc --noEmit --watch",
-    "prepare": "husky",
+    "prepare": "husky && npm run prepare --workspaces --if-present",
     "test": "npm run test --workspaces",
     "test:coverage": "npm run test:coverage --workspace=bupkis",
     "test:dev": "npm run test:dev --workspace=bupkis",
