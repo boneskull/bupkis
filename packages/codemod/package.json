@@ -27,6 +27,9 @@
   ],
   "scripts": {
     "build": "tsc",
+    "example:jest": "NODE_OPTIONS='--experimental-vm-modules' npx jest --config examples/jest.config.js",
+    "example:codemod": "npx tsx src/cli.ts --dry-run examples/",
+    "example:bupkis": "node --test --experimental-strip-types examples/*.transformed.test.ts",
     "test": "node --test --experimental-strip-types 'test/**/*.test.ts'",
     "test:dev": "node --test --watch --experimental-strip-types 'test/**/*.test.ts'"
   },
@@ -36,6 +39,9 @@
     "ts-morph": "^25.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0"
+    "@jest/globals": "^29.7.0",
+    "@types/node": "^24.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0"
   }
 }

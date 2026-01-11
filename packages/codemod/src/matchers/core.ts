@@ -125,7 +125,10 @@ export const coreMatchers: MatcherTransform[] = [
     jestMatcher: 'toHaveBeenCalled' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -164,7 +167,10 @@ export const coreMatchers: MatcherTransform[] = [
     jestMatcher: 'toHaveReturned' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',

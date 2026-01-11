@@ -52,7 +52,10 @@ export const jestExtendedMatchers: MatcherTransform[] = [
     jestMatcher: 'toSatisfyAny' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
 
   // Strings
@@ -80,14 +83,20 @@ export const jestExtendedMatchers: MatcherTransform[] = [
     jestMatcher: 'toBeEven' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeOdd' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
 
   // Objects
@@ -99,28 +108,40 @@ export const jestExtendedMatchers: MatcherTransform[] = [
     jestMatcher: 'toContainValue' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toContainValues' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toContainEntry' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toContainEntries' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   { bupkisPhrase: 'to be extensible', jestMatcher: 'toBeExtensible' },
   { bupkisPhrase: 'to be frozen', jestMatcher: 'toBeFrozen' },

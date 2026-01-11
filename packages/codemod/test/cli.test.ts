@@ -1,7 +1,7 @@
 import { expect } from 'bupkis';
 import { execSync } from 'node:child_process';
-import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
+import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

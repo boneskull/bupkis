@@ -1,8 +1,9 @@
-import { describe, it } from 'node:test';
 import { expect } from 'bupkis';
 import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
+import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+
 import { transformCode } from '../src/transform.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

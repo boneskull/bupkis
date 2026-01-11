@@ -15,77 +15,110 @@ export const testingLibraryMatchers: MatcherTransform[] = [
     jestMatcher: 'toBeInTheDocument' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeVisible' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeDisabled' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeEnabled' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveClass' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveAttribute' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveTextContent' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveValue' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveStyle' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toHaveFocus' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeChecked' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -100,21 +133,30 @@ export const testingLibraryMatchers: MatcherTransform[] = [
     jestMatcher: 'toHaveFormValues' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toContainElement' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toContainHTML' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -153,20 +195,29 @@ export const testingLibraryMatchers: MatcherTransform[] = [
     jestMatcher: 'toBeInvalid' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeRequired' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
   {
     bupkisPhrase: '',
     jestMatcher: 'toBeValid' /**
      * @function
      */,
-    transform: () => null,
+    /**
+ * @function
+ */
+transform: () => null,
   },
 ];
