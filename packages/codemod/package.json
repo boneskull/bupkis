@@ -27,9 +27,8 @@
   ],
   "scripts": {
     "build": "tsc",
+    "example:codemod": "npx tsx src/cli.ts --dry-run examples/jest-example.test.ts",
     "example:jest": "NODE_OPTIONS='--experimental-vm-modules' npx jest --config examples/jest.config.js",
-    "example:codemod": "npx tsx src/cli.ts --dry-run examples/",
-    "example:bupkis": "node --test --experimental-strip-types examples/*.transformed.test.ts",
     "test": "node --test --experimental-strip-types 'test/**/*.test.ts'",
     "test:dev": "node --test --watch --experimental-strip-types 'test/**/*.test.ts'"
   },

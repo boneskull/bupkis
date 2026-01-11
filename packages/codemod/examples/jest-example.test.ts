@@ -3,9 +3,10 @@
  *
  * This file can be:
  *
- * 1. Run with Jest (npm test)
- * 2. Transformed with bupkis-codemod
- * 3. Run with node:test after transformation
+ * 1. Run with Jest: npm run example:jest
+ * 2. Transformed with: npm run example:codemod
+ * 3. Run with Jest again after transformation (see
+ *    jest-example.transformed.test.ts)
  */
 import { describe, expect, it } from '@jest/globals';
 
