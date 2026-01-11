@@ -210,7 +210,8 @@ const testConfigs = new Map<
               .map((obj) => new Map(Object.entries(obj))),
             fc
               .array(filteredAnything, { maxLength: 10, minLength: 4 })
-              .map((arr) => new Set(arr)),
+              .map((arr) => new Set(arr))
+              .filter(({ size }) => size >= 4), // deduping can shrink Set
           ),
           fc.constantFrom(
             ...extractPhrases(assertions.collectionSizeLessThanAssertion),
