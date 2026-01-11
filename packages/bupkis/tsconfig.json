@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
@@ -22,18 +21,12 @@
     "types": ["node"],
     "verbatimModuleSyntax": false
   },
+  "exclude": ["dist", ".tshy-build", "node_modules", "**/test/**/*.snap.cjs"],
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
-    "test-d/**/*.ts",
     "test-data/**/*.ts",
     "bench/**/*.ts",
     "scripts/**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    ".tshy-build",
-    "node_modules",
-    "**/test/**/*.snap.cjs"
   ]
 }

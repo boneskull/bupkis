@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="/"><img src="./site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/></a>
+  <a href="/"><img src="../../site/media/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/></a>
   <h1 align="center"><span class="bupkis">⁓ BUPKIS ⁓<span></h1>
   <p align="center">
     <em>“Uncommonly Extensible Assertions for The Beautiful People”</em>

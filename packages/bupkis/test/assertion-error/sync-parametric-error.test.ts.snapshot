@@ -388,11 +388,12 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be a' / 'to
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\" [unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p] > should throw a consistent AssertionError [unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\nInput not instance of Number",
+  "message": "Assertion \\"{unknown} 'to be an instance of' / 'to be a' / 'to be an' {constructible}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- <Number>\\n+ hello",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
+  "expected": "<Number>",
   "diff": "simple",
   "assertionId": "unknown-to-be-an-instance-of-to-be-a-to-be-an-constructible-3s2p"
 }

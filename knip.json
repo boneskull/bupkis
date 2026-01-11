@@ -1,5 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "exclude": ["duplicates"],
+  "tags": ["-knipignore"],
   "workspaces": {
     ".": {
       "ignoreDependencies": [
@@ -14,15 +16,10 @@
         "worktrees/**/*",
         ".worktrees/**/*"
       ],
-      "entry": [
-        ".config/typedoc-plugin-bupkis.js",
-        ".config/eslint-rules/*.js"
-      ]
+      "entry": [".config/eslint-rules/*.js"]
     },
     "packages/bupkis": {
-      "ignore": [
-        "test-d/**/*.test-d.ts"
-      ],
+      "ignore": ["test-d/**/*.test-d.ts"],
       "entry": [
         "src/assertion/index.ts",
         "src/index.ts",

@@ -3,4 +3,4 @@ title: Release Notes
 category: About
 ---
 
-{@include ../../CHANGELOG.md}
+{@include ../../packages/bupkis/CHANGELOG.md}

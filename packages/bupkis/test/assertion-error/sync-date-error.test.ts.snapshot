@@ -1,11 +1,11 @@
 exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be after' {date-like}\" [date_like-to-be-after-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-after-date_like-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{date-like} 'to be after' {date-like}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 2025-01-01T00:00:00.001Z\\n+ 2024-01-01T00:00:00.000Z",
+  "message": "Assertion \\"{date-like} 'to be after' {date-like}\\" failed:\\n  Comparing two different types of values. Expected number but received date.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "2024-01-01T00:00:00.000Z",
-  "expected": "2025-01-01T00:00:00.001Z",
+  "expected": 1735689600001,
   "diff": "simple",
   "assertionId": "date_like-to-be-after-date_like-3s3p"
 }
@@ -13,12 +13,12 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be after' {date
 
 exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be before' {date-like}\" [date_like-to-be-before-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-before-date_like-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{date-like} 'to be before' {date-like}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 2023-12-31T23:59:59.999Z\\n+ 2025-01-01T00:00:00.000Z",
+  "message": "Assertion \\"{date-like} 'to be before' {date-like}\\" failed:\\n  Comparing two different types of values. Expected number but received date.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "2025-01-01T00:00:00.000Z",
-  "expected": "2023-12-31T23:59:59.999Z",
+  "expected": 1704067199999,
   "diff": "simple",
   "assertionId": "date_like-to-be-before-date_like-3s3p"
 }
@@ -26,12 +26,12 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be before' {dat
 
 exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be between' {date-like} 'and' {date-like}\" [date_like-to-be-between-date_like-and-date_like-5s5p] > should throw a consistent AssertionError [date_like-to-be-between-date_like-and-date_like-5s5p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{date-like} 'to be between' {date-like} 'and' {date-like}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 2024-12-31T00:00:00.000Z\\n+ 2025-06-01T00:00:00.000Z",
+  "message": "Assertion \\"{date-like} 'to be between' {date-like} 'and' {date-like}\\" failed:\\n  Comparing two different types of values. Expected number but received date.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "2025-06-01T00:00:00.000Z",
-  "expected": "2024-12-31T00:00:00.000Z",
+  "expected": 1735603200000,
   "diff": "simple",
   "assertionId": "date_like-to-be-between-date_like-and-date_like-5s5p"
 }
