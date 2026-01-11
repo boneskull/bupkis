@@ -39,7 +39,7 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be between' {da
 
 exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be the same date as' {date-like}\" [date_like-to-be-the-same-date-as-date_like-3s3p] > should throw a consistent AssertionError [date_like-to-be-the-same-date-as-date_like-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected dates to be the same day, but Wed Jan 01 2025 !== Thu Jan 02 2025",
+  "message": "Expected dates to be the same day, but Wed Jan 01 2025 !== Thu Jan 02 2025\\n- expected  - 1\\n+ actual    + 1\\n\\n- Thu Jan 02 2025\\n+ Wed Jan 01 2025",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -52,7 +52,7 @@ exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to be the same dat
 
 exports[`Sync Date Assertion Error Snapshots > \"{date-like} 'to equal' {date-like} 'within' {duration}\" [date_like-to-equal-date_like-within-duration-5s5p] > should throw a consistent AssertionError [date_like-to-equal-date_like-within-duration-5s5p] <snapshot> 1`] = `
 {
-  "message": "Expected dates to be equal within 30 seconds (30000ms), but difference was 60000ms",
+  "message": "Expected dates to be equal within 30 seconds (30000ms), but difference was 60000ms\\n- expected  - 1\\n+ actual    + 1\\n\\n  Object {\\n-   \\"maxDifference\\": 30000,\\n+   \\"difference\\": 60000,\\n  }",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

@@ -13,7 +13,7 @@ exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to fulfill w
 
 exports[`Async Parametric Assertion Error Snapshots > \"{function} 'to reject with a' / 'to reject with an' / 'to be rejected with a' / 'to be rejected with an' {constructible}\" [function-to-reject-with-a-to-reject-with-an-to-be-rejected-with-a-to-be-rejected-with-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-reject-with-a-to-reject-with-an-to-be-rejected-with-a-to-be-rejected-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected function to reject with an instance of TypeError, but it rejected with a Error",
+  "message": "Expected function to reject with an instance of TypeError, but it rejected with a Error\\n- expected  - 1\\n+ actual    + 1\\n\\n- TypeError\\n+ Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -109,7 +109,7 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to fulfil
 
 exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with a' / 'to reject with an' / 'to be rejected with a' / 'to be rejected with an' {constructible}\" [promiselike-to-reject-with-a-to-reject-with-an-to-be-rejected-with-a-to-be-rejected-with-an-constructible-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-a-to-reject-with-an-to-be-rejected-with-a-to-be-rejected-with-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Promise to reject with an instance of TypeError, but it rejected with a Error",
+  "message": "Expected Promise to reject with an instance of TypeError, but it rejected with a Error\\n- expected  - 1\\n+ actual    + 1\\n\\n- TypeError\\n+ Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

@@ -11,7 +11,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size greater than' {nonnegative-integer}\" [map-set-to-have-size-greater-than-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map-set-to-have-size-greater-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Set to have size greater than 2, got 1",
+  "message": "Expected Set to have size greater than 2, got 1\\n- expected  - 1\\n+ actual    + 1\\n\\n- 2\\n+ 1",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -24,7 +24,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size less than' {nonnegative-integer}\" [map-set-to-have-size-less-than-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map-set-to-have-size-less-than-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Set to have size less than 2, got 3",
+  "message": "Expected Set to have size less than 2, got 3\\n- expected  - 1\\n+ actual    + 1\\n\\n- 2\\n+ 3",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -37,7 +37,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map-or-weakmap} 'to contain' / 'to include' {unknown}\" [map_or_weakmap-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [map_or_weakmap-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Map to contain key",
+  "message": "Expected Map to contain key\\n- expected  - 1\\n+ actual    + 1\\n\\n- key to exist in Map\\n+ missing",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -50,7 +50,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map-or-weakmap} 'to cont
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map-or-weakmap} 'to have entry' / 'to have key/value pair' / 'to contain entry' / 'to contain key/value pair' / 'to include entry' / 'to include key/value pair' {[unknown, unknown]}\" [map_or_weakmap-to-have-entry-to-have-keyvalue-pair-to-contain-entry-to-contain-keyvalue-pair-to-include-entry-to-include-keyvalue-pair-unknown-unknown-3s3p] > should throw a consistent AssertionError [map_or_weakmap-to-have-entry-to-have-keyvalue-pair-to-contain-entry-to-contain-keyvalue-pair-to-include-entry-to-include-keyvalue-pair-unknown-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Map entry [key, value] to equal [key, wrong]",
+  "message": "Expected Map entry [key, value] to equal [key, wrong]\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    \\"key\\",\\n-   \\"wrong\\",\\n+   \\"value\\",\\n  ]",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -82,7 +82,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to be empty'\" [ma
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to equal' {map}\" [map-to-equal-map-3s3p] > should throw a consistent AssertionError [map-to-equal-map-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Maps to have equal value for key b",
+  "message": "Expected Maps to have equal value for key b\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    \\"b\\",\\n-   2,\\n+   3,\\n  ]",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -101,7 +101,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to equal' {map}\" 
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have key' {unknown}\" [map-to-have-key-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-key-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Map to have key",
+  "message": "Expected Map to have key\\n- expected  - 1\\n+ actual    + 0\\n\\n  Array [\\n    \\"key\\",\\n-   \\"missing\\",\\n  ]",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -132,7 +132,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have size' {non
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have value' / 'to contain value' / 'to include value' {unknown}\" [map-to-have-value-to-contain-value-to-include-value-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-value-to-contain-value-to-include-value-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Map to have value",
+  "message": "Expected Map to have value\\n  Comparing two different types of values. Expected string but received array.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -193,7 +193,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
 
 exports[`Sync Collection Assertion Error Snapshots > \"{record} 'to have size' {nonnegative-integer}\" [record-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [record-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected object to have 3 keys, but it has 1 keys",
+  "message": "Expected object to have 3 keys, but it has 1 keys\\n- expected  - 1\\n+ actual    + 1\\n\\n- 3\\n+ 1",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -206,7 +206,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{record} 'to have size' {
 
 exports[`Sync Collection Assertion Error Snapshots > \"{set-or-weakset} 'to contain' / 'to include' {unknown}\" [set_or_weakset-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [set_or_weakset-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Set to contain value",
+  "message": "Expected Set to contain value\\n- expected  - 1\\n+ actual    + 1\\n\\n- value to exist in Set\\n+ c",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

@@ -14,7 +14,7 @@ In no particular order, here are some things We want to implement:
   - ✅ Deep equality / partial equality, strict and loose
   - ✅ Callbacks & async callbacks
 - Custom assertion improvements
-  - Custom diffs
+  - ✅ Custom diffs
   - ✅ Custom error messages (via Zod)
   - ✅ Custom error metadata (via Zod)
   - ✅ Type safety for custom assertions (may require a significant refactor)

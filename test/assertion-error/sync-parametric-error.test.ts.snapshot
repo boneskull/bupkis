@@ -53,7 +53,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{error} 'to have message 
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{error} 'to have message' {string}\" [error-to-have-message-string-3s3p] > should throw a consistent AssertionError [error-to-have-message-string-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected error message \\"wrong message\\" to equal \\"expected message\\"",
+  "message": "Expected error message \\"wrong message\\" to equal \\"expected message\\"\\n- expected  - 1\\n+ actual    + 1\\n\\n- expected message\\n+ wrong message",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -66,7 +66,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{error} 'to have message'
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to have arity' {nonnegative-integer}\" [function-to-have-arity-nonnegative_integer-3s3p] > should throw a consistent AssertionError [function-to-have-arity-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected function to have arity 3, but it has arity 2",
+  "message": "Expected function to have arity 3, but it has arity 2\\n- expected  - 1\\n+ actual    + 1\\n\\n- 3\\n+ 2",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -96,7 +96,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' /
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw a' / 'to throw an' {constructible}\" [function-to-throw-a-to-throw-an-constructible-3s3p] > should throw a consistent AssertionError [function-to-throw-a-to-throw-an-constructible-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected function to throw with an instance of TypeError, but it threw with a Error",
+  "message": "Expected function to throw with an instance of TypeError, but it threw with a Error\\n- expected  - 1\\n+ actual    + 1\\n\\n- TypeError\\n+ Error",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -147,7 +147,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{map} 'to deep equal' / '
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to' {number} {number?}\" [number-to-be-close-to-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-close-to-number-number-4s4p] <snapshot> 1`] = `
 {
-  "message": "Expected 10 to be close to 5 (within 2), but difference was 5",
+  "message": "Expected 10 to be close to 5 (within 2), but difference was 5\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 10",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -351,7 +351,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to end with' {s
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to have length' {nonnegative-integer}\" [string-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [string-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected string to have length 3, but it has length 5",
+  "message": "Expected string to have length 3, but it has length 5\\n- expected  - 1\\n+ actual    + 1\\n\\n- 3\\n+ 5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -400,7 +400,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be an insta
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' {unknown-array}\" [unknown-to-be-one-of-unknown_array-3s2p] > should throw a consistent AssertionError [unknown-to-be-one-of-unknown_array-3s2p] <snapshot> 1`] = `
 {
-  "message": "Expected 5 to be one of [1, 2, 3]",
+  "message": "Expected 5 to be one of [1, 2, 3]\\n  Comparing two different types of values. Expected array but received number.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -417,7 +417,7 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be one of' 
 
 exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be' / 'to equal' / 'equals' / 'is' / 'is equal to' / 'to strictly equal' / 'is strictly equal to' {unknown}\" [unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p] > should throw a consistent AssertionError [unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p] <snapshot> 1`] = `
 {
-  "message": "Expected {} to equal {}",
+  "message": "Expected {} to equal {}\\nCompared values have no visual difference.",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

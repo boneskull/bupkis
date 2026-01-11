@@ -23,7 +23,15 @@ import { z } from 'zod/v4';
 import { expect as sacrificialExpect } from './bootstrap.js';
 export * as assertions from './assertion/impl/index.js';
 export { expect, expectAsync } from './bootstrap.js';
+/**
+ * Re-export of `DiffOptions` type from jest-diff for use with custom assertion
+ * diff configuration.
+ *
+ * @see {@link https://npm.im/jest-diff | jest-diff} for available options
+ */
+export type { DiffOptions } from './diff.js';
 export * from './error.js';
+
 export * as schema from './schema.js';
 
 /**
@@ -39,18 +47,18 @@ export type {
 } from './snapshot/adapter.js';
 
 /**
+ * Re-export of {@link https://zod.dev Zod v4} for use in custom assertion
+ * implementations.
+ */
+export { z };
+
+/**
  * Re-export of Standard Schema v1 types for use in custom assertion
  * implementations.
  *
  * @see {@link https://standardschema.dev | Standard Schema Specification}
  */
 export type { StandardSchemaV1 } from './standard-schema.js';
-
-/**
- * Re-export of {@link https://zod.dev Zod v4} for use in custom assertion
- * implementations.
- */
-export { z };
 
 /**
  * Re-export of most (all?) types defined within <span

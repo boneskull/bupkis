@@ -23,7 +23,7 @@ Of course, these mundane reasons may also apply:
 
 ## Static Assertions
 
-[_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_].
+[_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_](#behavioral-assertions).
 
 ### Static Assertions: "Zod Schema" Style
 
@@ -390,7 +390,7 @@ const isEvenAssertion = createAssertion(
 
 Oh well. Lesson learned. A non-parametric assertion isn't the right use-case for it; see [Parametric Assertions][].
 
-#### Returning an `AssertionParseRequest` object
+#### Returning an AssertionParseRequest object
 
 An {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} object looks like this:
 
@@ -399,19 +399,19 @@ type AssertionParseRequest = {
   subject: unknown;
 } & (
   | {
-      asyncSchema: z.ZodType;
+      asyncSchema: StandardSchemaV1 | z.ZodType;
       schema?: never;
     }
   | {
       asyncSchema?: never;
-      schema: z.ZodType;
+      schema: StandardSchemaV1 | z.ZodType;
     }
 );
 ```
 
 If you return this object, <span class="bupkis">Bupkis</span> will call `.parse()` (or `.parseAsync()`, respectively) on the schema with the provided `subject`. This delegates all handling of exceptions to <span class="bupkis">Bupkis</span>, which is good for you and us.
 
-#### Returning an `AssertionFailure` object
+#### Returning an AssertionFailure object
 
 An {@link bupkis!types.AssertionFailure | AssertionFailure} object looks like this:
 
@@ -429,6 +429,22 @@ type AssertionFailure = {
    * A custom error message to use
    */
   message?: string;
+  /**
+   * A pre-computed diff string to display (highest priority)
+   */
+  diff?: string;
+  /**
+   * Custom formatter for the actual value in diff output
+   */
+  formatActual?: (value: unknown) => string;
+  /**
+   * Custom formatter for the expected value in diff output
+   */
+  formatExpected?: (value: unknown) => string;
+  /**
+   * Options to pass to jest-diff for diff generation
+   */
+  diffOptions?: DiffOptions;
 };
 ```
 
@@ -440,11 +456,107 @@ If you return this object, <span class="bupkis">Bupkis</span> will stuff it into
 >
 > One thing explicitly _not_ to do is to provide values of two different types for `expected` and `actual`. There is no reasonable way to diff them, and the error message will reflect that.
 >
-> In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`.
+> In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`. If the default diff output doesn't work for your use case, see [Custom Diff Output](#custom-diff-output) below.
+
+##### Custom Diff Output
+
+<span class="bupkis">Bupkis</span> provides several ways to customize how diffs are displayed in assertion failures. These options follow a precedence order:
+
+1. **Pre-computed diff (`diff`)**: If you provide a `diff` string, it will be used as-is
+2. **Custom formatters (`formatActual`/`formatExpected`)**: Transform values before diffing
+3. **Default**: Uses [jest-diff][] with standard formatting
+
+###### Using a Pre-computed Diff
+
+For complete control over diff output, provide your own diff string:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const customDiffAssertion = createAssertion(
+  [z.unknown(), 'to diff custom with', z.unknown()],
+  (actual, expected) => ({
+    actual,
+    expected,
+    diff: `My Custom Diff:\n  want: ${expected}\n  got:  ${actual}`,
+    message: 'Values differ',
+  }),
+);
+
+const { expect } = use([customDiffAssertion]);
+expect('foo', 'to diff custom with', 'bar');
+// Error message will include:
+// My Custom Diff:
+//   want: bar
+//   got:  foo
+```
+
+###### Using Custom Formatters
+
+For domain-specific value formatting before diff generation:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const dateAssertion = createAssertion(
+  [z.date(), 'to be same day as', z.date()],
+  (actual, expected) => {
+    const sameDay = actual.toDateString() === expected.toDateString();
+    if (!sameDay) {
+      return {
+        actual,
+        expected,
+        formatActual: (d) => (d as Date).toDateString(),
+        formatExpected: (d) => (d as Date).toDateString(),
+        message: 'Dates are not the same day',
+      };
+    }
+  },
+);
+
+const { expect } = use([dateAssertion]);
+expect(new Date('2024-01-15'), 'to be same day as', new Date('2024-01-16'));
+// Diff will show formatted dates instead of full Date objects
+```
+
+###### Using diffOptions
+
+Pass options to [jest-diff][] for fine-grained control:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const verboseDiffAssertion = createAssertion(
+  [z.unknown(), 'to verbose equal', z.unknown()],
+  (actual, expected) => {
+    if (actual !== expected) {
+      return {
+        actual,
+        expected,
+        diffOptions: {
+          expand: true, // Show all lines, not just changed
+          contextLines: 10, // More context around changes
+          aAnnotation: 'Expected Value',
+          bAnnotation: 'Received Value',
+        },
+        message: 'Values do not match',
+      };
+    }
+  },
+);
+```
+
+> ℹ️ `DiffOptions` is re-exported from <span class="bupkis">Bupkis</span> for your convenience:
+>
+> ```ts
+> import type { DiffOptions } from 'bupkis';
+> ```
 
 Returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
 
-#### Returning a `ZodError` object
+[jest-diff]: https://npm.im/jest-diff
+
+#### Returning a ZodError object
 
 If, for some reason, you need to call `.safeParse` (or `.parse` + `try`/`catch`) yourself, you can return the resulting `ZodError` object to indicate failure. <span class="bupkis">Bupkis</span> handle it appropriately.
 

@@ -91,7 +91,7 @@ This isn't black magic. It ain't no _cauldron_. We're not just _throwing rat tai
 
 You may wonder how this could this be anything _but_ loosey-goosey _senselessness_. On the contrary—we have _conventions_!
 
-#### Conventions of `expect()`
+#### Conventions of expect()
 
 To formalize the conventions at a high level:
 
@@ -205,6 +205,8 @@ expect('skiball lavatory', 'to be a string');
 
 **Any [Standard Schema V1][standard schema] library makes it extremely easy to create most custom assertions**. Whether you prefer [Zod][], [Valibot][], [ArkType][], or another compliant library, they all work seamlessly. But despite their power, validation libraries can't do _everything_ we need an assertion to do; for those situations, there's also a [function-based API][custom-assertion-function] for use with [parametric][] and [behavioral][] (e.g., involving function execution) assertions.
 
+Function-based assertions can provide **rich diff output** through customizable formatting options—supply pre-computed diffs, custom value formatters, or [jest-diff][] configuration to make assertion failures crystal clear.
+
 👉 For an assiduous guide on creating assertions, read [Guide: How to Create a Custom Assertion][create-a-custom-assertion].
 
 ### Excruciating Type Safety
@@ -275,3 +277,4 @@ Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blu
 [embeddable assertions]: https://bupkis.zip/documents/Basic_Usage#embeddable-assertions
 [unexpected-to-satisfy]: https://unexpected.js.org/assertions/any/to-satisfy/
 [behavioral]: https://bupkis.zip/glossary#behavioral-assertion
+[jest-diff]: https://npm.im/jest-diff

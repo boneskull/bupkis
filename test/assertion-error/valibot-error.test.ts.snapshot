@@ -26,7 +26,7 @@ exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be less than' {custo
 
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be' {custom}\" [custom-to-be-custom-3s3p] > should throw a consistent AssertionError [custom-to-be-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected 5 to equal 10",
+  "message": "Expected 5 to equal 10\\n- expected  - 1\\n+ actual    + 1\\n\\n- 10\\n+ 5",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

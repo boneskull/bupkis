@@ -795,7 +795,7 @@ code.tsd-tag {
 
 .tsd-typography blockquote {
   margin: 1.5em;
-  padding: 0.5em 1.5em 0.5em 1.5em;
+  padding: 0.1em 1.5em 0.1em 1.5em;
   border-left: 4px solid var(--bupkis-gray-light);
   background-color: var(--bupkis-white-smoke);
 }

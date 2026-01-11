@@ -28,6 +28,7 @@ import {
   type ParsedValues,
 } from './assertion-types.js';
 import { BupkisAssertion } from './assertion.js';
+import { formatAssertionFailure } from './format-assertion-failure.js';
 
 export abstract class BupkisAssertionAsync<
   Parts extends AssertionParts,
@@ -198,13 +199,19 @@ export class BupkisAssertionFunctionAsync<
         }
       }
     } else if (isAssertionFailure(result)) {
+      const diffOutput = formatAssertionFailure(result);
+      const baseMessage =
+        result.message ??
+        `Assertion ${this} failed for arguments: ${inspect(args)}`;
+      const message = diffOutput
+        ? `${baseMessage}\n${diffOutput}`
+        : baseMessage;
+
       throw new AssertionError({
         actual: result.actual,
         expected: result.expected,
         id: this.id,
-        message:
-          result.message ??
-          `Assertion ${this} failed for arguments: ${inspect(args)}`,
+        message,
       });
     } else if (result as unknown) {
       throw new AssertionImplementationError(

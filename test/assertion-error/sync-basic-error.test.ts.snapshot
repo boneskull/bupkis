@@ -1,6 +1,6 @@
 exports[`Sync Basic Assertion Error Snapshots > \"{arraylike} 'to be empty'\" [arraylike-to-be-empty-2s2p] > should throw a consistent AssertionError [arraylike-to-be-empty-2s2p] <snapshot> 1`] = `
 {
-  "message": "Expected array-like to have length 0, but had length 3",
+  "message": "Expected array-like to have length 0, but had length 3\\n- expected  - 1\\n+ actual    + 1\\n\\n- 0\\n+ 3",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
