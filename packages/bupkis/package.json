@@ -141,6 +141,17 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg",
+      "prettier-plugin-sort-json"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  },
   "zshy": {
     "exports": {
       "./package.json": "./package.json",
