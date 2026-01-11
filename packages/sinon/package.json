@@ -57,6 +57,9 @@
     "@types/sinon": "21.0.0",
     "sinon": "21.0.1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "prettier": {
     "jsdocCommentLineStrategy": "keep",
     "jsdocPreferCodeFences": true,
