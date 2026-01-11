@@ -206,6 +206,7 @@ export default defineConfig(
       '.tmp/**/*',
       '.worktrees/**/*',
       'packages/**/test-d/**/*',
+      'packages/**/test/fixtures/**/*',
       '**/*.snap.cjs',
     ],
   },

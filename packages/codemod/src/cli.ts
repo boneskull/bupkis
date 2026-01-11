@@ -1,14 +1,25 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import pc from 'picocolors';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { transform } from './transform.ts';
+import pc from 'picocolors';
+
 import type { TransformMode, TransformResult } from './types.ts';
 
+import { transform } from './transform.ts';
+
+interface CliOptions {
+  bestEffort?: boolean;
+  dryRun?: boolean;
+  exclude: string[];
+  interactive?: boolean;
+  strict?: boolean;
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(
+const { parse } = JSON;
+const pkg = parse(
   readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'),
 ) as { version: string };
 
@@ -34,7 +45,7 @@ program
   .option('-e, --exclude <patterns...>', 'Patterns to exclude', [
     '**/node_modules/**',
   ])
-  .action(async (patterns: string[], options) => {
+  .action(async (patterns: string[], options: CliOptions) => {
     const mode: TransformMode = options.strict
       ? 'strict'
       : options.interactive
@@ -51,11 +62,11 @@ program
 
     console.log(`Mode: ${pc.bold(mode)}`);
     console.log(`Patterns: ${patterns.join(', ')}`);
-    console.log(`Exclude: ${(options.exclude as string[]).join(', ')}\n`);
+    console.log(`Exclude: ${options.exclude.join(', ')}\n`);
 
     try {
       const result = await transform({
-        exclude: options.exclude as string[],
+        exclude: options.exclude,
         include: patterns,
         mode,
         write: !options.dryRun,
