@@ -213,8 +213,13 @@ const parseExpectChain = (code: string): null | ParsedExpectChain => {
 
   const [, subject, notPart, matcher, argsStr] = match;
 
+  // Ensure required matches are present
+  if (!subject || !matcher) {
+    return null;
+  }
+
   // Parse arguments (simple split for now, doesn't handle nested parens)
-  const matcherArgs = argsStr.trim() ? parseArguments(argsStr) : [];
+  const matcherArgs = argsStr?.trim() ? parseArguments(argsStr) : [];
 
   return {
     matcher,

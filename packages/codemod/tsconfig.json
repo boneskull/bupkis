@@ -3,7 +3,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "noEmit": false,
+    "rewriteRelativeImportExtensions": true
   },
   "exclude": ["node_modules", "dist", "test"],
   "extends": "../../tsconfig.json",
