@@ -1,16 +1,18 @@
 name: Publish
-description: Publish workspaces to npm using laverna
+description: Publish workspaces to npm
 
 inputs:
   token:
     description: 'npm token'
+    required: true
+  paths-released:
+    description: 'JSON array of workspace paths to publish (from release-please paths_released output)'
     required: true
 
 runs:
   steps:
     # see https://github.com/google-github-actions/release-please-action#automating-publication-to-npm
     # see https://docs.npmjs.com/generating-provenance-statements
-    # see https://github.com/LavaMoat/LavaMoat/tree/main/packages/laverna
     - name: Checkout Repository
       uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Setup Node.js
@@ -23,9 +25,15 @@ runs:
     - name: Publish workspaces to npm
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
-      # laverna publishes all workspaces where the current version is not yet on npm
-      # in CI, it auto-confirms (--yes defaults to true when CI env var is set)
-      # provenance is configured in each package's publishConfig
-      run: npx @lavamoat/laverna
+      run: |
+        paths='${{ inputs.paths-released }}'
+        if [ -z "$paths" ] || [ "$paths" = "[]" ]; then
+          echo "::error::No paths provided to publish. paths-released must be a non-empty JSON array."
+          exit 1
+        fi
+        for path in $(echo "$paths" | jq -r '.[]'); do
+          echo "Publishing workspace at $path..."
+          npm publish --workspace="$path" --provenance --access public
+        done
       shell: bash
   using: composite

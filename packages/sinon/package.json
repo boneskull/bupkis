@@ -60,9 +60,7 @@
     "sinon": "21.0.1"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true,
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   },
   "prettier": {
     "jsdocCommentLineStrategy": "keep",

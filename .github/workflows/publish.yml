@@ -2,6 +2,11 @@ name: Publish to npm
 
 on:
   workflow_dispatch:
+    inputs:
+      paths:
+        description: 'Workspace paths to publish (comma-separated, e.g. "packages/bupkis,packages/sinon")'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -13,6 +18,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Convert paths to JSON array
+        id: paths
+        run: |
+          # Convert comma-separated paths to JSON array
+          json=$(echo '${{ inputs.paths }}' | jq -R 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          echo "json=$json" >> "$GITHUB_OUTPUT"
+        shell: bash
       - uses: ./.github/actions/publish
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          paths-released: ${{ steps.paths.outputs.json }}
