@@ -9,6 +9,11 @@
       "component": "bupkis",
       "release-type": "node"
     },
+    "packages/codemod": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/codemod",
+      "release-type": "node"
+    },
     "packages/sinon": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/sinon",
