@@ -1,3 +1,4 @@
 .worktrees
 *.snap.cjs
 CHANGELOG.md
+.plans
