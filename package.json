@@ -1,103 +1,18 @@
 {
-  "name": "bupkis",
-  "version": "0.15.0",
+  "name": "bupkis-monorepo",
   "type": "module",
-  "description": "Uncommonly extensible assertions for the beautiful people",
-  "repository": {
-    "url": "git+https://github.com/boneskull/bupkis.git"
-  },
-  "homepage": "https://bupkis.zip",
-  "author": {
-    "name": "Christopher Hiller",
-    "email": "boneskull@boneskull.com"
-  },
-  "license": "BlueOak-1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
     "node": "^20.19.0 || ^22.12.0 || >=23"
   },
-  "main": "./dist/index.cjs",
-  "types": "./dist/index.d.cts",
-  "module": "./dist/index.js",
-  "exports": {
-    "./package.json": "./package.json",
-    "./types": {
-      "types": "./dist/types.d.cts",
-      "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
-    },
-    "./util": {
-      "types": "./dist/util.d.cts",
-      "import": "./dist/util.js",
-      "require": "./dist/util.cjs"
-    },
-    "./schema": {
-      "types": "./dist/schema.d.cts",
-      "import": "./dist/schema.js",
-      "require": "./dist/schema.cjs"
-    },
-    "./guards": {
-      "types": "./dist/guards.d.cts",
-      "import": "./dist/guards.js",
-      "require": "./dist/guards.cjs"
-    },
-    "./assertions": {
-      "types": "./dist/assertion/index.d.cts",
-      "import": "./dist/assertion/index.js",
-      "require": "./dist/assertion/index.cjs"
-    },
-    ".": {
-      "types": "./dist/index.d.cts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./diff": {
-      "types": "./dist/diff.d.cts",
-      "import": "./dist/diff.js",
-      "require": "./dist/diff.cjs"
-    },
-    "./snapshot": {
-      "types": "./dist/snapshot/index.d.cts",
-      "import": "./dist/snapshot/index.js",
-      "require": "./dist/snapshot/index.cjs"
-    }
-  },
-  "files": [
-    "CHANGELOG.md",
-    "dist",
-    "src"
-  ],
-  "keywords": [
-    "test",
-    "expect",
-    "assert",
-    "assertion",
-    "expectation",
-    "assertion library",
-    "assertions",
-    "zod",
-    "validation",
-    "testing",
-    "jest",
-    "mocha",
-    "chai",
-    "vitest",
-    "ava",
-    "tap",
-    "tape"
-  ],
   "scripts": {
-    "bench": "modestbench",
-    "bench:async": "modestbench \"bench/async-*.bench.js\"",
-    "bench:function-schema": "modestbench \"bench/sync-function-schema.bench.js\"",
-    "bench:pure": "modestbench \"bench/sync-function-pure.bench.js\"",
-    "bench:schema": "modestbench \"bench/sync-schema.bench.js\"",
-    "bench:sync": "modestbench \"bench/sync-*.bench.js\"",
-    "bench:value": "modestbench \"bench/value-to-schema.bench.js\"",
-    "build": "zshy",
-    "debug:assertion-ids": "tsx scripts/dump-assertion-ids.ts",
-    "docs:build": "typedoc --cleanOutputDir --treatWarningsAsErrors",
-    "docs:dev": "run-p \"docs:build -- --watch\" docs:serve",
-    "docs:serve": "serve docs",
+    "bench": "npm run bench --workspace=bupkis",
+    "build": "npm run build --workspaces",
+    "docs:build": "npm run docs:build --workspace=bupkis",
+    "docs:dev": "npm run docs:dev --workspace=bupkis",
     "fix": "run-s -sl fix:*",
     "fix:eslint": "eslint --fix .",
     "fix:format": "prettier --write . && markdownlint-cli2 --fix \"**/*.md\"",
@@ -110,43 +25,14 @@
     "lint:spelling": "cspell .",
     "lint:staged": "lint-staged",
     "lint:types": "tsc --noEmit",
-    "lint:types:dev": "run-s \"lint:types -- --watch\"",
-    "prepare": "husky; run-s build",
-    "profile:analyze": "tsx scripts/analyze-profiles.ts",
-    "profile:benchmarks": "tsx scripts/profile-benchmarks.ts",
-    "profile:property": "node --cpu-prof --cpu-prof-dir=.profiles --import tsx --test \"test/property/**/*.test.ts\"",
-    "profile:test": "run-s test:profile",
-    "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\" test:types",
-    "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:bench": "run-s \"test:base -- \\\"test/bench/**/*.test.ts\\\" \\\"test/assertion/*suite*.test.ts\\\" \\\"test/property/assertion-classification.test.ts\\\" \\\"test/property/performance-validation.test.ts\\\"\"",
-    "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
-    "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
-    "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",
-    "test:property": "run-s \"test:base -- \\\"test/property/*.test.ts\\\"\"",
-    "test:property:dev": "run-s \"test:base -- --watch \\\"test/property/*.test.ts\\\"\"",
-    "test:snapshots": "run-s \"test:base -- --test-name-pattern=\\\"<snapshot>\\\" \\\"test/**/*.test.ts\\\"\"",
-    "test:types": "tsd",
-    "test:update-snapshots": "run-s \"test:base -- --test-update-snapshots --test-name-pattern=\\\"<snapshot>\\\" \\\"test/**/*.test.ts\\\"\""
-  },
-  "peerDependencies": {
-    "zod": "^4.1.5"
-  },
-  "dependencies": {
-    "debug": "^4.4.1",
-    "jest-diff": "30.2.0",
-    "json-stable-stringify": "1.3.0",
-    "set.prototype.difference": "^1.1.7",
-    "set.prototype.intersection": "^1.1.7",
-    "set.prototype.isdisjointfrom": "^1.1.5",
-    "set.prototype.issubsetof": "^1.1.4",
-    "set.prototype.issupersetof": "^1.1.3",
-    "set.prototype.symmetricdifference": "^1.1.3",
-    "set.prototype.union": "^1.1.3",
-    "slug": "^11.0.0",
-    "type-fest": "^4.41.0"
-  },
-  "optionalDependencies": {
-    "zod": "^4.1.5"
+    "lint:types:dev": "tsc --noEmit --watch",
+    "prepare": "husky",
+    "test": "npm run test --workspaces",
+    "test:coverage": "npm run test:coverage --workspace=bupkis",
+    "test:dev": "npm run test:dev --workspace=bupkis",
+    "test:property": "npm run test:property --workspace=bupkis",
+    "test:snapshots": "npm run test:snapshots --workspace=bupkis",
+    "test:types": "npm run test:types --workspaces"
   },
   "devDependencies": {
     "@commitlint/cli": "20.2.0",
@@ -191,48 +77,8 @@
     "valibot": "1.2.0",
     "zshy": "0.6.0"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "knip": {
-    "ignoreDependencies": [
-      "@types/wallabyjs",
-      "markdownlint-cli2-formatter-pretty"
-    ],
-    "ignore": [
-      ".wallaby.js",
-      "**/*.cts",
-      "**/*.d.ts",
-      "site/media/**/*",
-      "worktrees/**/*",
-      "test-d/**/*.test-d.ts"
-    ],
-    "tags": [
-      "-knipignore"
-    ],
-    "node": {
-      "entry": [
-        ".config/typedoc-plugin-bupkis.js",
-        "scripts/*.js",
-        "scripts/*.ts",
-        "test/**/*.test.ts",
-        "src/assertion/index.ts",
-        "src/index.ts",
-        "src/types.ts",
-        "src/util.ts",
-        "src/schema.ts",
-        "src/guards.ts",
-        "src/diff.ts",
-        "src/snapshot/index.ts",
-        "test-data/index.ts",
-        "bench/**/*.bench.ts"
-      ]
-    }
-  },
   "lint-staged": {
-    "*.{ts,cts,js,cjs,yml,json5}": [
-      "eslint --fix",
+    "**/!(.github/prompts)/*.md": [
       "prettier --write",
       "cspell lint --no-must-find-files"
     ],
@@ -241,7 +87,8 @@
       "prettier --write",
       "cspell lint --no-must-find-files"
     ],
-    "**/!(.github/prompts)/*.md": [
+    "*.{ts,cts,js,cjs,yml,json5}": [
+      "eslint --fix",
       "prettier --write",
       "cspell lint --no-must-find-files"
     ]
@@ -256,18 +103,5 @@
     ],
     "singleQuote": true,
     "tsdoc": true
-  },
-  "zshy": {
-    "exports": {
-      "./package.json": "./package.json",
-      "./types": "./src/types.ts",
-      "./util": "./src/util.ts",
-      "./schema": "./src/schema.ts",
-      "./guards": "./src/guards.ts",
-      "./assertions": "./src/assertion/index.ts",
-      ".": "./src/index.ts",
-      "./diff": "./src/diff.ts",
-      "./snapshot": "./src/snapshot/index.ts"
-    }
   }
 }
