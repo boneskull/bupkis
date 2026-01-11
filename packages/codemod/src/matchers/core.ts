@@ -1,0 +1,201 @@
+import type { MatcherTransform } from '../types.ts';
+
+/**
+ * Core Jest matchers and their bupkis equivalents.
+ *
+ * Reference: https://jestjs.io/docs/expect
+ */
+export const coreMatchers: MatcherTransform[] = [
+  // Equality
+  { bupkisPhrase: 'to be', jestMatcher: 'toBe' },
+  { bupkisPhrase: 'to deep equal', jestMatcher: 'toEqual' },
+  { bupkisPhrase: 'to deep equal', jestMatcher: 'toStrictEqual' },
+
+  // Truthiness
+  { bupkisPhrase: 'to be truthy', jestMatcher: 'toBeTruthy' },
+  { bupkisPhrase: 'to be falsy', jestMatcher: 'toBeFalsy' },
+  { bupkisPhrase: 'to be null', jestMatcher: 'toBeNull' },
+  { bupkisPhrase: 'to be undefined', jestMatcher: 'toBeUndefined' },
+  { bupkisPhrase: 'to be defined', jestMatcher: 'toBeDefined' },
+  { bupkisPhrase: 'to be NaN', jestMatcher: 'toBeNaN' },
+
+  // Type checking
+  {
+    bupkisPhrase: 'to be an instance of',
+    jestMatcher: 'toBeInstanceOf',
+  },
+
+  // Numbers
+  { bupkisPhrase: 'to be greater than', jestMatcher: 'toBeGreaterThan' },
+  {
+    bupkisPhrase: 'to be greater than or equal to',
+    jestMatcher: 'toBeGreaterThanOrEqual',
+  },
+  { bupkisPhrase: 'to be less than', jestMatcher: 'toBeLessThan' },
+  {
+    bupkisPhrase: 'to be less than or equal to',
+    jestMatcher: 'toBeLessThanOrEqual',
+  },
+  {
+    bupkisPhrase: 'to be close to',
+    jestMatcher: 'toBeCloseTo',
+    /**
+     * @function
+     */
+    transform: ({ matcherArgs, negated, subject }) => {
+      // toBeCloseTo(number, numDigits?) -> 'to be close to', number, numDigits
+      const phrase = negated ? 'not to be close to' : 'to be close to';
+      if (matcherArgs.length === 2) {
+        return `expect(${subject}, '${phrase}', ${matcherArgs[0]}, ${matcherArgs[1]})`;
+      }
+      return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
+    },
+  },
+
+  // Strings
+  { bupkisPhrase: 'to match', jestMatcher: 'toMatch' },
+  { bupkisPhrase: 'to contain', jestMatcher: 'toContain' },
+
+  // Arrays/Iterables
+  { bupkisPhrase: 'to have length', jestMatcher: 'toHaveLength' },
+  {
+    bupkisPhrase: 'to contain',
+    jestMatcher: 'toContainEqual',
+    /**
+     * @function
+     */
+    transform: ({ matcherArgs, negated, subject }) => {
+      // toContainEqual uses deep equality - bupkis 'to contain' does too
+      const phrase = negated ? 'not to contain' : 'to contain';
+      return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
+    },
+  },
+
+  // Objects
+  {
+    bupkisPhrase: 'to have property',
+    jestMatcher: 'toHaveProperty',
+    /**
+     * @function
+     */
+    transform: ({ matcherArgs, negated, subject }) => {
+      // toHaveProperty(keyPath, value?) -> 'to have property', key or 'to satisfy'
+      const phrase = negated ? 'not to have property' : 'to have property';
+      if (matcherArgs.length === 1) {
+        return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
+      }
+      // With value, use to satisfy for nested check
+      // This is a complex case - add TODO marker
+      return null;
+    },
+  },
+  {
+    bupkisPhrase: 'to satisfy',
+    jestMatcher: 'toMatchObject',
+  },
+
+  // Errors/Exceptions
+  { bupkisPhrase: 'to throw', jestMatcher: 'toThrow' },
+  {
+    bupkisPhrase: 'to throw',
+    jestMatcher: 'toThrowError',
+  },
+
+  // Promises (these need expectAsync)
+  {
+    bupkisPhrase: 'to be fulfilled',
+    jestMatcher: 'resolves',
+    /**
+     * @function
+     */
+    transform: () => null, // Complex - needs restructuring to expectAsync
+  },
+  {
+    bupkisPhrase: 'to reject',
+    jestMatcher: 'rejects',
+    /**
+     * @function
+     */
+    transform: () => null, // Complex - needs restructuring to expectAsync
+  },
+
+  // Mocks/Spies (mark as unsupported)
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveBeenCalled' /**
+     * @function
+     */,
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveBeenCalledTimes',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveBeenCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveBeenLastCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveBeenNthCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveReturned' /**
+     * @function
+     */,
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveReturnedTimes',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveReturnedWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveLastReturnedWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toHaveNthReturnedWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+];
