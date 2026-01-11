@@ -1,4 +1,5 @@
 .worktrees
 *.snap.cjs
-CHANGELOG.md
+**/CHANGELOG.md
+packages/**/dist
 .plans

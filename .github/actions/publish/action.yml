@@ -22,6 +22,6 @@ runs:
     - name: Publish to npm
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
-      run: npm publish --provenance --access public --registry https://registry.npmjs.org
+      run: npm publish --workspace=bupkis --provenance --access public --registry https://registry.npmjs.org
       shell: bash
   using: composite

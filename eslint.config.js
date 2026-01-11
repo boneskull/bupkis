@@ -24,7 +24,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/**/*.ts'],
+    files: ['packages/**/src/**/*.ts'],
     plugins: {
       custom: {
         rules: {
@@ -173,7 +173,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['test/**/*.test.ts'],
+    files: ['packages/**/test/**/*.test.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -182,13 +182,7 @@ export default defineConfig(
     },
   },
   {
-    files: [
-      '.config/*.js',
-      '/*.js',
-      '/.*.js',
-      'scripts/*.js',
-      '.claude/skills/**/*.js',
-    ],
+    files: ['.config/*.js', '/*.js', '/.*.js', 'packages/**/scripts/*.ts'],
     languageOptions: {
       globals: globals.node,
     },
@@ -201,14 +195,17 @@ export default defineConfig(
   /** @type {any} */ (eslintPluginJsonc.configs['flat/prettier'][2]),
   {
     ignores: [
+      '.claude/**/*',
       'docs',
       'dist',
+      'packages/**/dist',
       'coverage',
       '*.snapshot',
       '.zshy/**/*',
+      'packages/**/.zshy/**/*',
       '.tmp/**/*',
       '.worktrees/**/*',
-      'test-d/**/*',
+      'packages/**/test-d/**/*',
       '**/*.snap.cjs',
     ],
   },

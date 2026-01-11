@@ -1,0 +1,39 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "exclude": ["duplicates"],
+  "tags": ["-knipignore"],
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": [
+        "@types/wallabyjs",
+        "markdownlint-cli2-formatter-pretty"
+      ],
+      "ignore": [
+        ".wallaby.js",
+        "**/*.cts",
+        "**/*.d.ts",
+        "site/media/**/*",
+        "worktrees/**/*",
+        ".worktrees/**/*"
+      ],
+      "entry": [".config/eslint-rules/*.js"]
+    },
+    "packages/bupkis": {
+      "ignore": ["test-d/**/*.test-d.ts"],
+      "entry": [
+        "src/assertion/index.ts",
+        "src/index.ts",
+        "src/types.ts",
+        "src/util.ts",
+        "src/schema.ts",
+        "src/guards.ts",
+        "src/diff.ts",
+        "src/snapshot/index.ts",
+        "test-data/index.ts",
+        "bench/**/*.bench.ts",
+        "scripts/*.ts",
+        "test/**/*.test.ts"
+      ]
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "bail": false,
   "iterations": 5000,
   "outputDir": ".modestbench",
-  "pattern": "benchmarks/**/*.bench.{js,ts}",
+  "pattern": "bench/**/*.bench.{js,ts}",
   "reporters": ["human"],
   "time": 15000,
   "warmup": 100

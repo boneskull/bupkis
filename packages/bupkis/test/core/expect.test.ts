@@ -76,7 +76,7 @@ describe('core API', () => {
         expect(error, 'to be a', 'object');
         expect(error, 'to be an Error');
         expect(error?.message, 'to be a', 'string');
-        expect(error!.message, 'to include', 'Input not instance of Foo');
+        expect(error!.message, 'to include', '<Foo>');
       });
 
       it('should contain the entire API', () => {

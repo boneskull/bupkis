@@ -1,38 +1,20 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "declaration": true,
-    "declarationMap": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "lib": ["ES2023"],
-    "module": "nodenext",
-    "moduleDetection": "force",
-    "noImplicitOverride": true,
-    "noUncheckedIndexedAccess": true,
-    "noUncheckedSideEffectImports": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "stripInternal": true,
-    "target": "esnext",
-    "types": ["node"],
-    "verbatimModuleSyntax": false
-  },
-  "exclude": ["../test/**/*.snap.cjs"],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/.tshy-build",
+    "**/test/**/*.snap.cjs"
+  ],
+  "extends": "./.config/tsconfig.base.json",
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "test-data/**/*.ts",
-    "bench/**/*.ts",
     ".wallaby.js",
     "eslint.config.js",
     ".commitlintrc.js",
-    ".config/typedoc*.js",
-    "scripts/*",
-    "eslint-rules/*.js",
-    ".claude/skills/**/*.js"
+    ".config/**/*.js",
+    "packages/*/src/**/*.ts",
+    "packages/*/test/**/*.ts",
+    "packages/*/test-data/**/*.ts",
+    "packages/*/bench/**/*.ts",
+    "packages/*/scripts/**/*.ts"
   ]
 }

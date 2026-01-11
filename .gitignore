@@ -138,12 +138,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-src/**/*.d.ts*
-src/**/*.js*
-test/**/*.d.ts*
-test/**/*.js*
-scripts/*.d.ts*
-scripts/*.js*
+packages/**/src/**/*.d.ts*
+packages/**/src/**/*.js*
+packages/**/test/**/*.d.ts*
+packages/**/test/**/*.js*
+packages/**/scripts/*.d.ts*
+packages/**/scripts/*.js*
 docs
 
 .tmp

@@ -95,11 +95,12 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be NaN'\" [unkno
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\" [unknown-to-be-a-regexp-to-be-a-regex-to-be-a-regexp-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-regexp-to-be-a-regex-to-be-a-regexp-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\" failed:\\nInput not instance of RegExp",
+  "message": "Assertion \\"{unknown} 'to be a RegExp' / 'to be a regex' / 'to be a regexp'\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- <RegExp>\\n+ hello",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": "hello",
+  "expected": "<RegExp>",
   "diff": "simple",
   "assertionId": "unknown-to-be-a-regexp-to-be-a-regex-to-be-a-regexp-2s1p"
 }
@@ -107,7 +108,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a RegExp' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a Set'\" [unknown-to-be-a-set-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-set-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a Set'\\" failed:\\nInput not instance of Set",
+  "message": "Assertion \\"{unknown} 'to be a Set'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -119,7 +120,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a Set'\" [unk
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakMap'\" [unknown-to-be-a-weakmap-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weakmap-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a WeakMap'\\" failed:\\nInput not instance of WeakMap",
+  "message": "Assertion \\"{unknown} 'to be a WeakMap'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -131,7 +132,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakMap'\" 
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a WeakSet'\" [unknown-to-be-a-weakset-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-weakset-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a WeakSet'\\" failed:\\nInput not instance of WeakSet",
+  "message": "Assertion \\"{unknown} 'to be a WeakSet'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -296,7 +297,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a symbol' / '
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be an Error' / 'to be a Error'\" [unknown-to-be-an-error-to-be-a-error-2s1p] > should throw a consistent AssertionError [unknown-to-be-an-error-to-be-a-error-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be an Error' / 'to be a Error'\\" failed:\\nInput not instance of Error",
+  "message": "Assertion \\"{unknown} 'to be an Error' / 'to be a Error'\\" failed:\\nInvalid input",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
