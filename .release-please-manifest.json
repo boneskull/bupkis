@@ -1,3 +1,4 @@
 {
-  "packages/bupkis": "0.15.0"
+  "packages/bupkis": "0.15.0",
+  "packages/sinon": "0.0.0"
 }
