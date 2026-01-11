@@ -29,8 +29,8 @@
     "build": "tsc",
     "example:codemod": "npx tsx src/cli.ts --dry-run examples/jest-example.test.ts",
     "example:jest": "NODE_OPTIONS='--experimental-vm-modules' npx jest --config examples/jest.config.js",
-    "test": "node --no-warnings --test --experimental-strip-types 'test/**/*.test.ts'",
-    "test:dev": "node --no-warnings --test --watch --experimental-strip-types 'test/**/*.test.ts'"
+    "test": "node --test --test-reporter=spec --import tsx 'test/**/*.test.ts'",
+    "test:dev": "node --test --test-reporter=spec --watch --import tsx 'test/**/*.test.ts'"
   },
   "dependencies": {
     "@boneskull/bargs": "4.0.0",
@@ -39,7 +39,6 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/node": "^24.0.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.0"
   }

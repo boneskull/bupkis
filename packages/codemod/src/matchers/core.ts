@@ -67,6 +67,9 @@ export const coreMatchers: MatcherTransform[] = [
       // Regex: use 'to match'
       // String: use 'to contain' (substring matching)
       const arg = matcherArgs[0];
+      if (!arg) {
+        return null;
+      }
       const isRegex = arg.startsWith('/');
       const phrase = isRegex
         ? negated
