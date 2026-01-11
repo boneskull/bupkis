@@ -21,18 +21,27 @@
     "types": ["node"],
     "verbatimModuleSyntax": false
   },
-  "exclude": ["../test/**/*.snap.cjs"],
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "test-data/**/*.ts",
-    "bench/**/*.ts",
     ".wallaby.js",
     "eslint.config.js",
     ".commitlintrc.js",
     ".config/typedoc*.js",
-    "scripts/*",
-    "eslint-rules/*.js",
-    ".claude/skills/**/*.js"
+    ".config/eslint-rules/*.js",
+    ".claude/skills/**/*.js",
+    "packages/*/src/**/*.ts",
+    "packages/*/test/**/*.ts",
+    "packages/*/test-d/**/*.ts",
+    "packages/*/test-data/**/*.ts",
+    "packages/*/bench/**/*.ts",
+    "packages/*/scripts/**/*.ts"
+  ],
+  "exclude": [
+    "packages/**/dist",
+    "packages/**/.tshy-build",
+    "packages/**/node_modules",
+    "**/test/**/*.snap.cjs"
+  ],
+  "references": [
+    { "path": "packages/bupkis" }
   ]
 }
