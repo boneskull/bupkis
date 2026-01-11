@@ -10,7 +10,6 @@ import createDebug from 'debug';
 import { inspect } from 'util';
 import { z } from 'zod/v4';
 
-import { kStringLiteral } from '../constant.js';
 import {
   AssertionError,
   AssertionImplementationError,
@@ -27,7 +26,6 @@ import {
   isAssertionFailure,
   isAssertionParseRequest,
 } from '../internal-schema.js';
-import { BupkisRegistry } from '../metadata.js';
 import {
   type AssertionFunctionSync,
   type AssertionImplFnReturnType,
@@ -52,10 +50,10 @@ const debug = createDebug('bupkis:assertion:sync');
  * Child classes are expected to implement {@link execute}.
  */
 export abstract class BupkisAssertionSync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplSync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplSync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertion<Parts, Impl, Slots>
   implements AssertionSync<Parts, Impl, Slots>
 {
@@ -137,10 +135,10 @@ export abstract class BupkisAssertionSync<
 }
 
 export class BupkisAssertionFunctionSync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplFnSync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplFnSync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertionSync<Parts, Impl, Slots>
   implements AssertionFunctionSync<Parts, Impl, Slots>
 {
@@ -278,10 +276,10 @@ export class BupkisAssertionFunctionSync<
  */
 
 export class BupkisAssertionSchemaSync<
-    Parts extends AssertionParts,
-    Impl extends AssertionImplSchemaSync<Parts>,
-    Slots extends AssertionSlots<Parts>,
-  >
+  Parts extends AssertionParts,
+  Impl extends AssertionImplSchemaSync<Parts>,
+  Slots extends AssertionSlots<Parts>,
+>
   extends BupkisAssertionSync<Parts, Impl, Slots>
   implements AssertionSchemaSync<Parts, Impl, Slots>
 {
@@ -393,26 +391,5 @@ export class BupkisAssertionSchemaSync<
     }
 
     return result;
-  }
-
-  /**
-   * Determines if this assertion can be optimized (simple single-subject
-   * schema). Only simple assertions like ['to be a string'] with z.string()
-   * qualify.
-   */
-  private isSimpleSchemaAssertion(): boolean {
-    // Only optimize if we have exactly one subject slot + string literal slots
-    // and no complex argument processing
-    const hasSubjectSlot =
-      this.slots.length > 0 &&
-      (this.slots[0]?.def.type === 'unknown' ||
-        this.slots[0]?.def.type === 'any');
-
-    const allOtherSlotsAreLiterals = this.slots.slice(1).every((slot) => {
-      const meta = BupkisRegistry.get(slot) ?? {};
-      return kStringLiteral in meta;
-    });
-
-    return hasSubjectSlot && allOtherSlotsAreLiterals;
   }
 }
