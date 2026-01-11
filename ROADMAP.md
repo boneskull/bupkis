@@ -20,7 +20,8 @@ In no particular order, here are some things We want to implement:
   - ✅ Type safety for custom assertions (may require a significant refactor)
 - ✅ Lean on Zod more for builtin assertion implementations and use its error-reporting facilities
 - ✅ Keypaths / property drilling
-- Boolean logic syntax (`and`, `or`, `not`) while still avoiding chainable APIs. Though I might convince myself that chainable APIs are OK for this and this only.
+- ✅ Boolean logic syntax (`and`, `not`) while still avoiding chainable APIs
+  - Note: `or` was explicitly not implemented—it doesn't seem practically useful for testing assertions
 
 ## Maybe Later
 
@@ -30,7 +31,7 @@ In no particular order, here are some things We want to implement:
   - Draw a line in the sand: no stubs, no mocks, no fakes
   - Simple function instrumentation via `Proxy` or something; a way to check if a function was called, how many times, and with what
   - Adapters which generate assertions from 3p spy providers?
-- Is snapshot testing the responsibility of an assertion library?
+- ✅ Snapshot testing (v0.13.0)
 - Drop hard dependency on Node.js and expand support to other environments; as of this writing there are only three (3) bits used from Node.js:
   - `node:test` (dev)
   - `node:util.inspect` (dev)
