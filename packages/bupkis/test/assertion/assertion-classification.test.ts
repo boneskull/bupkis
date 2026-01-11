@@ -5,14 +5,17 @@
  * into "pure" and "schema" categories based on their return types.
  */
 
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { expect } from '../../src/index.js';
 
 const classifierPath = pathToFileURL(
-  resolve(process.cwd(), 'bench/assertion-classifier.ts'),
+  resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '../../bench/assertion-classifier.ts',
+  ),
 ).href;
 
 describe('Assertion Classification', () => {
