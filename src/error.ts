@@ -77,8 +77,9 @@ export interface InvalidSchemaErrorOptions extends ErrorOptions {
  *
  * @group Error Options
  */
-export interface UnknownAssertionErrorOptions<T extends readonly unknown[]>
-  extends ErrorOptions {
+export interface UnknownAssertionErrorOptions<
+  T extends readonly unknown[],
+> extends ErrorOptions {
   /**
    * The arguments passed to {@link bupkis!expect | expect} or
    * {@link bupkis!expectAsync | expectAsync} which caused this error.

@@ -1042,8 +1042,9 @@ export interface ParsedResultFailure extends BaseParsedResult<never> {
  * @see {@link ParsedResultFailure} for failed parsing results
  * @see {@link BaseParsedResult} for shared result properties
  */
-export interface ParsedResultSuccess<Parts extends AssertionParts>
-  extends BaseParsedResult<Parts> {
+export interface ParsedResultSuccess<
+  Parts extends AssertionParts,
+> extends BaseParsedResult<Parts> {
   exactMatch: boolean;
   parsedValues: ParsedValues<Parts>;
   /**

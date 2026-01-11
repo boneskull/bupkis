@@ -102,30 +102,32 @@ export type PropertyTestConfigVariant =
   | PropertyTestConfigVariantProperty<any>
   | PropertyTestConfigVariantSyncGenerators;
 
-export interface PropertyTestConfigVariantAsyncGenerators
-  extends PropertyTestConfigVariantSyncGenerators {
+export interface PropertyTestConfigVariantAsyncGenerators extends PropertyTestConfigVariantSyncGenerators {
   async: true;
 }
 
-export interface PropertyTestConfigVariantAsyncProperty<T = any>
-  extends PropertyTestConfigParameters {
+export interface PropertyTestConfigVariantAsyncProperty<
+  T = any,
+> extends PropertyTestConfigParameters {
   asyncProperty: () => fc.IAsyncProperty<T> | fc.IAsyncPropertyWithHooks<T>;
 }
 
-export interface PropertyTestConfigVariantModel<Model extends object, Real>
-  extends PropertyTestConfigParameters {
+export interface PropertyTestConfigVariantModel<
+  Model extends object,
+  Real,
+> extends PropertyTestConfigParameters {
   commands: fc.Arbitrary<fc.Command<Model, Real>>[];
   commandsConstraints: fc.CommandsContraints;
   initialState: fc.ModelRunSetup<Model, Real>;
 }
 
-export interface PropertyTestConfigVariantProperty<T = any>
-  extends PropertyTestConfigParameters {
+export interface PropertyTestConfigVariantProperty<
+  T = any,
+> extends PropertyTestConfigParameters {
   property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
 }
 
-export interface PropertyTestConfigVariantSyncGenerators
-  extends PropertyTestConfigParameters {
+export interface PropertyTestConfigVariantSyncGenerators extends PropertyTestConfigParameters {
   generators: GeneratorParams;
 }
 
