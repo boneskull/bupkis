@@ -5,7 +5,7 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   rootDir: '.',
-  testMatch: ['**/*.test.ts'],
+  testMatch: ['**/jest-example*.test.ts'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',

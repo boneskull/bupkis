@@ -1,6 +1,6 @@
 # @bupkis/codemod
 
-Migrate Jest assertions to [bupkis](https://github.com/boneskull/bupkis) with a single command.
+Migrate Jest and Vitest assertions to [bupkis](https://github.com/boneskull/bupkis) with a single command.
 
 ## Installation
 
@@ -40,9 +40,30 @@ npx @bupkis/codemod -e "**/fixtures/**" -e "**/snapshots/**"
 - **`--strict`**: Fail immediately on any unsupported transformation
 - **`--interactive`**: Prompt for ambiguous cases (coming soon)
 
+## Supported Test Frameworks
+
+**Supported versions:**
+
+- **Jest 29+** (including Jest 30)
+- **Vitest 1+**
+
+The codemod handles imports from:
+
+- **Jest**: `@jest/globals`
+- **Vitest**: `vitest`
+- **Global `expect`**: Adds `import { expect } from 'bupkis'`
+
+When transforming, the codemod:
+
+1. Removes `expect` from your test framework import
+2. Adds `import { expect } from 'bupkis'`
+3. Keeps other imports (`describe`, `it`, `test`, etc.) from your original framework
+
+> **Note:** Jest 30 removed several matcher aliases (e.g., `toThrowError` → `toThrow`, `toBeCalled` → `toHaveBeenCalled`). This codemod handles both the old aliases and the new canonical names.
+
 ## Supported Matchers
 
-### Jest Core
+### Jest/Vitest Core
 
 | Jest                           | bupkis                                 |
 | ------------------------------ | -------------------------------------- |
@@ -80,7 +101,7 @@ npx @bupkis/codemod -e "**/fixtures/**" -e "**/snapshots/**"
 All matchers support negation:
 
 ```javascript
-// Jest
+// Jest/Vitest
 expect(x).not.toBe(y);
 
 // bupkis
@@ -107,7 +128,7 @@ const results = await transform({
 
 ## What Requires Manual Migration
 
-Some Jest patterns cannot be automatically transformed:
+Some Jest/Vitest patterns cannot be automatically transformed:
 
 - **Mock/spy matchers**: `toHaveBeenCalled`, `toHaveBeenCalledWith`, etc. (bupkis doesn't include mocking)
 - **DOM matchers**: `@testing-library/jest-dom` matchers like `toBeInTheDocument`

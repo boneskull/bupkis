@@ -231,4 +231,87 @@ export const coreMatchers: MatcherTransform[] = [
      */
     transform: () => null,
   },
+
+  // Jest 29 aliases (removed in Jest 30)
+  // These are aliases for the canonical matchers above
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toBeCalled',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toBeCalledTimes',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toBeCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'lastCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'nthCalledWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toReturn',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toReturnTimes',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'toReturnWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'lastReturnedWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
+  {
+    bupkisPhrase: '',
+    jestMatcher: 'nthReturnedWith',
+    /**
+     * @function
+     */
+    transform: () => null,
+  },
 ];
