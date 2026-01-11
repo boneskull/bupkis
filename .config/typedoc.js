@@ -29,6 +29,8 @@ export default {
     '../packages/bupkis/src/schema.ts',
     '../packages/bupkis/src/util.ts',
     '../packages/bupkis/src/guards.ts',
+    '../packages/sinon/src/index.ts',
+    '../packages/property-testing/src/index.ts',
   ],
   excludeExternals: true,
   excludeInternal: true,
@@ -91,6 +93,7 @@ export default {
   ],
   preserveWatchOutput: true,
   projectDocuments: ['../site/**/*.md'],
+  readme: '../packages/bupkis/README.md',
   redirects: {
     'api/': 'modules/bupkis',
     'assertions/': 'documents/All_Assertions',
