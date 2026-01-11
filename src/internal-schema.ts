@@ -23,12 +23,28 @@ const AssertionFailureSchema: z.ZodType<AssertionFailure> = z
       .unknown()
       .optional()
       .describe('The actual value or description of what actually occurred'),
+    diff: z
+      .string()
+      .optional()
+      .describe('Pre-computed diff string that bypasses jest-diff'),
+    diffOptions: z
+      .record(z.string(), z.unknown())
+      .optional()
+      .describe('Override options for jest-diff'),
     expected: z
       .unknown()
       .optional()
       .describe(
         'The expected value or description of what was expected to occur',
       ),
+    formatActual: z
+      .function()
+      .optional()
+      .describe('Custom formatter for actual value in diff output'),
+    formatExpected: z
+      .function()
+      .optional()
+      .describe('Custom formatter for expected value in diff output'),
     message: z
       .string()
       .optional()
