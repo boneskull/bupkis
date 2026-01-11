@@ -207,7 +207,7 @@ export default defineConfig(
       '*.snapshot',
       '.zshy/**/*',
       '.tmp/**/*',
-      'worktrees/**/*',
+      '.worktrees/**/*',
       'test-d/**/*',
       '**/*.snap.cjs',
     ],
