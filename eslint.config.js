@@ -182,13 +182,7 @@ export default defineConfig(
     },
   },
   {
-    files: [
-      '.config/*.js',
-      '/*.js',
-      '/.*.js',
-      'packages/**/scripts/*.ts',
-      '.claude/skills/**/*.js',
-    ],
+    files: ['.config/*.js', '/*.js', '/.*.js', 'packages/**/scripts/*.ts'],
     languageOptions: {
       globals: globals.node,
     },
@@ -201,6 +195,7 @@ export default defineConfig(
   /** @type {any} */ (eslintPluginJsonc.configs['flat/prettier'][2]),
   {
     ignores: [
+      '.claude/**/*',
       'docs',
       'dist',
       'packages/**/dist',
