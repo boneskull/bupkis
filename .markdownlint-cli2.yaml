@@ -17,7 +17,7 @@ config:
 ignores:
   - '**/node_modules/**'
   - '.github/prompts/*.prompt.md'
-  - 'CHANGELOG.md' # generated
+  - '**/CHANGELOG.md' # generated
   - 'docs/**/*.md'
   - '.specify/**/*.md'
   - '.tmp/**/*.md'
