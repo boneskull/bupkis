@@ -49,9 +49,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toSatisfyAny' /**
-     * @function
-     */,
+    jestMatcher: 'toSatisfyAny',
     /**
      * @function
      */
@@ -80,9 +78,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   { bupkisPhrase: 'to be within', jestMatcher: 'toBeWithin' },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeEven' /**
-     * @function
-     */,
+    jestMatcher: 'toBeEven',
     /**
      * @function
      */
@@ -90,9 +86,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeOdd' /**
-     * @function
-     */,
+    jestMatcher: 'toBeOdd',
     /**
      * @function
      */
@@ -105,9 +99,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   { bupkisPhrase: 'to have properties', jestMatcher: 'toContainKeys' },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainValue' /**
-     * @function
-     */,
+    jestMatcher: 'toContainValue',
     /**
      * @function
      */
@@ -115,9 +107,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainValues' /**
-     * @function
-     */,
+    jestMatcher: 'toContainValues',
     /**
      * @function
      */
@@ -125,9 +115,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainEntry' /**
-     * @function
-     */,
+    jestMatcher: 'toContainEntry',
     /**
      * @function
      */
@@ -135,9 +123,7 @@ export const jestExtendedMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainEntries' /**
-     * @function
-     */,
+    jestMatcher: 'toContainEntries',
     /**
      * @function
      */

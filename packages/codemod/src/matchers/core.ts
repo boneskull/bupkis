@@ -112,12 +112,11 @@ export const coreMatchers: MatcherTransform[] = [
       const key = matcherArgs[0];
       const value = matcherArgs[1];
       // Handle string keys (remove quotes for object literal)
+      if (!key || typeof key !== 'string') {
+        return null;
+      }
       const keyStr =
-        typeof key === 'string' && key.startsWith("'")
-          ? key.slice(1, -1)
-          : typeof key === 'string' && key.startsWith('"')
-            ? key.slice(1, -1)
-            : key;
+        key.startsWith("'") || key.startsWith('"') ? key.slice(1, -1) : key;
       return `expect(${subject}, '${phrase}', { ${keyStr}: ${value} })`;
     },
   },
@@ -154,9 +153,7 @@ export const coreMatchers: MatcherTransform[] = [
   // Mocks/Spies (mark as unsupported)
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveBeenCalled' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveBeenCalled',
     /**
      * @function
      */
@@ -196,9 +193,7 @@ export const coreMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveReturned' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveReturned',
     /**
      * @function
      */

@@ -12,9 +12,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   // These are DOM-specific - mark for manual migration
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeInTheDocument' /**
-     * @function
-     */,
+    jestMatcher: 'toBeInTheDocument',
     /**
      * @function
      */
@@ -22,9 +20,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeVisible' /**
-     * @function
-     */,
+    jestMatcher: 'toBeVisible',
     /**
      * @function
      */
@@ -32,9 +28,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeDisabled' /**
-     * @function
-     */,
+    jestMatcher: 'toBeDisabled',
     /**
      * @function
      */
@@ -42,9 +36,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeEnabled' /**
-     * @function
-     */,
+    jestMatcher: 'toBeEnabled',
     /**
      * @function
      */
@@ -52,9 +44,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveClass' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveClass',
     /**
      * @function
      */
@@ -62,9 +52,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveAttribute' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveAttribute',
     /**
      * @function
      */
@@ -72,9 +60,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveTextContent' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveTextContent',
     /**
      * @function
      */
@@ -82,9 +68,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveValue' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveValue',
     /**
      * @function
      */
@@ -92,9 +76,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveStyle' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveStyle',
     /**
      * @function
      */
@@ -102,9 +84,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveFocus' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveFocus',
     /**
      * @function
      */
@@ -112,9 +92,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeChecked' /**
-     * @function
-     */,
+    jestMatcher: 'toBeChecked',
     /**
      * @function
      */
@@ -130,9 +108,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toHaveFormValues' /**
-     * @function
-     */,
+    jestMatcher: 'toHaveFormValues',
     /**
      * @function
      */
@@ -140,9 +116,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainElement' /**
-     * @function
-     */,
+    jestMatcher: 'toContainElement',
     /**
      * @function
      */
@@ -150,9 +124,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toContainHTML' /**
-     * @function
-     */,
+    jestMatcher: 'toContainHTML',
     /**
      * @function
      */
@@ -192,9 +164,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeInvalid' /**
-     * @function
-     */,
+    jestMatcher: 'toBeInvalid',
     /**
      * @function
      */
@@ -202,9 +172,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeRequired' /**
-     * @function
-     */,
+    jestMatcher: 'toBeRequired',
     /**
      * @function
      */
@@ -212,9 +180,7 @@ export const testingLibraryMatchers: MatcherTransform[] = [
   },
   {
     bupkisPhrase: '',
-    jestMatcher: 'toBeValid' /**
-     * @function
-     */,
+    jestMatcher: 'toBeValid',
     /**
      * @function
      */
