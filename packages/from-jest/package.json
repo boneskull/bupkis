@@ -1,10 +1,10 @@
 {
-  "name": "@bupkis/codemod",
+  "name": "@bupkis/from-jest",
   "version": "0.0.0",
   "type": "module",
   "description": "Migrate Jest and Vitest assertions to bupkis",
   "repository": {
-    "directory": "packages/codemod",
+    "directory": "packages/from-jest",
     "type": "git",
     "url": "git+https://github.com/boneskull/bupkis.git"
   },
@@ -18,7 +18,7 @@
     "node": "^20.19.0 || ^22.12.0 || >=23"
   },
   "bin": {
-    "bupkis-codemod": "./dist/cli.js"
+    "bupkis-from-jest": "./dist/cli.js"
   },
   "exports": {
     ".": {

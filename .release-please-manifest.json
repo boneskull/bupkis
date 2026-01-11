@@ -1,5 +1,5 @@
 {
   "packages/bupkis": "0.15.0",
-  "packages/codemod": "0.0.0",
+  "packages/from-jest": "0.0.0",
   "packages/sinon": "0.0.0"
 }

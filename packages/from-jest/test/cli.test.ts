@@ -14,7 +14,7 @@ describe('CLI', () => {
       encoding: 'utf-8',
     });
     expect(result, 'to contain', 'USAGE');
-    expect(result, 'to contain', 'bupkis-codemod');
+    expect(result, 'to contain', 'bupkis-from-jest');
   });
 
   it('should show version with --version', () => {

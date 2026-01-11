@@ -74,8 +74,8 @@ const printResult = (result: TransformResult): void => {
   }
 };
 
-const { positionals, values } = await bargs('bupkis-codemod', {
-  description: 'Migrate Jest assertions to bupkis',
+const { positionals, values } = await bargs('bupkis-from-jest', {
+  description: 'Migrate Jest and Vitest assertions to bupkis',
   version: pkg.version,
 })
   .globals(
@@ -119,7 +119,7 @@ const mode: TransformMode = values.strict
     : 'best-effort';
 
 console.log(
-  `${ansi.cyan}bupkis-codemod${ansi.reset} - Migrating Jest assertions to bupkis\n`,
+  `${ansi.cyan}bupkis-from-jest${ansi.reset} - Migrating Jest/Vitest assertions to bupkis\n`,
 );
 
 if (values['dry-run']) {

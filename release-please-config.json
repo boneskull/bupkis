@@ -9,9 +9,9 @@
       "component": "bupkis",
       "release-type": "node"
     },
-    "packages/codemod": {
+    "packages/from-jest": {
       "changelog-path": "CHANGELOG.md",
-      "component": "@bupkis/codemod",
+      "component": "@bupkis/from-jest",
       "release-type": "node"
     },
     "packages/sinon": {

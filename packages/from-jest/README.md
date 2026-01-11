@@ -1,37 +1,37 @@
-# @bupkis/codemod
+# @bupkis/from-jest
 
 Migrate Jest and Vitest assertions to [bupkis](https://github.com/boneskull/bupkis) with a single command.
 
 ## Installation
 
 ```bash
-npx @bupkis/codemod
+npx @bupkis/from-jest
 ```
 
 Or install globally:
 
 ```bash
-npm install -g @bupkis/codemod
-bupkis-codemod
+npm install -g @bupkis/from-jest
+bupkis-from-jest
 ```
 
 ## Usage
 
 ```bash
 # Transform all test files in current directory
-npx @bupkis/codemod
+npx @bupkis/from-jest
 
 # Transform specific patterns
-npx @bupkis/codemod "src/**/*.test.ts" "tests/**/*.spec.ts"
+npx @bupkis/from-jest "src/**/*.test.ts" "tests/**/*.spec.ts"
 
 # Dry run (see what would change)
-npx @bupkis/codemod --dry-run
+npx @bupkis/from-jest --dry-run
 
 # Strict mode (fail on any unsupported matcher)
-npx @bupkis/codemod --strict
+npx @bupkis/from-jest --strict
 
 # Exclude patterns
-npx @bupkis/codemod -e "**/fixtures/**" -e "**/snapshots/**"
+npx @bupkis/from-jest -e "**/fixtures/**" -e "**/snapshots/**"
 ```
 
 ## Modes
@@ -111,7 +111,7 @@ expect(x, 'not to be', y);
 ## Programmatic API
 
 ```typescript
-import { transform, transformCode } from '@bupkis/codemod';
+import { transform, transformCode } from '@bupkis/from-jest';
 
 // Transform a code string
 const result = await transformCode(`expect(42).toBe(42);`);
