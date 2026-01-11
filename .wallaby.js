@@ -17,9 +17,15 @@ export default {
     '!**/*.cts',
     { instrument: false, pattern: 'packages/bupkis/test/fixture/**' },
     '!packages/bupkis/src/node_modules/bupkis/**',
-    { instrument: false, pattern: 'packages/bupkis/test/**/*.test.ts.snapshot' },
+    {
+      instrument: false,
+      pattern: 'packages/bupkis/test/**/*.test.ts.snapshot',
+    },
   ],
-  filesWithNoCoverageCalculated: ['.tmp/**/*.test.ts', 'packages/bupkis/test/**/*.ts'],
+  filesWithNoCoverageCalculated: [
+    '.tmp/**/*.test.ts',
+    'packages/bupkis/test/**/*.ts',
+  ],
   preloadModules: ['tsx/esm'],
   runMode: 'onsave',
   tests: [
