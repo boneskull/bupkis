@@ -349,6 +349,19 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to end with' {s
 }
 `;
 
+exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to have length' {nonnegative-integer}\" [string-to-have-length-nonnegative_integer-3s3p] > should throw a consistent AssertionError [string-to-have-length-nonnegative_integer-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected string to have length 3, but it has length 5",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": 5,
+  "expected": 3,
+  "diff": "simple",
+  "assertionId": "string-to-have-length-nonnegative_integer-3s3p"
+}
+`;
+
 exports[`Sync Parametric Assertion Error Snapshots > \"{string} 'to match' {regexp}\" [string-to-match-regexp-3s3p] > should throw a consistent AssertionError [string-to-match-regexp-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{string} 'to match' {regexp}\\" failed for arguments: [ 'hello world', 'to match', /universe/ ]",
