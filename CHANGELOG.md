@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.14.0...bupkis-v0.15.0) (2026-01-11)
+
+
+### Features
+
+* **assertions:** add arrayItemSatisfiesAssertion ([220497b](https://github.com/boneskull/bupkis/commit/220497bbf65608d56fd6d12a3f321e5de5c71b6d))
+* **assertions:** add stringLengthAssertion ([68e481f](https://github.com/boneskull/bupkis/commit/68e481fe5e70ac41116b781cf75c725813a4eace))
+* custom diff support ([#308](https://github.com/boneskull/bupkis/issues/308)) ([5f07964](https://github.com/boneskull/bupkis/commit/5f079647503804129a49a4f1525bdd146d45b653))
+
+
+### Bug Fixes
+
+* **test:** filter Set generator to ensure minimum size after deduping ([93298e5](https://github.com/boneskull/bupkis/commit/93298e5e96474e73ac99fbd04713d9d379d128f1))
+
 ## [0.14.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.13.0...bupkis-v0.14.0) (2025-12-10)
 
 
