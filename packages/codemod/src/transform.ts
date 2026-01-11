@@ -9,6 +9,7 @@ import type {
 } from './types.ts';
 
 import { transformExpectCalls } from './transformers/expect-transformer.ts';
+import { transformImports } from './transformers/import-transformer.ts';
 
 export interface CodeTransformResult {
   code: string;
@@ -38,6 +39,9 @@ export const transformCode = async (
     sourceFile,
     options.mode ?? 'best-effort',
   );
+
+  // Transform imports after expect calls
+  transformImports(sourceFile);
 
   return {
     code: sourceFile.getFullText(),
@@ -95,6 +99,9 @@ export const transform = async (
     }
 
     const result = transformExpectCalls(sourceFile, mode);
+
+    // Transform imports after expect calls
+    transformImports(sourceFile);
 
     const fileResult: FileTransformResult = {
       errors: result.errors,
