@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true,
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,
@@ -10,6 +9,7 @@
     "lib": ["ES2023"],
     "module": "nodenext",
     "moduleDetection": "force",
+    "noEmit": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
@@ -21,23 +21,10 @@
     "types": ["node"],
     "verbatimModuleSyntax": false
   },
-  "exclude": [
-    "packages/**/dist",
-    "packages/**/.tshy-build",
-    "packages/**/node_modules",
-    "**/test/**/*.snap.cjs"
-  ],
-  "include": [
-    ".wallaby.js",
-    "eslint.config.js",
-    ".commitlintrc.js",
-    ".config/typedoc*.js",
-    ".config/eslint-rules/*.js",
-    ".claude/skills/**/*.js",
-    "packages/*/src/**/*.ts",
-    "packages/*/test/**/*.ts",
-    "packages/*/test-data/**/*.ts",
-    "packages/*/bench/**/*.ts",
-    "packages/*/scripts/**/*.ts"
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/bupkis/tsconfig.json"
+    }
   ]
 }
