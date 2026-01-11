@@ -1,5 +1,5 @@
 import { describe, it } from '@jest/globals';
-import { expect } from "bupkis";
+import { expect } from 'bupkis';
 
 describe('example test suite', () => {
   it('tests equality', () => {
@@ -24,7 +24,7 @@ describe('example test suite', () => {
   it('tests numbers', () => {
     expect(10, 'to be greater than', 5);
     expect(5, 'to be less than', 10);
-    expect(0.1 + 0.2, 'to be close to', 0.3);
+    expect(0.1 + 0.2, 'to be close to', 0.3, 0.005);
   });
 
   it('tests strings', () => {

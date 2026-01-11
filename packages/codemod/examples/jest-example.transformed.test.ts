@@ -1,11 +1,12 @@
 /**
- * Transformed version of jest-example.test.ts using bupkis assertions.
+ * Example Jest test file demonstrating all supported matchers.
  *
- * This file demonstrates that after running bupkis-codemod:
+ * This file can be:
  *
- * - Jest's describe/it/test remain unchanged
- * - Only `expect` is replaced with bupkis's expect
- * - Tests still run with Jest (or Vitest) - no runner migration needed!
+ * 1. Run with Jest: npm run example:jest
+ * 2. Transformed with: npm run example:codemod
+ * 3. Run with Jest again after transformation (see
+ *    jest-example.transformed.test.ts)
  */
 import { describe, it } from '@jest/globals';
 import { expect } from 'bupkis';

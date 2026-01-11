@@ -56,20 +56,43 @@ export const coreMatchers: MatcherTransform[] = [
   },
 
   // Strings
-  { bupkisPhrase: 'to match', jestMatcher: 'toMatch' },
+  {
+    bupkisPhrase: 'to match',
+    jestMatcher: 'toMatch',
+    /**
+     * @function
+     */
+    transform: ({ matcherArgs, negated, subject }) => {
+      // toMatch can take regex or string
+      // Regex: use 'to match'
+      // String: use 'to contain' (substring matching)
+      const arg = matcherArgs[0];
+      const isRegex = arg.startsWith('/');
+      const phrase = isRegex
+        ? negated
+          ? 'not to match'
+          : 'to match'
+        : negated
+          ? 'not to contain'
+          : 'to contain';
+      return `expect(${subject}, '${phrase}', ${arg})`;
+    },
+  },
   { bupkisPhrase: 'to contain', jestMatcher: 'toContain' },
 
   // Arrays/Iterables
   { bupkisPhrase: 'to have length', jestMatcher: 'toHaveLength' },
   {
-    bupkisPhrase: 'to contain',
+    bupkisPhrase: 'to have an item satisfying',
     jestMatcher: 'toContainEqual',
     /**
      * @function
      */
     transform: ({ matcherArgs, negated, subject }) => {
-      // toContainEqual uses deep equality - bupkis 'to contain' does too
-      const phrase = negated ? 'not to contain' : 'to contain';
+      // toContainEqual uses deep equality - use 'to have an item satisfying'
+      const phrase = negated
+        ? 'not to have an item satisfying'
+        : 'to have an item satisfying';
       return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
     },
   },
@@ -83,13 +106,22 @@ export const coreMatchers: MatcherTransform[] = [
      */
     transform: ({ matcherArgs, negated, subject }) => {
       // toHaveProperty(keyPath, value?) -> 'to have property', key or 'to satisfy'
-      const phrase = negated ? 'not to have property' : 'to have property';
       if (matcherArgs.length === 1) {
+        const phrase = negated ? 'not to have property' : 'to have property';
         return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
       }
-      // With value, use to satisfy for nested check
-      // This is a complex case - add TODO marker
-      return null;
+      // With value: toHaveProperty('key', value) -> 'to satisfy', {key: value}
+      const phrase = negated ? 'not to satisfy' : 'to satisfy';
+      const key = matcherArgs[0];
+      const value = matcherArgs[1];
+      // Handle string keys (remove quotes for object literal)
+      const keyStr =
+        typeof key === 'string' && key.startsWith("'")
+          ? key.slice(1, -1)
+          : typeof key === 'string' && key.startsWith('"')
+            ? key.slice(1, -1)
+            : key;
+      return `expect(${subject}, '${phrase}', { ${keyStr}: ${value} })`;
     },
   },
   {
