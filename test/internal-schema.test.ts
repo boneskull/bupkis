@@ -18,7 +18,7 @@ describe('isAssertionFailure', () => {
       const result = isAssertionFailure({
         actual: 'foo',
         expected: 'bar',
-        formatActual: (v) => `formatted: ${v}`,
+        formatActual: (v: unknown) => `formatted: ${v}`,
       });
       expect(result, 'to be true');
     });
@@ -27,7 +27,7 @@ describe('isAssertionFailure', () => {
       const result = isAssertionFailure({
         actual: 'foo',
         expected: 'bar',
-        formatExpected: (v) => `formatted: ${v}`,
+        formatExpected: (v: unknown) => `formatted: ${v}`,
       });
       expect(result, 'to be true');
     });
@@ -47,8 +47,8 @@ describe('isAssertionFailure', () => {
         diff: 'custom diff',
         diffOptions: { expand: true },
         expected: 'bar',
-        formatActual: (v) => `${v}`,
-        formatExpected: (v) => `${v}`,
+        formatActual: (v: unknown) => `${v}`,
+        formatExpected: (v: unknown) => `${v}`,
         message: 'test message',
       });
       expect(result, 'to be true');
