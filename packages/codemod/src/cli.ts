@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import { bargs, opt, pos } from '@boneskull/bargs';
+import { ansi, bargs, opt, pos } from '@boneskull/bargs';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import pc from 'picocolors';
 
 import type { TransformMode, TransformResult } from './types.ts';
 
@@ -21,6 +20,59 @@ const DEFAULT_PATTERNS = [
   '**/*.spec.ts',
   '**/*.spec.tsx',
 ];
+
+/**
+ * Print transformation result.
+ *
+ * @function
+ */
+const printResult = (result: TransformResult): void => {
+  console.log(`${ansi.bold}\nResults:${ansi.reset}`);
+  console.log(`  Files processed: ${result.totalFiles}`);
+  console.log(
+    `  Files modified: ${ansi.green}${result.modifiedFiles}${ansi.reset}`,
+  );
+  console.log(
+    `  Transformations: ${ansi.green}${result.totalTransformations}${ansi.reset}`,
+  );
+
+  if (result.totalWarnings > 0) {
+    console.log(
+      `  Warnings: ${ansi.yellow}${result.totalWarnings}${ansi.reset}`,
+    );
+  }
+
+  if (result.totalErrors > 0) {
+    console.log(`  Errors: ${ansi.red}${result.totalErrors}${ansi.reset}`);
+  }
+
+  // Print file details with warnings/errors
+  for (const file of result.files) {
+    if (file.warnings.length > 0 || file.errors.length > 0) {
+      console.log(`\n${ansi.dim}${file.filePath}${ansi.reset}`);
+
+      for (const warning of file.warnings) {
+        console.log(
+          `  ${ansi.yellow}⚠${ansi.reset} Line ${warning.line}: ${warning.message}`,
+        );
+      }
+
+      for (const error of file.errors) {
+        console.log(
+          `  ${ansi.red}✗${ansi.reset} ${error.line ? `Line ${error.line}: ` : ''}${error.message}`,
+        );
+      }
+    }
+  }
+
+  console.log();
+
+  if (result.totalWarnings > 0) {
+    console.log(
+      `${ansi.yellow}Note: Search for "TODO: Manual migration needed" in your code for items requiring manual review.${ansi.reset}`,
+    );
+  }
+};
 
 const { positionals, values } = await bargs('bupkis-codemod', {
   description: 'Migrate Jest assertions to bupkis',
@@ -67,14 +119,16 @@ const mode: TransformMode = values.strict
     : 'best-effort';
 
 console.log(
-  pc.cyan('bupkis-codemod') + ' - Migrating Jest assertions to bupkis\n',
+  `${ansi.cyan}bupkis-codemod${ansi.reset} - Migrating Jest assertions to bupkis\n`,
 );
 
 if (values['dry-run']) {
-  console.log(pc.yellow('Dry run mode - no files will be modified\n'));
+  console.log(
+    `${ansi.yellow}Dry run mode - no files will be modified${ansi.reset}\n`,
+  );
 }
 
-console.log(`Mode: ${pc.bold(mode)}`);
+console.log(`Mode: ${ansi.bold}${mode}${ansi.reset}`);
 console.log(`Patterns: ${actualPatterns.join(', ')}`);
 console.log(`Exclude: ${values.exclude.join(', ')}\n`);
 
@@ -93,59 +147,8 @@ try {
   }
 } catch (error) {
   console.error(
-    pc.red('Error:'),
+    `${ansi.red}Error:${ansi.reset}`,
     error instanceof Error ? error.message : error,
   );
   process.exit(1);
 }
-
-/**
- * Print transformation result.
- *
- * @function
- */
-const printResult = (result: TransformResult): void => {
-  console.log(pc.bold('\nResults:'));
-  console.log(`  Files processed: ${result.totalFiles}`);
-  console.log(`  Files modified: ${pc.green(String(result.modifiedFiles))}`);
-  console.log(
-    `  Transformations: ${pc.green(String(result.totalTransformations))}`,
-  );
-
-  if (result.totalWarnings > 0) {
-    console.log(`  Warnings: ${pc.yellow(String(result.totalWarnings))}`);
-  }
-
-  if (result.totalErrors > 0) {
-    console.log(`  Errors: ${pc.red(String(result.totalErrors))}`);
-  }
-
-  // Print file details with warnings/errors
-  for (const file of result.files) {
-    if (file.warnings.length > 0 || file.errors.length > 0) {
-      console.log(`\n${pc.dim(file.filePath)}`);
-
-      for (const warning of file.warnings) {
-        console.log(
-          `  ${pc.yellow('⚠')} Line ${warning.line}: ${warning.message}`,
-        );
-      }
-
-      for (const error of file.errors) {
-        console.log(
-          `  ${pc.red('✗')} ${error.line ? `Line ${error.line}: ` : ''}${error.message}`,
-        );
-      }
-    }
-  }
-
-  console.log();
-
-  if (result.totalWarnings > 0) {
-    console.log(
-      pc.yellow(
-        'Note: Search for "TODO: Manual migration needed" in your code for items requiring manual review.',
-      ),
-    );
-  }
-};

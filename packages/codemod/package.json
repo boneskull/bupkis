@@ -33,9 +33,8 @@
     "test:dev": "node --no-warnings --test --watch --experimental-strip-types 'test/**/*.test.ts'"
   },
   "dependencies": {
-    "@boneskull/bargs": "^3.0.0",
+    "@boneskull/bargs": "4.0.0",
     "bupkis": "0.14.0",
-    "picocolors": "^1.1.1",
     "ts-morph": "^25.0.0"
   },
   "devDependencies": {
