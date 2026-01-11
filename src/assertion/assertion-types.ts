@@ -19,6 +19,7 @@
 import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
 import { type z } from 'zod/v4';
 
+import type { DiffOptions } from '../diff.js';
 import type { StandardSchemaV1 } from '../standard-schema.js';
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
 
@@ -184,10 +185,66 @@ export interface AssertionFailure {
    * The actual value or condition that was encountered
    */
   actual?: unknown;
+
+  /**
+   * Pre-computed diff string. When provided, this bypasses jest-diff entirely
+   * and is used as-is in the error output. Takes precedence over
+   * `formatActual`, `formatExpected`, and `diffOptions`.
+   *
+   * @example
+   *
+   * ```typescript
+   * return {
+   *   actual: myDate,
+   *   expected: otherDate,
+   *   diff: `  Expected: ${formatDate(otherDate)}\n  Actual:   ${formatDate(myDate)}`,
+   *   message: 'Dates are not on the same day',
+   * };
+   * ```
+   */
+  diff?: string;
+
+  /**
+   * Override default jest-diff options. Only used when `diff` is not provided.
+   *
+   * @see {@link https://npm.im/jest-diff | jest-diff} for available options
+   */
+  diffOptions?: DiffOptions;
+
   /**
    * The expected value or condition that was not met
    */
   expected?: unknown;
+
+  /**
+   * Custom formatter for the actual value in diff output. Only used when `diff`
+   * is not provided. The returned string is passed to jest-diff.
+   *
+   * @example
+   *
+   * ```typescript
+   * return {
+   *   actual: sortedActual,
+   *   expected: sortedExpected,
+   *   formatActual: (v) => `[sorted] ${inspect(v)}`,
+   *   formatExpected: (v) => `[sorted] ${inspect(v)}`,
+   * };
+   * ```
+   *
+   * @param value - The actual value to format
+   * @returns String representation for diff display
+   */
+  formatActual?: (value: unknown) => string;
+
+  /**
+   * Custom formatter for the expected value in diff output. Only used when
+   * `diff` is not provided. The returned string is passed to jest-diff.
+   *
+   * @param value - The expected value to format
+   * @returns String representation for diff display
+   */
+  formatExpected?: (value: unknown) => string;
+
   /**
    * A human-readable message describing the failure
    */
