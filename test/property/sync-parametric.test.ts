@@ -770,6 +770,30 @@ const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
+    assertions.stringLengthAssertion,
+    {
+      invalid: {
+        generators: fc.string({ maxLength: 20, minLength: 1 }).chain((str) =>
+          fc.tuple(
+            fc.constant(str),
+            fc.constantFrom(
+              ...extractPhrases(assertions.stringLengthAssertion),
+            ),
+            fc
+              .integer({ max: 100, min: 0 })
+              .filter((len) => len !== str.length),
+          ),
+        ),
+      },
+      valid: {
+        generators: SyncParametricGenerators.get(
+          assertions.stringLengthAssertion,
+        )!,
+      },
+    },
+  ],
+
+  [
     assertions.stringLessThanAssertion,
     {
       invalid: {

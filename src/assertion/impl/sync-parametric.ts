@@ -946,6 +946,35 @@ export const stringMatchesAssertion = createAssertion(
 );
 
 /**
+ * Assertion for testing if a string has a specific length.
+ *
+ * @example
+ *
+ * ```typescript
+ * expect('hello', 'to have length', 5); // passes
+ * expect('hi', 'to have length', 5); // fails
+ * ```
+ *
+ * @group Parametric Assertions (Sync)
+ * @bupkisAnchor string-to-have-length
+ * @bupkisAssertionCategory strings
+ */
+export const stringLengthAssertion = createAssertion(
+  [StringSchema, 'to have length', NonNegativeIntegerSchema],
+  // StringSchema.length() produces a ZodError with a string diff (e.g., "hel"
+  // vs "hello") rather than comparing numeric lengths, which is confusing
+  (subject, expectedLength) => {
+    if (subject.length !== expectedLength) {
+      return {
+        actual: subject.length,
+        expected: expectedLength,
+        message: `Expected string to have length ${expectedLength}, but it has length ${subject.length}`,
+      };
+    }
+  },
+);
+
+/**
  * Assertion for testing if an object satisfies a pattern or shape.
  *
  * @example

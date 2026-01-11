@@ -207,6 +207,12 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
+    assertions.stringLengthAssertion,
+    () => {
+      expect('hello', 'to have length', 3);
+    },
+  ],
+  [
     assertions.stringLessThanAssertion,
     () => {
       expect('zebra', 'to be less than', 'apple');

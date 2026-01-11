@@ -434,6 +434,19 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
   ],
 
   [
+    assertions.stringLengthAssertion,
+    fc
+      .string({ maxLength: 20, minLength: 0 })
+      .chain((str) =>
+        fc.tuple(
+          fc.constant(str),
+          fc.constantFrom(...extractPhrases(assertions.stringLengthAssertion)),
+          fc.constant(str.length),
+        ),
+      ),
+  ],
+
+  [
     assertions.stringLessThanAssertion,
     fc.string({ maxLength: 5, minLength: 1 }).chain((threshold) =>
       fc.tuple(
