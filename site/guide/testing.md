@@ -359,11 +359,7 @@ import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { expect, expectAsync } from './my-assertions.js';
-import {
-  evenAssertion,
-  oddAssertion,
-  positiveAssertion,
-} from './assertions.js';
+import { evenAssertion, positiveAssertion } from './assertions.js';
 
 // Create the harness with your expect functions
 const { runVariant } = createPropertyTestHarness({ expect, expectAsync });

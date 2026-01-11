@@ -8,7 +8,7 @@ import type { AnyAssertion, AssertionPart, AssertionParts } from 'bupkis/types';
 
 import fc from 'fast-check';
 import { inspect } from 'util';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import {
   type InferPropertyTestConfigVariantProperty,
@@ -29,11 +29,6 @@ const { isArray } = Array;
  */
 const isFunction = (value: unknown): value is (...args: any[]) => any =>
   typeof value === 'function';
-
-/**
- * @function
- */
-const isError = (value: unknown): value is Error => value instanceof Error;
 
 /**
  * Result type for expectation functions used in property-based tests.
@@ -451,8 +446,6 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
 
     const numRuns = calculateNumRuns(finalParams.runSize);
 
-    let err: unknown;
-
     let result: fc.RunDetails<any>;
     const predicate = createAsyncPredicate(variantName);
     if (isGeneratorsTuple(generators)) {
@@ -468,11 +461,9 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
       result = await fc.check(asyncProperty, { ...finalParams, numRuns });
     }
     if (result.failed) {
-      let message = `Expected test to pass, but it failed: ${inspect(result)}`;
-      if (isError(err)) {
-        message += `\nUnderlying error: ${err.message}`;
-      }
-      throw new Error(message);
+      throw new Error(
+        `Expected test to pass, but it failed: ${inspect(result)}`,
+      );
     }
   };
 
