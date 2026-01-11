@@ -399,12 +399,12 @@ type AssertionParseRequest = {
   subject: unknown;
 } & (
   | {
-      asyncSchema: z.ZodType;
+      asyncSchema: StandardSchemaV1 | z.ZodType;
       schema?: never;
     }
   | {
       asyncSchema?: never;
-      schema: z.ZodType;
+      schema: StandardSchemaV1 | z.ZodType;
     }
 );
 ```
