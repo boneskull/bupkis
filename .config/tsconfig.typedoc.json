@@ -3,5 +3,5 @@
     "noEmit": true
   },
   "extends": "../tsconfig.json",
-  "include": ["../src/**/*.ts"]
+  "include": ["../packages/bupkis/src/**/*.ts"]
 }
