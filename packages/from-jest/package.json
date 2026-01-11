@@ -61,6 +61,11 @@
     "ts-jest": "29.4.6",
     "vitest": "4.0.16"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
   "prettier": {
     "jsdocCommentLineStrategy": "keep",
     "jsdocPreferCodeFences": true,
