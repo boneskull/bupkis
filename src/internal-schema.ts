@@ -17,7 +17,10 @@ import { isStandardSchema, isZodType } from './guards.js';
  * @internal
  */
 
-const AssertionFailureSchema: z.ZodType<AssertionFailure> = z
+// Note: We use a loose type here because z.function() has complex
+// inference that doesn't exactly match our AssertionFailure interface.
+// This schema is only used for validation (safeParse), not for type inference.
+const AssertionFailureSchema = z
   .object({
     actual: z
       .unknown()
