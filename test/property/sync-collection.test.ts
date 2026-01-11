@@ -102,6 +102,26 @@ const testConfigs = new Map<
   ],
 
   [
+    assertions.arrayItemSatisfiesAssertion,
+    {
+      invalid: {
+        generators: [
+          fc.constant([{ a: 1 }, { b: 2 }]),
+          fc.constantFrom(
+            ...extractPhrases(assertions.arrayItemSatisfiesAssertion),
+          ),
+          fc.constant({ c: 3 }),
+        ],
+      },
+      valid: {
+        generators: SyncCollectionGenerators.get(
+          assertions.arrayItemSatisfiesAssertion,
+        )!,
+      },
+    },
+  ],
+
+  [
     assertions.arraySizeAssertion,
     {
       invalid: {
