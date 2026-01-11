@@ -23,7 +23,7 @@ Of course, these mundane reasons may also apply:
 
 ## Static Assertions
 
-[_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_].
+[_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_](#behavioral-assertions).
 
 ### Static Assertions: "Zod Schema" Style
 
