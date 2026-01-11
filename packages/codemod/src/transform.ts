@@ -1,4 +1,4 @@
-import { Project } from 'ts-morph';
+import { Project, QuoteKind } from 'ts-morph';
 
 import type {
   FileTransformResult,
@@ -30,6 +30,9 @@ export const transformCode = async (
   const project = new Project({
     compilerOptions: {
       allowJs: true,
+    },
+    manipulationSettings: {
+      quoteKind: QuoteKind.Single,
     },
     useInMemoryFileSystem: true,
   });
@@ -73,6 +76,9 @@ export const transform = async (
   } = options;
 
   const project = new Project({
+    manipulationSettings: {
+      quoteKind: QuoteKind.Single,
+    },
     skipAddingFilesFromTsConfig: true,
     tsConfigFilePath: `${cwd}/tsconfig.json`,
   });
