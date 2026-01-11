@@ -53,9 +53,9 @@ export const jestExtendedMatchers: MatcherTransform[] = [
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
 
   // Strings
@@ -84,9 +84,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -94,9 +94,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
 
   // Objects
@@ -109,9 +109,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -119,9 +119,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -129,9 +129,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -139,9 +139,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   { bupkisPhrase: 'to be extensible', jestMatcher: 'toBeExtensible' },
   { bupkisPhrase: 'to be frozen', jestMatcher: 'toBeFrozen' },

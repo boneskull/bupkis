@@ -16,9 +16,9 @@ export const testingLibraryMatchers: MatcherTransform[] = [
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -26,9 +26,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -36,9 +36,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -46,9 +46,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -56,9 +56,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -66,9 +66,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -76,9 +76,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -86,9 +86,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -96,9 +96,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -106,9 +106,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -116,9 +116,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -134,9 +134,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -144,9 +144,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -154,9 +154,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -196,9 +196,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -206,9 +206,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -216,8 +216,8 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
 ];
