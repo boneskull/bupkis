@@ -2,6 +2,7 @@
  * Example Jest test file demonstrating all supported matchers.
  *
  * This file can be:
+ *
  * 1. Run with Jest (npm test)
  * 2. Transformed with bupkis-codemod
  * 3. Run with node:test after transformation
@@ -86,8 +87,10 @@ describe('Number matchers', () => {
     expect(5, 'to be less than or equal to', 10);
   });
 
-  // Note: toBeCloseTo is not supported in bupkis
-  // Use explicit rounding for floating point comparisons instead
+  it('toBeCloseTo - floating point', () => {
+    expect(0.1 + 0.2, 'to be close to', 0.3, 0.005);
+    expect(0.1 + 0.2, 'to be close to', 0.3, 0.000005);
+  });
 });
 
 describe('String matchers', () => {
@@ -143,26 +146,38 @@ describe('Type matchers', () => {
 describe('Error matchers', () => {
   it('toThrow - any error', () => {
     expect(() => {
-            throw new Error('oops');
-          }, 'to throw');
+      throw new Error('oops');
+    }, 'to throw');
   });
 
   it('toThrow - specific message', () => {
-    expect(() => {
-            throw new Error('specific error');
-          }, 'to throw', 'specific error');
+    expect(
+      () => {
+        throw new Error('specific error');
+      },
+      'to throw',
+      'specific error',
+    );
   });
 
   it('toThrow - regex match', () => {
-    expect(() => {
-            throw new Error('something went wrong');
-          }, 'to throw', /wrong/);
+    expect(
+      () => {
+        throw new Error('something went wrong');
+      },
+      'to throw',
+      /wrong/,
+    );
   });
 
   it('toThrowError - alias', () => {
-    expect(() => {
-            throw new TypeError('type error');
-          }, 'to throw', 'type error');
+    expect(
+      () => {
+        throw new TypeError('type error');
+      },
+      'to throw',
+      'type error',
+    );
   });
 });
 
@@ -181,8 +196,8 @@ describe('Negation examples', () => {
 
   it('not.toThrow', () => {
     expect(() => {
-            // This function doesn't throw
-            return 42;
-          }, 'not to throw');
+      // This function doesn't throw
+      return 42;
+    }, 'not to throw');
   });
 });

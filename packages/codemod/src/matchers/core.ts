@@ -43,12 +43,15 @@ export const coreMatchers: MatcherTransform[] = [
      * @function
      */
     transform: ({ matcherArgs, negated, subject }) => {
-      // toBeCloseTo(number, numDigits?) -> 'to be close to', number, numDigits
+      // Jest: toBeCloseTo(expected, numDigits?) where numDigits defaults to 2
+      // Bupkis: 'to be close to', expected, tolerance (absolute)
+      // Conversion: tolerance = 10^(-numDigits) / 2
       const phrase = negated ? 'not to be close to' : 'to be close to';
-      if (matcherArgs.length === 2) {
-        return `expect(${subject}, '${phrase}', ${matcherArgs[0]}, ${matcherArgs[1]})`;
-      }
-      return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
+      const expected = matcherArgs[0];
+      const numDigits = matcherArgs.length === 2 ? Number(matcherArgs[1]) : 2;
+      const { pow } = Math;
+      const tolerance = pow(10, -numDigits) / 2;
+      return `expect(${subject}, '${phrase}', ${expected}, ${tolerance})`;
     },
   },
 
@@ -126,9 +129,9 @@ export const coreMatchers: MatcherTransform[] = [
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',
@@ -168,9 +171,9 @@ transform: () => null,
      * @function
      */,
     /**
- * @function
- */
-transform: () => null,
+     * @function
+     */
+    transform: () => null,
   },
   {
     bupkisPhrase: '',

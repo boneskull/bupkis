@@ -2,6 +2,7 @@
  * Example Jest test file demonstrating all supported matchers.
  *
  * This file can be:
+ *
  * 1. Run with Jest (npm test)
  * 2. Transformed with bupkis-codemod
  * 3. Run with node:test after transformation
@@ -85,8 +86,10 @@ describe('Number matchers', () => {
     expect(5).toBeLessThanOrEqual(10);
   });
 
-  // Note: toBeCloseTo is not supported in bupkis
-  // Use explicit rounding for floating point comparisons instead
+  it('toBeCloseTo - floating point', () => {
+    expect(0.1 + 0.2).toBeCloseTo(0.3);
+    expect(0.1 + 0.2).toBeCloseTo(0.3, 5);
+  });
 });
 
 describe('String matchers', () => {
