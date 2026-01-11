@@ -38,10 +38,28 @@ export const formatAssertionFailure = (
   }
 
   // Precedence 2: Custom formatters
-  const formattedActual = formatActual ? formatActual(actual) : actual;
-  const formattedExpected = formatExpected
-    ? formatExpected(expected)
-    : expected;
+  // Wrap in try-catch to provide clearer error messages if formatters throw
+  let formattedActual = actual;
+  if (formatActual) {
+    try {
+      formattedActual = formatActual(actual);
+    } catch (error) {
+      throw new Error(
+        `AssertionFailure formatActual threw: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  let formattedExpected = expected;
+  if (formatExpected) {
+    try {
+      formattedExpected = formatExpected(expected);
+    } catch (error) {
+      throw new Error(
+        `AssertionFailure formatExpected threw: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
 
   // Precedence 3: Default jest-diff
   return generateDiff(formattedExpected, formattedActual, {
