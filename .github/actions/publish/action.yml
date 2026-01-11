@@ -28,8 +28,8 @@ runs:
       run: |
         paths='${{ inputs.paths-released }}'
         if [ -z "$paths" ] || [ "$paths" = "[]" ]; then
-          echo "::error::No paths provided to publish. paths-released must be a non-empty JSON array."
-          exit 1
+          echo "No paths to publish, nothing to do."
+          exit 0
         fi
         for path in $(echo "$paths" | jq -r '.[]'); do
           echo "Publishing workspace at $path..."
