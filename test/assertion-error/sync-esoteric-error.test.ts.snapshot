@@ -1,6 +1,6 @@
 exports[`Sync Esoteric Assertion Error Snapshots > \"{property-key} 'to be an enumerable property of' {unknown!}\" [property_key-to-be-an-enumerable-property-of-unknown-3s3p] > should throw a consistent AssertionError [property_key-to-be-an-enumerable-property-of-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected property hidden to be enumerable",
+  "message": "Expected property hidden to be enumerable\\n- expected  - 1\\n+ actual    + 1\\n\\n- true\\n+ false",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -43,7 +43,7 @@ exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be extensible
 
 exports[`Sync Esoteric Assertion Error Snapshots > \"{unknown} 'to be frozen'\" [unknown-to-be-frozen-2s1p] > should throw a consistent AssertionError [unknown-to-be-frozen-2s1p] <snapshot> 1`] = `
 {
-  "message": "Expected object to be frozen",
+  "message": "Expected object to be frozen\\n- expected  - 1\\n+ actual    + 1\\n\\n- true\\n+ false",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
