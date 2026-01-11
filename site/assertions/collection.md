@@ -67,7 +67,6 @@ expect([1, 2, 3], 'not to be empty');
 
 ```js
 expect([1, 2, 3], 'to have length', 3);
-expect('hello', 'to have length', 5);
 ```
 
 **Failure**:
