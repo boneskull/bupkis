@@ -12,7 +12,6 @@ describe('CLI', () => {
     const result = execSync('npx tsx src/cli.ts --help', {
       cwd: packageDir,
       encoding: 'utf-8',
-      shell: '/bin/bash',
     });
     expect(result, 'to contain', 'USAGE');
     expect(result, 'to contain', 'bupkis-codemod');
@@ -22,7 +21,6 @@ describe('CLI', () => {
     const result = execSync('npx tsx src/cli.ts --version', {
       cwd: packageDir,
       encoding: 'utf-8',
-      shell: '/bin/bash',
     });
     expect(result.trim(), 'to match', /^\d+\.\d+\.\d+/);
   });
