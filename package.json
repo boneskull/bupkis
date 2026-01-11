@@ -77,6 +77,41 @@
     "valibot": "1.2.0",
     "zshy": "0.6.0"
   },
+  "knip": {
+    "ignore": [
+      ".wallaby.js",
+      "**/*.cts",
+      "**/*.d.ts",
+      "site/media/**/*",
+      ".worktrees/**/*",
+      "**/test-d/**/*.test-d.ts"
+    ],
+    "ignoreDependencies": [
+      "@types/wallabyjs",
+      "markdownlint-cli2-formatter-pretty"
+    ],
+    "node": {
+      "entry": [
+        ".config/typedoc-plugin-bupkis.js",
+        "**/scripts/*.js",
+        "**/scripts/*.ts",
+        "**/test/**/*.test.ts",
+        "packages/bupkis/src/assertion/index.ts",
+        "packages/bupkis/src/index.ts",
+        "packages/bupkis/src/types.ts",
+        "packages/bupkis/src/util.ts",
+        "packages/bupkis/src/schema.ts",
+        "packages/bupkis/src/guards.ts",
+        "packages/bupkis/src/diff.ts",
+        "packages/bupkis/src/snapshot/index.ts",
+        "packages/bupkis/test-data/index.ts",
+        "packages/bupkis/bench/**/*.bench.ts"
+      ]
+    },
+    "tags": [
+      "-knipignore"
+    ]
+  },
   "lint-staged": {
     "**/!(.github/prompts)/*.md": [
       "prettier --write",
