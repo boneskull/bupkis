@@ -390,7 +390,7 @@ const isEvenAssertion = createAssertion(
 
 Oh well. Lesson learned. A non-parametric assertion isn't the right use-case for it; see [Parametric Assertions][].
 
-#### Returning an `AssertionParseRequest` object
+#### Returning an AssertionParseRequest object
 
 An {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} object looks like this:
 
@@ -411,7 +411,7 @@ type AssertionParseRequest = {
 
 If you return this object, <span class="bupkis">Bupkis</span> will call `.parse()` (or `.parseAsync()`, respectively) on the schema with the provided `subject`. This delegates all handling of exceptions to <span class="bupkis">Bupkis</span>, which is good for you and us.
 
-#### Returning an `AssertionFailure` object
+#### Returning an AssertionFailure object
 
 An {@link bupkis!types.AssertionFailure | AssertionFailure} object looks like this:
 
@@ -511,7 +511,7 @@ expect(new Date('2024-01-15'), 'to be same day as', new Date('2024-01-16'));
 // Diff will show formatted dates instead of full Date objects
 ```
 
-###### Using `diffOptions`
+###### Using diffOptions
 
 Pass options to [jest-diff][] for fine-grained control:
 
@@ -556,7 +556,7 @@ Returning an `AssertionFailure` object provides much more context about what wen
 
 [jest-diff]: https://npm.im/jest-diff
 
-#### Returning a `ZodError` object
+#### Returning a ZodError object
 
 If, for some reason, you need to call `.safeParse` (or `.parse` + `try`/`catch`) yourself, you can return the resulting `ZodError` object to indicate failure. <span class="bupkis">Bupkis</span> handle it appropriately.
 
