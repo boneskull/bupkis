@@ -1,12 +1,12 @@
+import {
+  extractPhrases,
+  filteredObject,
+  type GeneratorParams,
+} from '@bupkis/property-testing';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/sync-esoteric.js';
 import { type AnyAssertion } from '../src/types.js';
-import { type GeneratorParams } from '../test/property/property-test-config.js';
-import {
-  extractPhrases,
-  filteredObject,
-} from '../test/property/property-test-util.js';
 
 export const SyncEsotericGenerators = new Map<AnyAssertion, GeneratorParams>([
   [

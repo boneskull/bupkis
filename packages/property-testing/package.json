@@ -1,0 +1,79 @@
+{
+  "name": "@bupkis/property-testing",
+  "version": "0.15.0",
+  "type": "module",
+  "description": "Property-based testing harness for bupkis assertions",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git",
+    "directory": "packages/property-testing"
+  },
+  "homepage": "https://bupkis.zip",
+  "author": {
+    "name": "Christopher Hiller",
+    "email": "boneskull@boneskull.com"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "property-testing",
+    "fast-check",
+    "testing",
+    "assertions"
+  ],
+  "scripts": {
+    "build": "zshy",
+    "test": "echo \"No tests yet\"",
+    "test:types": "echo \"No type tests yet\""
+  },
+  "peerDependencies": {
+    "bupkis": "0.15.0",
+    "fast-check": "^4.0.0"
+  },
+  "dependencies": {
+    "zod": "4.3.5"
+  },
+  "devDependencies": {
+    "bupkis": "0.15.0",
+    "fast-check": "^4.5.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg",
+      "prettier-plugin-sort-json"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  },
+  "zshy": {
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    }
+  }
+}

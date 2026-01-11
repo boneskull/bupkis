@@ -13,11 +13,11 @@
  * @packageDocumentation
  */
 
+import { calculateNumRuns, filteredAnything } from '@bupkis/property-testing';
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
 import { get } from '../../src/util.js';
-import { calculateNumRuns, filteredAnything } from './property-test-util.js';
 
 const numRuns = calculateNumRuns();
 

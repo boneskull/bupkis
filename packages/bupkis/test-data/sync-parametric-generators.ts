@@ -1,16 +1,16 @@
+import {
+  extractPhrases,
+  filteredAnything,
+  filteredObject,
+  type GeneratorParams,
+  objectFilter,
+  safeRegexStringFilter,
+} from '@bupkis/property-testing';
 import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/sync-parametric.js';
 import { type AnyAssertion } from '../src/types.js';
-import { type GeneratorParams } from '../test/property/property-test-config.js';
-import {
-  extractPhrases,
-  filteredAnything,
-  filteredObject,
-  objectFilter,
-  safeRegexStringFilter,
-} from '../test/property/property-test-util.js';
 
 export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
   [
