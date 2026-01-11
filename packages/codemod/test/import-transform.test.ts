@@ -1,7 +1,7 @@
 import { expect } from 'bupkis';
 import { describe, it } from 'node:test';
 
-import { transformCode } from '../src/transform.ts';
+import { transformCode } from '../src/transform.js';
 
 describe('import transformation', () => {
   it('should add bupkis import when expect is used as global', async () => {

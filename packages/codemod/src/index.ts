@@ -5,9 +5,9 @@ export {
   isMatcherSupported,
   jestExtendedMatchers,
   testingLibraryMatchers,
-} from './matchers/index.ts';
-export { transform, transformCode } from './transform.ts';
-export type { CodeTransformResult } from './transform.ts';
+} from './matchers/index.js';
+export { transform, transformCode } from './transform.js';
+export type { CodeTransformResult } from './transform.js';
 export type {
   FileTransformResult,
   MatcherTransform,
@@ -17,4 +17,4 @@ export type {
   TransformOptions,
   TransformResult,
   TransformWarning,
-} from './types.ts';
+} from './types.js';

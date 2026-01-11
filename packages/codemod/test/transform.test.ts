@@ -1,7 +1,7 @@
 import { expect } from 'bupkis';
 import { describe, it } from 'node:test';
 
-import { transformCode } from '../src/transform.ts';
+import { transformCode } from '../src/transform.js';
 
 describe('transformCode', () => {
   it('should transform expect().toBe() to expect(, "to be", )', async () => {

@@ -6,10 +6,10 @@ import type {
   TransformOptions,
   TransformResult,
   TransformWarning,
-} from './types.ts';
+} from './types.js';
 
-import { transformExpectCalls } from './transformers/expect-transformer.ts';
-import { transformImports } from './transformers/import-transformer.ts';
+import { transformExpectCalls } from './transformers/expect-transformer.js';
+import { transformImports } from './transformers/import-transformer.js';
 
 export interface CodeTransformResult {
   code: string;

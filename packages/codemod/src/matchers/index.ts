@@ -1,8 +1,8 @@
-import type { MatcherTransform } from '../types.ts';
+import type { MatcherTransform } from '../types.js';
 
-import { coreMatchers } from './core.ts';
-import { jestExtendedMatchers } from './jest-extended.ts';
-import { testingLibraryMatchers } from './testing-library.ts';
+import { coreMatchers } from './core.js';
+import { jestExtendedMatchers } from './jest-extended.js';
+import { testingLibraryMatchers } from './testing-library.js';
 
 const allMatchers = new Map<string, MatcherTransform>();
 
@@ -45,6 +45,6 @@ export const getMatcherTransform = (
 export const isMatcherSupported = (jestMatcher: string): boolean =>
   allMatchers.has(jestMatcher);
 
-export { coreMatchers } from './core.ts';
-export { jestExtendedMatchers } from './jest-extended.ts';
-export { testingLibraryMatchers } from './testing-library.ts';
+export { coreMatchers } from './core.js';
+export { jestExtendedMatchers } from './jest-extended.js';
+export { testingLibraryMatchers } from './testing-library.js';

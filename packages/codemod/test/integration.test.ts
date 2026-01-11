@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { transformCode } from '../src/transform.ts';
+import { transformCode } from '../src/transform.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

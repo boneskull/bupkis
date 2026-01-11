@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { TransformMode, TransformResult } from './types.ts';
+import type { TransformMode, TransformResult } from './types.js';
 
-import { transform } from './transform.ts';
+import { transform } from './transform.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const { parse } = JSON;

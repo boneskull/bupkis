@@ -1,4 +1,4 @@
-import type { MatcherTransform } from '../types.ts';
+import type { MatcherTransform } from '../types.js';
 
 /**
  * @testing-library/jest-dom matchers.

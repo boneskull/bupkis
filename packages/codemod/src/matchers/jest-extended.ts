@@ -1,4 +1,4 @@
-import type { MatcherTransform } from '../types.ts';
+import type { MatcherTransform } from '../types.js';
 
 /**
  * Jest-extended matchers and their bupkis equivalents.

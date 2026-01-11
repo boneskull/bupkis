@@ -1,7 +1,7 @@
 import { expect } from 'bupkis';
 import { describe, it } from 'node:test';
 
-import { getCoreMatchers, getMatcherTransform } from '../src/matchers/index.ts';
+import { getCoreMatchers, getMatcherTransform } from '../src/matchers/index.js';
 
 describe('matcher registry', () => {
   describe('getCoreMatchers', () => {

@@ -4,9 +4,9 @@ import type {
   TransformError,
   TransformMode,
   TransformWarning,
-} from '../types.ts';
+} from '../types.js';
 
-import { getMatcherTransform, isMatcherSupported } from '../matchers/index.ts';
+import { getMatcherTransform, isMatcherSupported } from '../matchers/index.js';
 
 interface ExpectTransformResult {
   errors: TransformError[];
