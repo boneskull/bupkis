@@ -1,5 +1,5 @@
 name: Publish
-description: Publish to npm
+description: Publish workspaces to npm using laverna
 
 inputs:
   token:
@@ -10,6 +10,7 @@ runs:
   steps:
     # see https://github.com/google-github-actions/release-please-action#automating-publication-to-npm
     # see https://docs.npmjs.com/generating-provenance-statements
+    # see https://github.com/LavaMoat/LavaMoat/tree/main/packages/laverna
     - name: Checkout Repository
       uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Setup Node.js
@@ -19,9 +20,12 @@ runs:
         registry-url: https://registry.npmjs.org
     - name: Install & Build
       uses: bahmutov/npm-install@3e063b974f0d209807684aa23e534b3dde517fd9 # v1.11.2
-    - name: Publish to npm
+    - name: Publish workspaces to npm
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
-      run: npm publish --workspace=bupkis --provenance --access public --registry https://registry.npmjs.org
+      # laverna publishes all workspaces where the current version is not yet on npm
+      # in CI, it auto-confirms (--yes defaults to true when CI env var is set)
+      # provenance is configured in each package's publishConfig
+      run: npx @lavamoat/laverna
       shell: bash
   using: composite
