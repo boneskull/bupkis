@@ -1,0 +1,80 @@
+{
+  "name": "@bupkis/from-jest",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Migrate Jest and Vitest assertions to bupkis",
+  "repository": {
+    "directory": "packages/from-jest",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "homepage": "https://bupkis.zip",
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "bin": {
+    "bupkis-from-jest": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "jest",
+    "codemod",
+    "migration",
+    "assertions",
+    "vitest"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "example:codemod": "npx tsx src/cli.ts --dry-run examples/jest-example.test.ts",
+    "example:jest": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest --config examples/jest.config.js",
+    "example:vitest": "vitest run examples/vitest-example.test.ts examples/vitest-example.transformed.test.ts",
+    "test": "npm run test:base -- \"test/*/*.test.ts\"",
+    "test:base": "node --test --test-reporter=spec --import tsx",
+    "test:dev": "npm run test:base -- --watch \"test/*/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts"
+  },
+  "dependencies": {
+    "@boneskull/bargs": "4.0.0",
+    "bupkis": "0.15.0",
+    "ts-morph": "^25.0.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "30.2.0",
+    "cross-env": "10.1.0",
+    "jest": "30.2.0",
+    "ts-jest": "29.4.6",
+    "vitest": "4.0.16"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg",
+      "prettier-plugin-sort-json"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  }
+}
