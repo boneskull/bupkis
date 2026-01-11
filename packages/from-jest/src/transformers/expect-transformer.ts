@@ -218,7 +218,7 @@ const parseExpectChain = (code: string): null | ParsedExpectChain => {
     return null;
   }
 
-  // Parse arguments (simple split for now, doesn't handle nested parens)
+  // Parse arguments using parseArguments which handles nested structures
   const matcherArgs = argsStr?.trim() ? parseArguments(argsStr) : [];
 
   return {

@@ -44,10 +44,10 @@
     "example:codemod": "npx tsx src/cli.ts --dry-run examples/jest-example.test.ts",
     "example:jest": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest --config examples/jest.config.js",
     "example:vitest": "vitest run examples/vitest-example.test.ts examples/vitest-example.transformed.test.ts",
-    "test": "npm run test:base -- \"test/**/*.test.ts\"",
+    "test": "npm run test:base -- \"test/*/*.test.ts\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:dev": "npm run test:base -- --watch \"test/**/*.test.ts\"",
-    "test:node20": "npm run test:base -- test/**/*.test.ts"
+    "test:dev": "npm run test:base -- --watch \"test/*/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts"
   },
   "dependencies": {
     "@boneskull/bargs": "4.0.0",

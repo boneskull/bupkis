@@ -112,7 +112,8 @@ export const coreMatchers: MatcherTransform[] = [
       const key = matcherArgs[0];
       const value = matcherArgs[1];
       // Handle string keys (remove quotes for object literal)
-      if (!key || typeof key !== 'string') {
+      // Note: matcherArgs elements are always strings from the AST
+      if (!key) {
         return null;
       }
       const keyStr =
