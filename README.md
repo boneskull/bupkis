@@ -91,7 +91,7 @@ This isn't black magic. It ain't no _cauldron_. We're not just _throwing rat tai
 
 You may wonder how this could this be anything _but_ loosey-goosey _senselessness_. On the contrary—we have _conventions_!
 
-#### Conventions of `expect()`
+#### Conventions of expect()
 
 To formalize the conventions at a high level:
 
