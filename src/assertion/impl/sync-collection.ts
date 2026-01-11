@@ -38,6 +38,10 @@ import {
   UnknownSchema,
 } from '../../schema.js';
 import { has } from '../../util.js';
+import {
+  valueToSchema,
+  valueToSchemaOptionsForSatisfies,
+} from '../../value-to-schema.js';
 import { createAssertion } from '../create.js';
 
 const { hasOwn, keys } = Object;
@@ -247,6 +251,47 @@ export const arrayContainsAssertion = createAssertion(
         message: `Expected array to contain value`,
       };
     }
+  },
+);
+
+/**
+ * Asserts that an array contains an item that satisfies a given shape or
+ * pattern. Uses partial matching semantics - the item only needs to match the
+ * specified properties.
+ *
+ * @example
+ *
+ * ```ts
+ * expect([{ a: 1, b: 2 }, { c: 3 }], 'to have item satisfying', { a: 1 }); // passes
+ * expect([{ a: 1 }, { b: 2 }], 'to have an item satisfying', { c: 3 }); // fails
+ * expect([1, 2, 3], 'to contain item satisfying', 2); // passes (exact match)
+ * ```
+ *
+ * @group Collection Assertions
+ * @bupkisAnchor array-to-have-item-satisfying
+ * @bupkisAssertionCategory collections
+ */
+export const arrayItemSatisfiesAssertion = createAssertion(
+  [
+    UnknownArraySchema,
+    [
+      'to have item satisfying',
+      'to have an item satisfying',
+      'to contain item satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, shape) => {
+    const schema = valueToSchema(shape, valueToSchemaOptionsForSatisfies);
+    for (const item of subject) {
+      const result = schema.safeParse(item);
+      if (result.success) {
+        return;
+      }
+    }
+    return {
+      message: `Expected array to contain an item satisfying the given shape`,
+    };
   },
 );
 

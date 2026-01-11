@@ -56,6 +56,7 @@ import {
 } from './sync-basic.js';
 import {
   arrayContainsAssertion,
+  arrayItemSatisfiesAssertion,
   arraySizeAssertion,
   collectionSizeBetweenAssertion,
   collectionSizeGreaterThanAssertion,
@@ -266,6 +267,7 @@ export const SyncCollectionAssertions = [
   setSizeAssertion,
   emptySetAssertion,
   arrayContainsAssertion,
+  arrayItemSatisfiesAssertion,
   arraySizeAssertion,
   nonEmptyArrayAssertion,
   objectKeysAssertion,

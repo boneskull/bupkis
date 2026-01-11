@@ -368,6 +368,17 @@ exports[`Sync Collection Assertion Error Snapshots > \"{unknown-array} 'to conta
 }
 `;
 
+exports[`Sync Collection Assertion Error Snapshots > \"{unknown-array} 'to have item satisfying' / 'to have an item satisfying' / 'to contain item satisfying' {unknown}\" [unknown_array-to-have-item-satisfying-to-have-an-item-satisfying-to-contain-item-satisfying-unknown-3s3p] > should throw a consistent AssertionError [unknown_array-to-have-item-satisfying-to-have-an-item-satisfying-to-contain-item-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected array to contain an item satisfying the given shape",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "unknown_array-to-have-item-satisfying-to-have-an-item-satisfying-to-contain-item-satisfying-unknown-3s3p"
+}
+`;
+
 exports[`Sync Collection Assertion Error Snapshots > \"{unknown-array} 'to have length' / 'to have size' {nonnegative-integer}\" [unknown_array-to-have-length-to-have-size-nonnegative_integer-3s3p] > should throw a consistent AssertionError [unknown_array-to-have-length-to-have-size-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{unknown-array} 'to have length' / 'to have size' {nonnegative-integer}\\" failed:\\n- expected  - 2\\n+ actual    + 0\\n\\n  Array [\\n    1,\\n    2,\\n    3,\\n-   null,\\n-   null,\\n  ]",

@@ -18,6 +18,20 @@ export const SyncCollectionGenerators = new Map<AnyAssertion, GeneratorParams>([
     ],
   ],
   [
+    assertions.arrayItemSatisfiesAssertion,
+    fc
+      .record({ a: fc.integer(), b: fc.string() })
+      .chain((obj) =>
+        fc.tuple(
+          fc.constant([{ x: 'other' }, obj, { y: 123 }]),
+          fc.constantFrom(
+            ...extractPhrases(assertions.arrayItemSatisfiesAssertion),
+          ),
+          fc.constant({ a: obj.a }),
+        ),
+      ),
+  ],
+  [
     assertions.arraySizeAssertion,
     [
       fc.constant([1, 2, 3]),
