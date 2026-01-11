@@ -304,11 +304,24 @@ export const threwAssertion = expect.createAssertion(
 
 /**
  * Asserts that a spy threw a specific error.
+ *
+ * @remarks
+ * The `expected` parameter can be an Error instance or a string (error type
+ * name). If a non-matching type is provided, the assertion will fail with a
+ * type error message.
  */
 export const threwWithAssertion = expect.createAssertion(
   [SpySchema, 'threw', schema.UnknownSchema],
   (spy: SinonSpy, expected: unknown) => {
-    if (spy.threw(expected as Error | string)) {
+    // Sinon's threw() accepts Error instances or string type names
+    if (!(expected instanceof Error) && typeof expected !== 'string') {
+      return {
+        actual: typeof expected,
+        expected: 'Error instance or string error type name',
+        message: `Expected second argument to be an Error or string, got ${typeof expected}`,
+      };
+    }
+    if (spy.threw(expected)) {
       return true;
     }
     return {
