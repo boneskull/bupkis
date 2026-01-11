@@ -118,4 +118,4 @@ These cases will be marked with `// TODO: Manual migration needed` comments when
 
 ## License
 
-Apache-2.0
+Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
