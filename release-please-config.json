@@ -3,9 +3,15 @@
   "initial-version": "0.0.1",
   "packages": {
     "packages/bupkis": {
-      "release-type": "node",
       "changelog-path": "CHANGELOG.md",
-      "component": "bupkis"
+      "component": "bupkis",
+      "release-type": "node"
+    },
+    "packages/sinon": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/sinon",
+      "initial-version": "0.1.0",
+      "release-type": "node"
     }
   }
 }
