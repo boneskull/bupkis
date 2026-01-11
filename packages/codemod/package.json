@@ -3,6 +3,17 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Migrate Jest assertions to bupkis",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git",
+    "directory": "packages/codemod"
+  },
+  "homepage": "https://bupkis.zip",
+  "author": {
+    "name": "Christopher Hiller",
+    "email": "boneskull@boneskull.com"
+  },
+  "license": "BlueOak-1.0.0",
   "engines": {
     "node": "^20.19.0 || ^22.12.0 || >=23"
   },
@@ -16,6 +27,7 @@
     }
   },
   "files": [
+    "CHANGELOG.md",
     "dist"
   ],
   "keywords": [
@@ -23,7 +35,8 @@
     "jest",
     "codemod",
     "migration",
-    "assertions"
+    "assertions",
+    "vitest"
   ],
   "scripts": {
     "build": "tsc",
