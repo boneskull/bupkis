@@ -72,6 +72,12 @@ describe('@bupkis/sinon', () => {
         spy();
         e(spy, 'was called twice');
       });
+
+      it('should fail when spy was not called twice', () => {
+        const spy = sinon.spy();
+        spy();
+        expect(() => e(spy, 'was called twice'), 'to throw');
+      });
     });
 
     describe('was called thrice', () => {
@@ -81,6 +87,13 @@ describe('@bupkis/sinon', () => {
         spy();
         spy();
         e(spy, 'was called thrice');
+      });
+
+      it('should fail when spy was not called three times', () => {
+        const spy = sinon.spy();
+        spy();
+        spy();
+        expect(() => e(spy, 'was called thrice'), 'to throw');
       });
     });
 
