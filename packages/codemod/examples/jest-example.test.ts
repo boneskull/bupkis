@@ -119,8 +119,8 @@ describe('Array matchers', () => {
     expect(['a', 'b', 'c']).toContain('b');
   });
 
-  // Note: toContainEqual (deep equality) is not fully supported in bupkis
-  // bupkis 'to contain' uses shallow comparison
+  // Note: toContainEqual (deep equality) has no bupkis equivalent
+  // bupkis 'to contain' uses reference equality
 });
 
 describe('Object matchers', () => {

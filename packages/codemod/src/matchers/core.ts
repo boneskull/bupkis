@@ -83,18 +83,12 @@ export const coreMatchers: MatcherTransform[] = [
   // Arrays/Iterables
   { bupkisPhrase: 'to have length', jestMatcher: 'toHaveLength' },
   {
-    bupkisPhrase: 'to have an item satisfying',
+    bupkisPhrase: '',
     jestMatcher: 'toContainEqual',
     /**
      * @function
      */
-    transform: ({ matcherArgs, negated, subject }) => {
-      // toContainEqual uses deep equality - use 'to have an item satisfying'
-      const phrase = negated
-        ? 'not to have an item satisfying'
-        : 'to have an item satisfying';
-      return `expect(${subject}, '${phrase}', ${matcherArgs[0]})`;
-    },
+    transform: () => null, // No bupkis equivalent - 'to contain' uses reference equality
   },
 
   // Objects
