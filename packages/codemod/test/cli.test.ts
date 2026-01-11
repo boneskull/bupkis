@@ -14,7 +14,7 @@ describe('CLI', () => {
       encoding: 'utf-8',
       shell: '/bin/bash',
     });
-    expect(result, 'to contain', 'Usage:');
+    expect(result, 'to contain', 'USAGE');
     expect(result, 'to contain', 'bupkis-codemod');
   });
 

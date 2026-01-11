@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
+import { bargs, opt, pos } from '@boneskull/bargs';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,82 +9,95 @@ import type { TransformMode, TransformResult } from './types.ts';
 
 import { transform } from './transform.ts';
 
-interface CliOptions {
-  bestEffort?: boolean;
-  dryRun?: boolean;
-  exclude: string[];
-  interactive?: boolean;
-  strict?: boolean;
-}
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const { parse } = JSON;
 const pkg = parse(
   readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'),
 ) as { version: string };
 
-const program = new Command();
+const DEFAULT_PATTERNS = [
+  '**/*.test.ts',
+  '**/*.test.tsx',
+  '**/*.spec.ts',
+  '**/*.spec.tsx',
+];
 
-program
-  .name('bupkis-codemod')
-  .description('Migrate Jest assertions to bupkis')
-  .version(pkg.version)
-  .argument('[patterns...]', 'Glob patterns for files to transform', [
-    '**/*.test.ts',
-    '**/*.test.tsx',
-    '**/*.spec.ts',
-    '**/*.spec.tsx',
-  ])
-  .option('--strict', 'Fail on any unsupported transformation')
-  .option('--interactive', 'Prompt for ambiguous cases')
-  .option(
-    '--best-effort',
-    'Transform what we can, add TODOs for the rest (default)',
+const { positionals, values } = await bargs('bupkis-codemod', {
+  description: 'Migrate Jest assertions to bupkis',
+  version: pkg.version,
+})
+  .globals(
+    pos.positionals(
+      pos.variadic('string', {
+        description: 'Glob patterns for files to transform',
+        name: 'patterns',
+      }),
+    )(
+      opt.options({
+        'best-effort': opt.boolean({
+          description:
+            'Transform what we can, add TODOs for the rest (default)',
+        }),
+        'dry-run': opt.boolean({
+          description: 'Show what would be changed without writing',
+        }),
+        exclude: opt.array('string', {
+          aliases: ['e'],
+          default: ['**/node_modules/**'],
+          description: 'Patterns to exclude',
+        }),
+        interactive: opt.boolean({
+          description: 'Prompt for ambiguous cases',
+        }),
+        strict: opt.boolean({
+          description: 'Fail on any unsupported transformation',
+        }),
+      }),
+    ),
   )
-  .option('--dry-run', 'Show what would be changed without writing')
-  .option('-e, --exclude <patterns...>', 'Patterns to exclude', [
-    '**/node_modules/**',
-  ])
-  .action(async (patterns: string[], options: CliOptions) => {
-    const mode: TransformMode = options.strict
-      ? 'strict'
-      : options.interactive
-        ? 'interactive'
-        : 'best-effort';
+  .parseAsync();
 
-    console.log(
-      pc.cyan('bupkis-codemod') + ' - Migrating Jest assertions to bupkis\n',
-    );
+const [patterns] = positionals;
+const actualPatterns = patterns.length > 0 ? patterns : DEFAULT_PATTERNS;
 
-    if (options.dryRun) {
-      console.log(pc.yellow('Dry run mode - no files will be modified\n'));
-    }
+const mode: TransformMode = values.strict
+  ? 'strict'
+  : values.interactive
+    ? 'interactive'
+    : 'best-effort';
 
-    console.log(`Mode: ${pc.bold(mode)}`);
-    console.log(`Patterns: ${patterns.join(', ')}`);
-    console.log(`Exclude: ${options.exclude.join(', ')}\n`);
+console.log(
+  pc.cyan('bupkis-codemod') + ' - Migrating Jest assertions to bupkis\n',
+);
 
-    try {
-      const result = await transform({
-        exclude: options.exclude,
-        include: patterns,
-        mode,
-        write: !options.dryRun,
-      });
+if (values['dry-run']) {
+  console.log(pc.yellow('Dry run mode - no files will be modified\n'));
+}
 
-      printResult(result);
+console.log(`Mode: ${pc.bold(mode)}`);
+console.log(`Patterns: ${actualPatterns.join(', ')}`);
+console.log(`Exclude: ${values.exclude.join(', ')}\n`);
 
-      if (result.totalErrors > 0 && mode === 'strict') {
-        process.exit(1);
-      }
-    } catch (error) {
-      console.error(
-        pc.red('Error:'),
-        error instanceof Error ? error.message : error,
-      );
-      process.exit(1);
-    }
+try {
+  const result = await transform({
+    exclude: values.exclude,
+    include: actualPatterns,
+    mode,
+    write: !values['dry-run'],
   });
+
+  printResult(result);
+
+  if (result.totalErrors > 0 && mode === 'strict') {
+    process.exit(1);
+  }
+} catch (error) {
+  console.error(
+    pc.red('Error:'),
+    error instanceof Error ? error.message : error,
+  );
+  process.exit(1);
+}
 
 /**
  * Print transformation result.
@@ -136,5 +149,3 @@ const printResult = (result: TransformResult): void => {
     );
   }
 };
-
-program.parse();
