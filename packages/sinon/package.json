@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "build": "zshy",
-    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "test": "tsx --test --test-reporter spec test/**/*.test.ts",
     "test:dev": "tsx --test --watch --test-reporter spec test/**/*.test.ts",
     "test:types": "tsd"
@@ -55,8 +55,18 @@
   },
   "devDependencies": {
     "@types/sinon": "21.0.0",
-    "bupkis": "0.15.0",
     "sinon": "21.0.1"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg",
+      "prettier-plugin-sort-json"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
   },
   "zshy": {
     "exports": {
