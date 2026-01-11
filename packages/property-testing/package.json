@@ -42,6 +42,7 @@
   "scripts": {
     "build": "zshy",
     "test": "echo \"No tests yet\"",
+    "test:node20": "npm test",
     "test:types": "echo \"No type tests yet\""
   },
   "peerDependencies": {
