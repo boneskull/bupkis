@@ -450,6 +450,14 @@ type AssertionFailure = {
 
 If you return this object, <span class="bupkis">Bupkis</span> will stuff it into an `AssertionError` and toss it. If you don't know what to put for any of the fields, just omit them, with the following caveat: if either `actual` or `expected` (or both) are `undefined`, then no diff will be generated.
 
+> ℹ️ When To Use `actual` and `expected`
+>
+> Use `actual` and `expected` if you can provide meaningful, _diff-able_ values. This is generally best used in "equality"-style assertions.
+>
+> One thing explicitly _not_ to do is to provide values of two different types for `expected` and `actual`. There is no reasonable way to diff them, and the error message will reflect that.
+>
+> In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`. If the default diff output doesn't work for your use case, see [Custom Diff Output](#custom-diff-output) below.
+
 ##### Custom Diff Output
 
 <span class="bupkis">Bupkis</span> provides several ways to customize how diffs are displayed in assertion failures. These options follow a precedence order:
@@ -543,14 +551,6 @@ const verboseDiffAssertion = createAssertion(
 > ```ts
 > import type { DiffOptions } from 'bupkis';
 > ```
-
-> ℹ️ When To Use `actual` and `expected`
->
-> Use `actual` and `expected` if you can provide meaningful, _diff-able_ values. This is generally best used in "equality"-style assertions.
->
-> One thing explicitly _not_ to do is to provide values of two different types for `expected` and `actual`. There is no reasonable way to diff them, and the error message will reflect that.
->
-> In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`.
 
 Returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
 
