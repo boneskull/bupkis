@@ -429,10 +429,120 @@ type AssertionFailure = {
    * A custom error message to use
    */
   message?: string;
+  /**
+   * A pre-computed diff string to display (highest priority)
+   */
+  diff?: string;
+  /**
+   * Custom formatter for the actual value in diff output
+   */
+  formatActual?: (value: unknown) => string;
+  /**
+   * Custom formatter for the expected value in diff output
+   */
+  formatExpected?: (value: unknown) => string;
+  /**
+   * Options to pass to jest-diff for diff generation
+   */
+  diffOptions?: DiffOptions;
 };
 ```
 
 If you return this object, <span class="bupkis">Bupkis</span> will stuff it into an `AssertionError` and toss it. If you don't know what to put for any of the fields, just omit them, with the following caveat: if either `actual` or `expected` (or both) are `undefined`, then no diff will be generated.
+
+##### Custom Diff Output
+
+<span class="bupkis">Bupkis</span> provides several ways to customize how diffs are displayed in assertion failures. These options follow a precedence order:
+
+1. **Pre-computed diff (`diff`)**: If you provide a `diff` string, it will be used as-is
+2. **Custom formatters (`formatActual`/`formatExpected`)**: Transform values before diffing
+3. **Default**: Uses [jest-diff][] with standard formatting
+
+###### Using a Pre-computed Diff
+
+For complete control over diff output, provide your own diff string:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const customDiffAssertion = createAssertion(
+  [z.unknown(), 'to diff custom with', z.unknown()],
+  (actual, expected) => ({
+    actual,
+    expected,
+    diff: `My Custom Diff:\n  want: ${expected}\n  got:  ${actual}`,
+    message: 'Values differ',
+  }),
+);
+
+const { expect } = use([customDiffAssertion]);
+expect('foo', 'to diff custom with', 'bar');
+// Error message will include:
+// My Custom Diff:
+//   want: bar
+//   got:  foo
+```
+
+###### Using Custom Formatters
+
+For domain-specific value formatting before diff generation:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const dateAssertion = createAssertion(
+  [z.date(), 'to be same day as', z.date()],
+  (actual, expected) => {
+    const sameDay = actual.toDateString() === expected.toDateString();
+    if (!sameDay) {
+      return {
+        actual,
+        expected,
+        formatActual: (d) => (d as Date).toDateString(),
+        formatExpected: (d) => (d as Date).toDateString(),
+        message: 'Dates are not the same day',
+      };
+    }
+  },
+);
+
+const { expect } = use([dateAssertion]);
+expect(new Date('2024-01-15'), 'to be same day as', new Date('2024-01-16'));
+// Diff will show formatted dates instead of full Date objects
+```
+
+###### Using `diffOptions`
+
+Pass options to [jest-diff][] for fine-grained control:
+
+```ts
+import { createAssertion, z, use } from 'bupkis';
+
+const verboseDiffAssertion = createAssertion(
+  [z.unknown(), 'to verbose equal', z.unknown()],
+  (actual, expected) => {
+    if (actual !== expected) {
+      return {
+        actual,
+        expected,
+        diffOptions: {
+          expand: true, // Show all lines, not just changed
+          contextLines: 10, // More context around changes
+          aAnnotation: 'Expected Value',
+          bAnnotation: 'Received Value',
+        },
+        message: 'Values do not match',
+      };
+    }
+  },
+);
+```
+
+> ℹ️ `DiffOptions` is re-exported from <span class="bupkis">Bupkis</span> for your convenience:
+>
+> ```ts
+> import type { DiffOptions } from 'bupkis';
+> ```
 
 > ℹ️ When To Use `actual` and `expected`
 >
@@ -443,6 +553,8 @@ If you return this object, <span class="bupkis">Bupkis</span> will stuff it into
 > In short: just think about how a diff would display, and if it doesn't make sense, omit `actual` and `expected`.
 
 Returning an `AssertionFailure` object provides much more context about what went wrong than getting all _lazy_ by returning `false`.
+
+[jest-diff]: https://npm.im/jest-diff
 
 #### Returning a `ZodError` object
 
