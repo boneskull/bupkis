@@ -2,7 +2,7 @@
  * Adapter for node:test's built-in snapshot support.
  *
  * Node.js native test runner includes snapshot testing capabilities as of
- * Node.js v20. This adapter delegates to node:test's native `assert.snapshot()`
+ * Node.js v22. This adapter delegates to node:test's native `assert.snapshot()`
  * function while providing the unified BUPKIS snapshot interface.
  *
  * @packageDocumentation
@@ -22,6 +22,7 @@ import type {
 import { isA, isError } from '../../guards.js';
 import { type AssertionFailure } from '../../types.js';
 import { isTestContext } from '../adapter.js';
+import { assertNodeVersion } from '../node-version.js';
 import { defaultSerializer } from '../serializer.js';
 
 /**
@@ -101,8 +102,12 @@ export class NodeTestAdapter implements SnapshotAdapter {
    *
    * @param context - Test context to check
    * @returns `true` if this is a node:test context
+   * @throws {Error} If running on Node.js < 22 with a node:test context
    */
   canHandle(context: unknown): boolean {
+    if (looksLikeNodeTestContext(context) && !isNodeTestContext(context)) {
+      assertNodeVersion();
+    }
     return isNodeTestContext(context);
   }
 
@@ -234,6 +239,28 @@ const getTestFilePathFromStack = (): string => {
   }
 
   return 'unknown';
+};
+
+/**
+ * Check if a value looks like a node:test context (has `name` and `assert`
+ * properties).
+ *
+ * This is used to detect when someone is passing a node:test context on an
+ * older Node.js version that doesn't support `assert.snapshot`.
+ *
+ * @function
+ * @param value - Value to check
+ * @returns `true` if value looks like a node:test context
+ */
+const looksLikeNodeTestContext = (value: unknown): boolean => {
+  return (
+    isTestContext(value) &&
+    'name' in value &&
+    typeof value.name === 'string' &&
+    'assert' in value &&
+    typeof value.assert === 'object' &&
+    value.assert !== null
+  );
 };
 
 /**

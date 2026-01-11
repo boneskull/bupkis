@@ -10,6 +10,10 @@ import { inspect, stripVTControlCharacters } from 'node:util';
 
 import { type AssertionError, FailAssertionError } from '../../src/error.js';
 import { isError, isPromiseLike } from '../../src/guards.js';
+import {
+  MIN_NODE_MAJOR_VERSION,
+  supportsNodeTestSnapshots,
+} from '../../src/snapshot/node-version.js';
 import { expect } from '../custom-assertions.js';
 const { stringify } = JSON;
 
@@ -91,9 +95,13 @@ export function takeErrorSnapshot(
   failingAssertion: () => Promise<void> | void,
 ) {
   return async (t: it.TestContext) => {
+    if (!supportsNodeTestSnapshots) {
+      t.skip(`Snapshot testing requires Node.js v${MIN_NODE_MAJOR_VERSION}+`);
+      return;
+    }
+
     const captureError = (err: unknown): AssertionError => {
       if (FailAssertionError.isFailAssertionError(err)) {
-        // Rethrow FailAssertionError to avoid capturing its snapshot
         throw err;
       }
       return err as AssertionError;
@@ -109,7 +117,6 @@ export function takeErrorSnapshot(
     try {
       result = failingAssertion();
     } catch (err) {
-      // Synchronous error - capture it immediately
       const error = captureError(err);
       takeSnapshot(error);
       return;
@@ -126,7 +133,6 @@ export function takeErrorSnapshot(
         },
       );
     } else {
-      // Synchronous function that didn't throw - this shouldn't happen
       expect.fail('Expected assertion to throw, but it did not');
     }
   };

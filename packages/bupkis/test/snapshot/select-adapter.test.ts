@@ -13,6 +13,10 @@ import { describe, it } from 'node:test';
 import type { SnapshotAdapter } from '../../src/snapshot/adapter.js';
 
 import {
+  MIN_NODE_MAJOR_VERSION,
+  supportsNodeTestSnapshots,
+} from '../../src/snapshot/node-version.js';
+import {
   getRegisteredAdapters,
   registerAdapter,
   selectAdapter,
@@ -33,14 +37,35 @@ describe('selectAdapter', () => {
       expect(adapter.name, 'to equal', 'node:test');
     });
 
-    it('should not select node:test adapter for invalid context', () => {
+    it('should not select node:test adapter for context missing assert.snapshot', (t) => {
+      if (!supportsNodeTestSnapshots) {
+        t.skip(`Node.js v${MIN_NODE_MAJOR_VERSION}+ required`);
+        return;
+      }
       const invalidContext = {
+        assert: {},
         name: 'test',
-        // missing assert.snapshot
       };
 
       const adapter = selectAdapter(invalidContext);
       expect(adapter.name, 'not to equal', 'node:test');
+    });
+
+    it('should throw on Node.js < 22 when passing node:test context without snapshot support', (t) => {
+      if (supportsNodeTestSnapshots) {
+        t.skip(`Only runs on Node.js < ${MIN_NODE_MAJOR_VERSION}`);
+        return;
+      }
+      const nodeTestLikeContext = {
+        assert: {},
+        name: 'test',
+      };
+
+      expect(
+        () => selectAdapter(nodeTestLikeContext),
+        'to throw',
+        /Snapshot testing with node:test requires Node\.js/,
+      );
     });
   });
 

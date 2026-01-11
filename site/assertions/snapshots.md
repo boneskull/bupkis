@@ -11,10 +11,12 @@ Snapshot testing lets you capture the expected output of your code and automatic
 
 **Currently Supported Test Frameworks:**
 
-- ✅ **node:test** - Native `assert.snapshot()` integration
+- ✅ **node:test** - Native `assert.snapshot()` integration (**requires Node.js v22+**)
 - ✅ **Mocha** - Custom snapshot storage
 - ⏳ **Jest** - Planned for future release
 - ⏳ **Vitest** - Planned for future release
+
+> ⚠️ **Node.js Version Requirement**: Snapshot testing with `node:test` requires **Node.js v22 or later**. Earlier versions of Node.js do not have the `assert.snapshot()` API. If you need snapshot testing on older Node.js versions, use Mocha with its custom snapshot storage, or pass an explicit snapshot name string instead of a test context.
 
 ### {unknown} to match snapshot {test-context | string}
 

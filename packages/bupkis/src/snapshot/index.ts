@@ -48,9 +48,17 @@ export type {
 export { isTestContext } from './adapter.js';
 
 // Built-in adapters
-export { type FallbackAdapter, fallbackAdapter } from './adapters/fallback.js';
+export { fallbackAdapter, type FallbackAdapter } from './adapters/fallback.js';
 
-export { type NodeTestAdapter, nodeTestAdapter } from './adapters/node-test.js';
+export { nodeTestAdapter, type NodeTestAdapter } from './adapters/node-test.js';
+
+// Node.js version utilities
+export {
+  assertNodeVersion,
+  getNodeMajorVersion,
+  MIN_NODE_MAJOR_VERSION,
+  supportsNodeTestSnapshots,
+} from './node-version.js';
 
 // Adapter selection
 export {

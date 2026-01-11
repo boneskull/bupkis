@@ -3,6 +3,10 @@ import { before, describe, it } from 'node:test';
 
 import { expect } from '../../src/bootstrap.js';
 import { type AssertionError, FailAssertionError } from '../../src/error.js';
+import {
+  MIN_NODE_MAJOR_VERSION,
+  supportsNodeTestSnapshots,
+} from '../../src/snapshot/node-version.js';
 import { errorSerializer } from './error-snapshot-util.js';
 
 describe(`Comparison with Node.js' assert module`, () => {
@@ -35,10 +39,18 @@ describe(`Comparison with Node.js' assert module`, () => {
     });
 
     it('deepStrictEqual <snapshot>', (t) => {
+      if (!supportsNodeTestSnapshots) {
+        t.skip(`Snapshot testing requires Node.js v${MIN_NODE_MAJOR_VERSION}+`);
+        return;
+      }
       t.assert.snapshot(nodeAssertionError, { serializers: [errorSerializer] });
     });
 
     it('"to deep equal" <snapshot>', (t) => {
+      if (!supportsNodeTestSnapshots) {
+        t.skip(`Snapshot testing requires Node.js v${MIN_NODE_MAJOR_VERSION}+`);
+        return;
+      }
       t.assert.snapshot(bupkisAssertionError, {
         serializers: [errorSerializer],
       });

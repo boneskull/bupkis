@@ -21,9 +21,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./package.json": "./package.json"
   },
@@ -45,8 +45,10 @@
   "scripts": {
     "build": "zshy",
     "prepublishOnly": "npm run build",
-    "test": "tsx --test --test-reporter spec test/**/*.test.ts",
-    "test:dev": "tsx --test --watch --test-reporter spec test/**/*.test.ts",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
+    "test:base": "node --import tsx --test --test-reporter=spec",
+    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts",
     "test:types": "tsd"
   },
   "peerDependencies": {
