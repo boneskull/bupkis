@@ -12,7 +12,7 @@
 import type fc from 'fast-check';
 import type { Parameters } from 'fast-check';
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 export type GeneratorParams =
   | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>

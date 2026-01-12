@@ -14,7 +14,7 @@
  */
 
 import { inspect } from 'node:util';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { BupkisError, InvalidObjectSchemaError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';

@@ -34,7 +34,7 @@
  * Schemas for common types and validation patterns.
  */
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { KEYPATH_REGEX } from './constant.js';
 import {

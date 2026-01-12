@@ -35,9 +35,6 @@ const externalSymbolLinkMappings = {
   zod: {
     '*': 'https://zod.dev/',
   },
-  'zod/v4': {
-    '*': 'https://zod.dev/',
-  },
 };
 
 /** @type {Partial<TypeDocOptions>} */

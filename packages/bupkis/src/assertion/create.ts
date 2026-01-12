@@ -24,7 +24,7 @@
  *
  * ```ts
  * import { createAssertion } from './create.js';
- * import { z } from 'zod/v4';
+ * import { z } from 'zod';
  *
  * const stringAssertion = createAssertion(['to be a string'], z.string());
  * ```
@@ -51,7 +51,7 @@
  *
  * ```ts
  * import { createAssertion } from './create.js';
- * import { z } from 'zod/v4';
+ * import { z } from 'zod';
  *
  * const greaterThanAssertion = createAssertion(
  *   [z.number(), 'to be greater than', z.number()],
@@ -66,7 +66,7 @@
  * @see {@link AssertionImplAsync} for asynchronous implementation types
  */
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import type {
   AssertionImplAsync,

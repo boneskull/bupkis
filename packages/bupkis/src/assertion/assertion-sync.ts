@@ -8,7 +8,7 @@
 
 import createDebug from 'debug';
 import { inspect } from 'util';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import {
   AssertionError,

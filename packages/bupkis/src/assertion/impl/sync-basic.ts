@@ -12,7 +12,7 @@
  * @showGroups
  */
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { BupkisRegistry } from '../../metadata.js';
 import {

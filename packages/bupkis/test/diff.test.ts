@@ -3,7 +3,7 @@
  */
 
 import { describe, it } from 'node:test';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { expect } from '../src/bootstrap.js';
 import {

@@ -13,7 +13,7 @@ import createDebug from 'debug';
 import slug from 'slug';
 import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { kStringLiteral } from '../constant.js';
 import {

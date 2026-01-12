@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { describe, it } from 'node:test';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import type { StandardSchemaV1 } from '../../src/standard-schema.js';
 

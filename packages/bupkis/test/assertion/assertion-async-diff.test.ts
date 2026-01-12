@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { createAsyncAssertion } from '../../src/assertion/create.js';
 import { AssertionError } from '../../src/error.js';

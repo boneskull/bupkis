@@ -8,7 +8,7 @@
  * @group Snapshot Assertions
  */
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { SnapshotOptionsSchema } from '../../schema.js';
 import { selectAdapter } from '../../snapshot/select-adapter.js';

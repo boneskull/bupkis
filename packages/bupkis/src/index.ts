@@ -18,7 +18,7 @@
  * validation library.
  */
 
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { expect as sacrificialExpect } from './bootstrap.js';
 export * as assertions from './assertion/impl/index.js';

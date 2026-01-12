@@ -14,7 +14,7 @@
  */
 
 import { inspect } from 'node:util';
-import { type z } from 'zod/v4';
+import { type z } from 'zod';
 
 import { InvalidObjectSchemaError } from '../../error.js';
 import { isA, isNonNullObject, isString } from '../../guards.js';

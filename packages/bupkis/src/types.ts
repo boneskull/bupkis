@@ -24,7 +24,7 @@ import type {
   Constructor as TypeFestConstructor,
   UnionToIntersection,
 } from 'type-fest';
-import type { z } from 'zod/v4';
+import type { z } from 'zod';
 
 import type {
   AnyAssertion,

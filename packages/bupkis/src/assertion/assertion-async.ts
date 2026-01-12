@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import z from 'zod/v4';
+import z from 'zod';
 
 import { AssertionError, AssertionImplementationError } from '../error.js';
 import {

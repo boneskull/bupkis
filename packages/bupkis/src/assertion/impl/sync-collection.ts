@@ -21,7 +21,7 @@ import isSubsetOf from 'set.prototype.issubsetof';
 import isSupersetOf from 'set.prototype.issupersetof';
 import symmetricDifference from 'set.prototype.symmetricdifference';
 import setUnion from 'set.prototype.union';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import { isWeakKey } from '../../guards.js';
 import {

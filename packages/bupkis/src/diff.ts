@@ -10,7 +10,7 @@
  */
 
 import type { DiffOptions } from 'jest-diff';
-import type { z } from 'zod/v4';
+import type { z } from 'zod';
 
 import { diff } from 'jest-diff';
 export type { DiffOptions };

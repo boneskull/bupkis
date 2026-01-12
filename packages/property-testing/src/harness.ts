@@ -8,7 +8,7 @@ import type { AnyAssertion, AssertionPart, AssertionParts } from 'bupkis/types';
 
 import fc from 'fast-check';
 import { inspect } from 'util';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import {
   type InferPropertyTestConfigVariantProperty,
