@@ -1,50 +1,79 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) and other agents when working with code in this repository.
 
 ## Project Overview
 
+This is the **Bupkis monorepo**, containing the core assertion library and related packages.
+
 **Bupkis** is a TypeScript assertion library that prioritizes type safety, extensibility, and natural language syntax. Unlike traditional chainable APIs (`expect(value).toBeString()`), Bupkis uses function calls with phrase arguments: `expect(value, 'to be a string')`.
+
+## Monorepo Structure
+
+This is an npm workspaces monorepo. All packages live in `packages/`:
+
+| Package                    | Path                        | Description                                   |
+| -------------------------- | --------------------------- | --------------------------------------------- |
+| `bupkis`                   | `packages/bupkis`           | Core assertion library                        |
+| `@bupkis/from-jest`        | `packages/from-jest`        | Codemod to migrate Jest/Vitest assertions     |
+| `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
+| `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                |
 
 ## Development Commands
 
-### Building and Testing
+### Root-Level Commands (Run from monorepo root)
 
-- `npm run build` - Dual CJS/ESM build using zshy
-- `npm run build:dev` - Watch mode build
-- `npm test` - Run core test suite (Node.js built-in test runner)
-- `npm run test:property` - Property-based tests with fast-check (1 minute timeout)
-- `npm run test:bench` - Run benchmark-related tests
+**Building and Testing (all packages):**
+
+- `npm run build` - Build all packages (dual CJS/ESM via zshy)
+- `npm test` - Run all tests across all packages
 - `npm run test:dev` - Watch mode for all tests
+- `npm run test:property` - Property-based tests across packages
+- `npm run test:coverage` - Run tests with coverage
 
-### Running Specific Tests
-
-- `npm run test:base -- "test/<file>.test.ts"` - Run specific test file
-- `npm run test:base -- "test/core/**/*.test.ts"` - Run core tests only
-- `npm run test:property:dev` - Watch mode for property tests
-
-### Linting and Type Checking
+**Linting and Type Checking:**
 
 - `npm run lint` - Run all linting (ESLint, types, markdown, spelling)
-- `npm run lint:fix` - Auto-fix ESLint issues
+- `npm run fix` - Auto-fix all fixable issues
+- `npm run fix:eslint` - Auto-fix ESLint issues only
 - `npm run lint:types` - TypeScript type checking only
 - `npm run lint:types:dev` - Watch mode type checking
 
-### Benchmarking
+**Documentation (bupkis package only):**
+
+- `npm run docs:build` - Build documentation
+- `npm run docs:dev` - Watch mode documentation
+
+### Package-Specific Commands
+
+Run commands for a specific package using `--workspace`:
+
+```bash
+npm run test --workspace=bupkis
+npm run build --workspace=@bupkis/sinon
+```
+
+Or `cd` into the package directory and run `npm` commands directly.
+
+### Bupkis Package Commands (`packages/bupkis`)
 
 - `npm run bench` - Run all benchmark suites
-- `npm run bench:dev` - Watch mode benchmarking
-- `npm run bench:value-to-schema` - Run specific benchmark suite
+- `npm run test:property` - Property-based tests with fast-check
+- `npm run test:snapshots` - Run snapshot tests
+- `npm run test:update-snapshots` - Update snapshot files
+- `npm run test:types` - Run type definition tests (tsd)
 
 ### Debugging and Profiling
 
 - Set `DEBUG=bupkis*` for detailed logging
-- `npm run profile:test` - Profile test execution
-- `npm run profile:bench` - Profile benchmark execution
+- `npm run profile:test` - Profile test execution (in bupkis package)
+- `npm run profile:benchmarks` - Profile benchmark execution
 
-## Core Architecture
+## Core Architecture (bupkis package)
 
 ### Module Structure
+
+All paths below are relative to `packages/bupkis/`.
 
 **Main Entry Points:**
 
@@ -71,6 +100,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/schema.ts` - Zod integration utilities
 - `src/value-to-schema.ts` - Runtime type introspection
 - `src/error.ts` - Custom error types extending Node.js AssertionError
+- `src/snapshot/` - Snapshot testing support
 
 ### Key Design Patterns
 
@@ -95,6 +125,37 @@ expect(actual, 'not to be', expected);
 - Recursive conditional types for argument inference
 - Heavy use of `type-fest` utilities
 
+## Other Packages
+
+### @bupkis/from-jest (`packages/from-jest`)
+
+A codemod tool to migrate Jest and Vitest assertions to bupkis. Supports:
+
+- Jest 29+ and Vitest 1+
+- Most common matchers (`toBe`, `toEqual`, `toBeTruthy`, etc.)
+- Negation (`.not` → `'not to ...'`)
+- Both CLI (`bupkis-from-jest`) and programmatic API
+
+### @bupkis/property-testing (`packages/property-testing`)
+
+Property-based testing harness using fast-check. Provides utilities for systematically testing assertions across four variants: valid, invalid, validNegated, invalidNegated.
+
+Key exports:
+
+- `createPropertyTestHarness()` - Create test harness with expect functions
+- `extractPhrases()` - Extract phrase literals from assertions
+- `getVariants()` - Extract test variants from config
+- `filteredAnything` / `filteredObject` - Safe generators for Zod
+
+### @bupkis/sinon (`packages/sinon`)
+
+Sinon spy/stub/mock assertions for bupkis. Provides natural language assertions like:
+
+- `expect(spy, 'was called')`
+- `expect(spy, 'was called with', [arg1, arg2])`
+- `expect(spy, 'was called before', otherSpy)`
+- `expect(spy, 'to have calls satisfying', [...])`
+
 ## Testing Conventions
 
 ### Test Framework
@@ -105,27 +166,29 @@ expect(actual, 'not to be', expected);
 
 ### Property-Based Testing
 
-- Uses `fast-check` for property tests in `test/property/`
+- Uses `fast-check` for property tests in `packages/bupkis/test/property/`
+- Use `@bupkis/property-testing` harness for new assertion tests
 - Coordinated generators for valid input combinations
 - Avoid `fc.constant()` - prefer `fc.func().map()` for coverage
 - Use `getVariants()` and `runVariant()` utilities
 
-### Test Organization
+### Test Organization (bupkis package)
 
 - `test/core/` - Core functionality tests
 - `test/assertion/` - Assertion implementation tests
 - `test/assertion-error/` - Error formatting tests with snapshots
 - `test/property/` - Property-based tests
-- `test/bench/` - Benchmark-related tests
+- `test/integration/` - Integration tests (CJS/ESM compatibility)
 
-## Code Style Requirements
+## Code Style Requirements -- **CRITICAL**
 
-**Critical Rules:**
+**IMPORTANT:**
 
-- NO descriptive comments - use self-documenting code
-- Comments only explain _why_, never _what_
-- Always use ESM syntax (`import`/`export`)
-- Auto-fix ESLint issues before manual fixes
+- Comments should explain the _intent_ of the code instead of the implementation.
+- Always use ESM syntax (`import`/`export`).
+- When completing a task, _always_ run `npm run fix:eslint` and then manually fix any outstanding issues.
+- If you encounter ESLint errors otherwise, always run `npm run fix:eslint` first before attempting manual fixes.
+- **ALWAYS** use arrow functions unless you have a good reason not to (e.g., overloads, use of `this`). ESLint will enforce this rule.
 
 **TypeScript Patterns:**
 
@@ -133,46 +196,39 @@ expect(actual, 'not to be', expected);
 - Consume `type-fest` types instead of hand-rolled equivalents
 - Type inference flow: `AssertionParts` → `AssertionSlots` → `ParsedValues`
 
-**Error Handling:**
-
-- Use Node.js `AssertionError` for test framework compatibility
-- Enable debug via `DEBUG=bupkis*` for assertion matching details
-- Use `z.prettifyError()` for consistent error formatting
-
 ## Dependencies
 
-**Core:**
+**Core (bupkis):**
 
 - **Zod v4** - Validation library (peer dependency)
 - **tsx** - TypeScript execution
 - **zshy** - Dual CJS/ESM build system
 
-**Development:**
+**Development (root):**
 
 - **fast-check** - Property-based testing
 - **debug** - Structured logging (`bupkis:*` namespace)
-- **type-fest** - TypeScript utilities
+- **modestbench** - Benchmarking
 
 ## Common Debugging Patterns
 
 **Assertion Parsing Issues:**
 
 - Check `parseValues()` success/failure and reason
-- Complex tuple types may hit TypeScript limits
 
 **Async/Sync Confusion:**
 
-- `expect()` throws on Promise returns - use `expectAsync()`
-- Maintain clear sync/async assertion separation
+- `expect()` throws if it finds a thenable; use `expectAsync()` instead
+- Maintain clear sync/async separation in assertions.
+- A function should be sync or async; not both (no Zalgo). Create parallel APIs, if necessary (e.g., `expect()`/`expectAsync()`).
 
 **Object Matching:**
 
-- Use `valueToSchema(obj, { literalPrimitives: true })` for exact matching
-- `satisfies()` utility has circular reference detection overhead
+- `to satisfy` and `deep equal` both use `valueToSchema()`, but with different options.
+- When an assertion is said to use "'to satisfy' semantics", its implementation will need to call `valueToSchema` somewhere.
 
 ## File Organization
 
 - Place temporary files in `.tmp/` (Git-ignored)
-- Use `.mjs` extension for ESM scripts outside `.tmp/`
 - Follow established module boundaries (`guards.ts`, `schema.ts`, `util.ts`)
-- Maintain sync/async assertion separation in file structure
+- Package-specific code stays within its `packages/<name>/` directory
