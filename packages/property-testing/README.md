@@ -100,7 +100,7 @@ There are several ways to define a variant:
     fc.string(), // subject
     fc.constantFrom('to be a string', 'to be str'), // phrase
     // ... additional params for parametric assertions
-  ]
+  ];
 }
 ```
 
