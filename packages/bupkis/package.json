@@ -110,6 +110,7 @@
     "test:bench": "run-s \"test:base -- \\\"test/bench/**/*.test.ts\\\" \\\"test/assertion/*suite*.test.ts\\\" \\\"test/property/assertion-classification.test.ts\\\" \\\"test/property/performance-validation.test.ts\\\"\"",
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
     "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
+    "test:fuzz": "node --import tsx --no-warnings scripts/fuzz.ts",
     "test:node20": "run-s test:node20:runtime test:types",
     "test:node20:runtime": "node --test --test-reporter=spec --import tsx test/**/*.test.ts",
     "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",

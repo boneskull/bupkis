@@ -152,6 +152,8 @@ docs
 
 .profiles
 
+.fuzzing-results/
+
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/tasks.json
