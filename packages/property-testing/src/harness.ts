@@ -62,7 +62,7 @@ const GLOBAL_PROP_TEST_CONFIG_DEFAULTS =
 /**
  * @function
  */
-const isPropertyTestConfigVariantGenerators = (
+export const isPropertyTestConfigVariantGenerators = (
   value: PropertyTestConfigVariant,
 ): value is PropertyTestConfigVariantSyncGenerators => {
   return (
@@ -76,7 +76,7 @@ const isPropertyTestConfigVariantGenerators = (
 /**
  * @function
  */
-const isPropertyTestConfigVariantAsyncGenerators = (
+export const isPropertyTestConfigVariantAsyncGenerators = (
   value: PropertyTestConfigVariant,
 ): value is PropertyTestConfigVariantAsyncGenerators => {
   return (
@@ -91,7 +91,7 @@ const isPropertyTestConfigVariantAsyncGenerators = (
 /**
  * @function
  */
-const isPropertyTestConfigVariantProperty = (
+export const isPropertyTestConfigVariantProperty = (
   value: PropertyTestConfigVariant,
 ): value is InferPropertyTestConfigVariantProperty<typeof value> => {
   return (
@@ -105,7 +105,7 @@ const isPropertyTestConfigVariantProperty = (
 /**
  * @function
  */
-const isPropertyTestConfigVariantAsyncProperty = (
+export const isPropertyTestConfigVariantAsyncProperty = (
   value: PropertyTestConfigVariant,
 ): value is InferPropertyTestConfigVariantProperty<typeof value> =>
   typeof value === 'object' &&
@@ -116,7 +116,7 @@ const isPropertyTestConfigVariantAsyncProperty = (
 /**
  * @function
  */
-const isGeneratorsTuple = (
+export const isGeneratorsTuple = (
   value: PropertyTestConfigVariantAsyncGenerators['generators'],
 ): value is readonly [
   fc.Arbitrary<any>,
@@ -551,7 +551,79 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     }
   };
 
+  /**
+   * Extracts a standalone fast-check property from a variant configuration.
+   *
+   * Useful for running properties outside the normal test harness context, such
+   * as fuzzing scenarios where you want to run individual properties with
+   * custom iteration counts, in separate processes, or with different fc.check
+   * options.
+   *
+   * @function
+   * @param variant The variant configuration to extract from
+   * @param variantName The name of the variant (valid, invalid, validNegated,
+   *   invalidNegated)
+   * @returns Object containing the property and whether it's async
+   */
+  const extractProperty = (
+    variant: PropertyTestConfigVariant,
+    variantName: string,
+  ): {
+    isAsync: boolean;
+    property: fc.IAsyncProperty<any> | fc.IProperty<any>;
+  } => {
+    if (isPropertyTestConfigVariantGenerators(variant)) {
+      const { generators } = variant;
+      const predicate = createSyncPredicate(variantName);
+      if (isGeneratorsTuple(generators)) {
+        return {
+          isAsync: false,
+          property: fc.property(...generators, predicate),
+        };
+      }
+      return {
+        isAsync: false,
+        property: fc.property(generators, ([subject, ...part]) =>
+          predicate(subject, ...part),
+        ),
+      };
+    }
+
+    if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
+      const { generators } = variant;
+      const predicate = createAsyncPredicate(variantName);
+      if (isGeneratorsTuple(generators)) {
+        return {
+          isAsync: true,
+          property: fc.asyncProperty(...generators, predicate),
+        };
+      }
+      return {
+        isAsync: true,
+        property: fc.asyncProperty(generators, async ([subject, ...part]) => {
+          await predicate(subject, ...part);
+        }),
+      };
+    }
+
+    if (isPropertyTestConfigVariantProperty(variant)) {
+      return { isAsync: false, property: variant.property() };
+    }
+
+    if (isPropertyTestConfigVariantAsyncProperty(variant)) {
+      return {
+        isAsync: true,
+        property: (
+          variant as PropertyTestConfigVariantAsyncProperty
+        ).asyncProperty(),
+      };
+    }
+
+    throw new Error(`Unknown variant type: ${inspect(variant)}`);
+  };
+
   return {
+    extractProperty,
     invalidAsyncExpectation,
     invalidExpectation,
     invalidNegatedAsyncExpectation,

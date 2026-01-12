@@ -27,6 +27,11 @@ export {
   type ExpectationResult,
   extractPhrases,
   getVariants,
+  isGeneratorsTuple,
+  isPropertyTestConfigVariantAsyncGenerators,
+  isPropertyTestConfigVariantAsyncProperty,
+  isPropertyTestConfigVariantGenerators,
+  isPropertyTestConfigVariantProperty,
   type PropertyTestHarnessContext,
 } from './harness.js';
 
