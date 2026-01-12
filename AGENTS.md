@@ -232,3 +232,26 @@ Sinon spy/stub/mock assertions for bupkis. Provides natural language assertions 
 - Place temporary files in `.tmp/` (Git-ignored)
 - Follow established module boundaries (`guards.ts`, `schema.ts`, `util.ts`)
 - Package-specific code stays within its `packages/<name>/` directory
+
+## Commit Conventions (Monorepo)
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) with package scopes. Each package is independently versioned, so commit types directly affect changelogs and version bumps.
+
+**Commit Format:** `<type>(<scope>): <description>`
+
+- **Scopes** correspond to package names: `bupkis`, `property-testing`, `from-jest`, `sinon`
+- **Types** follow standard conventions: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`
+
+**Cross-Package Changes Require Careful Consideration:**
+
+When a change spans multiple packages, ask: _"Is the commit type the same for all affected packages?"_
+
+- If **yes** (e.g., `refactor` across multiple packages), a single commit is fine
+- If **no** (e.g., adding a new export to one package is a `feat`, but consuming it in another is a `chore`), **split into separate commits**
+
+**Example of when to split:**
+
+- Adding `extractProperty()` to `@bupkis/property-testing` → `feat(property-testing): add extractProperty`
+- Using that export to build fuzzing in `bupkis` → `chore(bupkis): add fuzzing infrastructure`
+
+**Why this matters:** `feat` commits trigger minor version bumps and appear in changelogs. Internal tooling or test changes (`chore`) should not trigger releases or clutter user-facing changelogs.
