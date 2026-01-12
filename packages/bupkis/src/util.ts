@@ -1,14 +1,13 @@
 /**
  * Utility functions.
  *
+ * @module util
  * @category API
  * @example
  *
  * ```ts
  * import * as util from 'bupkis/util';
  * ```
- *
- * @packageDocumentation
  */
 
 import { type StringKeyOf } from 'type-fest';

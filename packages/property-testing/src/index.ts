@@ -1,7 +1,8 @@
 /**
  * Property-based testing harness for bupkis assertions.
  *
- * @packageDocumentation
+ * @module @bupkis/property-testing
+ * @category Testing Utilities
  */
 
 export {

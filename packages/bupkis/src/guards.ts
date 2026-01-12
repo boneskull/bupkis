@@ -6,14 +6,13 @@
  * and assertion parts. These are used throughout the library for safe type
  * narrowing and validation.
  *
+ * @module guards
  * @category API
  * @example
  *
  * ```ts
  * import * as guards from 'bupkis/guards';
  * ```
- *
- * @packageDocumentation
  */
 
 import { type z } from 'zod/v4';

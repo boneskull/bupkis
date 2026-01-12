@@ -22,6 +22,7 @@
  * {@link WrappedPromiseLikeSchema} (which explicitly supports
  * {@link PromiseLike}/"thenable" objects).
  *
+ * @module schema
  * @category API
  * @example
  *
@@ -29,7 +30,6 @@
  * import * as schema from 'bupkis/schema';
  * ```
  *
- * @packageDocumentation
  * @groupDescription Schema
  * Schemas for common types and validation patterns.
  */

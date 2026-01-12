@@ -10,6 +10,36 @@ const customFooterHtml = readFileSync(
   'utf8',
 );
 
+/**
+ * External symbol link mappings for documentation
+ */
+const externalSymbolLinkMappings = {
+  '@types/node': {
+    'assert.AssertionError':
+      'https://nodejs.org/api/assert.html#class-assertassertionerror',
+    'assert.strictEqual':
+      'https://nodejs.org/api/assert.html#assertstrictequalactual-expected-message',
+  },
+  'fast-check': {
+    '*': 'https://fast-check.dev/api-reference/',
+  },
+  'type-fest': {
+    '*': 'https://github.com/sindresorhus/type-fest',
+  },
+  typescript: {
+    PromiseLike:
+      'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es5.d.ts',
+    'ProxyHandler.construct':
+      'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es2015.proxy.d.ts',
+  },
+  zod: {
+    '*': 'https://zod.dev/',
+  },
+  'zod/v4': {
+    '*': 'https://zod.dev/',
+  },
+};
+
 /** @type {Partial<TypeDocOptions>} */
 export default {
   blockTags: [
@@ -19,7 +49,16 @@ export default {
     '@bupkisRedirect',
     '@bupkisAssertionCategory',
   ],
-  categoryOrder: ['Assertions', 'Guides', 'Reference', 'API', 'About'],
+  categoryOrder: [
+    'Guides',
+    'Assertions',
+    'API',
+    'Reference',
+    'Plugins',
+    'Testing Utilities',
+    'About',
+    '*',
+  ],
   cname: 'bupkis.zip',
   customCss: '../site/media/bupkis-theme.css',
   customFooterHtml,
@@ -29,33 +68,13 @@ export default {
     '../packages/bupkis/src/schema.ts',
     '../packages/bupkis/src/util.ts',
     '../packages/bupkis/src/guards.ts',
+    '../packages/sinon/src/index.ts',
+    '../packages/property-testing/src/index.ts',
   ],
   excludeExternals: true,
   excludeInternal: true,
   excludePrivate: true,
-  externalSymbolLinkMappings: {
-    '@types/node': {
-      'assert.AssertionError':
-        'https://nodejs.org/api/assert.html#class-assertassertionerror',
-      'assert.strictEqual':
-        'https://nodejs.org/api/assert.html#assertstrictequalactual-expected-message',
-    },
-    'type-fest': {
-      '*': 'https://github.com/sindresorhus/type-fest',
-    },
-    typescript: {
-      PromiseLike:
-        'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es5.d.ts', // current of Sep 9 2025
-      'ProxyHandler.construct':
-        'https://github.com/microsoft/TypeScript/blob/3320dfdfcf17cdcdbfccb8040ea73cf110d94ba3/src/lib/es2015.proxy.d.ts', // current of Sep 9 2025
-    },
-    zod: {
-      '*': 'https://zod.dev/',
-    },
-    'zod/v4': {
-      '*': 'https://zod.dev/',
-    },
-  },
+  externalSymbolLinkMappings,
   favicon: '../site/media/favicon.svg',
   // @ts-expect-error from extras plugin
   footerLastModified: true,

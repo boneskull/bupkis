@@ -1,6 +1,8 @@
 /**
  * Sinon assertions for Bupkis.
  *
+ * @module @bupkis/sinon
+ * @category Plugins
  * @example
  *
  * ```ts
@@ -14,8 +16,6 @@
  * spy(42);
  * expect(spy, 'was called');
  * ```
- *
- * @packageDocumentation
  */
 
 export {
