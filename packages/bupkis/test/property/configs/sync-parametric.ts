@@ -12,11 +12,62 @@ import * as assertions from '../../../src/assertion/impl/sync-parametric.js';
 import { type AnyAssertion } from '../../../src/types.js';
 import { SyncParametricGenerators } from '../../../test-data/sync-parametric-generators.js';
 
+/**
+ * Checks if an actual object satisfies an expected object using "to satisfy"
+ * semantics (partial matching with extra properties allowed).
+ *
+ * @param actual - The object to check
+ * @param expected - The expected shape
+ * @returns True if actual satisfies expected
+ */
+const objectSatisfies = (
+  actual: Record<string, unknown>,
+  expected: Record<string, unknown>,
+): boolean => {
+  for (const key of Object.keys(expected)) {
+    if (!(key in actual)) {
+      return false;
+    }
+    const actualVal = actual[key];
+    const expectedVal = expected[key];
+
+    if (typeof expectedVal === 'object' && expectedVal !== null) {
+      if (typeof actualVal !== 'object' || actualVal === null) {
+        return false;
+      }
+      if (Array.isArray(expectedVal)) {
+        if (!Array.isArray(actualVal)) {
+          return false;
+        }
+        if (actualVal.length !== expectedVal.length) {
+          return false;
+        }
+        for (let i = 0; i < expectedVal.length; i++) {
+          if (JSON.stringify(actualVal[i]) !== JSON.stringify(expectedVal[i])) {
+            return false;
+          }
+        }
+      } else if (
+        !objectSatisfies(
+          actualVal as Record<string, unknown>,
+          expectedVal as Record<string, unknown>,
+        )
+      ) {
+        return false;
+      }
+    } else if (actualVal !== expectedVal) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   [
     assertions.arrayDeepEqualAssertion,
     {
       invalid: {
+        examples: [[[[[]], 'to deep equal', [[null]]]]],
         generators: fc
           .array(filteredAnything, { minLength: 1, size: 'small' })
           .filter(objectFilter)
@@ -24,8 +75,9 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             fc.tuple(
               fc
                 .array(filteredAnything, {
-                  minLength: 1,
-                  size: 'small',
+                  // Same length as expected for meaningful comparison
+                  maxLength: expected.length,
+                  minLength: expected.length,
                 })
                 .filter(objectFilter)
                 .filter(
@@ -44,13 +96,8 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           assertions.arrayDeepEqualAssertion,
         )!,
       },
-    },
-  ],
-
-  [
-    assertions.arraySatisfiesAssertion,
-    {
-      invalid: {
+      validNegated: {
+        examples: [[[[[]], 'to deep equal', [[null]]]]],
         generators: fc
           .array(filteredAnything, { minLength: 1, size: 'small' })
           .filter(objectFilter)
@@ -58,8 +105,40 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             fc.tuple(
               fc
                 .array(filteredAnything, {
-                  minLength: 1,
-                  size: 'small',
+                  // Same length as expected for meaningful comparison
+                  maxLength: expected.length,
+                  minLength: expected.length,
+                })
+                .filter(objectFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arrayDeepEqualAssertion),
+              ),
+              fc.constant(expected),
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
+    assertions.arraySatisfiesAssertion,
+    {
+      invalid: {
+        examples: [[[[[]], 'to satisfy', [[], null]]]],
+        generators: fc
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .array(filteredAnything, {
+                  // Same length as expected for meaningful comparison
+                  maxLength: expected.length,
+                  minLength: expected.length,
                 })
                 .filter(objectFilter)
                 .filter(
@@ -77,6 +156,31 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         generators: SyncParametricGenerators.get(
           assertions.arraySatisfiesAssertion,
         )!,
+      },
+      validNegated: {
+        examples: [[[[null], 'to satisfy', [null, null]]]],
+        generators: fc
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter)
+          .chain((expected) =>
+            fc.tuple(
+              fc
+                .array(filteredAnything, {
+                  // Same length as expected for meaningful comparison
+                  maxLength: expected.length,
+                  minLength: expected.length,
+                })
+                .filter(objectFilter)
+                .filter(
+                  (actual) =>
+                    JSON.stringify(actual) !== JSON.stringify(expected),
+                ),
+              fc.constantFrom(
+                ...extractPhrases(assertions.arraySatisfiesAssertion),
+              ),
+              fc.constant(expected),
+            ),
+          ),
       },
     },
   ],
@@ -543,7 +647,9 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
                 .filter(objectFilter)
                 .filter(
                   (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
+                    // Must be different AND must NOT satisfy (not a superset)
+                    JSON.stringify(actual) !== JSON.stringify(expected) &&
+                    !objectSatisfies(actual, expected),
                 ),
               fc.constantFrom(
                 ...extractPhrases(assertions.objectSatisfiesAssertion),
