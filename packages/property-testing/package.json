@@ -22,9 +22,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./package.json": "./package.json"
   },
@@ -41,7 +41,9 @@
   ],
   "scripts": {
     "build": "zshy",
-    "test": "echo \"No tests yet\"",
+    "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\"",
+    "test:base": "node --test --test-reporter=spec --import tsx",
+    "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
     "test:node20": "npm test",
     "test:types": "echo \"No type tests yet\""
   },
