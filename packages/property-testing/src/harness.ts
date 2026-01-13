@@ -4,8 +4,15 @@
  * @packageDocumentation
  */
 
-import type { AnyAssertion, AssertionPart, AssertionParts } from 'bupkis/types';
+import type {
+  AnyAssertion,
+  AnyAsyncAssertion,
+  AnySyncAssertion,
+  AssertionPart,
+  AssertionParts,
+} from 'bupkis/types';
 
+import { AssertionError, NegatedAssertionError } from 'bupkis';
 import fc from 'fast-check';
 import { inspect } from 'util';
 import { z } from 'zod';
@@ -21,6 +28,49 @@ import {
   type PropertyTestConfigVariantSyncGenerators,
 } from './config.js';
 import { calculateNumRuns } from './util.js';
+
+/**
+ * Error thrown when property test arguments don't match the expected assertion.
+ *
+ * This indicates a bug in the property test generator - it's producing inputs
+ * that don't match the assertion being tested.
+ */
+export class PropertyTestGeneratorError extends Error {
+  override name = 'PropertyTestGeneratorError';
+
+  constructor(
+    public readonly assertionId: string,
+    public readonly args: unknown[],
+    message?: string,
+  ) {
+    super(
+      message ??
+        `Generator bug: Arguments don't parse for assertion '${assertionId}'. ` +
+          `Args: ${inspect(args)}`,
+    );
+  }
+}
+
+/**
+ * Error thrown when a different assertion than expected handled the input.
+ *
+ * This indicates that the property generator produced input that matched a
+ * different assertion than the one being tested.
+ */
+export class WrongAssertionError extends Error {
+  override name = 'WrongAssertionError';
+
+  constructor(
+    public readonly expectedAssertionId: string,
+    public readonly actualAssertionId: string,
+    public readonly args: unknown[],
+  ) {
+    super(
+      `Wrong assertion failed: expected '${expectedAssertionId}', ` +
+        `but '${actualAssertionId}' failed instead. Args: ${inspect(args)}`,
+    );
+  }
+}
 
 const { isArray } = Array;
 
@@ -44,6 +94,17 @@ export type ExpectationResult =
     };
 
 /**
+ * Options for expectUsing functions.
+ */
+export interface ExpectUsingOptions {
+  /**
+   * Whether to run the assertion in negated mode. When true, the assertion is
+   * expected to fail (which means success for negated).
+   */
+  negated?: boolean;
+}
+
+/**
  * Context for creating a property test harness.
  *
  * Contains the expect functions that will be used to test assertions.
@@ -52,6 +113,101 @@ export interface PropertyTestHarnessContext {
   expect: (value: unknown, ...args: unknown[]) => void;
   expectAsync: (value: unknown, ...args: unknown[]) => Promise<void>;
 }
+
+/**
+ * Directly executes a sync assertion, bypassing phrase matching.
+ *
+ * Use this to verify that an assertion actually executes on given inputs,
+ * independent of whether expect() matched the correct assertion.
+ *
+ * @function
+ * @param assertion The assertion to execute
+ * @param args Arguments to pass (subject, phrase, ...params)
+ * @param options Options including negation
+ * @throws {PropertyTestGeneratorError} If args don't parse for the assertion
+ * @throws {AssertionError} If assertion fails (in non-negated mode)
+ * @throws {NegatedAssertionError} If assertion passes (in negated mode)
+ */
+export const expectUsing = <A extends AnySyncAssertion>(
+  assertion: A,
+  args: unknown[],
+  options?: ExpectUsingOptions,
+): void => {
+  const { negated = false } = options ?? {};
+  const parseResult = assertion.parseValues(args);
+
+  if (!parseResult.success) {
+    throw new PropertyTestGeneratorError(assertion.id, args);
+  }
+
+  try {
+    assertion.execute(parseResult.parsedValues, args, expectUsing, parseResult);
+  } catch (error) {
+    if (negated && AssertionError.isAssertionError(error)) {
+      // Negated assertion - error means the underlying check failed, which is success
+      return;
+    }
+    throw error;
+  }
+
+  // If we get here without throwing, assertion passed
+  if (negated) {
+    throw new NegatedAssertionError({
+      id: assertion.id,
+      message: `Expected negated assertion '${assertion.id}' to fail, but it passed`,
+    });
+  }
+};
+
+/**
+ * Directly executes an async assertion, bypassing phrase matching.
+ *
+ * Use this to verify that an assertion actually executes on given inputs,
+ * independent of whether expectAsync() matched the correct assertion.
+ *
+ * @function
+ * @param assertion The assertion to execute
+ * @param args Arguments to pass (subject, phrase, ...params)
+ * @param options Options including negation
+ * @throws {PropertyTestGeneratorError} If args don't parse for the assertion
+ * @throws {AssertionError} If assertion fails (in non-negated mode)
+ * @throws {NegatedAssertionError} If assertion passes (in negated mode)
+ */
+export const expectUsingAsync = async <A extends AnyAsyncAssertion>(
+  assertion: A,
+  args: unknown[],
+  options?: ExpectUsingOptions,
+): Promise<void> => {
+  const { negated = false } = options ?? {};
+  const parseResult = await assertion.parseValuesAsync(args);
+
+  if (!parseResult.success) {
+    throw new PropertyTestGeneratorError(assertion.id, args);
+  }
+
+  try {
+    await assertion.executeAsync(
+      parseResult.parsedValues,
+      args,
+      expectUsingAsync,
+      parseResult,
+    );
+  } catch (error) {
+    if (negated && AssertionError.isAssertionError(error)) {
+      // Negated assertion - error means the underlying check failed, which is success
+      return;
+    }
+    throw error;
+  }
+
+  // If we get here without throwing, assertion passed
+  if (negated) {
+    throw new NegatedAssertionError({
+      id: assertion.id,
+      message: `Expected negated assertion '${assertion.id}' to fail, but it passed`,
+    });
+  }
+};
 
 /**
  * Global defaults for property test configurations.
@@ -186,14 +342,49 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
   const { expect, expectAsync } = ctx;
 
   /**
+   * Verifies that a caught error is from the expected assertion.
+   *
+   * @function
+   * @param error The caught error
+   * @param expectedAssertionId The ID of the assertion we expect to have failed
+   * @param args The arguments that were passed
+   * @returns ExpectationResult indicating if the right assertion failed
+   */
+  const verifyAssertionError = (
+    error: unknown,
+    expectedAssertionId: string,
+    args: unknown[],
+  ): ExpectationResult => {
+    if (AssertionError.isAssertionError(error)) {
+      if (error.assertionId === expectedAssertionId) {
+        return { failed: false }; // Correct assertion failed
+      }
+      return {
+        error: new WrongAssertionError(
+          expectedAssertionId,
+          error.assertionId,
+          args,
+        ),
+        failed: true,
+      };
+    }
+
+    // Not an AssertionError - could be UnknownAssertionError or other error
+    return { error, failed: true };
+  };
+
+  /**
    * @function
    */
   const validExpectation = (
+    assertion: AnySyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): ExpectationResult => {
     try {
       expect(value, ...args);
+      // Also verify with expectUsing to ensure correct assertion executed
+      expectUsing(assertion, [value, ...args]);
       return { failed: false };
     } catch (err) {
       return { error: err, failed: true };
@@ -204,11 +395,14 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const validNegatedExpectation = (
+    assertion: AnySyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): ExpectationResult => {
     try {
       expect(value, `not ${args[0]}`, ...args.slice(1));
+      // Also verify with expectUsing in negated mode
+      expectUsing(assertion, [value, ...args], { negated: true });
       return { failed: false };
     } catch (err) {
       return { error: err, failed: true };
@@ -219,6 +413,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const invalidNegatedExpectation = (
+    assertion: AnySyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): ExpectationResult => {
@@ -230,8 +425,12 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         ),
         failed: true,
       };
-    } catch {
-      return { failed: false };
+    } catch (error) {
+      return verifyAssertionError(error, assertion.id, [
+        value,
+        `not ${args[0]}`,
+        ...args.slice(1),
+      ]);
     }
   };
 
@@ -239,6 +438,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const invalidExpectation = (
+    assertion: AnySyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): ExpectationResult => {
@@ -248,8 +448,8 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         error: new Error('Expected assertion to fail but it passed instead'),
         failed: true,
       };
-    } catch {
-      return { failed: false };
+    } catch (error) {
+      return verifyAssertionError(error, assertion.id, [value, ...args]);
     }
   };
 
@@ -257,6 +457,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const invalidAsyncExpectation = async (
+    assertion: AnyAsyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): Promise<ExpectationResult> => {
@@ -266,8 +467,8 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         error: new Error('Expected assertion to fail but it passed instead'),
         failed: true,
       };
-    } catch {
-      return { failed: false };
+    } catch (error) {
+      return verifyAssertionError(error, assertion.id, [value, ...args]);
     }
   };
 
@@ -275,11 +476,14 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const validAsyncExpectation = async (
+    assertion: AnyAsyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): Promise<ExpectationResult> => {
     try {
       await expectAsync(value, ...args);
+      // Also verify with expectUsingAsync to ensure correct assertion executed
+      await expectUsingAsync(assertion, [value, ...args]);
       return { failed: false };
     } catch (err) {
       return { error: err, failed: true };
@@ -290,11 +494,14 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const validNegatedAsyncExpectation = async (
+    assertion: AnyAsyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): Promise<ExpectationResult> => {
     try {
       await expectAsync(value, `not ${args[0]}`, ...args.slice(1));
+      // Also verify with expectUsingAsync in negated mode
+      await expectUsingAsync(assertion, [value, ...args], { negated: true });
       return { failed: false };
     } catch (err) {
       return { error: err, failed: true };
@@ -305,6 +512,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @function
    */
   const invalidNegatedAsyncExpectation = async (
+    assertion: AnyAsyncAssertion,
     value: unknown,
     ...args: unknown[]
   ): Promise<ExpectationResult> => {
@@ -316,15 +524,22 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         ),
         failed: true,
       };
-    } catch {
-      return { failed: false };
+    } catch (error) {
+      return verifyAssertionError(error, assertion.id, [
+        value,
+        `not ${args[0]}`,
+        ...args.slice(1),
+      ]);
     }
   };
 
   /**
    * @function
    */
-  const createSyncPredicate = (variantName: string) => {
+  const createSyncPredicate = (
+    variantName: string,
+    assertion: AnySyncAssertion,
+  ) => {
     /**
      * @function
      */
@@ -334,28 +549,40 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     ) => {
       switch (variantName) {
         case 'invalid': {
-          const { error, failed } = invalidExpectation(value, ...part);
+          const { error, failed } = invalidExpectation(
+            assertion,
+            value,
+            ...part,
+          );
           if (failed) {
             throw error;
           }
           break;
         }
         case 'invalidNegated': {
-          const { error, failed } = invalidNegatedExpectation(value, ...part);
+          const { error, failed } = invalidNegatedExpectation(
+            assertion,
+            value,
+            ...part,
+          );
           if (failed) {
             throw error;
           }
           break;
         }
         case 'valid': {
-          const { error, failed } = validExpectation(value, ...part);
+          const { error, failed } = validExpectation(assertion, value, ...part);
           if (failed) {
             throw error;
           }
           break;
         }
         case 'validNegated': {
-          const { error, failed } = validNegatedExpectation(value, ...part);
+          const { error, failed } = validNegatedExpectation(
+            assertion,
+            value,
+            ...part,
+          );
           if (failed) {
             throw error;
           }
@@ -369,7 +596,10 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
   /**
    * @function
    */
-  const createAsyncPredicate = (variantName: string) => {
+  const createAsyncPredicate = (
+    variantName: string,
+    assertion: AnyAsyncAssertion,
+  ) => {
     /**
      * @function
      */
@@ -383,6 +613,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
       switch (variantName) {
         case 'invalid': {
           const { error, failed } = await invalidAsyncExpectation(
+            assertion,
             value,
             ...part,
           );
@@ -393,6 +624,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         }
         case 'invalidNegated': {
           const { error, failed } = await invalidNegatedAsyncExpectation(
+            assertion,
             value,
             ...part,
           );
@@ -402,7 +634,11 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
           break;
         }
         case 'valid': {
-          const { error, failed } = await validAsyncExpectation(value, ...part);
+          const { error, failed } = await validAsyncExpectation(
+            assertion,
+            value,
+            ...part,
+          );
           if (failed) {
             throw error;
           }
@@ -410,6 +646,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
         }
         case 'validNegated': {
           const { error, failed } = await validNegatedAsyncExpectation(
+            assertion,
             value,
             ...part,
           );
@@ -435,6 +672,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     testConfigDefaults: PropertyTestConfigParameters,
     params: PropertyTestConfigParameters,
     variantName: string,
+    assertion: AnyAsyncAssertion,
   ) => {
     const { generators, ...propFcParams } = variant;
     const finalParams = {
@@ -447,7 +685,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     const numRuns = calculateNumRuns(finalParams.runSize);
 
     let result: fc.RunDetails<any>;
-    const predicate = createAsyncPredicate(variantName);
+    const predicate = createAsyncPredicate(variantName, assertion);
     if (isGeneratorsTuple(generators)) {
       const asyncProperty = fc.asyncProperty(...generators, predicate);
       result = await fc.check(asyncProperty, { ...finalParams, numRuns });
@@ -475,6 +713,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     testConfigDefaults: PropertyTestConfigParameters,
     params: PropertyTestConfigParameters,
     variantName: string,
+    assertion: AnySyncAssertion,
   ): void => {
     const { generators, ...propFcParams } = variant;
     const finalParams = {
@@ -486,7 +725,7 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
     const numRuns = calculateNumRuns(finalParams.runSize);
 
     let result: fc.RunDetails<any>;
-    const predicate = createSyncPredicate(variantName);
+    const predicate = createSyncPredicate(variantName, assertion);
     if (isGeneratorsTuple(generators)) {
       const property = fc.property(...generators, predicate);
       result = fc.check(property, { ...finalParams, numRuns });
@@ -507,22 +746,39 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
   };
 
   /**
+   * Runs a property test variant for a specific assertion.
+   *
    * @function
+   * @param variant The variant configuration
+   * @param testConfigDefaults Default parameters for all tests
+   * @param params Parameters specific to this test
+   * @param variantName Name of the variant (valid, invalid, validNegated,
+   *   invalidNegated)
+   * @param assertion The assertion being tested (enables assertion ID checking
+   *   and direct execution verification)
    */
   const runVariant = async (
     variant: PropertyTestConfigVariant,
     testConfigDefaults: PropertyTestConfigParameters,
     params: PropertyTestConfigParameters,
     variantName: string,
+    assertion: AnyAssertion,
   ): Promise<void> => {
     if (isPropertyTestConfigVariantGenerators(variant)) {
-      runSyncGeneratorsTest(variant, testConfigDefaults, params, variantName);
+      runSyncGeneratorsTest(
+        variant,
+        testConfigDefaults,
+        params,
+        variantName,
+        assertion as AnySyncAssertion,
+      );
     } else if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
       await runAsyncGeneratorsTest(
         variant,
         testConfigDefaults,
         params,
         variantName,
+        assertion as AnyAsyncAssertion,
       );
     } else if (isPropertyTestConfigVariantProperty(variant)) {
       const { property, ...propFcParams } = variant;
@@ -563,18 +819,24 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
    * @param variant The variant configuration to extract from
    * @param variantName The name of the variant (valid, invalid, validNegated,
    *   invalidNegated)
+   * @param assertion The assertion being tested (enables assertion ID checking
+   *   and direct execution verification)
    * @returns Object containing the property and whether it's async
    */
   const extractProperty = (
     variant: PropertyTestConfigVariant,
     variantName: string,
+    assertion: AnyAssertion,
   ): {
     isAsync: boolean;
     property: fc.IAsyncProperty<any> | fc.IProperty<any>;
   } => {
     if (isPropertyTestConfigVariantGenerators(variant)) {
       const { generators } = variant;
-      const predicate = createSyncPredicate(variantName);
+      const predicate = createSyncPredicate(
+        variantName,
+        assertion as AnySyncAssertion,
+      );
       if (isGeneratorsTuple(generators)) {
         return {
           isAsync: false,
@@ -591,7 +853,10 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
 
     if (isPropertyTestConfigVariantAsyncGenerators(variant)) {
       const { generators } = variant;
-      const predicate = createAsyncPredicate(variantName);
+      const predicate = createAsyncPredicate(
+        variantName,
+        assertion as AnyAsyncAssertion,
+      );
       if (isGeneratorsTuple(generators)) {
         return {
           isAsync: true,

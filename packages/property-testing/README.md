@@ -55,7 +55,7 @@ describe('myAssertion', () => {
 
   for (const [variantName, variant] of variants) {
     it(`should handle ${variantName} inputs`, async () => {
-      await runVariant(variant, {}, params, variantName);
+      await runVariant(variant, {}, params, variantName, myAssertion);
     });
   }
 });
@@ -151,8 +151,47 @@ const { runVariant } = createPropertyTestHarness({
 
 **Returns:**
 
-- `runVariant(variant, defaults, params, variantName)` - Runs a single variant test
+- `runVariant(variant, defaults, params, variantName, assertion)` - Runs a single variant test
 - Plus individual expectation helpers for advanced use cases
+
+### `expectUsing(assertion, args, options?)`
+
+Directly executes a sync assertion, bypassing phrase matching. This is useful for:
+
+- Verifying that generated inputs actually work with the target assertion
+- Testing assertion logic independently of the phrase-matching system
+- Catching generator bugs that produce invalid inputs
+
+```ts
+import {
+  expectUsing,
+  PropertyTestGeneratorError,
+} from '@bupkis/property-testing';
+import { myAssertion } from './my-assertion.js';
+
+// Execute the assertion directly
+expectUsing(myAssertion, [42, 'to be even']);
+
+// Test negated behavior
+expectUsing(myAssertion, [43, 'to be even'], { negated: true });
+```
+
+**Throws:**
+
+- `PropertyTestGeneratorError` - If arguments don't parse for the assertion (generator bug)
+- `AssertionError` - If assertion fails (in non-negated mode)
+- `NegatedAssertionError` - If assertion passes (in negated mode)
+
+### `expectUsingAsync(assertion, args, options?)`
+
+Async version of `expectUsing` for testing async assertions.
+
+```ts
+import { expectUsingAsync } from '@bupkis/property-testing';
+import { myAsyncAssertion } from './my-assertion.js';
+
+await expectUsingAsync(myAsyncAssertion, [promise, 'to resolve to', 42]);
+```
 
 ### `extractPhrases(assertion)`
 
@@ -250,6 +289,37 @@ Run sizes:
 - `small`: 50 base runs
 - `medium`: 250 base runs (default)
 - `large`: 500 base runs
+
+### Error Types
+
+#### `PropertyTestGeneratorError`
+
+Thrown when `expectUsing` or `expectUsingAsync` receives arguments that don't parse for the assertion. This indicates a bug in your property generator—the generated inputs don't match the assertion's schema.
+
+```ts
+import { PropertyTestGeneratorError } from '@bupkis/property-testing';
+
+try {
+  expectUsing(numberAssertion, ['not a number', 'to be positive']);
+} catch (error) {
+  if (error instanceof PropertyTestGeneratorError) {
+    console.log(error.assertionId); // The assertion that rejected the input
+    console.log(error.args); // The invalid arguments
+  }
+}
+```
+
+#### `WrongAssertionError`
+
+Thrown when testing `invalid` or `invalidNegated` variants and a different assertion than expected handles the error. This catches cases where your generator produces inputs that match a different assertion.
+
+```ts
+import { WrongAssertionError } from '@bupkis/property-testing';
+
+// If testing stringAssertion but numberAssertion catches the error instead:
+// WrongAssertionError: Wrong assertion failed: expected 'string-assertion',
+// but 'number-assertion' failed instead.
+```
 
 ## Environment Variables
 

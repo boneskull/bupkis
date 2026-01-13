@@ -25,6 +25,9 @@ export {
 export {
   createPropertyTestHarness,
   type ExpectationResult,
+  expectUsing,
+  expectUsingAsync,
+  type ExpectUsingOptions,
   extractPhrases,
   getVariants,
   isGeneratorsTuple,
@@ -32,7 +35,9 @@ export {
   isPropertyTestConfigVariantAsyncProperty,
   isPropertyTestConfigVariantGenerators,
   isPropertyTestConfigVariantProperty,
+  PropertyTestGeneratorError,
   type PropertyTestHarnessContext,
+  WrongAssertionError,
 } from './harness.js';
 
 export {
