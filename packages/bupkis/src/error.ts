@@ -252,7 +252,6 @@ export class InvalidObjectSchemaError extends BupkisError {
 /**
  * Error type used internally to catch failed negated assertions.
  *
- * @internal
  * @group Errors
  */
 export class NegatedAssertionError extends AssertionError {
