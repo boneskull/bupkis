@@ -30,6 +30,41 @@ const WORKER_PATH = join(__dirname, 'fuzz-worker.ts');
 const MAX_TARGETS_PER_WORKER = 50;
 
 /**
+ * Filter pattern for selecting specific fuzz targets.
+ *
+ * Can be set via:
+ *
+ * - Command-line argument: `npm run test:fuzz -- "stringAssertion"`
+ * - Environment variable: `FUZZ_FILTER="stringAssertion" npm run test:fuzz`
+ *
+ * Supports:
+ *
+ * - Substring match: `"stringAssertion"` matches all targets containing that
+ *   string
+ * - Regex (if starts with `/`): `"/^to be/:valid$/"` for precise matching
+ */
+const getFilter = (): ((id: string) => boolean) | null => {
+  const pattern = process.argv[2] ?? process.env.FUZZ_FILTER;
+  if (!pattern) {
+    return null;
+  }
+
+  // Regex pattern (e.g., "/^stringAssertion/")
+  if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
+    const lastSlash = pattern.lastIndexOf('/');
+    const regexBody = pattern.slice(1, lastSlash);
+    const flags = pattern.slice(lastSlash + 1);
+    const regex = new RegExp(regexBody, flags);
+    return (id: string) => regex.test(id);
+  }
+
+  // Simple substring match
+  return (id: string) => id.includes(pattern);
+};
+
+const targetFilter = getFilter();
+
+/**
  * Runtime statistics for the fuzzing session.
  *
  * Tracks progress, pass/fail counts, and timing information displayed in the
@@ -256,10 +291,35 @@ const main = async (): Promise<void> => {
   await ensureResultsDir();
 
   const allTargets = getFuzzTargetIds();
-  targetQueue = [...allTargets];
+  const filteredTargets = targetFilter
+    ? allTargets.filter(targetFilter)
+    : allTargets;
+
+  if (filteredTargets.length === 0) {
+    console.error('  ❌ No targets match the filter pattern.');
+    console.error(
+      `     Pattern: ${process.argv[2] ?? process.env.FUZZ_FILTER}`,
+    );
+    console.error('     Available targets:');
+    for (const id of allTargets.slice(0, 10)) {
+      console.error(`       - ${id}`);
+    }
+    if (allTargets.length > 10) {
+      console.error(`       ... and ${allTargets.length - 10} more`);
+    }
+    process.exit(1);
+  }
+
+  targetQueue = [...filteredTargets];
   const totalTargets = targetQueue.length;
 
-  console.log(`  Found ${totalTargets} fuzz targets`);
+  if (targetFilter) {
+    console.log(
+      `  Filter: "${process.argv[2] ?? process.env.FUZZ_FILTER}" (${totalTargets}/${allTargets.length} targets)`,
+    );
+  } else {
+    console.log(`  Found ${totalTargets} fuzz targets`);
+  }
 
   const numCores = cpus().length;
   const numWorkers = Math.min(numCores - 1, totalTargets, 8);
