@@ -30,7 +30,13 @@ describe('Property-Based Tests for Esoteric Assertions', () => {
     describe(`Assertion: ${assertion} [${id}]`, () => {
       for (const [name, variant] of variants) {
         it(`should pass ${name} checks [${id}]`, async () => {
-          await runVariant(variant, testConfigDefaults, params, name);
+          await runVariant(
+            variant,
+            testConfigDefaults,
+            params,
+            name,
+            assertion,
+          );
         });
       }
     });

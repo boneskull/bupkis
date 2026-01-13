@@ -352,5 +352,9 @@ export const isError = (value: unknown): value is Error => isA(value, Error);
 export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
   value: unknown,
 ): value is ExpectItExecutor<Subject> => {
-  return isFunction(value) && kExpectIt in value && value[kExpectIt] === true;
+  return (
+    isFunction(value) &&
+    kExpectIt in value &&
+    (value as unknown as Record<symbol, unknown>)[kExpectIt] === true
+  );
 };

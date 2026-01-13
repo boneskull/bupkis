@@ -84,7 +84,11 @@ const extractFuzzTargetsFromConfig = (
 
   for (const [variantName, variant] of variants) {
     const id = `${assertion.id}:${variantName}`;
-    const { isAsync, property } = harness.extractProperty(variant, variantName);
+    const { isAsync, property } = harness.extractProperty(
+      variant,
+      variantName,
+      assertion,
+    );
     targets.push({ id, isAsync, property });
   }
 

@@ -33,7 +33,13 @@ describe('Property-Based Tests for Collection Assertions', () => {
           const { params, variants } = getVariants(config);
           for (const [name, variant] of variants) {
             it(`should pass ${name} checks [${id}]`, async () => {
-              await runVariant(variant, testConfigDefaults, params, name);
+              await runVariant(
+                variant,
+                testConfigDefaults,
+                params,
+                name,
+                assertion,
+              );
             });
           }
         }

@@ -10,44 +10,46 @@
  */
 
 const { freeze } = Object;
+const { for: symbolFor } = Symbol;
 
 /**
  * Symbol flagging the value as a Bupkis-created string literal, which will be
  * omitted from the parameters to an `AssertionImpl`.
  */
 
-export const kStringLiteral: unique symbol = Symbol('bupkis:string-literal');
+export const kStringLiteral: symbol = symbolFor('bupkis-string-literal');
 
 /**
  * Symbol used to flag an `AssertionError` as our own.
  *
- * @internal
+ * Uses `symbolFor()` to ensure the symbol is shared across module instances,
+ * which is important in monorepo setups where the same package may be loaded
+ * from different paths.
  */
 
-export const kBupkisAssertionError: unique symbol = Symbol('bupkis-error');
+export const kBupkisAssertionError: symbol = symbolFor(
+  'bupkis-assertion-error',
+);
 
 /**
  * Symbol used to flag a `FailAssertionError`
- *
- * @internal
  */
-export const kBupkisFailAssertionError: unique symbol =
-  Symbol('bupkis-fail-error');
+export const kBupkisFailAssertionError: symbol = symbolFor(
+  'bupkis-fail-assertion-error',
+);
 
 /**
  * Symbol used to flag a `NegatedAssertionError`
- *
- * @internal
  */
 
-export const kBupkisNegatedAssertionError: unique symbol = Symbol(
-  'bupkis-negated-error',
+export const kBupkisNegatedAssertionError: symbol = symbolFor(
+  'bupkis-negated-assertion-error',
 );
 
 /**
  * Symbol used to flag a function as an `expect.it` executor.
  */
-export const kExpectIt: unique symbol = Symbol('bupkis-expect-it');
+export const kExpectIt: symbol = symbolFor('bupkis-expect-it');
 
 /**
  * Regular expression that matches valid keypath syntax.
@@ -79,7 +81,7 @@ export const KEYPATH_REGEX =
 /**
  * Symbol used to flag a function as a Bupkis-thrown error.
  */
-export const kBupkisError: unique symbol = Symbol('bupkis-error');
+export const kBupkisError: symbol = symbolFor('bupkis-error');
 
 /**
  * Assertion ID of a `FailAssertionError`.
