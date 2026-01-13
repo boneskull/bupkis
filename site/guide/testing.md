@@ -410,7 +410,7 @@ for (const [assertion, testConfig] of testConfigs) {
   describe(`assertion: "${phrases[0]}"`, () => {
     for (const [variantName, variant] of variants) {
       it(`should handle ${variantName} inputs`, async () => {
-        await runVariant(variant, {}, params, variantName);
+        await runVariant(variant, {}, params, variantName, assertion);
       });
     }
   });
@@ -479,6 +479,30 @@ const asyncConfig: PropertyTestConfig = {
 };
 ```
 
+### Direct Assertion Testing
+
+Sometimes you want to verify that your generated inputs actually work with the target assertion—not just that _some_ assertion passes. The `expectUsing` and `expectUsingAsync` functions execute an assertion directly, bypassing phrase matching:
+
+```ts
+import {
+  expectUsing,
+  expectUsingAsync,
+  PropertyTestGeneratorError,
+} from '@bupkis/property-testing';
+import { myAssertion, myAsyncAssertion } from './my-assertions.js';
+
+// Execute the assertion directly with arguments
+expectUsing(myAssertion, [42, 'to be even']);
+
+// Test negated behavior
+expectUsing(myAssertion, [43, 'to be even'], { negated: true });
+
+// Async assertions
+await expectUsingAsync(myAsyncAssertion, [promise, 'to resolve']);
+```
+
+If your generator produces invalid inputs (arguments that don't parse for the assertion), `expectUsing` throws a `PropertyTestGeneratorError`—catching bugs in your test setup rather than false positives.
+
 ### Utility Functions
 
 The package provides several helpers for common testing scenarios:
@@ -492,6 +516,10 @@ import {
   hasValueDeep, // recursively search for a value
   safeRegexStringFilter, // remove regex metacharacters
   calculateNumRuns, // environment-aware run count
+  expectUsing, // direct assertion execution (sync)
+  expectUsingAsync, // direct assertion execution (async)
+  PropertyTestGeneratorError, // generator bug error
+  WrongAssertionError, // wrong assertion matched error
 } from '@bupkis/property-testing';
 
 // Filter out objects that break Zod validation
