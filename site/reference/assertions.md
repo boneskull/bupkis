@@ -39,7 +39,7 @@ expect(
 
 > _See also:_ [Parameter (glossary)](./glossary.md#parameter)
 
-A _parameter_ is considered anything else that's neither a phrase nor a value. This comes into play when an assertion is _parametric_; this means the assertion expects some extra value to use in some manner.
+A _parameter_ is considered anything else that's neither a phrase nor a subject. This comes into play when an assertion is _parametric_; this means the assertion expects some extra value to use in some manner.
 
 Typically, a parameter is used for some type of comparison operation, but this is not a requirement.
 
