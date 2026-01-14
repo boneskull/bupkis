@@ -52,6 +52,7 @@ export default {
     'API',
     'Reference',
     'Plugins',
+    'Migration Tools',
     'Testing Utilities',
     'About',
     '*',
