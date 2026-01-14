@@ -431,7 +431,7 @@ export const valueToSchema = (
           return baseSchema.superRefine((data, ctx) => {
             if (typeof data !== 'object' || data === null) {
               ctx.addIssue({
-                code: z.ZodIssueCode.custom,
+                code: 'custom',
                 message: 'Expected an object',
               });
               return;
@@ -441,7 +441,7 @@ export const valueToSchema = (
             for (const key of undefinedKeys) {
               if (!hasOwn(obj, key)) {
                 ctx.addIssue({
-                  code: z.ZodIssueCode.custom,
+                  code: 'custom',
                   message: `Expected property "${key}" to exist with value undefined`,
                   path: [key],
                 });
