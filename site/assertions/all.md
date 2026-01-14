@@ -8,6 +8,7 @@ category: Assertions
 {@include ./other.md}
 {@include ./string.md}
 {@include ./collection.md}
+{@include ./iterable.md}
 {@include ./object.md}
 {@include ./function.md}
 {@include ./equality.md}

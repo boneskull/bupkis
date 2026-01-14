@@ -67,6 +67,7 @@ describe('Assertion Classification', () => {
     }
 
     // This will pass since T010 correctly classifies all assertions
-    expect(totalClassified, 'to equal', 72);
+    // Updated from 72 to 86 after adding 14 sync iterable assertions
+    expect(totalClassified, 'to equal', 86);
   });
 });
