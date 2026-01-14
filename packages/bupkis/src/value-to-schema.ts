@@ -146,13 +146,6 @@ export const valueToSchema = (
     visited.add(value);
 
     try {
-      // Check for objects with own __proto__ property - these can cause unexpected behavior
-      if (hasOwn(value, '__proto__')) {
-        throw new SatisfactionError(
-          'Objects with an own "__proto__" property are not supported by valueToSchema',
-        );
-      }
-
       // Handle built-in object types
       if (value instanceof Date) {
         // Check if it's a valid date
@@ -396,8 +389,25 @@ export const valueToSchema = (
         const schemaShape: Record<string, z.ZodType<any>> = {};
         const undefinedKeys: string[] = [];
 
+        // Handle __proto__ specially - Zod ignores it in z.object() shapes,
+        // so we validate it separately via superRefine
+        let protoSchema: null | z.ZodType = null;
+        if (hasOwn(value, '__proto__')) {
+          const protoValue = (value as Record<string, unknown>)['__proto__'];
+          protoSchema = valueToSchema(
+            protoValue,
+            { ...options, _currentDepth: _currentDepth + 1 },
+            visited,
+          );
+        }
+
         for (const [key, val] of entries(value)) {
           if (isString(key)) {
+            // Skip __proto__ - handled separately since Zod ignores it in object shapes
+            if (key === '__proto__') {
+              continue;
+            }
+
             // Skip undefined values unless we're in literalPrimitives mode
             // This prevents objects with only undefined values from matching any object
             if (val === undefined && !literalPrimitives) {
@@ -426,8 +436,55 @@ export const valueToSchema = (
           ? z.strictObject(schemaShape)
           : z.looseObject(schemaShape);
 
-        // If we have undefined keys in literalPrimitives mode, add validation to ensure they exist
-        if (undefinedKeys.length > 0 && literalPrimitives) {
+        // When __proto__ is present, we MUST use z.custom() because Zod strips
+        // __proto__ before it reaches superRefine. z.custom() receives the raw input.
+        if (protoSchema) {
+          const capturedProtoSchema = protoSchema;
+          const capturedUndefinedKeys = undefinedKeys;
+          const needsUndefinedValidation =
+            capturedUndefinedKeys.length > 0 && literalPrimitives;
+
+          return z.custom<Record<string, unknown>>(
+            (val) => {
+              if (typeof val !== 'object' || val === null) {
+                return false;
+              }
+
+              // Validate __proto__ BEFORE Zod can strip it
+              if (!hasOwn(val, '__proto__')) {
+                return false;
+              }
+              const actualProto = (val as Record<string, unknown>)['__proto__'];
+              if (!capturedProtoSchema.safeParse(actualProto).success) {
+                return false;
+              }
+
+              // Validate the rest of the object via the base schema
+              if (!baseSchema.safeParse(val).success) {
+                return false;
+              }
+
+              // Validate undefined keys if needed
+              if (needsUndefinedValidation) {
+                for (const key of capturedUndefinedKeys) {
+                  if (!hasOwn(val, key)) {
+                    return false;
+                  }
+                }
+              }
+
+              return true;
+            },
+            {
+              message: 'Expected object to have own "__proto__" property',
+            },
+          );
+        }
+
+        // Apply refinements for undefined keys (no __proto__ case)
+        const needsUndefinedKeyValidation =
+          undefinedKeys.length > 0 && literalPrimitives;
+        if (needsUndefinedKeyValidation) {
           return baseSchema.superRefine((data, ctx) => {
             if (typeof data !== 'object' || data === null) {
               ctx.addIssue({
@@ -438,6 +495,8 @@ export const valueToSchema = (
             }
 
             const obj = data as Record<string, unknown>;
+
+            // Validate undefined keys exist
             for (const key of undefinedKeys) {
               if (!hasOwn(obj, key)) {
                 ctx.addIssue({

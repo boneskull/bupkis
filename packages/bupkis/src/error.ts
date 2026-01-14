@@ -270,9 +270,8 @@ export class NegatedAssertionError extends AssertionError {
  * Thrown when a value cannot be converted to a schema using `valueToSchema()`.
  *
  * @remarks
- * Currently, this includes the presence of an own property `__proto__` or an
- * empty object (because this will match anything; though maybe we should change
- * that).
+ * Currently, this is thrown when encountering an empty object as a value
+ * (because this will match anything; though maybe we should change that).
  * @group Errors
  */
 export class SatisfactionError extends BupkisError {

@@ -21,7 +21,6 @@ import {
 import fc from 'fast-check';
 import { describe, it } from 'node:test';
 
-import { SatisfactionError } from '../../src/error.js';
 import {
   valueToSchema,
   type ValueToSchemaOptions,
@@ -593,79 +592,6 @@ describe('valueToSchema() property tests', () => {
     );
   });
 
-  it('should throw ValueToSchemaError for objects with own __proto__ property', () => {
-    fc.assert(
-      fc.property(
-        // Use fc.chain to compose the generator
-        fc
-          .record({
-            anotherKey: fc.integer(),
-            nested: fc.record({ value: filteredAnything }),
-            someKey: fc.string(),
-          })
-          .chain((baseObj) =>
-            fc
-              .oneof(
-                fc.constant({}),
-                fc.constant(null),
-                fc.record({ customProp: fc.string() }),
-                filteredAnything,
-              )
-              .map((protoValue) => {
-                // Create an object with own __proto__ property
-                const objWithProto = { ...baseObj };
-                Object.defineProperty(objWithProto, '__proto__', {
-                  configurable: true,
-                  enumerable: true,
-                  value: protoValue,
-                  writable: true,
-                });
-                return objWithProto;
-              }),
-          ),
-        (objWithProto) => {
-          // Verify that Object.hasOwn returns true for __proto__
-          if (!Object.hasOwn(objWithProto, '__proto__')) {
-            throw new Error(
-              'Test setup failed: Object should have own __proto__ property',
-            );
-          }
-
-          let errorThrown = false;
-          let errorMessage = '';
-
-          try {
-            valueToSchema(objWithProto);
-          } catch (error) {
-            errorThrown = true;
-            if (error instanceof SatisfactionError) {
-              errorMessage = error.message;
-            }
-          }
-
-          // Verify that a TypeError was thrown with the expected message
-          if (!errorThrown) {
-            throw new Error('Expected TypeError to be thrown');
-          }
-
-          if (
-            !(
-              errorMessage.includes('__proto__') &&
-              errorMessage.includes('not supported')
-            )
-          ) {
-            throw new Error(
-              `Expected error message to mention __proto__ and "not supported", got: ${errorMessage}`,
-            );
-          }
-
-          return true;
-        },
-      ),
-      { numRuns },
-    );
-  });
-
   it('should handle circular object references with fc.letrec', () => {
     fc.assert(
       fc.property(
@@ -739,5 +665,166 @@ describe('valueToSchema() property tests', () => {
         timeout: 5000, // 5 second timeout to prevent hanging
       },
     );
+  });
+
+  describe('__proto__ handling', () => {
+    /**
+     * Helper to create an object with `__proto__` as an own property. Using
+     * Object.defineProperty is the only reliable way to do this.
+     */
+    const withOwnProto = <T extends object>(
+      obj: T,
+      protoValue: unknown,
+    ): T & { __proto__: unknown } => {
+      Object.defineProperty(obj, '__proto__', {
+        configurable: true,
+        enumerable: true,
+        value: protoValue,
+        writable: true,
+      });
+      return obj as T & { __proto__: unknown };
+    };
+
+    it('should correctly validate objects with own __proto__ property', () => {
+      fc.assert(
+        fc.property(
+          fc
+            .record({
+              anotherKey: fc.integer(),
+              normalKey: fc.string(),
+            })
+            .chain((baseObj) =>
+              fc
+                .oneof(
+                  fc.string(),
+                  fc.integer(),
+                  fc.boolean(),
+                  fc.record({ nested: fc.string() }),
+                )
+                .map((protoValue) => withOwnProto(baseObj, protoValue)),
+            ),
+          (objWithProto) => {
+            const schema = valueToSchema(objWithProto);
+
+            // Schema should accept the exact same structure
+            const validCopy = withOwnProto(
+              { ...objWithProto },
+              objWithProto['__proto__'],
+            );
+            // Remove the __proto__ from the spread copy to avoid duplication
+            delete (validCopy as Record<string, unknown>)['__proto__'];
+            const realValidCopy = withOwnProto(
+              {
+                anotherKey: objWithProto.anotherKey,
+                normalKey: objWithProto.normalKey,
+              },
+              objWithProto['__proto__'],
+            );
+            const validResult = schema.safeParse(realValidCopy);
+            if (!validResult.success) {
+              return false;
+            }
+
+            // Schema should reject object without __proto__
+            const objWithoutProto = {
+              anotherKey: objWithProto.anotherKey,
+              normalKey: objWithProto.normalKey,
+            };
+            const invalidResult = schema.safeParse(objWithoutProto);
+            return !invalidResult.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should correctly validate nested objects with own __proto__ property', () => {
+      fc.assert(
+        fc.property(
+          fc
+            .record({
+              outerKey: fc.string(),
+            })
+            .chain((outerObj) =>
+              fc.record({ innerKey: fc.integer() }).chain((innerObj) =>
+                fc.string().map((innerProto) =>
+                  Object.assign(outerObj, {
+                    nested: withOwnProto(innerObj, innerProto),
+                  }),
+                ),
+              ),
+            ),
+          (obj) => {
+            const schema = valueToSchema(obj);
+
+            // Valid: exact structure match
+            const validCopy = {
+              nested: withOwnProto(
+                { innerKey: obj.nested.innerKey },
+                obj.nested['__proto__'],
+              ),
+              outerKey: obj.outerKey,
+            };
+            if (!schema.safeParse(validCopy).success) {
+              return false;
+            }
+
+            // Invalid: missing __proto__ in nested object
+            const invalidCopy = {
+              nested: { innerKey: obj.nested.innerKey },
+              outerKey: obj.outerKey,
+            };
+            return !schema.safeParse(invalidCopy).success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should correctly validate objects with __proto__ containing objects with __proto__', () => {
+      fc.assert(
+        fc.property(
+          fc
+            .record({ key: fc.string() })
+            .chain((baseObj) =>
+              fc
+                .record({ innerKey: fc.integer() })
+                .chain((innerObj) =>
+                  fc
+                    .string()
+                    .map((deepProto) =>
+                      withOwnProto(baseObj, withOwnProto(innerObj, deepProto)),
+                    ),
+                ),
+            ),
+          (obj) => {
+            const schema = valueToSchema(obj);
+            const protoObj = obj['__proto__'] as {
+              __proto__: string;
+            } & { innerKey: number };
+
+            // Valid: exact deep structure
+            const validCopy = withOwnProto(
+              { key: obj.key },
+              withOwnProto(
+                { innerKey: protoObj.innerKey },
+                protoObj['__proto__'],
+              ),
+            );
+            if (!schema.safeParse(validCopy).success) {
+              return false;
+            }
+
+            // Invalid: missing inner __proto__
+            const invalidCopy = withOwnProto(
+              { key: obj.key },
+              { innerKey: protoObj.innerKey },
+            );
+            return !schema.safeParse(invalidCopy).success;
+          },
+        ),
+        { numRuns },
+      );
+    });
   });
 });
