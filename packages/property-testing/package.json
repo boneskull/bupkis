@@ -41,10 +41,9 @@
   ],
   "scripts": {
     "build": "zshy",
-    "test": "run-s \"test:base -- \\\"test/**/*.test.ts\\\"\"",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
-    "test:node20": "npm test",
+    "test:node20": "npm run test:base -- test/*.test.ts",
     "test:types": "echo \"No type tests yet\""
   },
   "peerDependencies": {

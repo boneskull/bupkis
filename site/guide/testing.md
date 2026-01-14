@@ -533,6 +533,56 @@ hasKeyDeep({ a: { b: { c: 1 } } }, 'c'); // true
 hasValueDeep({ a: [{ b: 42 }] }, 42); // true
 ```
 
+### Assertion Applicability Registry
+
+For testing compositional assertions (like `'and'` chains), the package provides an **applicability registry** that maps runtime values to assertions that would pass or fail for them. This enables data-first generation: generate a diverse value, then query which assertions apply.
+
+```ts
+import {
+  getApplicabilityRegistry,
+  getApplicableAssertions,
+  getInapplicableAssertions,
+  diverseValueArbitrary,
+  validChainArbitrary,
+  invalidChainArbitrary,
+} from '@bupkis/property-testing';
+
+// Get the default registry (lazy-loaded)
+const registry = await getApplicabilityRegistry();
+
+// Query which assertions pass/fail for a value
+const value = 42;
+const applicable = getApplicableAssertions(value, registry);
+// e.g., [numberAssertion, integerAssertion, positiveAssertion, ...]
+
+const inapplicable = getInapplicableAssertions(value, registry);
+// e.g., [stringAssertion, booleanAssertion, nullAssertion, ...]
+```
+
+#### Chain Generators
+
+For testing `'and'` chains, use the built-in chain arbitraries:
+
+```ts
+// Generate diverse values covering many type categories
+const valueGen = diverseValueArbitrary();
+
+// Generate valid 'and' chains (all assertions in chain pass)
+const validChainGen = validChainArbitrary(registry, { maxChainLength: 4 });
+
+// Generate invalid 'and' chains (at least one assertion fails)
+const invalidChainGen = invalidChainArbitrary(registry);
+
+// Each returns ChainArgs: { args, chainLength, subject }
+fc.assert(
+  fc.property(validChainGen, ({ args }) => {
+    expect(...args); // Should pass
+  }),
+);
+```
+
+There are also `validNegatedChainArbitrary` and `invalidNegatedChainArbitrary` for testing negated chains.
+
 ### Controlling Test Runs
 
 The `runSize` option adjusts the number of property test iterations:

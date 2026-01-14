@@ -321,6 +321,131 @@ import { WrongAssertionError } from '@bupkis/property-testing';
 // but 'number-assertion' failed instead.
 ```
 
+## Assertion Applicability Registry
+
+For testing compositional assertions (like `'and'` chains), the package provides an **applicability registry** system. This maps runtime values to assertions that would pass or fail for them, enabling data-first generation of valid/invalid assertion chains.
+
+### Core Concept
+
+Instead of generating random assertions and hoping they match random values, the registry lets you:
+
+1. Generate a diverse value
+2. Query which assertions would pass/fail for that value
+3. Build valid or invalid assertion chains accordingly
+
+### Creating a Registry
+
+```ts
+import {
+  createApplicabilityRegistry,
+  type ApplicabilityAssertionMap,
+} from '@bupkis/property-testing';
+import { assertions } from 'bupkis';
+
+// assertions object must have properties like stringAssertion, numberAssertion, etc.
+const registry = createApplicabilityRegistry(
+  assertions as ApplicabilityAssertionMap,
+);
+```
+
+Or use the lazy-loaded default registry:
+
+```ts
+import { getApplicabilityRegistry } from '@bupkis/property-testing';
+
+const registry = await getApplicabilityRegistry();
+```
+
+### Querying the Registry
+
+```ts
+import {
+  getApplicableAssertions,
+  getInapplicableAssertions,
+} from '@bupkis/property-testing';
+
+const value = 42;
+
+// Get assertions that would PASS for this value
+const applicable = getApplicableAssertions(value, registry);
+// e.g., [numberAssertion, integerAssertion, positiveAssertion, ...]
+
+// Get assertions that would FAIL for this value
+const inapplicable = getInapplicableAssertions(value, registry);
+// e.g., [stringAssertion, booleanAssertion, nullAssertion, ...]
+```
+
+### Chain Generators
+
+For testing `'and'` chains, use the built-in chain arbitraries:
+
+```ts
+import {
+  diverseValueArbitrary,
+  validChainArbitrary,
+  invalidChainArbitrary,
+  validNegatedChainArbitrary,
+  invalidNegatedChainArbitrary,
+} from '@bupkis/property-testing';
+
+// Generate values covering many type categories
+const valueGen = diverseValueArbitrary();
+
+// Generate valid 'and' chains (all assertions pass)
+const validChainGen = validChainArbitrary(registry, { maxChainLength: 4 });
+
+// Generate invalid 'and' chains (at least one assertion fails)
+const invalidChainGen = invalidChainArbitrary(registry);
+
+// For negated assertions
+const validNegatedGen = validNegatedChainArbitrary(registry);
+const invalidNegatedGen = invalidNegatedChainArbitrary(registry);
+```
+
+Each chain generator returns `ChainArgs`:
+
+```ts
+interface ChainArgs {
+  args: readonly unknown[]; // [subject, phrase1, 'and', phrase2, ...]
+  chainLength: number; // Number of assertions in the chain
+  subject: unknown; // The generated subject value
+}
+
+// Use with expect:
+const { args } = validChainGen.generate(fc.random(42)).value;
+expect(...args);
+```
+
+### AssertionApplicability Interface
+
+Each registry entry has this shape:
+
+```ts
+interface AssertionApplicability {
+  appliesTo: (value: unknown) => boolean; // Predicate for this assertion
+  assertion: AnySyncAssertion; // The assertion object
+  phrases: readonly [string, ...string[]]; // Phrase literals
+}
+```
+
+### Extending the Registry
+
+The registry covers non-parametric sync-basic assertions. To add custom assertions:
+
+```ts
+import { extractPhrases } from '@bupkis/property-testing';
+
+const customEntries = [
+  {
+    appliesTo: (v) => typeof v === 'string' && v.startsWith('http'),
+    assertion: myUrlAssertion,
+    phrases: extractPhrases(myUrlAssertion),
+  },
+];
+
+const extendedRegistry = [...registry, ...customEntries];
+```
+
 ## Environment Variables
 
 - `WALLABY` - Set when running in Wallaby.js (reduces runs by 10x)

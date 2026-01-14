@@ -6,6 +6,25 @@
  */
 
 export {
+  type AssertionApplicability,
+  createApplicabilityRegistry,
+  getApplicabilityRegistry,
+  getApplicableAssertions,
+  getInapplicableAssertions,
+} from './applicability.js';
+
+export {
+  buildChainArgs,
+  type ChainArgs,
+  type ChainGeneratorConfig,
+  diverseValueArbitrary,
+  invalidChainArbitrary,
+  invalidNegatedChainArbitrary,
+  validChainArbitrary,
+  validNegatedChainArbitrary,
+} from './chain-generators.js';
+
+export {
   type GeneratorParams,
   type InferPropertyTestConfigVariantAsyncProperty,
   type InferPropertyTestConfigVariantModel,
