@@ -139,6 +139,43 @@ describe('@bupkis/events', () => {
           [1, 2, 3],
         );
       });
+
+      it('should support expect.it() for custom assertions on detail', async () => {
+        const target = new EventTarget();
+        await expectAsync(
+          () =>
+            target.dispatchEvent(
+              new CustomEvent('custom', {
+                detail: { count: 42, extra: 'ignored' },
+              }),
+            ),
+          'to dispatch from',
+          target,
+          'custom',
+          'with detail',
+          expect.it('to satisfy', {
+            count: expect.it('to be greater than', 0),
+          }),
+        );
+      });
+
+      it('should support partial matching via satisfy semantics', async () => {
+        const target = new EventTarget();
+        // Detail has extra properties not in expected - 'to satisfy' allows this
+        await expectAsync(
+          () =>
+            target.dispatchEvent(
+              new CustomEvent('custom', {
+                detail: { extra: 'ignored', foo: 'bar' },
+              }),
+            ),
+          'to dispatch from',
+          target,
+          'custom',
+          'with detail',
+          { foo: 'bar' },
+        );
+      });
     });
 
     describe('timeout option', () => {

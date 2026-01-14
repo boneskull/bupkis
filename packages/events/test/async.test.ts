@@ -131,6 +131,22 @@ describe('@bupkis/events', () => {
           'to reject',
         );
       });
+
+      it('should support expect.it() for custom assertions on args', async () => {
+        const emitter = new EventEmitter();
+        await expectAsync(
+          () => emitter.emit('data', { count: 42, extra: 'ignored' }),
+          'to emit from',
+          emitter,
+          'data',
+          'with args',
+          [
+            expect.it('to satisfy', {
+              count: expect.it('to be greater than', 0),
+            }),
+          ],
+        );
+      });
     });
 
     describe('to emit error from', () => {
