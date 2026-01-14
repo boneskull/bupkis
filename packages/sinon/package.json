@@ -21,9 +21,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./package.json": "./package.json"
   },
@@ -49,7 +49,7 @@
     "test:base": "node --import tsx --test --test-reporter=spec",
     "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
     "test:node20": "npm run test:base -- test/*.test.ts",
-    "test:property": "npm run test:base -- \"test/property.test.ts\"",
+    "test:property": "npm run test:base -- ./test/property.test.ts",
     "test:types": "exit 0"
   },
   "peerDependencies": {
