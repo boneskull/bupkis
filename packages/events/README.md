@@ -11,12 +11,12 @@ npm install @bupkis/events
 ## Usage
 
 ```ts
-import { expect, expectAsync } from 'bupkis';
+import { use } from 'bupkis';
 import { eventAssertions } from '@bupkis/events';
 import { EventEmitter } from 'node:events';
 
 // Register the assertions
-const { expect: e, expectAsync: ea } = expect.use(eventAssertions);
+const { expect, expectAsync } = use(eventAssertions);
 
 // Sync assertions for listener state
 const emitter = new EventEmitter();
