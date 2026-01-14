@@ -257,8 +257,9 @@ TODO: think of good reason and fill in later
 
 ## License
 
-Copyright © 2025 Christopher Hiller. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
+Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
+[boneskull]: https://github.com/boneskull
 [standard schema]: https://standardschema.dev
 [zod]: https://zod.dev
 [valibot]: https://valibot.dev

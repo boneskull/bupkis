@@ -454,4 +454,6 @@ const extendedRegistry = [...registry, ...customEntries];
 
 ## License
 
-[BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0)
+Copyright © 2026 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
+
+[boneskull]: https://github.com/boneskull

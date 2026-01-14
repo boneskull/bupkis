@@ -19,3 +19,9 @@ This is the monorepo for [**Bupkis**](https://bupkis.zip), the uncommonly extens
 ---
 
 Looking for the source code? Head to **[packages/bupkis](./packages/bupkis/)**.
+
+## License
+
+Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
+
+[boneskull]: https://github.com/boneskull
