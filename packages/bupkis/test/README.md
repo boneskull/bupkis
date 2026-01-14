@@ -18,6 +18,8 @@ Tests for the core API:
 
 This directory contains property-based tests for Bupkis assertions using [fast-check](https://fast-check.dev/). Property-based testing validates assertions against a wide range of generated inputs, ensuring robustness and catching edge cases that might be missed in traditional unit tests.
 
+The test harness and utilities are provided by the [`@bupkis/property-testing`](../property-testing) package.
+
 ### Overview
 
 Property-based tests verify that assertions behave correctly across four different scenarios:
@@ -29,89 +31,65 @@ Property-based tests verify that assertions behave correctly across four differe
 
 Tests are organized by assertion category:
 
-- `sync-basic.test.ts` - Basic type assertions (string, number, boolean, etc.)
-- `sync-collection.test.ts` - Array and object assertions (contains, length, etc.)
-- `sync-esoteric.test.ts` - Advanced assertions (instanceof, satisfies, etc.)
-- `sync-parametric.test.ts` - Parameterized assertions (greater than, matches, etc.)
-- `async-parametric.test.ts` - Promise-based assertions (resolve, reject, etc.)
+- `property/sync-basic.test.ts` - Basic type assertions (string, number, boolean, etc.)
+- `property/sync-collection.test.ts` - Array and object assertions (contains, length, etc.)
+- `property/sync-date.test.ts` - Date-related assertions
+- `property/sync-esoteric.test.ts` - Advanced assertions (instanceof, satisfies, etc.)
+- `property/sync-parametric.test.ts` - Parameterized assertions (greater than, matches, etc.)
+- `property/async-parametric.test.ts` - Promise-based assertions (resolve, reject, etc.)
 
 Additional property test files:
 
-- `guards.test.ts` - Property tests for runtime type guards
-- `util.test.ts` - Property tests for utility functions
-- `value-to-schema.test.ts` - Property tests for value-to-schema conversion
+- `property/guards.test.ts` - Property tests for runtime type guards
+- `property/util.test.ts` - Property tests for utility functions
+- `property/value-to-schema.test.ts` - Property tests for value-to-schema conversion
 
 ### Key Files
 
-#### `property-test-config.ts`
+#### Test Configurations (`property/configs/`)
 
-Defines the configuration types and interfaces for property-based tests.
+Test configurations are defined separately from test files and live in `property/configs/`:
 
-**Key exports:**
+- `sync-basic.ts` - Configurations for basic type assertions
+- `sync-collection.ts` - Configurations for collection assertions
+- `sync-date.ts` - Configurations for date assertions
+- `sync-esoteric.ts` - Configurations for esoteric assertions
+- `sync-parametric.ts` - Configurations for parametric assertions
+- `async-parametric.ts` - Configurations for async assertions
 
-- **`PropertyTestConfig`** - Main configuration interface that extends fast-check's `Parameters`
-- **`PropertyTestConfigVariantConfig`** - Configuration for individual test variants (valid/invalid cases)
-- **`PropertyTestConfigParameters`** - Base parameters inherited from fast-check
-
-The configuration system allows fine-grained control over test generation:
-
-```typescript
-interface PropertyTestConfig {
-  invalid: PropertyTestConfigVariantConfig; // Should fail assertion
-  valid: PropertyTestConfigVariantConfig; // Should pass assertion
-  invalidNegated?: PropertyTestConfigVariantConfig; // Should fail negated assertion
-  validNegated?: PropertyTestConfigVariantConfig; // Should pass negated assertion
-}
-```
-
-Each variant config specifies:
-
-- `generators` - Array of fast-check generators for test inputs
-- Fast-check parameters (numRuns, seed, etc.)
-
-#### `property-test-util.ts`
-
-Contains utility functions for property-based test setup and data extraction.
-
-**Key exports:**
-
-- **`getVariants(assertions, createExtractPhrases)`** - Creates test variants for property-based testing. Returns an array of test configurations for each assertion, including generators and metadata for valid/invalid cases.
-
-- **`runVariant(variant, isNegated)`** - Executes a single property test variant. Handles both sync and async assertions, validating that they pass/fail as expected.
-
-- **`createPhraseExtractor(assertions)`** - Creates a phrase extraction function for a given assertion collection. Returns a function that can extract valid phrases from assertion IDs.
-
-- **`valueToSchemaFilter(value)`** - Filters objects for use with "deep equal" or "satisfies"-based assertions. Returns `true` if the value doesn't contain problematic properties like `__proto__`, `valueOf`, `toString`, or empty objects that could interfere with Zod parsing.
-
-- **`safeRegexStringFilter(str)`** - Filters strings to remove characters that could cause regex syntax errors. Removes problematic regex metacharacters: `[ ] ( ) { } ^ $ * + ? . \ |`
-
-- **`calculateNumRuns(runSize?)`** - Calculates the number of runs for property-based tests based on the environment and desired run size. Supports 'small' (50), 'medium' (250), or 'large' (500) run sizes, with automatic reduction in Wallaby and CI environments.
-
-**Usage examples:**
+These configs export a `Map<AnyAssertion, PropertyTestConfig>` that maps each assertion to its test configuration:
 
 ```typescript
-// Create test variants for assertion collection
-const variants = getVariants(assertions, createPhraseExtractor);
+import {
+  extractPhrases,
+  filteredAnything,
+  type PropertyTestConfig,
+} from '@bupkis/property-testing';
+import fc from 'fast-check';
 
-// Run individual test variant
-await runVariant(variant, false);
+import { toBeAString, toBeANumber } from '../../src/assertion/index.js';
 
-// Extract phrases for assertion testing
-const extractPhrases = createPhraseExtractor(assertions);
-const phrases = extractPhrases('to-be-a-string');
-// Returns: ['to be a string']
-
-// Filter problematic objects for schema generation
-fc.object().filter(valueToSchemaFilter);
-
-// Create safe regex strings for pattern testing
-fc.string().map(safeRegexStringFilter);
-
-// Configure test run counts based on environment
-const numRuns = calculateNumRuns('large'); // 500 runs (or reduced in CI/Wallaby)
+export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
+  [
+    toBeAString,
+    {
+      valid: {
+        generators: [
+          fc.string(),
+          fc.constantFrom(...extractPhrases(toBeAString)),
+        ],
+      },
+      invalid: {
+        generators: [
+          filteredAnything.filter((v) => typeof v !== 'string'),
+          fc.constantFrom(...extractPhrases(toBeAString)),
+        ],
+      },
+    },
+  ],
+  // ... more assertions
+]);
 ```
-
-These utilities are essential for generating valid assertion phrases and safe test inputs in property tests, ensuring robust testing while avoiding problematic edge cases.
 
 #### `custom-assertions.ts`
 
@@ -125,37 +103,44 @@ Contains custom assertions for testing, including assertions specific to the tes
 
 **Testing Pattern**:
 
-Property tests now use the custom exhaustive testing assertion instead of macro functions:
+Property tests use this custom assertion to verify that all assertions in a collection have test configurations:
 
 ```typescript
-describe('Parametric assertions', () => {
-  it('should exhaustively test collection', () => {
-    const variants = getVariants(assertions, createPhraseExtractor);
-    expect(variants, 'to exhaustively test collection', assertions);
-  });
-});
-```
+import {
+  createPropertyTestHarness,
+  getVariants,
+} from '@bupkis/property-testing';
+import { describe, it } from 'node:test';
 
-**How it works:**
+import { SyncBasicAssertions } from '../../src/assertion/index.js';
+import { expect, expectAsync } from '../custom-assertions.js';
+import { testConfigs } from './configs/sync-basic.js';
 
-1. **Variant Generation**: Uses `getVariants()` to create test configurations for each assertion
-2. **Coverage Validation**: The custom assertion verifies all assertions have corresponding test variants
-3. **Individual Testing**: Each variant is tested using `runVariant()` function
-4. **Wallaby Compatibility**: Structure avoids `describe`/`it` blocks in utility files for better Wallaby integration
+const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 
-**Example test structure generated:**
-
-```typescript
-describe('Assertion: {FunctionSchema} "to be a string"', () => {
-  it('should pass for all valid inputs [string-assertion-id]', () => {
-    // Uses fc.property with valid generators
-  });
-
-  it('should fail for all invalid inputs [string-assertion-id]', () => {
-    // Uses fc.property with invalid generators, expects AssertionError
+describe('Property-Based Tests for Basic Assertions', () => {
+  // Verify all assertions have test configs
+  it('should test all available assertions', () => {
+    expect(
+      testConfigs,
+      'to exhaustively test collection',
+      'SyncBasicAssertions',
+      'from',
+      SyncBasicAssertions,
+    );
   });
 
-  // ... negated variants
+  // Run tests for each assertion
+  for (const [assertion, testConfig] of testConfigs) {
+    const { params, variants } = getVariants(testConfig);
+    describe(`Assertion: ${assertion}`, () => {
+      for (const [name, variant] of variants) {
+        it(`should pass ${name} checks`, async () => {
+          await runVariant(variant, {}, params, name, assertion);
+        });
+      }
+    });
+  }
 });
 ```
 
@@ -221,53 +206,50 @@ node --import tsx --test test/property/sync-basic.test.ts
 node --import tsx --test test/property/async-parametric.test.ts
 ```
 
-**Note**: Property-based tests integrate with Wallaby through the restructured utility functions and custom assertions. The new structure avoids `describe`/`it` blocks in utility files for better Wallaby compatibility.
+**Note**: Property-based tests integrate with Wallaby through the `@bupkis/property-testing` harness. The test structure keeps test registration separate from utility code for better Wallaby compatibility.
 
 ### Configuration Examples
 
 #### Basic Type Assertion
 
 ```typescript
-'to-be-a-string': {
+const testConfig: PropertyTestConfig = {
+  valid: {
+    generators: [fc.string(), fc.constantFrom(...extractPhrases(toBeAString))],
+  },
   invalid: {
     generators: [
-      fc.anything().filter(v => typeof v !== 'string'),
-      fc.constantFrom(...extractPhrases(assertions['to-be-a-string'])),
+      filteredAnything.filter((v) => typeof v !== 'string'),
+      fc.constantFrom(...extractPhrases(toBeAString)),
     ],
   },
-  valid: {
-    generators: [
-      fc.string(),
-      fc.constantFrom(...extractPhrases(assertions['to-be-a-string'])),
-    ],
-  },
-},
+};
 ```
 
 #### Async Assertion
 
 ```typescript
-'promise-to-reject': {
-  invalid: {
-    async: true,
-    generators: [
-      fc.string().map(str => Promise.resolve(str)), // Should reject but resolves
-      fc.constantFrom(...extractPhrases(assertions['promise-to-reject'])),
-    ],
-  },
+const testConfig: PropertyTestConfig = {
   valid: {
     async: true,
     generators: [
       // Safe thenable pattern to avoid unhandled rejections
-      fc.string().map(error => ({
+      fc.string().map((error) => ({
         then(_resolve: any, reject: any) {
           reject(new Error(error));
         },
       })),
-      fc.constantFrom(...extractPhrases(assertions['promise-to-reject'])),
+      fc.constantFrom(...extractPhrases(promiseToReject)),
     ],
   },
-},
+  invalid: {
+    async: true,
+    generators: [
+      fc.string().map((str) => Promise.resolve(str)), // Should reject but resolves
+      fc.constantFrom(...extractPhrases(promiseToReject)),
+    ],
+  },
+};
 ```
 
 This systematic approach ensures comprehensive testing coverage while maintaining the natural language expressiveness that makes Bupkis unique.
@@ -277,34 +259,57 @@ This systematic approach ensures comprehensive testing coverage while maintainin
 The run count is dependent on several environment variables, _in order of precedence_:
 
 - `WALLABY`: If set, will decrease the number of runs drastically to speed up responsiveness in WallabyJS.
-- `CI`: If set, will decrease the number of runs to avoid execessive resource usage.
+- `CI`: If set, will decrease the number of runs to avoid excessive resource usage.
 - `NUM_RUNS`: If set, this integer value will determine the number of runs.
+
+See `@bupkis/property-testing`'s `calculateNumRuns()` for details.
 
 ## Snapshot Tests for `AssertionError` Messages
 
-This directory contains error snapshot tests that complement the property-based testing approach. Error snapshot tests use the same test configurations but focus on capturing consistent error message formatting.
+This directory contains error snapshot tests that complement the property-based testing approach. Error snapshot tests capture consistent error message formatting for assertion failures.
 
 ### Error Test Files
 
-- `test/error/sync-basic-error.test.ts` - Error snapshots for basic type assertions
-- `test/error/sync-collection-error.test.ts` - Error snapshots for collection assertions
-- `test/error/sync-esoteric-error.test.ts` - Error snapshots for esoteric assertions
-- `test/error/sync-parametric-error.test.ts` - Error snapshots for parametric assertions
-- `test/error/async-parametric-error.test.ts` - Error snapshots for async assertions
+- `assertion-error/sync-basic-error.test.ts` - Error snapshots for basic type assertions
+- `assertion-error/sync-collection-error.test.ts` - Error snapshots for collection assertions
+- `assertion-error/sync-date-error.test.ts` - Error snapshots for date assertions
+- `assertion-error/sync-esoteric-error.test.ts` - Error snapshots for esoteric assertions
+- `assertion-error/sync-parametric-error.test.ts` - Error snapshots for parametric assertions
+- `assertion-error/async-parametric-error.test.ts` - Error snapshots for async assertions
 
-### Error Snapshot Macro
+### Error Snapshot Utilities
 
-The `test/error/error-snapshot.macro.ts` provides `runErrorSnapshotTests()` function that supports both sync and async assertions:
+The `assertion-error/error-snapshot-util.ts` provides the `takeErrorSnapshot()` function for capturing and serializing assertion errors:
 
 ```typescript
-// For sync assertions
-runErrorSnapshotTests(assertions, failingAssertions);
+import { describe, it } from 'node:test';
 
-// For async assertions
-runErrorSnapshotTests(assertions, failingAssertions, { async: true });
+import { expect } from '../custom-assertions.js';
+import { takeErrorSnapshot } from './error-snapshot-util.js';
+
+describe('Error snapshots', () => {
+  it(
+    'should capture string assertion error',
+    takeErrorSnapshot(() => {
+      expect(42, 'to be a string');
+    }),
+  );
+
+  // For async assertions
+  it(
+    'should capture rejection error',
+    takeErrorSnapshot(async () => {
+      await expectAsync(Promise.resolve('foo'), 'to reject');
+    }),
+  );
+});
 ```
 
-This ensures consistent error message formatting across all assertion types while properly handling Promise-based scenarios.
+The serializer:
+
+- Strips ANSI control characters from error messages
+- Removes stack traces for stable snapshots
+- Handles nested Error objects in `actual`/`expected` properties
 
 ### Updating Snapshots
 
