@@ -7,6 +7,87 @@ description: This skill should be used when the user asks to "write property tes
 
 This skill covers writing property-based tests for bupkis assertion plugins (like `@bupkis/events` or `@bupkis/sinon`) using `@bupkis/property-testing` and `fast-check`.
 
+## The Spirit of Property Testing
+
+**The whole point of property testing is to exercise code with a wide variety of randomly generated inputs.** Every test config should have actual stochastic behavior - if a test just runs the same hardcoded values 50 times, you've missed the plot entirely.
+
+### The Anti-Pattern: `fc.constant(null).chain(...)`
+
+This pattern is a red flag that indicates zero randomness:
+
+```typescript
+// BAD: No randomness at all - just runs the same test 50 times
+generators: fc.constant(null).chain(() => {
+  const spy = sinon.spy();
+  spy('hardcoded', 42);
+  return fc.tuple(fc.constant(spy), fc.constant('was called'));
+});
+```
+
+The only benefit over a regular unit test is exercising alternate phrase variants. That's weak sauce.
+
+### The Fix: Always Generate Something
+
+Even when the assertion logic seems simple, find something to randomize:
+
+```typescript
+// GOOD: Random args, random call counts - actually tests edge cases
+generators: fc.tuple(
+  fc.integer({ min: 1, max: 5 }),
+  fc.array(fc.oneof(fc.string(), fc.integer(), fc.boolean()), { maxLength: 5 }),
+).chain(([callCount, args]) => {
+  const spy = sinon.spy();
+  for (let i = 0; i < callCount; i++) {
+    spy(...args, i);
+  }
+  return fc.tuple(
+    fc.constant(spy),
+    fc.constantFrom(...extractPhrases(assertions.wasCalledAssertion)),
+  );
+});
+```
+
+### What to Randomize
+
+Look for opportunities to vary:
+
+- **Arguments/parameters** - strings, numbers, objects, arrays with diverse values
+- **Counts** - call counts, array lengths, iteration counts
+- **Object shapes** - context objects, configuration objects
+- **Error types and messages** - Error, TypeError, RangeError with random messages
+- **Timing** - delays, timeouts (for async tests)
+
+### Helper Arbitraries
+
+Define reusable arbitraries for common patterns:
+
+```typescript
+// Diverse argument arrays
+const argsArbitrary = fc.array(
+  fc.oneof(
+    fc.string(),
+    fc.integer(),
+    fc.boolean(),
+    fc.double({ noNaN: true }),
+    fc.constant(null),
+    fc.constant(undefined),
+  ),
+  { maxLength: 5, minLength: 0 },
+);
+
+// Random context objects
+const contextArbitrary = fc.record({
+  id: fc.oneof(fc.string(), fc.integer()),
+  name: fc.option(fc.string(), { nil: undefined }),
+  value: fc.option(fc.integer(), { nil: undefined }),
+});
+
+// Random Error instances
+const errorArbitrary = fc
+  .tuple(fc.string(), fc.constantFrom(Error, TypeError, RangeError))
+  .map(([msg, ErrorClass]) => new ErrorClass(msg));
+```
+
 ## Overview
 
 Property-based testing validates that assertions behave correctly across a wide range of randomly generated inputs. The `@bupkis/property-testing` package provides a test harness that automatically generates four test variants from each configuration:
@@ -27,7 +108,7 @@ Add to `package.json`:
 ```json
 {
   "devDependencies": {
-    "@bupkis/property-testing": "workspace:*",
+    "@bupkis/property-testing": "0.15.0",
     "fast-check": "^4.5.2"
   }
 }
@@ -63,26 +144,7 @@ const testConfigDefaults: PropertyTestConfigParameters = {
 
 ## PropertyTestConfig Structure
 
-Each assertion needs a `PropertyTestConfig` with `valid` and `invalid` variants:
-
-```typescript
-const config: PropertyTestConfig = {
-  valid: {
-    generators: fc.tuple(
-      fc.constant(subject),
-      fc.constant('assertion phrase'),
-      // ...additional params
-    ),
-  },
-  invalid: {
-    generators: fc.tuple(
-      fc.constant(invalidSubject),
-      fc.constant('assertion phrase'),
-      // ...additional params
-    ),
-  },
-};
-```
+Each assertion needs a `PropertyTestConfig` with `valid` and `invalid` variants. **Both variants should have randomness.**
 
 ### Generator Tuple Order
 
@@ -91,11 +153,15 @@ Generators produce tuples matching assertion signature: `[subject, phrase, ...pa
 For `expect(emitter, 'to have listener for', eventName)`:
 
 ```typescript
-generators: fc.tuple(
-  fc.constant(emitter), // subject
-  fc.constant('to have listener for'), // phrase
-  fc.constant(eventName), // param
-);
+generators: fc.string({ minLength: 1 }).chain((eventName) => {
+  const emitter = new EventEmitter();
+  emitter.on(eventName, () => {});
+  return fc.tuple(
+    fc.constant(emitter),
+    fc.constantFrom(...extractPhrases(assertions.hasListenerForAssertion)),
+    fc.constant(eventName),
+  );
+});
 ```
 
 ## The Chain Pattern (Critical)
@@ -156,13 +222,14 @@ fc.tuple(fc.string({ minLength: 1 }), fc.integer({ min: 0, max: 10 })).chain(
 
 ### Sync Assertions
 
-Sync assertions use the standard generator pattern:
+Sync assertions use the standard generator pattern. Always include randomness:
 
 ```typescript
 [
   assertions.hasListenersAssertion,
   {
     valid: {
+      // Random event name - good!
       generators: fc.string({ minLength: 1 }).chain((eventName) => {
         const emitter = new EventEmitter();
         emitter.on(eventName, () => {});
@@ -173,10 +240,15 @@ Sync assertions use the standard generator pattern:
       }),
     },
     invalid: {
-      generators: [
-        fc.constant(new EventEmitter()), // No chaining needed for fresh object
-        fc.constantFrom(...extractPhrases(assertions.hasListenersAssertion)),
-      ],
+      // Still use chain to get fresh emitter per run
+      generators: fc.string({ minLength: 1 }).chain(() => {
+        const emitter = new EventEmitter();
+        // Don't add any listeners - that's the invalid case
+        return fc.tuple(
+          fc.constant(emitter),
+          fc.constantFrom(...extractPhrases(assertions.hasListenersAssertion)),
+        );
+      }),
     },
   },
 ];
@@ -299,6 +371,16 @@ fc.tuple(
   });
 ```
 
+## Checklist Before Submitting
+
+Before considering property tests complete, verify:
+
+1. **Every config has randomness** - No `fc.constant(null).chain(() => { hardcoded stuff })`
+2. **Valid and invalid variants both vary** - Don't just randomize one side
+3. **Helper arbitraries are defined** - Reuse common patterns (args, contexts, errors)
+4. **Edge cases are possible** - Empty arrays, empty strings, zero, negative numbers
+5. **ESLint passes** - Watch for `@typescript-eslint/no-unsafe-return` in forEach callbacks
+
 ## Additional Resources
 
 ### Reference Files
@@ -308,7 +390,5 @@ fc.tuple(
 
 ### Example Files
 
-- **`examples/sync-config.ts`** - Complete sync assertion config
-- **`examples/async-config.ts`** - Complete async assertion config
-
-See `packages/events/test/property.test.ts` for a complete working implementation.
+- **`packages/sinon/test/property.test.ts`** - Sync assertions with diverse randomness
+- **`packages/events/test/property.test.ts`** - Mix of sync and async assertions
