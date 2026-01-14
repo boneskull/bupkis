@@ -5,7 +5,6 @@
   "extends": "../tsconfig.json",
   "include": [
     "../packages/bupkis/src/**/*.ts",
-    "../packages/sinon/src/**/*.ts",
     "../packages/property-testing/src/**/*.ts"
   ]
 }

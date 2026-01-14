@@ -65,7 +65,6 @@ export default {
     '../packages/bupkis/src/schema.ts',
     '../packages/bupkis/src/util.ts',
     '../packages/bupkis/src/guards.ts',
-    '../packages/sinon/src/index.ts',
     '../packages/property-testing/src/index.ts',
   ],
   excludeExternals: true,
@@ -106,7 +105,7 @@ export default {
     'typedoc-plugin-extras',
   ],
   preserveWatchOutput: true,
-  projectDocuments: ['../site/**/*.md'],
+  projectDocuments: ['../site/**/*.md', '../packages/*/doc/readme.md'],
   readme: '../packages/bupkis/README.md',
   redirects: {
     'api/': 'modules/bupkis',
