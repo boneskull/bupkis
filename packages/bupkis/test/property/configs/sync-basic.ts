@@ -157,7 +157,17 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               fc.string().filter((s) => s !== '__proto__'),
               filteredAnything,
             )
-            .filter((obj) => Object.keys(obj).length > 0),
+            .filter((obj) => {
+              if (Object.keys(obj).length === 0) {
+                return false;
+              }
+              // Exclude objects that would match ArrayLikeSchema (nonnegative integer length)
+              // because those are handled by emptyArrayAssertion instead
+              const len = obj.length;
+              return (
+                typeof len !== 'number' || !Number.isInteger(len) || len < 0
+              );
+            }),
           fc.constantFrom(...extractPhrases(assertions.emptyObjectAssertion)),
         ],
       },
