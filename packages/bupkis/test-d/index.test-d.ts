@@ -524,6 +524,268 @@ describe('Other Assertions', () => {
   });
 });
 
+describe('Sync Iterable Assertions', () => {
+  it('should support "to yield" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield', 2));
+    expectType<void>(expect(new Set(['a', 'b']), 'to emit', 'a'));
+    expectType<void>(
+      expect([{ a: 1, b: 2 }], 'to yield value satisfying', { a: 1 }),
+    );
+    expectType<void>(expect([1, 2, 3], 'not to yield', 5));
+  });
+
+  it('should support "to yield value exhaustively satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }], 'to yield value exhaustively satisfying', { a: 1 }),
+    );
+    expectType<void>(
+      expect([{ a: 1, b: 2 }], 'not to yield value exhaustively satisfying', {
+        a: 1,
+      }),
+    );
+  });
+
+  it('should support "to yield items satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }, { a: 2 }], 'to yield items satisfying', { a: 1 }),
+    );
+  });
+
+  it('should support "to yield items exhaustively satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }], 'to yield items exhaustively satisfying', { a: 1 }),
+    );
+  });
+
+  it('should support "to yield first" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield first', 1));
+    expectType<void>(expect([{ a: 1 }], 'to yield first satisfying', { a: 1 }));
+  });
+
+  it('should support "to yield first exhaustively satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }], 'to yield first exhaustively satisfying', { a: 1 }),
+    );
+  });
+
+  it('should support "to yield last" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield last', 3));
+    expectType<void>(expect([{ a: 1 }], 'to yield last satisfying', { a: 1 }));
+  });
+
+  it('should support "to yield last exhaustively satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }], 'to yield last exhaustively satisfying', { a: 1 }),
+    );
+  });
+
+  it('should support "to yield count" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield count', 3));
+    expectType<void>(expect(new Set([1, 2]), 'to yield count', 2));
+    expectType<void>(expect([1, 2, 3], 'not to yield count', 5));
+  });
+
+  it('should support "to yield at least" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield at least', 2));
+  });
+
+  it('should support "to yield at most" assertion', () => {
+    expectType<void>(expect([1, 2], 'to yield at most', 3));
+  });
+
+  it('should support "to be an empty iterable" assertion', () => {
+    expectType<void>(expect([], 'to be an empty iterable'));
+    expectType<void>(expect([1, 2, 3], 'not to be an empty iterable'));
+  });
+
+  it('should support "to yield exactly" assertion', () => {
+    expectType<void>(expect([1, 2, 3], 'to yield exactly', [1, 2, 3]));
+    expectType<void>(expect([1, 2], 'not to yield exactly', [1, 2, 3]));
+  });
+
+  it('should support "to yield sequence satisfying" assertion', () => {
+    expectType<void>(
+      expect([{ a: 1 }], 'to yield sequence satisfying', [{ a: 1 }]),
+    );
+    expectType<void>(expect([1, 2, 3], 'to yield array satisfying', [1, 2, 3]));
+  });
+
+  it('should work with generators', () => {
+    const gen = function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<void>(expect(gen(), 'to yield', 1));
+    expectType<void>(expect(gen(), 'to yield count', 2));
+  });
+
+  it('should work with Maps (iterates entries)', () => {
+    const map = new Map([
+      ['a', 1],
+      ['b', 2],
+    ]);
+    expectType<void>(expect(map, 'to yield count', 2));
+  });
+
+  it('should work with strings (iterates chars)', () => {
+    expectType<void>(expect('abc', 'to yield', 'b'));
+    expectType<void>(expect('abc', 'to yield count', 3));
+  });
+});
+
+describe('Async Iterable Assertions', () => {
+  it('should support "to yield" assertion for async iterables', () => {
+    const asyncGen = async function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield', 2));
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to emit', 1));
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield value satisfying', 1),
+    );
+  });
+
+  it('should support "to yield value exhaustively satisfying" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield { a: 1 };
+    };
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield value exhaustively satisfying', {
+        a: 1,
+      }),
+    );
+  });
+
+  it('should support "to yield items satisfying" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield { a: 1 };
+    };
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield items satisfying', { a: 1 }),
+    );
+  });
+
+  it('should support "to yield first" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield first', 1));
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield first satisfying', 1),
+    );
+  });
+
+  it('should support "to yield last" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield last', 2));
+  });
+
+  it('should support "to yield count" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield count', 2));
+  });
+
+  it('should support "to yield at least" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield at least', 1));
+  });
+
+  it('should support "to yield at most" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to yield at most', 2));
+  });
+
+  it('should support "to be an empty iterable" assertion for async', () => {
+    const emptyGen = async function* () {};
+    expectType<Promise<void>>(
+      expectAsync(emptyGen(), 'to be an empty iterable'),
+    );
+  });
+
+  it('should support "to yield exactly" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+      yield 2;
+    };
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield exactly', [1, 2]),
+    );
+  });
+
+  it('should support "to yield sequence satisfying" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield { a: 1 };
+    };
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield sequence satisfying', [{ a: 1 }]),
+    );
+    expectType<Promise<void>>(
+      expectAsync(asyncGen(), 'to yield array satisfying', [{ a: 1 }]),
+    );
+  });
+
+  it('should support "to complete" assertion for async', () => {
+    const asyncGen = async function* () {
+      yield 1;
+    };
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to complete'));
+    expectType<Promise<void>>(expectAsync(asyncGen(), 'to finish'));
+  });
+
+  it('should support "to reject" assertion for async iterables', () => {
+    const failingGen = async function* () {
+      throw new Error('test');
+    };
+    expectType<Promise<void>>(expectAsync(failingGen(), 'to reject'));
+    expectType<Promise<void>>(expectAsync(failingGen(), 'to be rejected'));
+  });
+
+  it('should support "to reject with a" assertion for async iterables', () => {
+    const failingGen = async function* () {
+      throw new TypeError('test');
+    };
+    expectType<Promise<void>>(
+      expectAsync(failingGen(), 'to reject with a', TypeError),
+    );
+    expectType<Promise<void>>(
+      expectAsync(failingGen(), 'to reject with an', Error),
+    );
+  });
+
+  it('should support "to reject with error satisfying" assertion for async iterables', () => {
+    const failingGen = async function* () {
+      throw new Error('test');
+    };
+    expectType<Promise<void>>(
+      expectAsync(failingGen(), 'to reject with error satisfying', {
+        message: 'test',
+      }),
+    );
+    expectType<Promise<void>>(
+      expectAsync(failingGen(), 'to be rejected with error satisfying', {
+        message: 'test',
+      }),
+    );
+  });
+
+  it('should accept sync iterables in async assertions (auto-wrapped)', () => {
+    expectType<Promise<void>>(expectAsync([1, 2, 3], 'to yield', 2));
+    expectType<Promise<void>>(expectAsync([1, 2, 3], 'to yield count', 3));
+  });
+});
+
 describe('Promise Assertions (Async)', () => {
   it('should support "to resolve" assertion', () => {
     expectType<Promise<void>>(expectAsync(Promise.resolve(42), 'to resolve'));

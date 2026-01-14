@@ -51,6 +51,7 @@ import {
 } from './types.js';
 
 const { getPrototypeOf, prototype: objectPrototype } = Object;
+const { asyncIterator: asyncIteratorSymbol, iterator: iteratorSymbol } = Symbol;
 
 /**
  * A Zod schema that validates JavaScript constructible functions.
@@ -1346,3 +1347,267 @@ export const SnapshotOptionsSchema = z.object({
   hint: z.string().optional(),
   serializer: z.any().optional(),
 });
+
+/**
+ * Schema matching any synchronous iterable (has `Symbol.iterator` method).
+ *
+ * This schema validates values that implement the synchronous iteration
+ * protocol, meaning they have a `Symbol.iterator` method that returns an
+ * iterator. This includes arrays, strings, Sets, Maps, generators, and custom
+ * iterable objects.
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * SyncIterableSchema.parse([1, 2, 3]); // ✓ Valid (array)
+ * SyncIterableSchema.parse('hello'); // ✓ Valid (string)
+ * SyncIterableSchema.parse(new Set()); // ✓ Valid (Set)
+ * SyncIterableSchema.parse(new Map()); // ✓ Valid (Map)
+ * SyncIterableSchema.parse(
+ *   (function* () {
+ *     yield 1;
+ *   })(),
+ * ); // ✓ Valid (generator)
+ * SyncIterableSchema.parse(42); // ✗ Throws validation error
+ * SyncIterableSchema.parse({}); // ✗ Throws validation error (plain objects are not iterable)
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { SyncIterableSchema } from 'bupkis/schema';
+ *
+ * const iterableAssertion = createAssertion(
+ *   [SyncIterableSchema, 'to be iterable'],
+ *   SyncIterableSchema,
+ * );
+ *
+ * const { expect } = use([iterableAssertion]);
+ * expect([1, 2, 3], 'to be iterable');
+ * ```
+ *
+ * @group Schema
+ */
+export const SyncIterableSchema = z
+  .custom<Iterable<unknown>>(
+    (val): val is Iterable<unknown> =>
+      val != null &&
+      typeof (val as Record<symbol, unknown>)[iteratorSymbol] === 'function',
+    { error: 'Expected a synchronous iterable' },
+  )
+  .register(BupkisRegistry, { name: 'sync-iterable' })
+  .describe('A synchronous iterable (has Symbol.iterator)');
+
+/**
+ * Schema matching any synchronous iterator (has `next()` method).
+ *
+ * This schema validates values that implement the iterator protocol, meaning
+ * they have a `next()` method that returns `{ value, done }` objects. This
+ * includes iterator objects returned from calling `Symbol.iterator` on
+ * iterables, generator objects, and custom iterator implementations.
+ *
+ * @remarks
+ * Note that most iterators are also iterable (they have `Symbol.iterator`
+ * returning `this`), but this schema specifically checks for the `next()`
+ * method which is the core iterator requirement.
+ * @example Direct Usage
+ *
+ * ```typescript
+ * const arr = [1, 2, 3];
+ * SyncIteratorSchema.parse(arr[Symbol.iterator]()); // ✓ Valid
+ * SyncIteratorSchema.parse(
+ *   (function* () {
+ *     yield 1;
+ *   })(),
+ * ); // ✓ Valid (generators are iterators)
+ * SyncIteratorSchema.parse({
+ *   next: () => ({ done: true, value: undefined }),
+ * }); // ✓ Valid
+ * SyncIteratorSchema.parse([1, 2, 3]); // ✗ Throws (array is iterable, not iterator)
+ * SyncIteratorSchema.parse({}); // ✗ Throws validation error
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { SyncIteratorSchema } from 'bupkis/schema';
+ *
+ * const iteratorAssertion = createAssertion(
+ *   [SyncIteratorSchema, 'to be an iterator'],
+ *   SyncIteratorSchema,
+ * );
+ *
+ * const { expect } = use([iteratorAssertion]);
+ * expect([1, 2, 3][Symbol.iterator](), 'to be an iterator');
+ * ```
+ *
+ * @group Schema
+ */
+export const SyncIteratorSchema = z
+  .custom<Iterator<unknown>>(
+    (val): val is Iterator<unknown> =>
+      val != null &&
+      typeof (val as Record<string, unknown>).next === 'function',
+    { error: 'Expected a synchronous iterator' },
+  )
+  .register(BupkisRegistry, { name: 'sync-iterator' })
+  .describe('A synchronous iterator (has next() method)');
+
+/**
+ * Schema matching either a sync iterable or sync iterator.
+ *
+ * This union schema accepts values that implement either the iterable protocol
+ * (has `Symbol.iterator`) or the iterator protocol (has `next()` method). This
+ * is useful for assertions that can work with either form, allowing users to
+ * pass arrays, generators, or raw iterators interchangeably.
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * SyncIterableOrIteratorSchema.parse([1, 2, 3]); // ✓ Valid (iterable)
+ * SyncIterableOrIteratorSchema.parse([1, 2, 3][Symbol.iterator]()); // ✓ Valid (iterator)
+ * SyncIterableOrIteratorSchema.parse(
+ *   (function* () {
+ *     yield 1;
+ *   })(),
+ * ); // ✓ Valid (both)
+ * SyncIterableOrIteratorSchema.parse(42); // ✗ Throws validation error
+ * ```
+ *
+ * @group Schema
+ */
+export const SyncIterableOrIteratorSchema = z
+  .union([SyncIterableSchema, SyncIteratorSchema])
+  .register(BupkisRegistry, { name: 'sync-iterable-or-iterator' })
+  .describe('A synchronous iterable or iterator');
+
+/**
+ * Schema matching any asynchronous iterable (has `Symbol.asyncIterator`
+ * method).
+ *
+ * This schema validates values that implement the asynchronous iteration
+ * protocol, meaning they have a `Symbol.asyncIterator` method that returns an
+ * async iterator. This includes async generators, Node.js Readable streams
+ * (v10+), and Web ReadableStreams (in modern browsers and Node.js v22+).
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * AsyncIterableSchema.parse(
+ *   (async function* () {
+ *     yield 1;
+ *   })(),
+ * ); // ✓ Valid (async generator)
+ * AsyncIterableSchema.parse(Readable.from([1, 2, 3])); // ✓ Valid (Node stream)
+ * AsyncIterableSchema.parse(new ReadableStream()); // ✓ Valid (Web stream, Node 22+)
+ * AsyncIterableSchema.parse([1, 2, 3]); // ✗ Throws (sync iterable, not async)
+ * AsyncIterableSchema.parse(Promise.resolve(1)); // ✗ Throws (Promise is not iterable)
+ * ```
+ *
+ * @example Assertion Creation
+ *
+ * ```ts
+ * import { createAssertion, use } from 'bupkis';
+ * import { AsyncIterableSchema } from 'bupkis/schema';
+ *
+ * const asyncIterableAssertion = createAssertion(
+ *   [AsyncIterableSchema, 'to be an async iterable'],
+ *   AsyncIterableSchema,
+ * );
+ *
+ * const { expect } = use([asyncIterableAssertion]);
+ * expect(
+ *   (async function* () {
+ *     yield 1;
+ *   })(),
+ *   'to be an async iterable',
+ * );
+ * ```
+ *
+ * @group Schema
+ */
+export const AsyncIterableSchema = z
+  .custom<AsyncIterable<unknown>>(
+    (val): val is AsyncIterable<unknown> =>
+      val != null &&
+      typeof (val as Record<symbol, unknown>)[asyncIteratorSymbol] ===
+        'function',
+    { error: 'Expected an asynchronous iterable' },
+  )
+  .register(BupkisRegistry, { name: 'async-iterable' })
+  .describe('An asynchronous iterable (has Symbol.asyncIterator)');
+
+/**
+ * Schema matching any asynchronous iterator (has async `next()` method).
+ *
+ * This schema validates values that implement the async iterator protocol,
+ * meaning they have a `next()` method that returns a Promise of `{ value, done
+ * }`. This includes async iterator objects and custom async iterator
+ * implementations.
+ *
+ * @remarks
+ * This schema checks for the presence of a `next()` method but cannot verify at
+ * parse time that it returns a Promise. The async behavior is validated at
+ * iteration time.
+ * @example Direct Usage
+ *
+ * ```typescript
+ * const asyncGen = (async function* () {
+ *   yield 1;
+ * })();
+ * AsyncIteratorSchema.parse(asyncGen); // ✓ Valid (async generator is also iterator)
+ * AsyncIteratorSchema.parse({
+ *   next: async () => ({ done: true, value: undefined }),
+ * }); // ✓ Valid
+ * AsyncIteratorSchema.parse([1, 2, 3][Symbol.iterator]()); // ✓ Valid (has next())
+ * AsyncIteratorSchema.parse({}); // ✗ Throws validation error
+ * ```
+ *
+ * @group Schema
+ */
+export const AsyncIteratorSchema = z
+  .custom<AsyncIterator<unknown>>(
+    (val): val is AsyncIterator<unknown> =>
+      val != null &&
+      typeof (val as Record<string, unknown>).next === 'function',
+    { error: 'Expected an asynchronous iterator' },
+  )
+  .register(BupkisRegistry, { name: 'async-iterator' })
+  .describe('An asynchronous iterator (has next() method)');
+
+/**
+ * Schema matching either an async iterable or async iterator. Also accepts sync
+ * iterables (can be consumed async).
+ *
+ * This permissive union schema accepts values that can be iterated
+ * asynchronously, including:
+ *
+ * - Async iterables (has `Symbol.asyncIterator`)
+ * - Async iterators (has async `next()`)
+ * - Sync iterables (has `Symbol.iterator`) - these can be consumed via async
+ *   iteration
+ *
+ * This flexibility allows async assertions to work uniformly with various
+ * iterable types.
+ *
+ * @example Direct Usage
+ *
+ * ```typescript
+ * AsyncIterableOrIteratorSchema.parse(
+ *   (async function* () {
+ *     yield 1;
+ *   })(),
+ * ); // ✓ Valid
+ * AsyncIterableOrIteratorSchema.parse([1, 2, 3]); // ✓ Valid (sync iterable works)
+ * AsyncIterableOrIteratorSchema.parse(Readable.from([1, 2, 3])); // ✓ Valid
+ * AsyncIterableOrIteratorSchema.parse(42); // ✗ Throws validation error
+ * ```
+ *
+ * @group Schema
+ */
+export const AsyncIterableOrIteratorSchema = z
+  .union([AsyncIterableSchema, AsyncIteratorSchema, SyncIterableSchema])
+  .register(BupkisRegistry, { name: 'async-iterable-or-iterator' })
+  .describe('An async iterable, async iterator, or sync iterable');

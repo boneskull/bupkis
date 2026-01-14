@@ -7,6 +7,7 @@
  * @showGroups
  */
 
+import { AsyncIterableAssertions } from './async-iterable.js';
 import {
   functionFulfillWithValueSatisfyingAssertion,
   functionRejectAssertion,
@@ -39,10 +40,14 @@ export const AsyncParametricAssertions = [
 ] as const;
 
 /**
- * Tuple of all built-in async assertions (Promise only).
+ * Tuple of all built-in async assertions (Promise and async iterables).
  *
  * @group Assertion Collections
  */
-export const AsyncAssertions = [...AsyncParametricAssertions] as const;
+export const AsyncAssertions = [
+  ...AsyncParametricAssertions,
+  ...AsyncIterableAssertions,
+] as const;
 
+export * from './async-iterable.js';
 export * from './async-parametric.js';

@@ -104,6 +104,7 @@ import {
   nullPrototypeAssertion,
   sealedAssertion,
 } from './sync-esoteric.js';
+import { SyncIterableAssertions } from './sync-iterable.js';
 import {
   arrayDeepEqualAssertion,
   arraySatisfiesAssertion,
@@ -314,6 +315,7 @@ export const SyncAssertions = [
   ...SyncEsotericAssertions,
   ...SyncDateAssertions,
   ...SyncSnapshotAssertions,
+  ...SyncIterableAssertions,
 ] as const;
 
 export * from './snapshot.js';
@@ -323,4 +325,5 @@ export * from './sync-basic.js';
 export * from './sync-collection.js';
 export * from './sync-date.js';
 export * from './sync-esoteric.js';
+export * from './sync-iterable.js';
 export * from './sync-parametric.js';

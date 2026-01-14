@@ -28,6 +28,7 @@ const CATEGORY_DOC_MAP = freeze(
     equality: 'Equality___Comparison_Assertions',
     error: 'Error_Assertions',
     function: 'Function_Assertions',
+    iterable: 'Iterable_Assertions',
     numeric: 'Numeric_Assertions',
     object: 'Object_Assertions',
     other: 'Other_Assertions',
