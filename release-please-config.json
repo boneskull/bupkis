@@ -20,6 +20,12 @@
       "component": "@bupkis/sinon",
       "initial-version": "0.1.0",
       "release-type": "node"
+    },
+    "packages/events": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/events",
+      "initial-version": "0.1.0",
+      "release-type": "node"
     }
   }
 }
