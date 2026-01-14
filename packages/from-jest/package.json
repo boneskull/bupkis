@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "@boneskull/bargs": "4.0.0",
-    "bupkis": "0.15.0",
     "ts-morph": "^25.0.0"
   },
   "devDependencies": {

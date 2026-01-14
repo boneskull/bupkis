@@ -9,21 +9,27 @@
       "component": "bupkis",
       "release-type": "node"
     },
+    "packages/events": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/events",
+      "initial-version": "0.1.0",
+      "release-type": "node"
+    },
     "packages/from-jest": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-jest",
       "initial-version": "0.1.0",
       "release-type": "node"
     },
-    "packages/sinon": {
+    "packages/property-testing": {
       "changelog-path": "CHANGELOG.md",
-      "component": "@bupkis/sinon",
+      "component": "@bupkis/property-testing",
       "initial-version": "0.1.0",
       "release-type": "node"
     },
-    "packages/events": {
+    "packages/sinon": {
       "changelog-path": "CHANGELOG.md",
-      "component": "@bupkis/events",
+      "component": "@bupkis/sinon",
       "initial-version": "0.1.0",
       "release-type": "node"
     }
