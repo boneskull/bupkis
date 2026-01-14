@@ -8,8 +8,6 @@ import { type AssertionError, expect, schema, z } from 'bupkis';
 
 import type { EventEmitterLike, TimeoutOptions, Trigger } from './types.js';
 
-const { is } = Object;
-
 import {
   EventEmitterSchema,
   EventNameSchema,
@@ -336,28 +334,18 @@ const toEmitWithArgsFromImpl = async (
     const listener = (...args: unknown[]) => {
       cleanup();
 
-      // Check args match
-      if (args.length !== expectedArgs.length) {
+      // Use 'to satisfy' for flexible matching semantics
+      try {
+        expect(args, 'to satisfy', expectedArgs);
+        resolve(true);
+      } catch (err) {
+        const error = err as AssertionError;
         resolve({
-          actual: args,
-          expected: expectedArgs,
-          message: `Expected event '${String(eventName)}' to be emitted with ${expectedArgs.length} argument(s), but got ${args.length}`,
+          actual: error.actual ?? args,
+          expected: error.expected ?? expectedArgs,
+          message: `Expected event '${String(eventName)}' args to satisfy:\n${error.message}`,
         });
-        return;
       }
-
-      for (let i = 0; i < expectedArgs.length; i++) {
-        if (!is(args[i], expectedArgs[i])) {
-          resolve({
-            actual: args,
-            expected: expectedArgs,
-            message: `Expected event '${String(eventName)}' argument ${i} to match`,
-          });
-          return;
-        }
-      }
-
-      resolve(true);
     };
 
     const timer = setTimeout(() => {
@@ -817,12 +805,12 @@ const toDispatchWithDetailFromImpl = async (
         return;
       }
 
-      // Equality check for detail using bupkis
+      // Use 'to satisfy' for objects, 'to equal' for primitives
+      // ('to satisfy' doesn't accept primitive subjects)
       const actualDetail = event.detail as unknown;
       try {
-        // 'to equal' handles primitives; 'to deeply equal' handles objects
-        if (expectedDetail !== null && typeof expectedDetail === 'object') {
-          expect(actualDetail, 'to deeply equal', expectedDetail);
+        if (actualDetail !== null && typeof actualDetail === 'object') {
+          expect(actualDetail, 'to satisfy', expectedDetail);
         } else {
           expect(actualDetail, 'to equal', expectedDetail);
         }
