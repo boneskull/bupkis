@@ -1,24 +1,39 @@
-<div align="center">
-  <img src="./assets/bupkis.webp" alt="Bupkis" width="256" />
-</div>
+<p align="center">
+  <a href="/"><img src="./assets/bupkis-logo-512.png" width="512px" align="center" alt="BUPKIS: The Glory of Certainty"/></a>
+  <h1 align="center"><span class="bupkis">⁓ BUPKIS ⁓<span></h1>
+  <p align="center">
+    <em>“Uncommonly Extensible Assertions for The Beautiful People”</em>
+    <br/>
+    <small>by <a href="https://github.com/boneskull" title="@boneskull on GitHub">@boneskull</a></small>
+  </p>
+</p>
 
-# Bupkis Monorepo
+* * *
 
-This is the monorepo for [**Bupkis**](https://bupkis.zip), the uncommonly extensible assertion library.
+This is the monorepo for [**BUPKIS**](https://bupkis.zip), the uncommonly extensible assertion library.
 
 ## Packages
 
-- **[bupkis](./packages/bupkis/)** - The main assertion library
+- **[bupkis](./packages/bupkis/)** - 🚨 The only _edible_ assertion library, **BUPKIS** 🚨
 
-## Quick Links
+### Plugins
 
-- [Documentation](https://bupkis.zip)
+- **[@bupkis/sinon](./packages/sinon/)** - Sinon spy/stub/mock assertions
+- **[@bupkis/events](./packages/events/)** - Event emitter assertions
+
+### Migration Tools
+
+- **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate Jest/Vitest assertions to bupkis
+
+### Testing Tools
+
+- **[@bupkis/property-testing](./packages/property-testing/)** - Property-based testing harness for bupkis assertions
+
+## Resources
+
+- [Official Documentation](https://bupkis.zip)
 - [npm](https://www.npmjs.com/package/bupkis)
 - [GitHub](https://github.com/boneskull/bupkis)
-
----
-
-Looking for the source code? Head to **[packages/bupkis](./packages/bupkis/)**.
 
 ## License
 
