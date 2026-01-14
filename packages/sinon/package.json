@@ -21,9 +21,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.cts"
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -49,6 +49,7 @@
     "test:base": "node --import tsx --test --test-reporter=spec",
     "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
     "test:node20": "npm run test:base -- test/*.test.ts",
+    "test:property": "npm run test:base -- \"test/property.test.ts\"",
     "test:types": "exit 0"
   },
   "peerDependencies": {
@@ -56,7 +57,9 @@
     "sinon": ">=17.0.0"
   },
   "devDependencies": {
+    "@bupkis/property-testing": "0.15.0",
     "@types/sinon": "21.0.0",
+    "fast-check": "^4.5.2",
     "sinon": "21.0.1"
   },
   "publishConfig": {
