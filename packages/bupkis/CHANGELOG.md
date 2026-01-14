@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.17.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.16.0...bupkis-v0.17.0) (2026-01-14)
+
+
+### Features
+
+* **bupkis:** support objects with own __proto__ property in valueToSchema ([6e3bb1d](https://github.com/boneskull/bupkis/commit/6e3bb1d1a6ebc2534044e8d1222e2a6e0045dfc3))
+
+
+### Bug Fixes
+
+* **deps:** fix deps, RP, versioning, etc. ([970529b](https://github.com/boneskull/bupkis/commit/970529b498f2bd61055181ac9e4c0ddaac9511fb))
+
 ## [0.16.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.15.0...bupkis-v0.16.0) (2026-01-14)
 
 
