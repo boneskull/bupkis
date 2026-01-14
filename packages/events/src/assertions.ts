@@ -234,7 +234,7 @@ const toEmitFromImpl = async (
         expected: `'${String(eventName)}' event`,
         message: `Expected '${String(eventName)}' to be emitted within ${timeout}ms`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     /**
      * @function
@@ -368,7 +368,7 @@ const toEmitWithArgsFromImpl = async (
         expected: `'${String(eventName)}' event with args`,
         message: `Expected '${String(eventName)}' to be emitted within ${timeout}ms`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     /**
      * @function
@@ -484,7 +484,7 @@ const toEmitErrorFromImpl = async (
         expected: "'error' event",
         message: `Expected 'error' event to be emitted within ${timeout}ms`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     /**
      * @function
@@ -611,7 +611,7 @@ const toEmitEventsFromImpl = async (
         expected: expectedEvents,
         message: `Expected all events to be emitted within ${timeout}ms, but only received: ${received.map(String).join(', ') || '(none)'}`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     // Set up listeners for each expected event
     for (const eventName of expectedEvents) {
@@ -725,7 +725,7 @@ const toDispatchFromImpl = async (
         expected: `'${eventType}' event`,
         message: `Expected '${eventType}' to be dispatched within ${timeout}ms`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     /**
      * @function
@@ -839,7 +839,7 @@ const toDispatchWithDetailFromImpl = async (
         expected: `'${eventType}' CustomEvent with detail`,
         message: `Expected '${eventType}' to be dispatched within ${timeout}ms`,
       });
-    }, timeout).unref();
+    }, timeout);
 
     /**
      * @function
