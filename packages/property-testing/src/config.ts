@@ -14,6 +14,28 @@ import type { Parameters } from 'fast-check';
 
 import { z } from 'zod';
 
+/**
+ * Defines how to generate assertion arguments for property-based tests.
+ *
+ * Two forms are supported:
+ *
+ * 1. **Single Arbitrary** returning a tuple: Useful when subject/phrase/params
+ *    have interdependencies and must be generated together.
+ * 2. **Array of Arbitraries**: Each element generates one argument independently.
+ *    Elements are: `[subject, phrase, ...params]`.
+ *
+ * @example Single arbitrary (coordinated generation):
+ *
+ * ```ts
+ * fc.tuple(fc.string(), fc.constantFrom('to be a string'));
+ * ```
+ *
+ * @example Array form (independent generation):
+ *
+ * ```ts
+ * [fc.string(), fc.constantFrom('to be a string', 'to be str')];
+ * ```
+ */
 export type GeneratorParams =
   | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
   | readonly [
@@ -22,10 +44,23 @@ export type GeneratorParams =
       ...fc.Arbitrary<any>[],
     ];
 
+/**
+ * Extracts the concrete async property variant type from a union.
+ *
+ * Used in type guards to narrow `PropertyTestConfigVariant` to its async
+ * property form.
+ */
 export type InferPropertyTestConfigVariantAsyncProperty<T> =
   T extends PropertyTestConfigVariantAsyncProperty<infer U>
     ? PropertyTestConfigVariantAsyncProperty<U>
     : never;
+
+/**
+ * Extracts the concrete model-based testing variant type from a union.
+ *
+ * Used in type guards to narrow `PropertyTestConfigVariant` to its model-based
+ * testing form.
+ */
 export type InferPropertyTestConfigVariantModel<
   T extends PropertyTestConfigVariant,
 > =
@@ -33,6 +68,12 @@ export type InferPropertyTestConfigVariantModel<
     ? PropertyTestConfigVariantModel<M, R>
     : never;
 
+/**
+ * Extracts the concrete sync property variant type from a union.
+ *
+ * Used in type guards to narrow `PropertyTestConfigVariant` to its sync
+ * property form.
+ */
 export type InferPropertyTestConfigVariantProperty<T> =
   T extends PropertyTestConfigVariantProperty<infer U>
     ? PropertyTestConfigVariantProperty<U>
@@ -102,16 +143,38 @@ export type PropertyTestConfigVariant =
   | PropertyTestConfigVariantProperty<any>
   | PropertyTestConfigVariantSyncGenerators;
 
+/**
+ * Variant configuration for async assertions using generator-based input.
+ *
+ * Identical to {@link PropertyTestConfigVariantSyncGenerators} but with `async:
+ * true`, indicating that `expectAsync` should be used instead of `expect`.
+ */
 export interface PropertyTestConfigVariantAsyncGenerators extends PropertyTestConfigVariantSyncGenerators {
   async: true;
 }
 
+/**
+ * Variant configuration using a custom async fast-check property.
+ *
+ * Use this when generator-based testing is insufficient and you need full
+ * control over the property logic, such as testing complex async flows or
+ * assertions that require special setup/teardown.
+ */
 export interface PropertyTestConfigVariantAsyncProperty<
   T = any,
 > extends PropertyTestConfigParameters {
   asyncProperty: () => fc.IAsyncProperty<T> | fc.IAsyncPropertyWithHooks<T>;
 }
 
+/**
+ * Variant configuration for model-based testing with fast-check commands.
+ *
+ * Enables stateful property testing where a sequence of commands is applied to
+ * both a model (expected behavior) and a real implementation, verifying they
+ * remain consistent.
+ *
+ * @see {@link https://fast-check.dev/docs/advanced/model-based-testing/ | fast-check Model-Based Testing}
+ */
 export interface PropertyTestConfigVariantModel<
   Model extends object,
   Real,
@@ -121,16 +184,33 @@ export interface PropertyTestConfigVariantModel<
   initialState: fc.ModelRunSetup<Model, Real>;
 }
 
+/**
+ * Variant configuration using a custom sync fast-check property.
+ *
+ * Use this when generator-based testing is insufficient and you need full
+ * control over the property logic, such as testing assertions with complex
+ * preconditions or custom shrinking behavior.
+ */
 export interface PropertyTestConfigVariantProperty<
   T = any,
 > extends PropertyTestConfigParameters {
   property: () => fc.IProperty<T> | fc.IPropertyWithHooks<T>;
 }
 
+/**
+ * Variant configuration for sync assertions using generator-based input.
+ *
+ * This is the most common variant type. The harness automatically combines the
+ * generators, runs the assertion, and verifies behavior based on the variant
+ * name (valid/invalid/negated).
+ */
 export interface PropertyTestConfigVariantSyncGenerators extends PropertyTestConfigParameters {
   generators: GeneratorParams;
 }
 
+/**
+ * Zod schema for {@link PropertyTestConfigParameters}.
+ */
 const PropertyTestConfigParametersSchema = z.looseObject({
   runSize: z.enum(['small', 'medium', 'large']).optional(),
 });
