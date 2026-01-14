@@ -468,8 +468,12 @@ const asyncTestConfigs = new Map<
       invalid: {
         async: true,
         // Emit ALL events in reverse order to trigger immediate order-mismatch failure
+        // Use uniqueArray to ensure reversing actually changes the order
         generators: fc
-          .array(fc.string({ minLength: 1 }), { maxLength: 3, minLength: 2 })
+          .uniqueArray(fc.string({ minLength: 1 }), {
+            maxLength: 3,
+            minLength: 2,
+          })
           .chain((events) => {
             const emitter = new EventEmitter();
             const reversed = [...events].reverse();
