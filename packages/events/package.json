@@ -53,6 +53,10 @@
   "peerDependencies": {
     "bupkis": ">=0.15.0"
   },
+  "devDependencies": {
+    "@bupkis/property-testing": "0.15.0",
+    "fast-check": "^4.5.2"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
