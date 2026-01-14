@@ -88,7 +88,8 @@
       "**/*.d.ts",
       "site/media/**/*",
       ".worktrees/**/*",
-      "**/test-d/**/*.test-d.ts"
+      "**/test-d/**/*.test-d.ts",
+      ".claude/**/*.ts"
     ],
     "ignoreDependencies": [
       "@types/wallabyjs",
