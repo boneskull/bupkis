@@ -4,12 +4,11 @@
  * @packageDocumentation
  */
 
-import { expect, schema, z } from 'bupkis';
+import { type AssertionError, expect, schema, z } from 'bupkis';
 
 import type { EventEmitterLike, TimeoutOptions, Trigger } from './types.js';
 
 const { is } = Object;
-const { stringify } = JSON;
 
 import {
   EventEmitterSchema,
@@ -818,18 +817,24 @@ const toDispatchWithDetailFromImpl = async (
         return;
       }
 
-      // Simple deep equality check for detail
+      // Equality check for detail using bupkis
       const actualDetail = event.detail as unknown;
-      if (stringify(actualDetail) !== stringify(expectedDetail)) {
+      try {
+        // 'to equal' handles primitives; 'to deeply equal' handles objects
+        if (expectedDetail !== null && typeof expectedDetail === 'object') {
+          expect(actualDetail, 'to deeply equal', expectedDetail);
+        } else {
+          expect(actualDetail, 'to equal', expectedDetail);
+        }
+        resolve(true);
+      } catch (err) {
+        const error = err as AssertionError;
         resolve({
-          actual: actualDetail,
-          expected: expectedDetail,
-          message: `Expected CustomEvent detail to match`,
+          actual: error.actual ?? actualDetail,
+          expected: error.expected ?? expectedDetail,
+          message: `Expected CustomEvent detail to match:\n${error.message}`,
         });
-        return;
       }
-
-      resolve(true);
     };
 
     const timer = setTimeout(() => {
