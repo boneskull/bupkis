@@ -32,7 +32,6 @@ import { createAssertion } from '../create.js';
 import {
   collectSync,
   countSync,
-  firstSync,
   iterateFullySync,
   toIterator,
 } from './iteration-util.js';
@@ -237,19 +236,7 @@ export const iterableYieldsFirstAssertion = createAssertion(
     UnknownSchema,
   ],
   (subject, expected) => {
-    const first = firstSync(subject);
-    if (first === undefined) {
-      // Check if iterator was actually empty vs yielded undefined
-      const iterator = toIterator(subject);
-      const result = iterator.next();
-      if (result.done) {
-        return {
-          message:
-            'Expected iterable to yield at least one value, but it was empty',
-        };
-      }
-    }
-    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    // Only call toIterator once to avoid exhausting raw iterators
     const iterator = toIterator(subject);
     const result = iterator.next();
     if (result.done) {
@@ -258,6 +245,7 @@ export const iterableYieldsFirstAssertion = createAssertion(
           'Expected iterable to yield at least one value, but it was empty',
       };
     }
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
     if (!schema.safeParse(result.value).success) {
       return {
         message: `Expected first yielded value to satisfy ${inspect(expected)}, but got ${inspect(result.value)}`,
