@@ -33,7 +33,7 @@ runs:
         fi
         for path in $(echo "$paths" | jq -r '.[]'); do
           echo "Publishing workspace at $path..."
-          npm publish --workspace="$path" --provenance --access public
+          npm publish --workspace="$path" --access public
         done
       shell: bash
   using: composite

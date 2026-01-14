@@ -4,14 +4,14 @@
   "type": "module",
   "description": "Uncommonly extensible assertions for the beautiful people",
   "repository": {
+    "directory": "packages/bupkis",
     "type": "git",
-    "url": "git+https://github.com/boneskull/bupkis.git",
-    "directory": "packages/bupkis"
+    "url": "git+https://github.com/boneskull/bupkis.git"
   },
   "homepage": "https://bupkis.zip",
   "author": {
-    "name": "Christopher Hiller",
-    "email": "boneskull@boneskull.com"
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
   },
   "license": "BlueOak-1.0.0",
   "engines": {
@@ -21,46 +21,46 @@
   "types": "./dist/index.d.cts",
   "module": "./dist/index.js",
   "exports": {
-    "./package.json": "./package.json",
-    "./types": {
-      "types": "./dist/types.d.cts",
-      "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
-    },
-    "./util": {
-      "types": "./dist/util.d.cts",
-      "import": "./dist/util.js",
-      "require": "./dist/util.cjs"
-    },
-    "./schema": {
-      "types": "./dist/schema.d.cts",
-      "import": "./dist/schema.js",
-      "require": "./dist/schema.cjs"
-    },
-    "./guards": {
-      "types": "./dist/guards.d.cts",
-      "import": "./dist/guards.js",
-      "require": "./dist/guards.cjs"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./assertions": {
-      "types": "./dist/assertion/index.d.cts",
       "import": "./dist/assertion/index.js",
-      "require": "./dist/assertion/index.cjs"
-    },
-    ".": {
-      "types": "./dist/index.d.cts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/assertion/index.cjs",
+      "types": "./dist/assertion/index.d.cts"
     },
     "./diff": {
-      "types": "./dist/diff.d.cts",
       "import": "./dist/diff.js",
-      "require": "./dist/diff.cjs"
+      "require": "./dist/diff.cjs",
+      "types": "./dist/diff.d.cts"
+    },
+    "./guards": {
+      "import": "./dist/guards.js",
+      "require": "./dist/guards.cjs",
+      "types": "./dist/guards.d.cts"
+    },
+    "./package.json": "./package.json",
+    "./schema": {
+      "import": "./dist/schema.js",
+      "require": "./dist/schema.cjs",
+      "types": "./dist/schema.d.cts"
     },
     "./snapshot": {
-      "types": "./dist/snapshot/index.d.cts",
       "import": "./dist/snapshot/index.js",
-      "require": "./dist/snapshot/index.cjs"
+      "require": "./dist/snapshot/index.cjs",
+      "types": "./dist/snapshot/index.d.cts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs",
+      "types": "./dist/types.d.cts"
+    },
+    "./util": {
+      "import": "./dist/util.js",
+      "require": "./dist/util.cjs",
+      "types": "./dist/util.d.cts"
     }
   },
   "files": [
@@ -145,6 +145,7 @@
   },
   "publishConfig": {
     "access": "public",
+    "provenance": true,
     "registry": "https://registry.npmjs.org/"
   },
   "prettier": {
@@ -160,15 +161,15 @@
   },
   "zshy": {
     "exports": {
-      "./package.json": "./package.json",
-      "./types": "./src/types.ts",
-      "./util": "./src/util.ts",
-      "./schema": "./src/schema.ts",
-      "./guards": "./src/guards.ts",
-      "./assertions": "./src/assertion/index.ts",
       ".": "./src/index.ts",
+      "./assertions": "./src/assertion/index.ts",
       "./diff": "./src/diff.ts",
-      "./snapshot": "./src/snapshot/index.ts"
+      "./guards": "./src/guards.ts",
+      "./package.json": "./package.json",
+      "./schema": "./src/schema.ts",
+      "./snapshot": "./src/snapshot/index.ts",
+      "./types": "./src/types.ts",
+      "./util": "./src/util.ts"
     }
   }
 }
