@@ -268,7 +268,7 @@ const toEmitFromImpl = async (
  * ); // passes
  * ```
  */
-export const toEmitFromAssertion = expect.createAsyncAssertion(
+const toEmitFromAssertion = expect.createAsyncAssertion(
   [TriggerSchema, 'to emit from', EventEmitterSchema, EventNameSchema],
   async (
     trigger: Trigger,
@@ -504,7 +504,7 @@ const toEmitErrorFromImpl = async (
  * ); // passes
  * ```
  */
-export const toEmitErrorFromAssertion = expect.createAsyncAssertion(
+const toEmitErrorFromAssertion = expect.createAsyncAssertion(
   [TriggerSchema, 'to emit error from', EventEmitterSchema],
   async (trigger: Trigger, emitter: EventEmitterLike) =>
     toEmitErrorFromImpl(trigger, emitter),
@@ -642,7 +642,7 @@ const toEmitEventsFromImpl = async (
  * ); // passes
  * ```
  */
-export const toEmitEventsFromAssertion = expect.createAsyncAssertion(
+const toEmitEventsFromAssertion = expect.createAsyncAssertion(
   [
     TriggerSchema,
     'to emit events from',
@@ -746,7 +746,7 @@ const toDispatchFromImpl = async (
  * ); // passes
  * ```
  */
-export const toDispatchFromAssertion = expect.createAsyncAssertion(
+const toDispatchFromAssertion = expect.createAsyncAssertion(
   [TriggerSchema, 'to dispatch from', EventTargetSchema, z.string()],
   async (trigger: Trigger, target: EventTarget, eventType: string) =>
     toDispatchFromImpl(trigger, target, eventType),

@@ -94,8 +94,7 @@
     ],
     "ignoreDependencies": [
       "@types/wallabyjs",
-      "markdownlint-cli2-formatter-pretty",
-      "bupkis"
+      "markdownlint-cli2-formatter-pretty"
     ],
     "node": {
       "entry": [
