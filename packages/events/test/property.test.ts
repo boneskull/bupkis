@@ -27,6 +27,23 @@ const testConfigDefaults: PropertyTestConfigParameters = {
   runSize: 'small',
 } as const;
 
+// Helper: Generate random Error instances
+const errorArbitrary = fc
+  .tuple(fc.string(), fc.constantFrom(Error, TypeError, RangeError))
+  .map(([msg, ErrorClass]) => new ErrorClass(msg));
+
+// Helper: Diverse event args
+const eventArgsArbitrary = fc.array(
+  fc.oneof(
+    fc.string(),
+    fc.integer(),
+    fc.boolean(),
+    fc.double({ noNaN: true }),
+    fc.constant(null),
+  ),
+  { maxLength: 5, minLength: 0 },
+);
+
 // ─────────────────────────────────────────────────────────────
 // SYNC ASSERTION CONFIGS
 // ─────────────────────────────────────────────────────────────
@@ -119,16 +136,10 @@ const syncTestConfigs = new Map<
     assertions.hasListenersAssertion,
     {
       invalid: {
-        // Array syntax appropriate for non-parametric assertions
-        generators: [
-          fc.constant(new EventEmitter()),
-          fc.constantFrom(...extractPhrases(assertions.hasListenersAssertion)),
-        ],
-      },
-      valid: {
-        generators: fc.string({ minLength: 1 }).chain((eventName) => {
+        // Fresh emitter with no listeners - use chain to get fresh instance each run
+        generators: fc.integer({ max: 100, min: 0 }).chain((maxListeners) => {
           const emitter = new EventEmitter();
-          emitter.on(eventName, () => {});
+          emitter.setMaxListeners(maxListeners); // Vary something at least
           return fc.tuple(
             fc.constant(emitter),
             fc.constantFrom(
@@ -136,6 +147,22 @@ const syncTestConfigs = new Map<
             ),
           );
         }),
+      },
+      valid: {
+        generators: fc
+          .tuple(fc.string({ minLength: 1 }), fc.integer({ max: 5, min: 1 }))
+          .chain(([eventName, listenerCount]) => {
+            const emitter = new EventEmitter();
+            for (let i = 0; i < listenerCount; i++) {
+              emitter.on(eventName, () => {});
+            }
+            return fc.tuple(
+              fc.constant(emitter),
+              fc.constantFrom(
+                ...extractPhrases(assertions.hasListenersAssertion),
+              ),
+            );
+          }),
       },
     },
   ],
@@ -295,21 +322,23 @@ const asyncTestConfigs = new Map<
         asyncProperty: () =>
           fc.asyncProperty(
             fc.string({ minLength: 1 }),
-            fc.string(),
-            async (eventType, detail) => {
+            fc.oneof(fc.string(), fc.integer(), fc.boolean()),
+            fc.oneof(fc.string(), fc.integer(), fc.boolean()),
+            async (eventType, actualDetail, expectedDetail) => {
+              // Ensure actual !== expected for a guaranteed mismatch
               const target = new EventTarget();
-              // Dispatch with different detail
               await expectAsync(
                 expectAsync(
                   () =>
                     target.dispatchEvent(
-                      new CustomEvent(eventType, { detail: 'wrong' }),
+                      new CustomEvent(eventType, { detail: actualDetail }),
                     ),
                   'to dispatch from',
                   target,
                   eventType,
                   'with detail',
-                  detail,
+                  // Use something definitely different from actualDetail
+                  { definitelyDifferent: expectedDetail },
                   { within: 50 },
                 ),
                 'to reject',
@@ -322,7 +351,7 @@ const asyncTestConfigs = new Map<
         generators: fc
           .tuple(
             fc.string({ minLength: 1 }),
-            fc.oneof(fc.string(), fc.integer(), fc.object()),
+            fc.oneof(fc.string(), fc.integer(), fc.object(), fc.boolean()),
           )
           .chain(([eventType, detail]) => {
             const target = new EventTarget();
@@ -349,20 +378,21 @@ const asyncTestConfigs = new Map<
         asyncProperty: () =>
           fc.asyncProperty(
             fc.string({ minLength: 1 }),
-            fc.string(),
-            async (eventType, detail) => {
+            fc.oneof(fc.string(), fc.integer(), fc.boolean()),
+            fc.oneof(fc.string(), fc.integer(), fc.boolean()),
+            async (eventType, actualDetail, expectedDetail) => {
               const target = new EventTarget();
               await expectAsync(
                 expectAsync(
                   () =>
                     target.dispatchEvent(
-                      new CustomEvent(eventType, { detail: 'wrong' }),
+                      new CustomEvent(eventType, { detail: actualDetail }),
                     ),
                   'to dispatch from',
                   target,
                   eventType,
                   'with detail',
-                  detail,
+                  { definitelyDifferent: expectedDetail },
                   { within: 50 },
                 ),
                 'to reject',
@@ -375,7 +405,7 @@ const asyncTestConfigs = new Map<
         generators: fc
           .tuple(
             fc.string({ minLength: 1 }),
-            fc.oneof(fc.string(), fc.integer(), fc.object()),
+            fc.oneof(fc.string(), fc.integer(), fc.object(), fc.boolean()),
           )
           .chain(([eventType, detail]) => {
             const target = new EventTarget();
@@ -400,25 +430,31 @@ const asyncTestConfigs = new Map<
     assertions.toEmitErrorFromAssertion,
     {
       invalid: {
+        // Not much to vary here - we're testing "no error emitted"
+        // At least vary maxListeners to get fresh emitter each run
         asyncProperty: () =>
-          fc.asyncProperty(fc.constant(null), async () => {
-            const emitter = new EventEmitter();
-            emitter.on('error', () => {});
-            await expectAsync(
-              expectAsync(() => {}, 'to emit error from', emitter, {
-                within: 50,
-              }),
-              'to reject',
-            );
-          }),
+          fc.asyncProperty(
+            fc.integer({ max: 100, min: 1 }),
+            async (maxListeners) => {
+              const emitter = new EventEmitter();
+              emitter.setMaxListeners(maxListeners);
+              emitter.on('error', () => {});
+              await expectAsync(
+                expectAsync(() => {}, 'to emit error from', emitter, {
+                  within: 50,
+                }),
+                'to reject',
+              );
+            },
+          ),
       },
       valid: {
         async: true,
-        generators: fc.constant(null).chain(() => {
+        generators: errorArbitrary.chain((error) => {
           const emitter = new EventEmitter();
           emitter.on('error', () => {}); // Prevent unhandled error
           return fc.tuple(
-            fc.constant(() => emitter.emit('error', new Error('test'))),
+            fc.constant(() => emitter.emit('error', error)),
             fc.constantFrom(
               ...extractPhrases(assertions.toEmitErrorFromAssertion),
             ),
@@ -428,31 +464,34 @@ const asyncTestConfigs = new Map<
       },
     },
   ],
-
   // toEmitErrorFromWithOptionsAssertion
   [
     assertions.toEmitErrorFromWithOptionsAssertion,
     {
       invalid: {
         asyncProperty: () =>
-          fc.asyncProperty(fc.constant(null), async () => {
-            const emitter = new EventEmitter();
-            emitter.on('error', () => {});
-            await expectAsync(
-              expectAsync(() => {}, 'to emit error from', emitter, {
-                within: 50,
-              }),
-              'to reject',
-            );
-          }),
+          fc.asyncProperty(
+            fc.integer({ max: 100, min: 1 }),
+            async (maxListeners) => {
+              const emitter = new EventEmitter();
+              emitter.setMaxListeners(maxListeners);
+              emitter.on('error', () => {});
+              await expectAsync(
+                expectAsync(() => {}, 'to emit error from', emitter, {
+                  within: 50,
+                }),
+                'to reject',
+              );
+            },
+          ),
       },
       valid: {
         async: true,
-        generators: fc.constant(null).chain(() => {
+        generators: errorArbitrary.chain((error) => {
           const emitter = new EventEmitter();
           emitter.on('error', () => {});
           return fc.tuple(
-            fc.constant(() => emitter.emit('error', new Error('test'))),
+            fc.constant(() => emitter.emit('error', error)),
             fc.constant('to emit error from'),
             fc.constant(emitter),
             fc.constant({ within: 1000 }),
@@ -461,7 +500,6 @@ const asyncTestConfigs = new Map<
       },
     },
   ],
-
   // toEmitEventsFromAssertion
   [
     assertions.toEmitEventsFromAssertion,
@@ -499,7 +537,11 @@ const asyncTestConfigs = new Map<
           .chain((events) => {
             const emitter = new EventEmitter();
             return fc.tuple(
-              fc.constant(() => events.forEach((e) => emitter.emit(e))),
+              fc.constant(() => {
+                for (const e of events) {
+                  emitter.emit(e);
+                }
+              }),
               fc.constantFrom(
                 ...extractPhrases(assertions.toEmitEventsFromAssertion),
               ),
@@ -547,7 +589,11 @@ const asyncTestConfigs = new Map<
           .chain((events) => {
             const emitter = new EventEmitter();
             return fc.tuple(
-              fc.constant(() => events.forEach((e) => emitter.emit(e))),
+              fc.constant(() => {
+                for (const e of events) {
+                  emitter.emit(e);
+                }
+              }),
               fc.constant('to emit events from'),
               fc.constant(emitter),
               fc.constant(events),
@@ -557,7 +603,6 @@ const asyncTestConfigs = new Map<
       },
     },
   ],
-
   // toEmitFromAssertion
   [
     assertions.toEmitFromAssertion,
@@ -588,7 +633,6 @@ const asyncTestConfigs = new Map<
       },
     },
   ],
-
   // toEmitFromWithOptionsAssertion
   [
     assertions.toEmitFromWithOptionsAssertion,
@@ -620,7 +664,6 @@ const asyncTestConfigs = new Map<
       },
     },
   ],
-
   // toEmitWithArgsFromAssertion
   [
     assertions.toEmitWithArgsFromAssertion,
@@ -629,21 +672,18 @@ const asyncTestConfigs = new Map<
         asyncProperty: () =>
           fc.asyncProperty(
             fc.string({ minLength: 1 }),
-            fc.array(fc.oneof(fc.string(), fc.integer()), {
-              maxLength: 3,
-              minLength: 1,
-            }),
-            async (eventName, args) => {
+            fc.array(eventArgsArbitrary, { maxLength: 3, minLength: 1 }),
+            async (eventName, argsList) => {
               const emitter = new EventEmitter();
-              // Emit with different args
+              // Emit with different args (wrong_arg ensures mismatch)
               await expectAsync(
                 expectAsync(
-                  () => emitter.emit(eventName, 'wrong'),
+                  () => emitter.emit(eventName, 'wrong_arg_not_in_expected'),
                   'to emit from',
                   emitter,
                   eventName,
                   'with args',
-                  args,
+                  argsList[0] ?? [],
                   { within: 50 },
                 ),
                 'to reject',
@@ -654,13 +694,7 @@ const asyncTestConfigs = new Map<
       valid: {
         async: true,
         generators: fc
-          .tuple(
-            fc.string({ minLength: 1 }),
-            fc.array(fc.oneof(fc.string(), fc.integer()), {
-              maxLength: 3,
-              minLength: 1,
-            }),
-          )
+          .tuple(fc.string({ minLength: 1 }), eventArgsArbitrary)
           .chain(([eventName, args]) => {
             const emitter = new EventEmitter();
             return fc.tuple(
@@ -684,20 +718,17 @@ const asyncTestConfigs = new Map<
         asyncProperty: () =>
           fc.asyncProperty(
             fc.string({ minLength: 1 }),
-            fc.array(fc.oneof(fc.string(), fc.integer()), {
-              maxLength: 3,
-              minLength: 1,
-            }),
-            async (eventName, args) => {
+            fc.array(eventArgsArbitrary, { maxLength: 3, minLength: 1 }),
+            async (eventName, argsList) => {
               const emitter = new EventEmitter();
               await expectAsync(
                 expectAsync(
-                  () => emitter.emit(eventName, 'wrong'),
+                  () => emitter.emit(eventName, 'wrong_arg_not_in_expected'),
                   'to emit from',
                   emitter,
                   eventName,
                   'with args',
-                  args,
+                  argsList[0] ?? [],
                   { within: 50 },
                 ),
                 'to reject',
@@ -708,13 +739,7 @@ const asyncTestConfigs = new Map<
       valid: {
         async: true,
         generators: fc
-          .tuple(
-            fc.string({ minLength: 1 }),
-            fc.array(fc.oneof(fc.string(), fc.integer()), {
-              maxLength: 3,
-              minLength: 1,
-            }),
-          )
+          .tuple(fc.string({ minLength: 1 }), eventArgsArbitrary)
           .chain(([eventName, args]) => {
             const emitter = new EventEmitter();
             return fc.tuple(
