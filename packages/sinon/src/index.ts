@@ -2,12 +2,11 @@
  * Sinon assertions for Bupkis.
  *
  * @module @bupkis/sinon
- * @category Plugins
  * @example
  *
  * ```ts
  * import { use } from 'bupkis';
- * import { sinonAssertions } from '@bupkis/sinon';
+ * import sinonAssertions from '@bupkis/sinon';
  * import sinon from 'sinon';
  *
  * const { expect } = use(sinonAssertions);
@@ -18,31 +17,4 @@
  * ```
  */
 
-export {
-  alwaysThrewAssertion,
-  callHasArgsAssertion,
-  callHasThisAssertion,
-  callReturnedAssertion,
-  callThrewAssertion,
-  givenCallOrderAssertion,
-  sinonAssertions,
-  threwAssertion,
-  threwWithAssertion,
-  toHaveCallsSatisfyingAssertion,
-  wasAlwaysCalledOnAssertion,
-  wasAlwaysCalledWithAssertion,
-  wasCalledAfterAssertion,
-  wasCalledAssertion,
-  wasCalledBeforeAssertion,
-  wasCalledOnAssertion,
-  wasCalledOnceAssertion,
-  wasCalledThriceAssertion,
-  wasCalledTimesAssertion,
-  wasCalledTwiceAssertion,
-  wasCalledWithAssertion,
-  wasCalledWithExactlyAssertion,
-  wasNeverCalledWithAssertion,
-  wasNotCalledAssertion,
-} from './assertions.js';
-export { isSpy, isSpyCall } from './guards.js';
-export { SpyCallSchema, SpySchema } from './schema.js';
+export { sinonAssertions as default, sinonAssertions } from './assertions.js';

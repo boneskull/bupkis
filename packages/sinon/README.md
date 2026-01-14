@@ -12,7 +12,7 @@ npm install @bupkis/sinon bupkis sinon
 
 ```typescript
 import { use } from 'bupkis';
-import { sinonAssertions } from '@bupkis/sinon';
+import sinonAssertions from '@bupkis/sinon';
 import sinon from 'sinon';
 
 const { expect } = use(sinonAssertions);
@@ -891,25 +891,6 @@ const spy = sinon.spy();
 spy('a');
 spy('b');
 expect(spy, 'not to have calls satisfying', [['x'], ['y']]);
-```
-
-## Exports
-
-```typescript
-// Main assertion array for use()
-import { sinonAssertions } from '@bupkis/sinon';
-
-// Individual assertions (for selective use)
-import {
-  wasCalledAssertion,
-  wasCalledWithAssertion /* ... */,
-} from '@bupkis/sinon';
-
-// Type guards
-import { isSpy, isSpyCall } from '@bupkis/sinon';
-
-// Zod schemas
-import { SpySchema, SpyCallSchema } from '@bupkis/sinon';
 ```
 
 ## License
