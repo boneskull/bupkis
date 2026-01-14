@@ -161,3 +161,6 @@ docs
 
 .claude/settings.local.json
 .worktrees
+
+# DELETE THIS -- wallaby snapshot artifacts haven't been able to pin down yet
+packages-*.test.ts.snap.cjs
