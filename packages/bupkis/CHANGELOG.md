@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.16.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.15.0...bupkis-v0.16.0) (2026-01-14)
+
+
+### Features
+
+* **bupkis:** add iterable and async iterable assertions ([#326](https://github.com/boneskull/bupkis/issues/326)) ([cb33787](https://github.com/boneskull/bupkis/commit/cb337872d5b57ff9c5dc6ef779fb9e6910efef92))
+* **bupkis:** add target filtering to fuzzer ([3cc8c2c](https://github.com/boneskull/bupkis/commit/3cc8c2cda209011054c14af0a67e0a213b9d41ff))
+* **property-testing:** create @bupkis/property-testing ([#319](https://github.com/boneskull/bupkis/issues/319)) ([fbb378f](https://github.com/boneskull/bupkis/commit/fbb378f709e806c6d455bf77cafe55219302e2bb))
+
+
+### Bug Fixes
+
+* **bupkis:** expose NegatedAssertionError ([eb0754e](https://github.com/boneskull/bupkis/commit/eb0754e9932b9ae6d73506f893a781e84445985f))
+* **bupkis:** recycle fuzzer workers to prevent OOM ([2e0ab31](https://github.com/boneskull/bupkis/commit/2e0ab317ef2f80621505786a85886e324fd35638))
+* **bupkis:** use Symbol.for() for cross-module symbol identity ([daf94f4](https://github.com/boneskull/bupkis/commit/daf94f4f6ef44065caf88075719f7a0e80092cdf))
+* **snapshot:** require Node.js v22+ for node:test snapshot testing ([25f92c3](https://github.com/boneskull/bupkis/commit/25f92c3fdbbaa3f9f823aa8cc61876577734388a))
+
 ## [0.15.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.14.0...bupkis-v0.15.0) (2026-01-11)
 
 
