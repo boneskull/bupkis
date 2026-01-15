@@ -1,19 +1,19 @@
 {
   "editor.codeActionsOnSave": {
-    // "source.fixAll": "explicit",
+    "source.fixAll": "explicit",
     "source.formatDocument": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "eslint.useFlatConfig": true,
-  "files.exclude": {
-    "**/node_modules": true
-  },
   "files.insertFinalNewline": false,
-  "markdownlint.configFile": ".markdownlint-cli2.yaml",
   "prettier.useEditorConfig": true,
   "search.exclude": {
-    "dist": true
+    "**/.fuzzing-results": true,
+    "**/.modestbench": true,
+    "**/.profiles": true,
+    "**/dist": true,
+    "**/docs": true
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
