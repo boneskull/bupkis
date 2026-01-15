@@ -32,6 +32,9 @@ npx @bupkis/from-jest --strict
 
 # Exclude patterns
 npx @bupkis/from-jest -e "**/fixtures/**" -e "**/snapshots/**"
+
+# Transform mock/spy matchers using @bupkis/sinon
+npx @bupkis/from-jest --sinon
 ```
 
 ## Modes
@@ -108,6 +111,52 @@ expect(x).not.toBe(y);
 expect(x, 'not to be', y);
 ```
 
+### Mock/Spy Matchers (with `--sinon`)
+
+When you use the `--sinon` flag, the codemod transforms Jest mock matchers to [`@bupkis/sinon`](https://github.com/boneskull/bupkis/tree/main/packages/sinon) assertions:
+
+| Jest (canonical)             | Jest 29 alias        | @bupkis/sinon                             |
+| ---------------------------- | -------------------- | ----------------------------------------- |
+| `toHaveBeenCalled()`         | `toBeCalled()`       | `'was called'`                            |
+| `toHaveBeenCalledTimes(n)`   | `toBeCalledTimes()`  | `'was called times', n`                   |
+| `toHaveBeenCalledWith(...)`  | `toBeCalledWith()`   | `'was called with', [...]`                |
+| `toHaveBeenLastCalledWith()` | `lastCalledWith()`   | `spy.lastCall, 'to have args', [...]`     |
+| `toHaveBeenNthCalledWith(n)` | `nthCalledWith()`    | `spy.getCall(n-1), 'to have args', [...]` |
+| `toHaveReturned()`           | `toReturn()`         | `'to have returned'`                      |
+| `toHaveReturnedTimes(n)`     | `toReturnTimes()`    | `'to have returned times', n`             |
+| `toHaveReturnedWith(v)`      | `toReturnWith()`     | `'to have returned with', v`              |
+| `toHaveLastReturnedWith(v)`  | `lastReturnedWith()` | `spy.lastCall, 'to have returned', v`     |
+| `toHaveNthReturnedWith(n,v)` | `nthReturnedWith()`  | `spy.getCall(n-1), 'to have returned', v` |
+
+> **Note:** The Jest 29 aliases were deprecated in Jest 26 and removed in Jest 30. This codemod handles both.
+
+**Example transformation:**
+
+```javascript
+// Before (Jest)
+expect(mockFn).toHaveBeenCalled();
+expect(mockFn).toHaveBeenCalledWith('arg1', 'arg2');
+expect(mockFn).toHaveBeenLastCalledWith('final');
+
+// After (bupkis + @bupkis/sinon)
+expect(mockFn, 'was called');
+expect(mockFn, 'was called with', ['arg1', 'arg2']);
+expect(mockFn.lastCall, 'to have args', ['final']);
+```
+
+**Important:** The `--sinon` flag only transforms _assertions_. You must manually migrate your mock/spy creation from `jest.fn()` to Sinon:
+
+```javascript
+// Before
+const mockFn = jest.fn();
+
+// After (manual migration required)
+import sinon from 'sinon';
+const mockFn = sinon.spy();
+```
+
+When mock matchers are detected without `--sinon`, the codemod will notify you and suggest using the flag.
+
 ## Programmatic API
 
 ```typescript
@@ -117,11 +166,18 @@ import { transform, transformCode } from '@bupkis/from-jest';
 const result = await transformCode(`expect(42).toBe(42);`);
 console.log(result.code); // expect(42, 'to be', 42);
 
+// Transform with sinon support
+const result = await transformCode(`expect(spy).toHaveBeenCalled();`, {
+  sinon: true,
+});
+console.log(result.code); // expect(spy, 'was called');
+
 // Transform files
 const results = await transform({
   include: ['src/**/*.test.ts'],
   exclude: ['**/node_modules/**'],
   mode: 'best-effort',
+  sinon: true, // Enable mock matcher transformation
   write: true,
 });
 ```
@@ -130,12 +186,14 @@ const results = await transform({
 
 Some Jest/Vitest patterns cannot be automatically transformed:
 
-- **Mock/spy matchers**: `toHaveBeenCalled`, `toHaveBeenCalledWith`, etc. (bupkis doesn't include mocking)
+- **Mock/spy creation**: `jest.fn()`, `jest.spyOn()`, `vi.fn()` must be manually migrated to Sinon (`sinon.spy()`, `sinon.stub()`)
 - **DOM matchers**: `@testing-library/jest-dom` matchers like `toBeInTheDocument`
 - **Promise matchers**: `resolves`/`rejects` need restructuring to `expectAsync`
 - **Complex `toHaveProperty`**: When checking property value, not just existence
 
 These cases will be marked with `// TODO: Manual migration needed` comments when using `--best-effort` mode.
+
+> **Tip:** Mock/spy _assertions_ can be transformed automatically with `--sinon`. See the [Mock/Spy Matchers](#mockspy-matchers-with---sinon) section.
 
 ## License
 

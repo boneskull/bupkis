@@ -1,7 +1,9 @@
 import { Project, QuoteKind } from 'ts-morph';
 
+import type { MockMatcherInfo } from './transformers/expect-transformer.js';
 import type {
   FileTransformResult,
+  MockMatcherDetection,
   TransformError,
   TransformOptions,
   TransformResult,
@@ -14,6 +16,10 @@ import { transformImports } from './transformers/import-transformer.js';
 export interface CodeTransformResult {
   code: string;
   errors: TransformError[];
+
+  /** Mock matchers detected (when sinon not enabled) */
+  mockMatchers: MockMatcherInfo[];
+
   transformCount: number;
   warnings: TransformWarning[];
 }
@@ -25,7 +31,7 @@ export interface CodeTransformResult {
  */
 export const transformCode = async (
   code: string,
-  options: { mode?: TransformOptions['mode'] } = {},
+  options: { mode?: TransformOptions['mode']; sinon?: boolean } = {},
 ): Promise<CodeTransformResult> => {
   const project = new Project({
     compilerOptions: {
@@ -38,20 +44,46 @@ export const transformCode = async (
   });
 
   const sourceFile = project.createSourceFile('temp.ts', code);
-  const result = transformExpectCalls(
-    sourceFile,
-    options.mode ?? 'best-effort',
-  );
+  const result = transformExpectCalls(sourceFile, {
+    mode: options.mode ?? 'best-effort',
+    sinon: options.sinon,
+  });
 
   // Transform imports after expect calls
-  transformImports(sourceFile);
+  // Use sinon imports if any mock matchers were transformed
+  transformImports(sourceFile, {
+    useSinon: options.sinon && result.mockMatcherTransformCount > 0,
+  });
 
   return {
     code: sourceFile.getFullText(),
     errors: result.errors,
+    mockMatchers: result.mockMatchers,
     transformCount: result.transformCount,
     warnings: result.warnings,
   };
+};
+
+/**
+ * Aggregate mock matcher detections by file and matcher.
+ *
+ * @function
+ */
+const aggregateMockMatchers = (
+  filePath: string,
+  matchers: MockMatcherInfo[],
+): MockMatcherDetection[] => {
+  const counts = new Map<string, number>();
+
+  for (const { matcher } of matchers) {
+    counts.set(matcher, (counts.get(matcher) ?? 0) + 1);
+  }
+
+  return [...counts.entries()].map(([matcher, count]) => ({
+    count,
+    filePath,
+    matcher,
+  }));
 };
 
 /**
@@ -72,6 +104,7 @@ export const transform = async (
       '**/*.spec.tsx',
     ],
     mode = 'best-effort',
+    sinon = false,
     write = true,
   } = options;
 
@@ -89,6 +122,7 @@ export const transform = async (
   }
 
   const files: FileTransformResult[] = [];
+  const mockMatcherDetections: MockMatcherDetection[] = [];
   let totalTransformations = 0;
   let totalWarnings = 0;
   let totalErrors = 0;
@@ -104,10 +138,20 @@ export const transform = async (
       continue;
     }
 
-    const result = transformExpectCalls(sourceFile, mode);
+    const result = transformExpectCalls(sourceFile, { mode, sinon });
+
+    // Aggregate mock matcher detections for this file
+    if (result.mockMatchers.length > 0) {
+      mockMatcherDetections.push(
+        ...aggregateMockMatchers(filePath, result.mockMatchers),
+      );
+    }
 
     // Transform imports after expect calls
-    transformImports(sourceFile);
+    // Use sinon imports if any mock matchers were transformed
+    transformImports(sourceFile, {
+      useSinon: sinon && result.mockMatcherTransformCount > 0,
+    });
 
     const fileResult: FileTransformResult = {
       errors: result.errors,
@@ -132,6 +176,7 @@ export const transform = async (
 
   return {
     files,
+    mockMatcherDetections,
     modifiedFiles,
     totalErrors,
     totalFiles: files.length,

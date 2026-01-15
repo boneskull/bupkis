@@ -3,27 +3,44 @@ import { type SourceFile, SyntaxKind } from 'ts-morph';
 const JEST_IMPORT_SOURCES = ['@jest/globals', 'vitest', 'jest'];
 
 /**
+ * Options for import transformation.
+ */
+export interface ImportTransformOptions {
+  /**
+   * Whether sinon assertions are being used (adds @bupkis/sinon imports).
+   */
+  useSinon?: boolean;
+}
+
+/**
  * Transform Jest/Vitest imports to bupkis.
  *
  * @function
  */
 export const transformImports = (
   sourceFile: SourceFile,
+  options: ImportTransformOptions = {},
 ): {
   modified: boolean;
 } => {
+  const { useSinon = false } = options;
+
   let hasBupkisImport = false;
+  let hasSinonImport = false;
   let hasExpectUsage = false;
   let modified = false;
 
   // Check if bupkis import already exists
   const imports = sourceFile.getImportDeclarations();
   for (const imp of imports) {
-    if (imp.getModuleSpecifierValue() === 'bupkis') {
+    const moduleSpecifier = imp.getModuleSpecifierValue();
+    if (moduleSpecifier === 'bupkis') {
       const namedImports = imp.getNamedImports();
       if (namedImports.some((n) => n.getName() === 'expect')) {
         hasBupkisImport = true;
       }
+    } else if (moduleSpecifier === '@bupkis/sinon') {
+      hasSinonImport = true;
     }
   }
 
@@ -56,10 +73,37 @@ export const transformImports = (
 
   // Add bupkis import if needed
   if (hasExpectUsage && !hasBupkisImport) {
+    if (useSinon) {
+      // When using sinon, import { use } from bupkis
+      sourceFile.addImportDeclaration({
+        moduleSpecifier: 'bupkis',
+        namedImports: ['use'],
+      });
+    } else {
+      // Standard bupkis import
+      sourceFile.addImportDeclaration({
+        moduleSpecifier: 'bupkis',
+        namedImports: ['expect'],
+      });
+    }
+    modified = true;
+  }
+
+  // Add sinon imports if needed
+  if (useSinon && hasExpectUsage && !hasSinonImport) {
     sourceFile.addImportDeclaration({
-      moduleSpecifier: 'bupkis',
-      namedImports: ['expect'],
+      defaultImport: 'sinonAssertions',
+      moduleSpecifier: '@bupkis/sinon',
     });
+
+    // Add the use() statement to create expect
+    // Find a good insertion point (after imports)
+    const lastImport = sourceFile.getImportDeclarations().at(-1);
+    if (lastImport) {
+      lastImport.replaceWithText(
+        `${lastImport.getText()}\n\nconst { expect } = use(sinonAssertions);`,
+      );
+    }
     modified = true;
   }
 
