@@ -8,6 +8,7 @@
 import {
   createPropertyTestHarness,
   extractPhrases,
+  filteredObject,
   getVariants,
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
@@ -339,7 +340,7 @@ const asyncTestConfigs = new Map<
         generators: fc
           .tuple(
             fc.string({ minLength: 1 }),
-            fc.oneof(fc.string(), fc.integer(), fc.object(), fc.boolean()),
+            fc.oneof(fc.string(), fc.integer(), filteredObject, fc.boolean()),
           )
           .chain(([eventType, detail]) => {
             const target = new EventTarget();
@@ -401,7 +402,7 @@ const asyncTestConfigs = new Map<
         generators: fc
           .tuple(
             fc.string({ minLength: 1 }),
-            fc.oneof(fc.string(), fc.integer(), fc.object(), fc.boolean()),
+            fc.oneof(fc.string(), fc.integer(), filteredObject, fc.boolean()),
           )
           .chain(([eventType, detail]) => {
             const target = new EventTarget();
