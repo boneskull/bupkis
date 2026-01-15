@@ -114,7 +114,7 @@ const printMockMatcherDetections = (
 ${ansi.cyan}To transform these, rerun with:${ansi.reset} npx @bupkis/from-jest --sinon
 
 ${ansi.yellow}Note: You'll need to:${ansi.reset}
-  1. Install @bupkis/sinon: ${ansi.dim}npm install @bupkis/sinon${ansi.reset}
+  1. Install ${ansi.dim}@bupkis/sinon${ansi.reset} using your package manager
   2. Migrate jest.fn()/vi.fn() calls to Sinon spies (manual)
 `);
 };

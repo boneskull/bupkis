@@ -153,6 +153,9 @@ export const sinonMatchers: MatcherTransform[] = [
      * @function
      */
     transform: ({ matcherArgs, negated, subject }) => {
+      if (matcherArgs[0] === undefined) {
+        return null;
+      }
       const phrase = negated ? 'not to have returned' : 'to have returned';
       return `expect(${subject}.lastCall, '${phrase}', ${matcherArgs[0]})`;
     },
@@ -164,6 +167,9 @@ export const sinonMatchers: MatcherTransform[] = [
      * @function
      */
     transform: ({ matcherArgs, negated, subject }) => {
+      if (matcherArgs[0] === undefined) {
+        return null;
+      }
       const phrase = negated ? 'not to have returned' : 'to have returned';
       return `expect(${subject}.lastCall, '${phrase}', ${matcherArgs[0]})`;
     },

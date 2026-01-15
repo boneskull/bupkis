@@ -36,7 +36,12 @@ export const transformImports = (
     const moduleSpecifier = imp.getModuleSpecifierValue();
     if (moduleSpecifier === 'bupkis') {
       const namedImports = imp.getNamedImports();
-      if (namedImports.some((n) => n.getName() === 'expect')) {
+      // Check for 'expect' (standard) or 'use' (when using sinon)
+      if (
+        namedImports.some(
+          (n) => n.getName() === 'expect' || n.getName() === 'use',
+        )
+      ) {
         hasBupkisImport = true;
       }
     } else if (moduleSpecifier === '@bupkis/sinon') {
@@ -97,12 +102,16 @@ export const transformImports = (
     });
 
     // Add the use() statement to create expect
-    // Find a good insertion point (after imports)
-    const lastImport = sourceFile.getImportDeclarations().at(-1);
-    if (lastImport) {
-      lastImport.replaceWithText(
-        `${lastImport.getText()}\n\nconst { expect } = use(sinonAssertions);`,
-      );
+    // Insert after all import declarations
+    const allStatements = sourceFile.getStatements();
+    const importDecls = sourceFile.getImportDeclarations();
+    if (importDecls.length > 0) {
+      const lastImport = importDecls.at(-1)!;
+      const lastImportIndex = allStatements.indexOf(lastImport);
+      sourceFile.insertStatements(lastImportIndex + 1, (writer) => {
+        writer.blankLine();
+        writer.writeLine('const { expect } = use(sinonAssertions);');
+      });
     }
     modified = true;
   }
