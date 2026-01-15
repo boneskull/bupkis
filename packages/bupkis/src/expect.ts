@@ -176,12 +176,23 @@ export function createExpectAsyncFunction<
   T extends AnyAsyncAssertions,
   U extends ExpectAsync<AnyAsyncAssertions>,
 >(assertions: T, expect?: U) {
+  // Combine all assertions once at creation time
+  const allAssertions: AnyAsyncAssertion[] = [
+    ...(expect?.assertions ?? []),
+    ...assertions,
+  ];
+
+  // Build phrase index for fast dispatch
+  const phraseIndex = buildPhraseIndex(allAssertions);
+
   debug(
-    'ℹ Creating expectAsync function with %d new assertions and %d existing assertions (%d total)',
+    'ℹ Creating expectAsync function with %d new assertions and %d existing assertions (%d total, %d indexed phrases)',
     assertions.length,
     expect?.assertions.length ?? 0,
-    assertions.length + (expect?.assertions.length ?? 0),
+    allAssertions.length,
+    phraseIndex.size,
   );
+
   /**
    * @function
    */
@@ -197,7 +208,15 @@ export function createExpectAsyncFunction<
         assertion: AnyAsyncAssertion;
         parseResult: ParsedResult<AssertionParts>;
       }> = [];
-      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+
+      // Use phrase index for O(1) candidate lookup, fall back to full scan
+      const assertionsToCheck = getCandidateAssertions(
+        processedArgs,
+        phraseIndex,
+        allAssertions,
+      );
+
+      for (const assertion of assertionsToCheck) {
         const parseResult = await assertion.parseValuesAsync(processedArgs);
         const { exactMatch, parsedValues, success } = parseResult;
 
@@ -239,7 +258,6 @@ export function createExpectAsyncFunction<
     // Fallback: if all conjunctified attempts failed and we actually split on "and",
     // try different permutations of rejoining the split parts
     if (argsMatrix.length > 1) {
-      const allAssertions = [...(expect?.assertions ?? []), ...assertions];
       const rejoinPermutations = generateRejoinPermutations(argsMatrix, args);
 
       for (const permutation of rejoinPermutations) {
@@ -249,7 +267,14 @@ export function createExpectAsyncFunction<
           parseResult: ParsedResult<AssertionParts>;
         }> = [];
 
-        for (const assertion of allAssertions) {
+        // Use phrase index for O(1) candidate lookup, fall back to full scan
+        const assertionsToCheck = getCandidateAssertions(
+          processedArgs,
+          phraseIndex,
+          allAssertions,
+        );
+
+        for (const assertion of assertionsToCheck) {
           const parseResult = await assertion.parseValuesAsync(processedArgs);
           const { exactMatch, parsedValues, success } = parseResult;
 
@@ -420,12 +445,23 @@ export function createExpectSyncFunction<
   Assertions extends AnySyncAssertions,
   ParentExpect extends Expect<AnySyncAssertions>,
 >(assertions: Assertions, expect?: ParentExpect) {
+  // Combine all assertions once at creation time
+  const allAssertions: AnySyncAssertion[] = [
+    ...(expect?.assertions ?? []),
+    ...assertions,
+  ];
+
+  // Build phrase index for fast dispatch
+  const phraseIndex = buildPhraseIndex(allAssertions);
+
   debug(
-    'ℹ Creating expect function with %d new assertions and %d existing assertions (%d total)',
+    'ℹ Creating expect function with %d new assertions and %d existing assertions (%d total, %d indexed phrases)',
     assertions.length,
     expect?.assertions.length ?? 0,
-    assertions.length + (expect?.assertions.length ?? 0),
+    allAssertions.length,
+    phraseIndex.size,
   );
+
   /**
    * @function
    */
@@ -440,7 +476,15 @@ export function createExpectSyncFunction<
         assertion: AnySyncAssertion;
         parseResult: ParsedResult<AssertionParts>;
       }> = [];
-      for (const assertion of [...(expect?.assertions ?? []), ...assertions]) {
+
+      // Use phrase index for O(1) candidate lookup, fall back to full scan
+      const assertionsToCheck = getCandidateAssertions(
+        processedArgs,
+        phraseIndex,
+        allAssertions,
+      );
+
+      for (const assertion of assertionsToCheck) {
         const parseResult = assertion.parseValues(processedArgs);
         const { exactMatch, parsedValues, success } = parseResult;
 
@@ -482,7 +526,6 @@ export function createExpectSyncFunction<
     // Fallback: if all conjunctified attempts failed and we actually split on "and",
     // try different permutations of rejoining the split parts
     if (argsMatrix.length > 1) {
-      const allAssertions = [...(expect?.assertions ?? []), ...assertions];
       const rejoinPermutations = generateRejoinPermutations(argsMatrix, args);
 
       for (const permutation of rejoinPermutations) {
@@ -492,7 +535,14 @@ export function createExpectSyncFunction<
           parseResult: ParsedResult<AssertionParts>;
         }> = [];
 
-        for (const assertion of allAssertions) {
+        // Use phrase index for O(1) candidate lookup, fall back to full scan
+        const assertionsToCheck = getCandidateAssertions(
+          processedArgs,
+          phraseIndex,
+          allAssertions,
+        );
+
+        for (const assertion of assertionsToCheck) {
           const parseResult = assertion.parseValues(processedArgs);
           const { exactMatch, parsedValues, success } = parseResult;
 
@@ -772,6 +822,90 @@ const generateRejoinPermutations = (
   permutations.push(originalArgs);
 
   return permutations;
+};
+
+/**
+ * Assertion type with getIndexPhrases method for phrase indexing.
+ */
+type IndexableAssertion = {
+  getIndexPhrases(): readonly string[];
+};
+
+/**
+ * Builds a phrase-keyed index for fast assertion dispatch.
+ *
+ * Maps phrase literals to the assertions that use them, enabling O(1) lookup
+ * instead of O(n) iteration over all assertions during dispatch.
+ *
+ * @function
+ * @param assertions - Array of assertions to index
+ * @returns Map from phrase string to array of assertions using that phrase
+ */
+const buildPhraseIndex = <T extends IndexableAssertion>(
+  assertions: readonly T[],
+): Map<string, T[]> => {
+  const index = new Map<string, T[]>();
+  for (const assertion of assertions) {
+    const phrases = assertion.getIndexPhrases();
+    for (const phrase of phrases) {
+      const existing = index.get(phrase);
+      if (existing) {
+        existing.push(assertion);
+      } else {
+        index.set(phrase, [assertion]);
+      }
+    }
+  }
+  return index;
+};
+
+/**
+ * Extracts the phrase from processed arguments for index lookup.
+ *
+ * Looks at position 1 (subject-first assertions) and position 0 (phrase-first).
+ * Returns the first string found, or undefined if no phrase is present.
+ *
+ * @function
+ * @param args - Processed arguments (after negation handling)
+ * @returns The phrase string if found, undefined otherwise
+ */
+const extractPhraseFromArgs = (
+  args: readonly unknown[],
+): string | undefined => {
+  // Most common: subject at 0, phrase at 1
+  if (args.length > 1 && isString(args[1])) {
+    return args[1];
+  }
+  // Less common: phrase at 0
+  if (args.length > 0 && isString(args[0])) {
+    return args[0];
+  }
+  return undefined;
+};
+
+/**
+ * Gets candidate assertions for dispatch using phrase index lookup.
+ *
+ * Extracts the phrase from processed arguments and looks it up in the phrase
+ * index for O(1) candidate retrieval. Falls back to the full assertion list if
+ * no phrase is found or the phrase isn't indexed.
+ *
+ * @function
+ * @param processedArgs - Arguments after negation processing
+ * @param phraseIndex - Map from phrase strings to assertion arrays
+ * @param allAssertions - Complete assertion list for fallback
+ * @returns Array of candidate assertions to check
+ */
+const getCandidateAssertions = <T extends IndexableAssertion>(
+  processedArgs: readonly unknown[],
+  phraseIndex: Map<string, T[]>,
+  allAssertions: readonly T[],
+): readonly T[] => {
+  const phrase = extractPhraseFromArgs(processedArgs);
+  return (
+    (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
+    allAssertions
+  );
 };
 
 /**

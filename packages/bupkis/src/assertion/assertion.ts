@@ -37,6 +37,7 @@ import {
 const debug = createDebug('bupkis:assertion');
 const { entries, hasOwn, keys } = Object;
 const { isArray } = Array;
+const { min } = Math;
 /**
  * Modified charmap for {@link slug} to use underscores to replace hyphens (`-`;
  * and for hyphens to replace everything else that needs replacing) and `<` with
@@ -63,6 +64,41 @@ export abstract class BupkisAssertion<
   ) {
     this.id = this.generateAssertionId();
     debug('ℹ Created assertion %s', this);
+  }
+
+  /**
+   * Extracts phrase literals from this assertion for use in dispatch indexing.
+   *
+   * Returns phrases from the first phrase literal slot found (typically slot 1
+   * for subject-first assertions, or slot 0 for phrase-first assertions).
+   * Handles both single phrase literals and phrase literal choices.
+   *
+   * **Limitation:** Only checks slots at positions 0 and 1. Assertions with
+   * phrase literals at position 2 or higher will not be indexed, falling back
+   * to O(n) full scan during dispatch. This covers the vast majority of
+   * assertion patterns (subject-phrase-... or phrase-subject-...).
+   *
+   * @returns Array of phrase strings for indexing, or empty array if none found
+   */
+  public getIndexPhrases(): readonly string[] {
+    // Look for phrase literal at slot 0 or 1 (most common positions)
+    for (let i = 0; i < min(2, this.slots.length); i++) {
+      const slot = this.slots[i];
+      if (!slot) {
+        continue;
+      }
+
+      const meta = BupkisRegistry.get(slot) ?? {};
+      if (kStringLiteral in meta) {
+        if ('value' in meta && typeof meta.value === 'string') {
+          return [meta.value];
+        }
+        if ('values' in meta && isArray(meta.values)) {
+          return meta.values as readonly string[];
+        }
+      }
+    }
+    return [];
   }
 
   /**
