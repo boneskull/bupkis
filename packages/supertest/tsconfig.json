@@ -1,0 +1,5 @@
+{
+  "exclude": ["dist", "node_modules", "**/test/**/*.snap.cjs"],
+  "extends": "../../.config/tsconfig.base.json",
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

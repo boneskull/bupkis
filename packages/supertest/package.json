@@ -1,0 +1,73 @@
+{
+  "name": "@bupkis/supertest",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "HTTP response assertions for Bupkis - works with supertest, fetch, and axios",
+  "repository": {
+    "directory": "packages/supertest",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "supertest",
+    "http",
+    "response",
+    "assert",
+    "assertion",
+    "test",
+    "fetch",
+    "axios"
+  ],
+  "scripts": {
+    "build": "zshy",
+    "prepublishOnly": "npm run build",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
+    "test:base": "node --import tsx --test --test-reporter=spec",
+    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts",
+    "test:types": "tsd"
+  },
+  "peerDependencies": {
+    "bupkis": ">=0.15.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/supertest": "6.0.3",
+    "express": "5.1.0",
+    "supertest": "7.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
+  }
+}
