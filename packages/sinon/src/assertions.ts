@@ -351,9 +351,96 @@ export const alwaysThrewAssertion = expect.createAssertion(
 
 // #endregion
 
-// #region SpyCall Assertions
+// #region Return Assertions (Spy-level)
 
 const { is } = Object;
+
+/**
+ * Asserts that a spy returned (without throwing) at least once.
+ *
+ * @example
+ *
+ * ```ts
+ * const stub = sinon.stub().returns(42);
+ * stub();
+ * expect(stub, 'to have returned'); // passes
+ * ```
+ */
+const spyReturnedAssertion = expect.createAssertion(
+  [SpySchema, ['to have returned', 'returned']],
+  (spy: SinonSpy) => {
+    // Check if any call returned without throwing
+    const returnCount = spy
+      .getCalls()
+      .filter((call) => call.exception === undefined).length;
+    if (returnCount > 0) {
+      return true;
+    }
+    return {
+      actual: returnCount,
+      expected: 'at least 1 return',
+      message: `Expected spy to have returned at least once`,
+    };
+  },
+);
+
+/**
+ * Asserts that a spy returned (without throwing) exactly N times.
+ *
+ * @example
+ *
+ * ```ts
+ * const stub = sinon.stub().returns(42);
+ * stub();
+ * stub();
+ * expect(stub, 'to have returned times', 2); // passes
+ * ```
+ */
+const spyReturnedTimesAssertion = expect.createAssertion(
+  [SpySchema, 'to have returned times', schema.NonNegativeIntegerSchema],
+  (spy: SinonSpy, expected: number) => {
+    const returnCount = spy
+      .getCalls()
+      .filter((call) => call.exception === undefined).length;
+    if (returnCount === expected) {
+      return true;
+    }
+    return {
+      actual: returnCount,
+      expected,
+      message: `Expected spy to have returned ${expected} time(s)`,
+    };
+  },
+);
+
+/**
+ * Asserts that a spy returned a specific value at least once.
+ *
+ * @example
+ *
+ * ```ts
+ * const stub = sinon.stub().returns(42);
+ * stub();
+ * expect(stub, 'to have returned with', 42); // passes
+ * ```
+ */
+const spyReturnedWithAssertion = expect.createAssertion(
+  [SpySchema, 'to have returned with', schema.UnknownSchema],
+  (spy: SinonSpy, expected: unknown) => {
+    if (spy.returned(expected)) {
+      return true;
+    }
+    return {
+      actual: spy.returnValues,
+      expected,
+      message: `Expected spy to have returned specified value at least once`,
+    };
+  },
+);
+
+// #endregion
+
+// #region SpyCall Assertions
 
 /**
  * Asserts that a spy call had specific arguments.
@@ -638,6 +725,10 @@ export const sinonAssertions = [
   threwAssertion,
   threwWithAssertion,
   alwaysThrewAssertion,
+  // Returns (Spy-level)
+  spyReturnedAssertion,
+  spyReturnedTimesAssertion,
+  spyReturnedWithAssertion,
   // SpyCall
   callHasArgsAssertion,
   callReturnedAssertion,

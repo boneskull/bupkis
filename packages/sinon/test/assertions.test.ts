@@ -274,6 +274,120 @@ describe('@bupkis/sinon', () => {
         expect(() => e(stub, 'always threw'), 'to throw');
       });
     });
+
+    describe('to have returned (spy-level)', () => {
+      it('should pass when spy returned at least once', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        e(stub, 'to have returned');
+      });
+
+      it('should pass when spy returned after throwing', () => {
+        const stub = sinon.stub();
+        stub.onFirstCall().throws(new Error('oops'));
+        stub.onSecondCall().returns(42);
+        try {
+          stub();
+        } catch {
+          // expected
+        }
+        stub();
+        e(stub, 'to have returned');
+      });
+
+      it('should fail when spy only threw', () => {
+        const stub = sinon.stub().throws(new Error('always throws'));
+        try {
+          stub();
+        } catch {
+          // expected
+        }
+        expect(() => e(stub, 'to have returned'), 'to throw');
+      });
+
+      it('should fail when spy was never called', () => {
+        const spy = sinon.spy();
+        expect(() => e(spy, 'to have returned'), 'to throw');
+      });
+
+      it('should support alternate phrase "returned"', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        e(stub, 'returned');
+      });
+    });
+
+    describe('to have returned times', () => {
+      it('should pass when spy returned exact number of times', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        stub();
+        stub();
+        e(stub, 'to have returned times', 3);
+      });
+
+      it('should count only successful returns', () => {
+        const stub = sinon.stub();
+        stub.onFirstCall().throws(new Error('oops'));
+        stub.onSecondCall().returns(1);
+        stub.onThirdCall().returns(2);
+        try {
+          stub();
+        } catch {
+          // expected
+        }
+        stub();
+        stub();
+        e(stub, 'to have returned times', 2);
+      });
+
+      it('should fail when return count does not match', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        stub();
+        expect(() => e(stub, 'to have returned times', 3), 'to throw');
+      });
+
+      it('should pass with 0 when all calls threw', () => {
+        const stub = sinon.stub().throws(new Error('always throws'));
+        try {
+          stub();
+        } catch {
+          // expected
+        }
+        e(stub, 'to have returned times', 0);
+      });
+    });
+
+    describe('to have returned with', () => {
+      it('should pass when spy returned the value at least once', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        e(stub, 'to have returned with', 42);
+      });
+
+      it('should pass when any call returned the value', () => {
+        const stub = sinon.stub();
+        stub.onFirstCall().returns('first');
+        stub.onSecondCall().returns('target');
+        stub.onThirdCall().returns('third');
+        stub();
+        stub();
+        stub();
+        e(stub, 'to have returned with', 'target');
+      });
+
+      it('should fail when value was never returned', () => {
+        const stub = sinon.stub().returns(42);
+        stub();
+        expect(() => e(stub, 'to have returned with', 99), 'to throw');
+      });
+
+      it('should fail when spy was never called', () => {
+        const spy = sinon.spy();
+        expect(() => e(spy, 'to have returned with', 42), 'to throw');
+      });
+    });
   });
 
   describe('spyCall assertions', () => {

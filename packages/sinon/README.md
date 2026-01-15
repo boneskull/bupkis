@@ -252,6 +252,112 @@ spy();
 expect(spy, 'not was called times', 5);
 ```
 
+### {Spy} to have returned
+
+> ✏️ Aliases:
+>
+>     {Spy} to have returned
+>     {Spy} returned
+
+Asserts that a spy returned successfully (without throwing) at least once.
+
+**Success**:
+
+```js
+const spy = sinon.spy(() => 42);
+spy();
+expect(spy, 'to have returned');
+expect(spy, 'returned');
+```
+
+**Failure**:
+
+```js
+const spy = sinon.spy(() => {
+  throw new Error('boom');
+});
+try {
+  spy();
+} catch {}
+expect(spy, 'to have returned');
+// AssertionError: Expected spy to have returned at least once
+```
+
+**Negation**:
+
+```js
+const spy = sinon.spy(() => {
+  throw new Error('boom');
+});
+try {
+  spy();
+} catch {}
+expect(spy, 'not to have returned');
+```
+
+### {Spy} to have returned times {number}
+
+Asserts that a spy returned successfully exactly the specified number of times.
+
+**Success**:
+
+```js
+const spy = sinon.spy(() => 42);
+spy();
+spy();
+spy();
+expect(spy, 'to have returned times', 3);
+```
+
+**Failure**:
+
+```js
+const spy = sinon.spy(() => 42);
+spy();
+spy();
+expect(spy, 'to have returned times', 3);
+// AssertionError: Expected spy to have returned 3 time(s), but it returned 2 time(s)
+```
+
+**Negation**:
+
+```js
+const spy = sinon.spy(() => 42);
+spy();
+expect(spy, 'not to have returned times', 3);
+```
+
+### {Spy} to have returned with {unknown}
+
+Asserts that a spy returned the specified value on at least one call. Uses _'to satisfy' semantics_ for comparison.
+
+**Success**:
+
+```js
+const spy = sinon.spy((x) => x * 2);
+spy(5);
+spy(10);
+expect(spy, 'to have returned with', 10);
+expect(spy, 'to have returned with', 20);
+```
+
+**Failure**:
+
+```js
+const spy = sinon.spy((x) => x * 2);
+spy(5);
+expect(spy, 'to have returned with', 100);
+// AssertionError: Expected spy to have returned specified value
+```
+
+**Negation**:
+
+```js
+const spy = sinon.spy((x) => x * 2);
+spy(5);
+expect(spy, 'not to have returned with', 100);
+```
+
 ### {Spy} was called with {array}
 
 > ✏️ Aliases:
