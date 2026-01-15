@@ -69,8 +69,7 @@
     "jsdocPreferCodeFences": true,
     "plugins": [
       "prettier-plugin-jsdoc",
-      "prettier-plugin-pkg",
-      "prettier-plugin-sort-json"
+      "prettier-plugin-pkg"
     ],
     "singleQuote": true,
     "tsdoc": true

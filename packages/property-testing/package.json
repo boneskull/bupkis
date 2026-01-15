@@ -22,9 +22,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.cts"
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -65,8 +65,7 @@
     "jsdocPreferCodeFences": true,
     "plugins": [
       "prettier-plugin-jsdoc",
-      "prettier-plugin-pkg",
-      "prettier-plugin-sort-json"
+      "prettier-plugin-pkg"
     ],
     "singleQuote": true,
     "tsdoc": true

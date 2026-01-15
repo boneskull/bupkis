@@ -67,7 +67,6 @@
     "prettier": "3.7.4",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-pkg": "0.21.2",
-    "prettier-plugin-sort-json": "4.1.1",
     "serve": "14.2.5",
     "tsd": "0.33.0",
     "tsx": "4.21.0",
@@ -139,8 +138,7 @@
     "jsdocPreferCodeFences": true,
     "plugins": [
       "prettier-plugin-jsdoc",
-      "prettier-plugin-pkg",
-      "prettier-plugin-sort-json"
+      "prettier-plugin-pkg"
     ],
     "singleQuote": true,
     "tsdoc": true
