@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 import { ansi, bargs, opt, pos } from '@boneskull/bargs';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { TransformMode, TransformResult } from './types.js';
+import type {
+  MockMatcherDetection,
+  TransformMode,
+  TransformResult,
+} from './types.js';
 
 import { transform } from './transform.js';
 
@@ -74,6 +78,47 @@ const printResult = (result: TransformResult): void => {
   }
 };
 
+/**
+ * Print mock matcher detection summary.
+ *
+ * @function
+ */
+const printMockMatcherDetections = (
+  detections: MockMatcherDetection[],
+): void => {
+  // Group by file
+  const byFile = new Map<string, MockMatcherDetection[]>();
+  for (const detection of detections) {
+    const existing = byFile.get(detection.filePath) ?? [];
+    existing.push(detection);
+    byFile.set(detection.filePath, existing);
+  }
+
+  const totalCount = detections.reduce((sum, d) => sum + d.count, 0);
+  const fileCount = byFile.size;
+  const cwd = process.cwd();
+
+  console.log(
+    `\n${ansi.yellow}⚠ Found ${totalCount} mock/spy matcher(s) in ${fileCount} file(s):${ansi.reset}`,
+  );
+
+  for (const [filePath, fileDetections] of byFile) {
+    const relativePath = relative(cwd, filePath);
+    const matcherSummary = fileDetections
+      .map((d) => `${d.matcher}${d.count > 1 ? ` (x${d.count})` : ''}`)
+      .join(', ');
+    console.log(`  ${ansi.dim}${relativePath}:${ansi.reset} ${matcherSummary}`);
+  }
+
+  console.log(`
+${ansi.cyan}To transform these, rerun with:${ansi.reset} npx @bupkis/from-jest --sinon
+
+${ansi.yellow}Note: You'll need to:${ansi.reset}
+  1. Install @bupkis/sinon: ${ansi.dim}npm install @bupkis/sinon${ansi.reset}
+  2. Migrate jest.fn()/vi.fn() calls to Sinon spies (manual)
+`);
+};
+
 const { positionals, values } = await bargs('bupkis-from-jest', {
   description: 'Migrate Jest and Vitest assertions to bupkis',
   version: pkg.version,
@@ -100,6 +145,9 @@ const { positionals, values } = await bargs('bupkis-from-jest', {
         }),
         interactive: opt.boolean({
           description: 'Prompt for ambiguous cases',
+        }),
+        sinon: opt.boolean({
+          description: 'Transform mock/spy matchers to @bupkis/sinon',
         }),
         strict: opt.boolean({
           description: 'Fail on any unsupported transformation',
@@ -137,10 +185,16 @@ try {
     exclude: values.exclude,
     include: actualPatterns,
     mode,
+    sinon: values.sinon,
     write: !values['dry-run'],
   });
 
   printResult(result);
+
+  // Print mock matcher detection summary if any were found and --sinon not enabled
+  if (result.mockMatcherDetections.length > 0 && !values.sinon) {
+    printMockMatcherDetections(result.mockMatcherDetections);
+  }
 
   if (result.totalErrors > 0 && mode === 'strict') {
     process.exit(1);

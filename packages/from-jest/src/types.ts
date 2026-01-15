@@ -53,6 +53,20 @@ export interface MatcherTransformArgs {
 }
 
 /**
+ * Detection of a mock matcher that requires @bupkis/sinon.
+ */
+export interface MockMatcherDetection {
+  /** Number of occurrences */
+  count: number;
+
+  /** File path where detected */
+  filePath: string;
+
+  /** Jest matcher name */
+  matcher: string;
+}
+
+/**
  * Error during transformation.
  */
 export interface TransformError {
@@ -100,6 +114,13 @@ export interface TransformOptions {
   mode?: TransformMode;
 
   /**
+   * Enable transformation of mock/spy matchers to @bupkis/sinon.
+   *
+   * @default false
+   */
+  sinon?: boolean;
+
+  /**
    * Whether to write changes to disk.
    *
    * @default true
@@ -113,6 +134,9 @@ export interface TransformOptions {
 export interface TransformResult {
   /** Results for each file processed */
   files: FileTransformResult[];
+
+  /** Mock matchers detected (when --sinon not enabled) */
+  mockMatcherDetections: MockMatcherDetection[];
 
   /** Total files modified */
   modifiedFiles: number;
