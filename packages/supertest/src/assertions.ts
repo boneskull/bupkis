@@ -666,7 +666,7 @@ const toRedirectToUrlAssertion = expect.createAssertion(
       };
     }
 
-    const locationString = isArray(location) ? location[0] : location;
+    const locationString = isArray(location) ? (location[0] ?? '') : location;
 
     if (locationString === expectedUrl) {
       return true;
