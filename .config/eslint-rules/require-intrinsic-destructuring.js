@@ -4,8 +4,9 @@
  *
  * This rule enforces that static methods of JavaScript intrinsics (like
  * Object.keys, Array.from, etc.) should be destructured before use instead of
- * being accessed directly. This can help with performance and bundle size by
- * allowing these methods to be reused throughout a module.
+ * being accessed directly. Because BUPKIS is run within a test context, it's
+ * possible the user will want to monkeypatch intrinsics for one reason or
+ * another. This protects BUPKIS (to a degree) from unexpected behavior.
  *
  * @example
  *
@@ -33,7 +34,10 @@ const INTRINSICS_WITH_STATIC_METHODS = freeze(
     /** @type {const} */ ([
       'Array',
       'ArrayBuffer',
+      'Atomics',
       'BigInt',
+      'BigInt64Array',
+      'BigUint64Array',
       'Boolean',
       'console',
       'DataView',
@@ -50,7 +54,9 @@ const INTRINSICS_WITH_STATIC_METHODS = freeze(
       'Math',
       'Number',
       'Object',
-      // 'Promise', // should not be destructured
+      // Promise is intentionally excluded: its static methods (all, race, resolve,
+      // etc.) are subclass-aware and use `this` to determine the constructor for
+      // the returned promise. Destructuring them breaks this behavior.
       'Proxy',
       'Reflect',
       'RegExp',
@@ -58,6 +64,7 @@ const INTRINSICS_WITH_STATIC_METHODS = freeze(
       'String',
       'Symbol',
       'Uint8Array',
+      'Uint8ClampedArray',
       'Uint16Array',
       'Uint32Array',
       'WeakMap',
