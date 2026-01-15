@@ -61,6 +61,7 @@ export const valueToSchema = (
 ): z.ZodType<any> => {
   const {
     _currentDepth = 0,
+    literalEmptyArrays = false,
     literalEmptyObjects = false,
     literalPrimitives = false,
     literalRegExp = false,
@@ -284,7 +285,11 @@ export const valueToSchema = (
         const filteredValue = value; // Always process all elements
 
         if (filteredValue.length === 0) {
-          // For empty arrays, use z.tuple() if literalTuples is enabled
+          // When literalEmptyArrays is false, empty arrays match any array
+          if (!literalEmptyArrays) {
+            return z.array(z.unknown());
+          }
+          // For literal empty arrays, use z.tuple() if literalTuples is enabled
           if (literalTuples) {
             return z.tuple([]);
           }
@@ -303,6 +308,10 @@ export const valueToSchema = (
               ...options,
               _currentDepth: _currentDepth + 1,
               literalPrimitives: itemLiteralPrimitives,
+              // Disable permissive property check for array elements to avoid
+              // conflicts in union schemas (permissive z.any() would accept
+              // array elements meant for other branches)
+              permissivePropertyCheck: false,
             },
             visited,
           );
@@ -490,7 +499,20 @@ export const valueToSchema = (
                 continue;
               }
 
-              const propValue = (val as Record<string, unknown>)[key];
+              // Property access can throw for reserved properties on strict mode
+              // functions (e.g., 'arguments', 'caller', 'callee')
+              let propValue: unknown;
+              try {
+                propValue = (val as Record<string, unknown>)[key];
+              } catch {
+                ctx.addIssue({
+                  code: 'custom',
+                  message: `Property "${key}" exists but cannot be accessed`,
+                  path: [key],
+                });
+                continue;
+              }
+
               const result = schema.safeParse(propValue);
               if (!result.success) {
                 for (const issue of result.error.issues) {
@@ -633,6 +655,14 @@ export interface ValueToSchemaOptions {
   _currentDepth?: number;
 
   /**
+   * If `true`, treat empty arrays `[]` as literal empty arrays that only match
+   * arrays with zero elements. When `false`, empty arrays match any array.
+   *
+   * @defaultValue false
+   */
+  literalEmptyArrays?: boolean;
+
+  /**
    * If `true`, treat empty objects `{}` as literal empty objects that only
    * match objects with zero own properties
    *
@@ -709,6 +739,7 @@ export interface ValueToSchemaOptions {
  * properties.
  */
 export const valueToSchemaOptionsForSatisfies = freeze({
+  literalEmptyArrays: false,
   literalEmptyObjects: true,
   literalPrimitives: true,
   literalRegExp: false,
@@ -725,6 +756,7 @@ export const valueToSchemaOptionsForSatisfies = freeze({
  * matching.
  */
 export const valueToSchemaOptionsForDeepEqual = freeze({
+  literalEmptyArrays: true,
   literalEmptyObjects: true,
   literalPrimitives: true,
   literalRegExp: true,

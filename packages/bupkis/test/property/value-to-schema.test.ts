@@ -827,4 +827,482 @@ describe('valueToSchema() property tests', () => {
       );
     });
   });
+
+  describe('permissivePropertyCheck option', () => {
+    /**
+     * Generator for functions with static properties
+     */
+    const functionWithProps = fc
+      .record({
+        prop1: fc.string(),
+        prop2: fc.integer(),
+      })
+      .map((props) => {
+        const fn = () => {};
+        Object.assign(fn, props);
+        return { fn, props };
+      });
+
+    /**
+     * Generator for class constructors with static methods
+     */
+    const classWithStatics = fc
+      .record({
+        staticValue: fc.integer(),
+      })
+      .map((props) => {
+        class TestClass {
+          static staticMethod() {
+            return 42;
+          }
+        }
+        Object.assign(TestClass, props);
+        return { cls: TestClass, props };
+      });
+
+    it('should validate object shapes against functions when permissivePropertyCheck is true', () => {
+      fc.assert(
+        fc.property(functionWithProps, ({ fn, props }) => {
+          // Create schema from the props (object shape)
+          const schema = valueToSchema(props, {
+            literalPrimitives: true,
+            permissivePropertyCheck: true,
+          });
+
+          // Should validate the function that has those properties
+          const result = schema.safeParse(fn);
+          return result.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should reject functions missing expected properties when permissivePropertyCheck is true', () => {
+      fc.assert(
+        fc.property(
+          fc
+            .string()
+            .filter((s) => s.length > 0 && s !== 'length' && s !== 'name'),
+          (propName) => {
+            const fn = () => {};
+            const expectedShape = { [propName]: 'expectedValue' };
+
+            const schema = valueToSchema(expectedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            // Function doesn't have the property, should fail
+            const result = schema.safeParse(fn);
+            return !result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should validate array length property via object shape', () => {
+      fc.assert(
+        fc.property(
+          fc.array(filteredAnything, { maxLength: 20, minLength: 0 }),
+          (arr) => {
+            const expectedShape = { length: arr.length };
+
+            const schema = valueToSchema(expectedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(arr);
+            return result.success;
+          },
+        ),
+        { examples: [[[{ '': 0 }, { '': { '': 0 } }]]], numRuns },
+      );
+    });
+
+    it('should reject arrays with wrong length via object shape', () => {
+      fc.assert(
+        fc.property(
+          fc.array(filteredAnything, { maxLength: 20, minLength: 1 }),
+          fc.integer({ max: 100, min: 0 }),
+          (arr, wrongLength) => {
+            // Skip if lengths happen to match
+            if (wrongLength === arr.length) {
+              return true;
+            }
+
+            const expectedShape = { length: wrongLength };
+
+            const schema = valueToSchema(expectedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(arr);
+            return !result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should validate class constructors with static properties', () => {
+      fc.assert(
+        fc.property(classWithStatics, ({ cls, props }) => {
+          // Schema for checking static properties
+          const schema = valueToSchema(
+            { ...props, staticMethod: cls.staticMethod },
+            {
+              permissivePropertyCheck: true,
+            },
+          );
+
+          const result = schema.safeParse(cls);
+          return result.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should reject primitives when object shape is expected', () => {
+      fc.assert(
+        fc.property(
+          fc.oneof(
+            fc.string(),
+            fc.integer(),
+            fc.boolean(),
+            fc.constant(null),
+            fc.constant(undefined),
+            fc.bigInt(),
+          ),
+          fc.record({ someProp: fc.string() }),
+          (primitive, shape) => {
+            const schema = valueToSchema(shape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(primitive);
+            return !result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should validate nested object shapes on functions', () => {
+      fc.assert(
+        fc.property(
+          fc.record({
+            nested: fc.record({
+              value: fc.integer(),
+            }),
+          }),
+          (nestedShape) => {
+            const fn = () => {};
+            Object.assign(fn, nestedShape);
+
+            const schema = valueToSchema(nestedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(fn);
+            return result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should reject when nested property types mismatch', () => {
+      fc.assert(
+        fc.property(fc.string(), fc.integer(), (expectedValue, actualValue) => {
+          // Skip if values happen to match type-wise
+          if (typeof expectedValue === typeof actualValue) {
+            return true;
+          }
+
+          const fn = () => {};
+          (fn as any).prop = { nested: actualValue };
+
+          const schema = valueToSchema(
+            { prop: { nested: expectedValue } },
+            {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            },
+          );
+
+          const result = schema.safeParse(fn);
+          return !result.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should not use permissive check when strict is true', () => {
+      fc.assert(
+        fc.property(functionWithProps, ({ fn, props }) => {
+          // With strict: true, permissivePropertyCheck should be ignored
+          // and functions should be rejected (since strictObject expects objects)
+          const schema = valueToSchema(props, {
+            literalPrimitives: true,
+            permissivePropertyCheck: true,
+            strict: true,
+          });
+
+          const result = schema.safeParse(fn);
+          // Should fail because strict mode uses z.strictObject which rejects functions
+          return !result.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should work with empty object shapes in permissive mode', () => {
+      fc.assert(
+        fc.property(
+          fc.oneof(
+            fc.constant(() => {}),
+            fc.constant([]),
+            fc.constant({}),
+            fc.constant(new Map()),
+            fc.constant(new Set()),
+          ),
+          (value) => {
+            const schema = valueToSchema(
+              {},
+              {
+                literalEmptyObjects: false, // Don't require literally empty
+                permissivePropertyCheck: true,
+              },
+            );
+
+            const result = schema.safeParse(value);
+            return result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should validate built-in function properties', () => {
+      // Test that we can check properties on built-in functions like Promise
+      fc.assert(
+        fc.property(
+          fc.constantFrom(
+            { fn: Promise, prop: 'resolve' },
+            { fn: Promise, prop: 'reject' },
+            { fn: Promise, prop: 'all' },
+            { fn: Array, prop: 'isArray' },
+            { fn: Object, prop: 'keys' },
+            { fn: JSON, prop: 'parse' },
+          ),
+          ({ fn, prop }) => {
+            const schema = valueToSchema(
+              { [prop]: (fn as any)[prop] },
+              { permissivePropertyCheck: true },
+            );
+
+            const result = schema.safeParse(fn);
+            return result.success;
+          },
+        ),
+        { numRuns: 20 },
+      );
+    });
+
+    it('should handle array index properties via object shape', () => {
+      fc.assert(
+        fc.property(
+          fc.array(filteredAnything, { maxLength: 10, minLength: 1 }),
+          (arr) => {
+            // Check specific index via object notation
+            const expectedShape = { 0: arr[0] };
+
+            const schema = valueToSchema(expectedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(arr);
+            return result.success;
+          },
+        ),
+        {
+          examples: [
+            [[{ '': 0 }, { '': { '': 0 } }]],
+            [[[{ '': [] }, { '': { '': null } }], { '': [] }]],
+          ],
+          numRuns,
+        },
+      );
+    });
+
+    it('should combine permissivePropertyCheck with other options', () => {
+      fc.assert(
+        fc.property(
+          fc.record({
+            literalPrimitives: fc.boolean(),
+            maxDepth: fc.integer({ max: 10, min: 1 }),
+          }),
+          fc.record({ prop: fc.string() }),
+          (options, shape) => {
+            const fn = () => {};
+            Object.assign(fn, shape);
+
+            const schema = valueToSchema(shape, {
+              ...options,
+              permissivePropertyCheck: true,
+              strict: false, // Must be false for permissive to work
+            });
+
+            const result = schema.safeParse(fn);
+            return result.success;
+          },
+        ),
+        { numRuns },
+      );
+    });
+
+    it('should correctly validate prototype property access', () => {
+      // The `in` operator checks prototype chain, so inherited properties should work
+      fc.assert(
+        fc.property(
+          fc.constantFrom(
+            { obj: [], prop: 'map' },
+            { obj: [], prop: 'filter' },
+            { obj: [], prop: 'reduce' },
+            { obj: {}, prop: 'hasOwnProperty' },
+            { obj: {}, prop: 'toString' },
+            { obj: '', prop: 'charAt' },
+          ),
+          ({ obj, prop }) => {
+            // Skip string because it's a primitive and will fail the object check
+            if (typeof obj === 'string') {
+              return true;
+            }
+
+            // Check that inherited method exists
+            const schema = valueToSchema(
+              { [prop]: (obj as any)[prop] },
+              { permissivePropertyCheck: true },
+            );
+
+            const result = schema.safeParse(obj);
+            return result.success;
+          },
+        ),
+        { numRuns: 20 },
+      );
+    });
+
+    it('should handle symbol properties on objects', () => {
+      const testSymbol = Symbol('test');
+
+      fc.assert(
+        fc.property(fc.integer(), (value) => {
+          const obj = { regularProp: 'hello', [testSymbol]: value };
+          const fn = () => {};
+          Object.assign(fn, obj);
+
+          // Check regular property (symbols can't be in object shape keys easily)
+          const schema = valueToSchema(
+            { regularProp: 'hello' },
+            {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            },
+          );
+
+          const result = schema.safeParse(fn);
+          return result.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should validate getters via property access', () => {
+      fc.assert(
+        fc.property(fc.integer(), (expectedValue) => {
+          const obj = {
+            get computed() {
+              return expectedValue;
+            },
+          };
+
+          const fn = Object.create(null, {
+            computed: {
+              enumerable: true,
+              get() {
+                return expectedValue;
+              },
+            },
+          }) as { computed: number };
+
+          const schema = valueToSchema(
+            { computed: expectedValue },
+            {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            },
+          );
+
+          // Test with regular object with getter
+          const result1 = schema.safeParse(obj);
+          if (!result1.success) {
+            return false;
+          }
+
+          // Test with object created via Object.create
+          const result2 = schema.safeParse(fn);
+          return result2.success;
+        }),
+        { numRuns },
+      );
+    });
+
+    it('should correctly report missing properties in error', () => {
+      // Reserved properties that throw when accessed on strict mode functions
+      const reservedProps = new Set(['arguments', 'callee', 'caller']);
+
+      fc.assert(
+        fc.property(
+          fc
+            .string()
+            .filter(
+              (s) =>
+                s.length > 0 &&
+                !/[^a-zA-Z0-9_]/.test(s) &&
+                !reservedProps.has(s),
+            ),
+          (propName) => {
+            const fn = () => {};
+            const expectedShape = { [propName]: 'value' };
+
+            const schema = valueToSchema(expectedShape, {
+              literalPrimitives: true,
+              permissivePropertyCheck: true,
+            });
+
+            const result = schema.safeParse(fn);
+            if (result.success) {
+              return false; // Should have failed
+            }
+
+            // Check that the error mentions the missing property
+            const hasPropertyError = result.error.issues.some(
+              (issue) =>
+                issue.path.includes(propName) ||
+                issue.message.includes(propName),
+            );
+            return hasPropertyError;
+          },
+        ),
+        { numRuns },
+      );
+    });
+  });
 });
