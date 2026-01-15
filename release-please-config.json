@@ -18,7 +18,7 @@
     "packages/from-chai": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-chai",
-      "initial-version": "0.0.0",
+      "initial-version": "0.1.0",
       "release-type": "node"
     },
     "packages/from-jest": {
