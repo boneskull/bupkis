@@ -49,6 +49,7 @@
     "test": "npm run test:base -- \"test/*.test.ts\"",
     "test:base": "node --import tsx --test --test-reporter=spec",
     "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:manual": "tsx examples/manual-test.ts",
     "test:node20": "npm run test:base -- test/*.test.ts"
   },
   "peerDependencies": {
