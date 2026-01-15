@@ -1,45 +1,3 @@
-exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to deep equal' / 'to deeply equal' {unknown}\" [arraylike-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [arraylike-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{arraylike} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    1,\\n    2,\\n-   4,\\n+   3,\\n  ]",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": [
-    1,
-    2,
-    3
-  ],
-  "expected": [
-    1,
-    2,
-    4
-  ],
-  "diff": "simple",
-  "assertionId": "arraylike-to-deep-equal-to-deeply-equal-unknown-3s3p"
-}
-`;
-
-exports[`Sync Parametric Assertion Error Snapshots > \"{arraylike} 'to satisfy' / 'to be like' {unknown}\" [arraylike-to-satisfy-to-be-like-unknown-3s3p] > should throw a consistent AssertionError [arraylike-to-satisfy-to-be-like-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{arraylike} 'to satisfy' / 'to be like' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    1,\\n    2,\\n-   4,\\n+   3,\\n  ]",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": [
-    1,
-    2,
-    3
-  ],
-  "expected": [
-    1,
-    2,
-    4
-  ],
-  "diff": "simple",
-  "assertionId": "arraylike-to-satisfy-to-be-like-unknown-3s3p"
-}
-`;
-
 exports[`Sync Parametric Assertion Error Snapshots > \"{error} 'to have message matching' {regexp}\" [error-to-have-message-matching-regexp-3s3p] > should throw a consistent AssertionError [error-to-have-message-matching-regexp-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected error message \\"wrong message\\" to match /expected/",
@@ -132,19 +90,6 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{function} 'to throw'\" [
 }
 `;
 
-exports[`Sync Parametric Assertion Error Snapshots > \"{map} 'to deep equal' / 'to deeply equal' {unknown}\" [map-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [map-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{map} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\nCompared values have no visual difference.",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": {},
-  "expected": {},
-  "diff": "simple",
-  "assertionId": "map-to-deep-equal-to-deeply-equal-unknown-3s3p"
-}
-`;
-
 exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be close to' {number} {number?}\" [number-to-be-close-to-number-number-4s4p] > should throw a consistent AssertionError [number-to-be-close-to-number-number-4s4p] <snapshot> 1`] = `
 {
   "message": "Expected 10 to be close to 5 (within 2), but difference was 5\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 10",
@@ -218,57 +163,6 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{number} 'to be within' /
   "code": "ERR_ASSERTION",
   "diff": "simple",
   "assertionId": "number-to-be-within-to-be-between-number-number-4s4p"
-}
-`;
-
-exports[`Sync Parametric Assertion Error Snapshots > \"{object!} 'to satisfy' / 'to be like' / 'satisfies' {unknown}\" [object-to-satisfy-to-be-like-satisfies-unknown-3s3p] > should throw a consistent AssertionError [object-to-satisfy-to-be-like-satisfies-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{object!} 'to satisfy' / 'to be like' / 'satisfies' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Object {\\n    \\"a\\": 1,\\n-   \\"b\\": 3,\\n+   \\"b\\": 2,\\n  }",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": {
-    "a": 1,
-    "b": 2
-  },
-  "expected": {
-    "a": 1,
-    "b": 3
-  },
-  "diff": "simple",
-  "assertionId": "object-to-satisfy-to-be-like-satisfies-unknown-3s3p"
-}
-`;
-
-exports[`Sync Parametric Assertion Error Snapshots > \"{record} 'to deep equal' / 'to deeply equal' {unknown}\" [record-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [record-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{record} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Object {\\n    \\"a\\": 1,\\n-   \\"b\\": 3,\\n+   \\"b\\": 2,\\n  }",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": {
-    "a": 1,
-    "b": 2
-  },
-  "expected": {
-    "a": 1,
-    "b": 3
-  },
-  "diff": "simple",
-  "assertionId": "record-to-deep-equal-to-deeply-equal-unknown-3s3p"
-}
-`;
-
-exports[`Sync Parametric Assertion Error Snapshots > \"{set} 'to deep equal' / 'to deeply equal' {unknown}\" [set-to-deep-equal-to-deeply-equal-unknown-3s3p] > should throw a consistent AssertionError [set-to-deep-equal-to-deeply-equal-unknown-3s3p] <snapshot> 1`] = `
-{
-  "message": "Assertion \\"{set} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\nCompared values have no visual difference.",
-  "generatedMessage": false,
-  "name": "AssertionError",
-  "code": "ERR_ASSERTION",
-  "actual": {},
-  "expected": {},
-  "diff": "simple",
-  "assertionId": "set-to-deep-equal-to-deeply-equal-unknown-3s3p"
 }
 `;
 
@@ -426,5 +320,47 @@ exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to be' / 'to e
   "expected": {},
   "diff": "simple",
   "assertionId": "unknown-to-be-to-equal-equals-is-is-equal-to-to-strictly-equal-is-strictly-equal-to-unknown-3s2p"
+}
+`;
+
+exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to deep equal' / 'to deeply equal' {unknown}\" [unknown-to-deep-equal-to-deeply-equal-unknown-3s2p] > should throw a consistent AssertionError [unknown-to-deep-equal-to-deeply-equal-unknown-3s2p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{unknown} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    1,\\n    2,\\n-   4,\\n+   3,\\n  ]",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": [
+    1,
+    2,
+    4
+  ],
+  "diff": "simple",
+  "assertionId": "unknown-to-deep-equal-to-deeply-equal-unknown-3s2p"
+}
+`;
+
+exports[`Sync Parametric Assertion Error Snapshots > \"{unknown} 'to satisfy' / 'to be like' / 'satisfies' {unknown}\" [unknown-to-satisfy-to-be-like-satisfies-unknown-3s2p] > should throw a consistent AssertionError [unknown-to-satisfy-to-be-like-satisfies-unknown-3s2p] <snapshot> 1`] = `
+{
+  "message": "Assertion \\"{unknown} 'to satisfy' / 'to be like' / 'satisfies' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Array [\\n    1,\\n    2,\\n-   4,\\n+   3,\\n  ]",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "actual": [
+    1,
+    2,
+    3
+  ],
+  "expected": [
+    1,
+    2,
+    4
+  ],
+  "diff": "simple",
+  "assertionId": "unknown-to-satisfy-to-be-like-satisfies-unknown-3s2p"
 }
 `;

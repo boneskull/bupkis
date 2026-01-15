@@ -64,123 +64,103 @@ const objectSatisfies = (
 
 export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   [
-    assertions.arrayDeepEqualAssertion,
+    assertions.deepEqualAssertion,
     {
       invalid: {
-        examples: [[[[[]], 'to deep equal', [[null]]]]],
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
+        examples: [
+          [[[[]], 'to deep equal', [[null]]]],
+          [[42, 'to deep equal', 43]],
+          [['hello', 'to deeply equal', 'world']],
+        ],
+        generators: fc.oneof(
+          // Primitives that don't match
+          fc.integer().chain((expected) =>
             fc.tuple(
-              fc
-                .array(filteredAnything, {
-                  // Same length as expected for meaningful comparison
-                  maxLength: expected.length,
-                  minLength: expected.length,
-                })
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
-                ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arrayDeepEqualAssertion),
-              ),
+              fc.integer().filter((actual) => actual !== expected),
+              fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
               fc.constant(expected),
             ),
           ),
+          // Objects that don't match
+          fc
+            .object()
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .object()
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.deepEqualAssertion),
+                ),
+                fc.constant(expected),
+              ),
+            ),
+          // Arrays that don't match
+          fc
+            .array(filteredAnything, { minLength: 1, size: 'small' })
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .array(filteredAnything, {
+                    maxLength: expected.length,
+                    minLength: expected.length,
+                  })
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.deepEqualAssertion),
+                ),
+                fc.constant(expected),
+              ),
+            ),
+        ),
       },
       valid: {
         generators: SyncParametricGenerators.get(
-          assertions.arrayDeepEqualAssertion,
+          assertions.deepEqualAssertion,
         )!,
       },
       validNegated: {
-        examples: [[[[[]], 'to deep equal', [[null]]]]],
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
+        examples: [
+          [[[[]], 'to deep equal', [[null]]]],
+          [[42, 'to deep equal', 43]],
+        ],
+        generators: fc.oneof(
+          fc.integer().chain((expected) =>
             fc.tuple(
-              fc
-                .array(filteredAnything, {
-                  // Same length as expected for meaningful comparison
-                  maxLength: expected.length,
-                  minLength: expected.length,
-                })
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
-                ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arrayDeepEqualAssertion),
-              ),
+              fc.integer().filter((actual) => actual !== expected),
+              fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
               fc.constant(expected),
             ),
           ),
-      },
-    },
-  ],
-
-  [
-    assertions.arraySatisfiesAssertion,
-    {
-      invalid: {
-        examples: [[[[[]], 'to satisfy', [[], null]]]],
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc
-                .array(filteredAnything, {
-                  // Same length as expected for meaningful comparison
-                  maxLength: expected.length,
-                  minLength: expected.length,
-                })
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
+          fc
+            .object()
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .object()
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.deepEqualAssertion),
                 ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arraySatisfiesAssertion),
+                fc.constant(expected),
               ),
-              fc.constant(expected),
             ),
-          ),
-      },
-      valid: {
-        generators: SyncParametricGenerators.get(
-          assertions.arraySatisfiesAssertion,
-        )!,
-      },
-      validNegated: {
-        examples: [[[[null], 'to satisfy', [null, null]]]],
-        generators: fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc
-                .array(filteredAnything, {
-                  // Same length as expected for meaningful comparison
-                  maxLength: expected.length,
-                  minLength: expected.length,
-                })
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
-                ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.arraySatisfiesAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
+        ),
       },
     },
   ],
@@ -423,33 +403,6 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
-    assertions.mapDeepEqualAssertion,
-    {
-      invalid: {
-        generators: fc
-          .array(fc.tuple(fc.string(), fc.integer()), {
-            minLength: 1,
-            size: 'small',
-          })
-          .chain((entries) =>
-            fc.tuple(
-              fc.constant(new Map(entries)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.mapDeepEqualAssertion),
-              ),
-              fc.constant(new Map([...entries, ['__different_key__', 999]])),
-            ),
-          ),
-      },
-      valid: {
-        generators: SyncParametricGenerators.get(
-          assertions.mapDeepEqualAssertion,
-        )!,
-      },
-    },
-  ],
-
-  [
     assertions.numberCloseToAssertion,
     {
       invalid: {
@@ -602,72 +555,6 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
-    assertions.objectDeepEqualAssertion,
-    {
-      invalid: {
-        generators: fc
-          .object()
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc
-                .object()
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    JSON.stringify(actual) !== JSON.stringify(expected),
-                ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.objectDeepEqualAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
-        verbose: true,
-      },
-      valid: {
-        generators: SyncParametricGenerators.get(
-          assertions.objectDeepEqualAssertion,
-        )!,
-      },
-    },
-  ],
-
-  [
-    assertions.objectSatisfiesAssertion,
-    {
-      invalid: {
-        generators: fc
-          .object()
-          .filter(objectFilter)
-          .chain((expected) =>
-            fc.tuple(
-              fc
-                .object({ depthSize: 'medium' })
-                .filter(objectFilter)
-                .filter(
-                  (actual) =>
-                    // Must be different AND must NOT satisfy (not a superset)
-                    JSON.stringify(actual) !== JSON.stringify(expected) &&
-                    !objectSatisfies(actual, expected),
-                ),
-              fc.constantFrom(
-                ...extractPhrases(assertions.objectSatisfiesAssertion),
-              ),
-              fc.constant(expected),
-            ),
-          ),
-        verbose: true,
-      },
-      valid: {
-        generators: SyncParametricGenerators.get(
-          assertions.objectSatisfiesAssertion,
-        )!,
-      },
-    },
-  ],
-
-  [
     assertions.oneOfAssertion,
     {
       invalid: {
@@ -684,25 +571,105 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   ],
 
   [
-    assertions.setDeepEqualAssertion,
+    assertions.satisfiesAssertion,
     {
       invalid: {
-        generators: fc
-          .array(fc.integer(), { minLength: 1, size: 'small' })
-          .chain((values) =>
+        examples: [
+          [[[[]], 'to satisfy', [[], null]]],
+          [[42, 'to satisfy', 43]],
+          [['hello', 'satisfies', 'world']],
+        ],
+        generators: fc.oneof(
+          // Primitives that don't match
+          fc.integer().chain((expected) =>
             fc.tuple(
-              fc.constant(new Set(values)),
-              fc.constantFrom(
-                ...extractPhrases(assertions.setDeepEqualAssertion),
-              ),
-              fc.constant(new Set(['__different_value__', ...values])),
+              fc.integer().filter((actual) => actual !== expected),
+              fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+              fc.constant(expected),
             ),
           ),
+          // Objects that don't satisfy
+          fc
+            .object()
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .object({ depthSize: 'medium' })
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected) &&
+                      !objectSatisfies(actual, expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.satisfiesAssertion),
+                ),
+                fc.constant(expected),
+              ),
+            ),
+          // Arrays that don't satisfy
+          fc
+            .array(filteredAnything, { minLength: 1, size: 'small' })
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .array(filteredAnything, {
+                    maxLength: expected.length,
+                    minLength: expected.length,
+                  })
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.satisfiesAssertion),
+                ),
+                fc.constant(expected),
+              ),
+            ),
+        ),
       },
       valid: {
         generators: SyncParametricGenerators.get(
-          assertions.setDeepEqualAssertion,
+          assertions.satisfiesAssertion,
         )!,
+      },
+      validNegated: {
+        examples: [
+          [[[null], 'to satisfy', [null, null]]],
+          [[42, 'to satisfy', 43]],
+        ],
+        generators: fc.oneof(
+          fc.integer().chain((expected) =>
+            fc.tuple(
+              fc.integer().filter((actual) => actual !== expected),
+              fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+              fc.constant(expected),
+            ),
+          ),
+          fc
+            .object()
+            .filter(objectFilter)
+            .chain((expected) =>
+              fc.tuple(
+                fc
+                  .object({ depthSize: 'medium' })
+                  .filter(objectFilter)
+                  .filter(
+                    (actual) =>
+                      JSON.stringify(actual) !== JSON.stringify(expected) &&
+                      !objectSatisfies(actual, expected),
+                  ),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.satisfiesAssertion),
+                ),
+                fc.constant(expected),
+              ),
+            ),
+        ),
       },
     },
   ],

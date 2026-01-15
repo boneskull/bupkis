@@ -33,7 +33,7 @@ const errorArbitrary = fc
   .tuple(fc.string(), fc.constantFrom(Error, TypeError, RangeError))
   .map(([msg, ErrorClass]) => new ErrorClass(msg));
 
-// Helper: Diverse event args
+// Helper: Diverse event args (can be empty)
 const eventArgsArbitrary = fc.array(
   fc.oneof(
     fc.string(),
@@ -43,6 +43,20 @@ const eventArgsArbitrary = fc.array(
     fc.constant(null),
   ),
   { maxLength: 5, minLength: 0 },
+);
+
+// Helper: Non-empty event args (for invalid tests where we need actual args to mismatch)
+// Empty arrays [] now mean "any array" in satisfaction mode, so invalid tests
+// must use non-empty expected args to actually test argument mismatches.
+const nonEmptyEventArgsArbitrary = fc.array(
+  fc.oneof(
+    fc.string(),
+    fc.integer(),
+    fc.boolean(),
+    fc.double({ noNaN: true }),
+    fc.constant(null),
+  ),
+  { maxLength: 5, minLength: 1 },
 );
 
 // ─────────────────────────────────────────────────────────────
@@ -566,7 +580,9 @@ const asyncTestConfigs = new Map<
       invalid: {
         async: true,
         generators: fc
-          .tuple(fc.string({ minLength: 1 }), eventArgsArbitrary)
+          // Use nonEmptyEventArgsArbitrary because [] means "any array" in
+          // satisfaction mode, so we need actual args to test mismatches
+          .tuple(fc.string({ minLength: 1 }), nonEmptyEventArgsArbitrary)
           .chain(([eventName, expectedArgs]) => {
             const emitter = new EventEmitter();
             return fc.tuple(
@@ -611,7 +627,9 @@ const asyncTestConfigs = new Map<
       invalid: {
         async: true,
         generators: fc
-          .tuple(fc.string({ minLength: 1 }), eventArgsArbitrary)
+          // Use nonEmptyEventArgsArbitrary because [] means "any array" in
+          // satisfaction mode, so we need actual args to test mismatches
+          .tuple(fc.string({ minLength: 1 }), nonEmptyEventArgsArbitrary)
           .chain(([eventName, expectedArgs]) => {
             const emitter = new EventEmitter();
             return fc.tuple(

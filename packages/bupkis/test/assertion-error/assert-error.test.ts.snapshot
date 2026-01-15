@@ -1,6 +1,6 @@
 exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep equal\" > \"to deep equal\" <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{record} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Object {\\n    \\"a\\": 1,\\n    \\"b\\": Object {\\n-     \\"c\\": 3,\\n+     \\"c\\": 2,\\n    },\\n  }",
+  "message": "Assertion \\"{unknown} 'to deep equal' / 'to deeply equal' {unknown}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n  Object {\\n    \\"a\\": 1,\\n    \\"b\\": Object {\\n-     \\"c\\": 3,\\n+     \\"c\\": 2,\\n    },\\n  }",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -17,7 +17,7 @@ exports[`Comparison with Node.js' assert module > deepStrictEqual / \"to deep eq
     }
   },
   "diff": "simple",
-  "assertionId": "record-to-deep-equal-to-deeply-equal-unknown-3s3p"
+  "assertionId": "unknown-to-deep-equal-to-deeply-equal-unknown-3s2p"
 }
 `;
 

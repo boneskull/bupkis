@@ -20,7 +20,6 @@ import { BupkisError, InvalidObjectSchemaError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   AnyObjectSchema,
-  ArrayLikeSchema,
   BigintSchema,
   BooleanSchema,
   ConstructibleSchema,
@@ -39,7 +38,6 @@ import {
   SymbolSchema,
   UndefinedSchema,
   UnknownArraySchema,
-  UnknownRecordSchema,
   UnknownSchema,
   WeakMapSchema,
   WeakRefSchema,
@@ -590,95 +588,36 @@ export const strictEqualityAssertion = createAssertion(
 );
 
 /**
- * Assertion for testing deep equality between objects.
+ * Assertion for testing deep equality between any values.
+ *
+ * Works with primitives, objects, arrays, Maps, Sets, and other types.
  *
  * @example
  *
  * ```typescript
+ * // Primitives
+ * expect(42, 'to deep equal', 42); // passes
+ * expect('hello', 'to deeply equal', 'world'); // fails
+ *
+ * // Objects
  * expect({ a: 1, b: 2 }, 'to deep equal', { a: 1, b: 2 }); // passes
  * expect({ a: 1 }, 'to deeply equal', { a: 1, b: 2 }); // fails
- * ```
  *
- * @group Parametric Assertions (Sync)
- */
-export const objectDeepEqualAssertion = createAssertion(
-  [UnknownRecordSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
-  (_, expected) => valueToSchema(expected, valueToSchemaOptionsForDeepEqual),
-);
-
-/**
- * Assertion for testing deep equality between array-like structures.
- *
- * @example
- *
- * ```typescript
+ * // Arrays
  * expect([1, 2, 3], 'to deep equal', [1, 2, 3]); // passes
- * expect([1, 2], 'to deeply equal', [1, 2, 3]); // fails
+ *
+ * // Maps and Sets
+ * expect(new Map([['a', 1]]), 'to deep equal', new Map([['a', 1]])); // passes
+ * expect(new Set([1, 2]), 'to deeply equal', new Set([1, 2])); // passes
  * ```
  *
  * @group Parametric Assertions (Sync)
+ * @bupkisAnchor unknown-to-deep-equal-any
+ * @bupkisAssertionCategory equality
  */
-export const arrayDeepEqualAssertion = createAssertion(
-  [ArrayLikeSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
-  (_, expected) => {
-    return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
-  },
-);
-
-/**
- * Assertion for testing deep equality between Map instances.
- *
- * @example
- *
- * ```typescript
- * const map1 = new Map([
- *   ['a', 1],
- *   ['b', 2],
- * ]);
- * const map2 = new Map([
- *   ['a', 1],
- *   ['b', 2],
- * ]);
- * expect(map1, 'to deep equal', map2); // passes
- *
- * const map3 = new Map([['a', 1]]);
- * expect(map1, 'to deeply equal', map3); // fails
- * ```
- *
- * @group Parametric Assertions (Sync)
- * @bupkisAnchor map-to-deep-equal
- * @bupkisAssertionCategory collections
- */
-export const mapDeepEqualAssertion = createAssertion(
-  [MapSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
-  (_, expected) => {
-    return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
-  },
-);
-
-/**
- * Assertion for testing deep equality between Set instances.
- *
- * @example
- *
- * ```typescript
- * const set1 = new Set([1, 2, 3]);
- * const set2 = new Set([1, 2, 3]);
- * expect(set1, 'to deep equal', set2); // passes
- *
- * const set3 = new Set([1, 2]);
- * expect(set1, 'to deeply equal', set3); // fails
- * ```
- *
- * @group Parametric Assertions (Sync)
- * @bupkisAnchor set-to-deep-equal
- * @bupkisAssertionCategory collections
- */
-export const setDeepEqualAssertion = createAssertion(
-  [SetSchema, ['to deep equal', 'to deeply equal'], UnknownSchema],
-  (_, expected) => {
-    return valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
-  },
+export const deepEqualAssertion = createAssertion(
+  [['to deep equal', 'to deeply equal'], UnknownSchema],
+  (_, expected) => valueToSchema(expected, valueToSchemaOptionsForDeepEqual),
 );
 
 /**
@@ -975,44 +914,35 @@ export const stringLengthAssertion = createAssertion(
 );
 
 /**
- * Assertion for testing if an object satisfies a pattern or shape.
+ * Assertion for testing if a value satisfies a pattern or shape.
+ *
+ * Works with any value type: primitives, objects, arrays, or cross-type checks.
+ * Uses partial matching semantics - extra properties are allowed in objects.
  *
  * @example
  *
  * ```typescript
+ * // Primitives
+ * expect(42, 'to satisfy', 42); // passes
+ * expect('hello', 'satisfies', 'hello'); // passes
+ *
+ * // Objects (partial matching)
  * expect({ name: 'John', age: 30 }, 'to satisfy', { name: 'John' }); // passes
  * expect({ name: 'John' }, 'to be like', { name: 'John', age: 30 }); // fails
+ *
+ * // Arrays
+ * expect([1, 2, 3], 'to satisfy', [1, 2, 3]); // passes
+ *
+ * // Cross-type satisfaction
+ * expect([1, 2, 3], 'to satisfy', { length: 3 }); // passes
  * ```
  *
  * @group Parametric Assertions (Sync)
- * @bupkisAnchor object-to-satisfy-any
- * @bupkisAssertionCategory object
- * @bupkisRedirect satisfies
+ * @bupkisAnchor unknown-to-satisfy-any
+ * @bupkisAssertionCategory equality
  */
-export const objectSatisfiesAssertion = createAssertion(
-  [
-    AnyObjectSchema.nonoptional(),
-    ['to satisfy', 'to be like', 'satisfies'],
-    UnknownSchema,
-  ],
-  (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
-);
-
-/**
- * Assertion for testing if an array-like structure satisfies a pattern or
- * shape.
- *
- * @example
- *
- * ```typescript
- * expect([1, 2, 3], 'to satisfy', [1, NumberSchema, 3]); // passes
- * expect([1, 'two'], 'to be like', [1, NumberSchema]); // fails
- * ```
- *
- * @group Parametric Assertions (Sync)
- */
-export const arraySatisfiesAssertion = createAssertion(
-  [ArrayLikeSchema, ['to satisfy', 'to be like'], UnknownSchema],
+export const satisfiesAssertion = createAssertion(
+  [['to satisfy', 'to be like', 'satisfies'], UnknownSchema],
   (_subject, shape) => valueToSchema(shape, valueToSchemaOptionsForSatisfies),
 );
 

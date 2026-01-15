@@ -15,15 +15,9 @@ import { takeErrorSnapshot } from './error-snapshot-util.js';
 
 const failingAssertions = new Map<AnyAssertion, () => void>([
   [
-    assertions.arrayDeepEqualAssertion,
+    assertions.deepEqualAssertion,
     () => {
       expect([1, 2, 3], 'to deeply equal', [1, 2, 4]);
-    },
-  ],
-  [
-    assertions.arraySatisfiesAssertion,
-    () => {
-      expect([1, 2, 3], 'to satisfy', [1, 2, 4]);
     },
   ],
   [
@@ -105,12 +99,6 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
-    assertions.mapDeepEqualAssertion,
-    () => {
-      expect(new Map([['a', 1]]), 'to deeply equal', new Map([['a', 2]]));
-    },
-  ],
-  [
     assertions.numberCloseToAssertion,
     () => {
       expect(10, 'to be close to', 5, 2);
@@ -147,27 +135,15 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
-    assertions.objectDeepEqualAssertion,
-    () => {
-      expect({ a: 1, b: 2 }, 'to deeply equal', { a: 1, b: 3 });
-    },
-  ],
-  [
-    assertions.objectSatisfiesAssertion,
-    () => {
-      expect({ a: 1, b: 2 }, 'to satisfy', { a: 1, b: 3 });
-    },
-  ],
-  [
     assertions.oneOfAssertion,
     () => {
       expect(5, 'to be one of', [1, 2, 3]);
     },
   ],
   [
-    assertions.setDeepEqualAssertion,
+    assertions.satisfiesAssertion,
     () => {
-      expect(new Set([1, 2, 3]), 'to deeply equal', new Set([1, 2, 4]));
+      expect([1, 2, 3], 'to satisfy', [1, 2, 4]);
     },
   ],
   [
