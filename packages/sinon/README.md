@@ -329,7 +329,7 @@ expect(spy, 'not to have returned times', 3);
 
 ### {Spy} to have returned with {unknown}
 
-Asserts that a spy returned the specified value on at least one call. Uses strict equality (`===`) for comparison via Sinon's `spy.returned()` method.
+Asserts that a spy returned the specified value on at least one call. Uses Sinon's `spy.returned()` method for comparison (deep equality via samsam).
 
 **Success**:
 

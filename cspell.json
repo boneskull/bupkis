@@ -36,6 +36,7 @@
   ],
   "ignoreRandomStrings": true,
   "ignoreWords": [
+    "eqls",
     "bahmutov",
     "boneskull",
     "bruh",
