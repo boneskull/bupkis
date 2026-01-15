@@ -15,7 +15,7 @@
  * @showGroup
  */
 import { inspect } from 'node:util';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 import {
   AsyncIterableOrIteratorSchema,

@@ -101,7 +101,7 @@ const { asyncIterator: asyncIteratorSymbol, iterator: iteratorSymbol } = Symbol;
 export const ConstructibleSchema = z
   .custom<Constructor>(isConstructible)
   .register(BupkisRegistry, { name: 'constructible' })
-  .describe('Constructible Function');
+  .meta({ description: 'Constructible Function' });
 
 /**
  * A Zod schema that validates any JavaScript function.
@@ -151,7 +151,7 @@ export const FunctionSchema = z
   .register(BupkisRegistry, {
     name: 'function',
   })
-  .describe('Any function');
+  .meta({ description: 'Any function' });
 
 /**
  * A Zod schema that validates non-collection objects and functions.
@@ -198,7 +198,7 @@ export const NonCollectionObjectSchema = z
       !(v instanceof WeakSet),
   )
   .register(BupkisRegistry, { name: 'non-collection-object' })
-  .describe('Non-collection object or function');
+  .meta({ description: 'Non-collection object or function' });
 
 /**
  * A Zod schema that validates JavaScript property keys.
@@ -242,8 +242,8 @@ export const NonCollectionObjectSchema = z
  */
 export const PropertyKeySchema = z
   .union([z.string(), z.number(), z.symbol()])
-  .describe('Any valid object property name')
-  .register(BupkisRegistry, { name: 'property-key' });
+  .register(BupkisRegistry, { name: 'property-key' })
+  .meta({ description: 'Any valid object property name' });
 
 /**
  * A Zod schema that validates a keypath, which is a string featuring dot
@@ -286,8 +286,8 @@ export const PropertyKeySchema = z
 export const KeypathSchema: z.ZodType<Keypath> = z
   .string()
   .regex(KEYPATH_REGEX)
-  .describe('A keypath supporting dot and bracket notation')
-  .register(BupkisRegistry, { name: 'keypath' });
+  .register(BupkisRegistry, { name: 'keypath' })
+  .meta({ description: 'A keypath supporting dot and bracket notation' });
 
 /**
  * A Zod schema that validates "thenable" objects with a `.then()` method.
@@ -333,10 +333,11 @@ export const KeypathSchema: z.ZodType<Keypath> = z
  */
 export const WrappedPromiseLikeSchema = z
   .custom<PromiseLike<unknown>>((value) => isPromiseLike(value))
-  .describe(
-    'PromiseLike; unlike z.promise(), does not unwrap the resolved value',
-  )
-  .register(BupkisRegistry, { name: 'promiselike' });
+  .register(BupkisRegistry, { name: 'promiselike' })
+  .meta({
+    description:
+      'PromiseLike; unlike z.promise(), does not unwrap the resolved value',
+  });
 
 /**
  * A Zod schema that validates plain objects with null prototypes.
@@ -391,8 +392,8 @@ export const DictionarySchema = z
   .custom<Record<PropertyKey, unknown>>(
     (value) => isNonNullObject(value) && getPrototypeOf(value) === null,
   )
-  .describe('Object with null prototype')
-  .register(BupkisRegistry, { name: 'dictionary' });
+  .register(BupkisRegistry, { name: 'dictionary' })
+  .meta({ description: 'Object with null prototype' });
 
 /**
  * {@inheritDoc DictionarySchema}
@@ -506,10 +507,10 @@ export const TruthySchema = z
   .any()
   .nonoptional()
   .refine((value) => !!value)
-  .describe('Truthy value')
   .register(BupkisRegistry, {
     name: 'truthy',
-  });
+  })
+  .meta({ description: 'Truthy value' });
 
 /**
  * A Zod schema that validates falsy JavaScript values.
@@ -559,8 +560,8 @@ export const FalsySchema = z
   .any()
   .nullable()
   .refine((value) => !value)
-  .describe('Falsy value')
-  .register(BupkisRegistry, { name: 'falsy' });
+  .register(BupkisRegistry, { name: 'falsy' })
+  .meta({ description: 'Falsy value' });
 
 /**
  * A Zod schema that validates primitive JavaScript values.
@@ -617,8 +618,8 @@ export const PrimitiveSchema = z
     z.null(),
     z.undefined(),
   ])
-  .describe('Primitive value')
-  .register(BupkisRegistry, { name: 'primitive' });
+  .register(BupkisRegistry, { name: 'primitive' })
+  .meta({ description: 'Primitive value' });
 
 /**
  * A Zod schema that validates array-like structures including mutable and
@@ -673,12 +674,12 @@ export const ArrayLikeSchema = z
   .union([
     z.array(z.unknown()),
     z.tuple([z.unknown()], z.unknown()),
-    z.looseObject({ length: z.number().nonnegative().int() }),
+    z.looseObject({ length: z.int().nonnegative() }),
   ])
-  .describe('Array-like value')
   .register(BupkisRegistry, {
     name: 'arraylike',
-  });
+  })
+  .meta({ description: 'Array-like value' });
 
 /**
  * A Zod schema that validates RegExp instances.
@@ -724,8 +725,8 @@ export const ArrayLikeSchema = z
  */
 export const RegExpSchema = z
   .instanceof(RegExp)
-  .describe('A RegExp instance')
-  .register(BupkisRegistry, { name: 'regexp' });
+  .register(BupkisRegistry, { name: 'regexp' })
+  .meta({ description: 'A RegExp instance' });
 
 /**
  * A Zod schema that validates non-negative integer values.
@@ -771,8 +772,8 @@ export const RegExpSchema = z
 export const NonNegativeIntegerSchema = z
   .int()
   .nonnegative()
-  .describe('A non-negative integer')
-  .register(BupkisRegistry, { name: 'nonnegative-integer' });
+  .register(BupkisRegistry, { name: 'nonnegative-integer' })
+  .meta({ description: 'A non-negative integer' });
 
 const MIN_TIMESTAMP = -8640000000000000;
 const MAX_TIMESTAMP = 8640000000000000;
@@ -801,7 +802,6 @@ const MAX_TIMESTAMP = 8640000000000000;
  * @group Schema
  */
 export const TimestampFormatSchema = z
-  .number()
   .int()
   .min(MIN_TIMESTAMP)
   .max(MAX_TIMESTAMP);
@@ -864,7 +864,7 @@ export const ISODateFormatSchema = z.union([
 export const DateLikeFormatSchema = z
   .union([z.date(), ISODateFormatSchema, TimestampFormatSchema])
   .register(BupkisRegistry, { name: 'date-like' })
-  .describe('Date, ISO string, or timestamp');
+  .meta({ description: 'Date, ISO string, or timestamp' });
 
 const DURATION_REGEX =
   /^(\d+)\s*(milliseconds?|ms|seconds?|s|minutes?|m|hours?|h|days?|d|weeks?|w|months?|months?|years?|y)$/i;
@@ -913,7 +913,9 @@ const DURATION_REGEX =
 export const DurationFormatSchema = z
   .stringFormat('duration', (val: string) => DURATION_REGEX.test(val.trim()))
   .register(BupkisRegistry, { name: 'duration' })
-  .describe('Duration string format like "1 hour", "30 minutes", "2 days"');
+  .meta({
+    description: 'Duration string format like "1 hour", "30 minutes", "2 days"',
+  });
 
 /**
  * A Zod schema that validates and transforms duration strings to milliseconds.
@@ -1049,7 +1051,7 @@ export const DurationSchema = DurationFormatSchema.transform(
 export const SetSchema = z
   .instanceof(Set)
   .register(BupkisRegistry, { name: 'set' })
-  .describe('A Set instance');
+  .meta({ description: 'A Set instance' });
 
 /**
  * Schema that matches either `Set` or `WeakSet` instances.
@@ -1140,12 +1142,12 @@ export const AnySetSchema = SetSchema.or(z.instanceof(WeakSet))
 export const MapSchema = z
   .instanceof(Map)
   .register(BupkisRegistry, { name: 'map' })
-  .describe('A Map instance');
+  .meta({ description: 'A Map instance' });
 
 export const WeakMapSchema = z
   .instanceof(WeakMap)
   .register(BupkisRegistry, { name: 'weakmap' })
-  .describe('A WeakMap instance');
+  .meta({ description: 'A WeakMap instance' });
 
 /**
  * Schema that matches either `Map` or `WeakMap` instances.
@@ -1197,102 +1199,102 @@ export const AnyMapSchema = MapSchema.or(WeakMapSchema)
 export const StringSchema = z
   .string()
   .register(BupkisRegistry, { name: 'string' })
-  .describe('A string');
+  .meta({ description: 'A string' });
 export const NumberSchema = z
   .number()
   .register(BupkisRegistry, { name: 'number' })
-  .describe('A number');
+  .meta({ description: 'A number' });
 
 export const InfinitySchema = z
   .literal(Infinity)
   .register(BupkisRegistry, { name: 'infinity' })
-  .describe('The number Infinity');
+  .meta({ description: 'The number Infinity' });
 
 export const NegativeInfinitySchema = z
   .literal(-Infinity)
   .register(BupkisRegistry, { name: 'negative-infinity' })
-  .describe('The number -Infinity');
+  .meta({ description: 'The number -Infinity' });
 
 export const BooleanSchema = z
   .boolean()
   .register(BupkisRegistry, { name: 'boolean' })
-  .describe('A boolean');
+  .meta({ description: 'A boolean' });
 
 export const PositiveNumberSchema = z
   .number()
   .positive()
-  .describe('A positive number')
-  .register(BupkisRegistry, { name: 'positive-number' });
+  .register(BupkisRegistry, { name: 'positive-number' })
+  .meta({ description: 'A positive number' });
 
 export const NegativeNumberSchema = z
   .number()
   .negative()
-  .describe('A negative number')
-  .register(BupkisRegistry, { name: 'negative-number' });
+  .register(BupkisRegistry, { name: 'negative-number' })
+  .meta({ description: 'A negative number' });
 
 export const BigintSchema = z
   .bigint()
   .register(BupkisRegistry, { name: 'bigint' })
-  .describe('A bigint');
+  .meta({ description: 'A bigint' });
 
 export const SymbolSchema = z
   .symbol()
   .register(BupkisRegistry, { name: 'symbol' })
-  .describe('A symbol');
+  .meta({ description: 'A symbol' });
 export const UnknownSchema = z
   .unknown()
   .register(BupkisRegistry, { name: 'unknown' })
-  .describe('Unknown value');
+  .meta({ description: 'Unknown value' });
 
 export const UnknownArraySchema = z
   .array(UnknownSchema)
   .register(BupkisRegistry, { name: 'unknown-array' })
-  .describe('An array of unknown values');
+  .meta({ description: 'An array of unknown values' });
 
 export const DateSchema = z
   .date()
   .register(BupkisRegistry, { name: 'date' })
-  .describe('A Date');
+  .meta({ description: 'A Date' });
 
 export const UnknownRecordSchema = z
   .record(PropertyKeySchema, UnknownSchema)
   .register(BupkisRegistry, { name: 'record' })
-  .describe('A record with unknown values and property keys');
+  .meta({ description: 'A record with unknown values and property keys' });
 
 export const ErrorSchema = z
   .instanceof(Error)
   .register(BupkisRegistry, { name: 'error' })
-  .describe('An Error instance');
+  .meta({ description: 'An Error instance' });
 
 export const RegexpSchema = z
   .instanceof(RegExp)
   .register(BupkisRegistry, { name: 'regexp' })
-  .describe('A RegExp instance');
+  .meta({ description: 'A RegExp instance' });
 
 export const NullSchema = z
   .null()
   .register(BupkisRegistry, { name: 'null' })
-  .describe('Null');
+  .meta({ description: 'Null' });
 
 export const UndefinedSchema = z
   .undefined()
   .register(BupkisRegistry, { name: 'undefined' })
-  .describe('Undefined');
+  .meta({ description: 'Undefined' });
 
 export const WeakSetSchema = z
   .instanceof(WeakSet)
   .register(BupkisRegistry, { name: 'weakset' })
-  .describe('A WeakSet instance');
+  .meta({ description: 'A WeakSet instance' });
 
 export const WeakRefSchema = z
   .instanceof(WeakRef)
   .register(BupkisRegistry, { name: 'weakref' })
-  .describe('A WeakRef instance');
+  .meta({ description: 'A WeakRef instance' });
 
 export const AnyObjectSchema = z
   .looseObject({})
   .register(BupkisRegistry, { name: 'object' })
-  .describe('An object with unknown properties');
+  .meta({ description: 'An object with unknown properties' });
 
 /**
  * Memoizes {@link createErrorMessageSchema}
@@ -1397,7 +1399,7 @@ export const SyncIterableSchema = z
     { error: 'Expected a synchronous iterable' },
   )
   .register(BupkisRegistry, { name: 'sync-iterable' })
-  .describe('A synchronous iterable (has Symbol.iterator)');
+  .meta({ description: 'A synchronous iterable (has Symbol.iterator)' });
 
 /**
  * Schema matching any synchronous iterator (has `next()` method).
@@ -1453,7 +1455,7 @@ export const SyncIteratorSchema = z
     { error: 'Expected a synchronous iterator' },
   )
   .register(BupkisRegistry, { name: 'sync-iterator' })
-  .describe('A synchronous iterator (has next() method)');
+  .meta({ description: 'A synchronous iterator (has next() method)' });
 
 /**
  * Schema matching either a sync iterable or sync iterator.
@@ -1481,7 +1483,7 @@ export const SyncIteratorSchema = z
 export const SyncIterableOrIteratorSchema = z
   .union([SyncIterableSchema, SyncIteratorSchema])
   .register(BupkisRegistry, { name: 'sync-iterable-or-iterator' })
-  .describe('A synchronous iterable or iterator');
+  .meta({ description: 'A synchronous iterable or iterator' });
 
 /**
  * Schema matching any asynchronous iterable (has `Symbol.asyncIterator`
@@ -1537,7 +1539,7 @@ export const AsyncIterableSchema = z
     { error: 'Expected an asynchronous iterable' },
   )
   .register(BupkisRegistry, { name: 'async-iterable' })
-  .describe('An asynchronous iterable (has Symbol.asyncIterator)');
+  .meta({ description: 'An asynchronous iterable (has Symbol.asyncIterator)' });
 
 /**
  * Schema matching any asynchronous iterator (has async `next()` method).
@@ -1575,7 +1577,7 @@ export const AsyncIteratorSchema = z
     { error: 'Expected an asynchronous iterator' },
   )
   .register(BupkisRegistry, { name: 'async-iterator' })
-  .describe('An asynchronous iterator (has next() method)');
+  .meta({ description: 'An asynchronous iterator (has next() method)' });
 
 /**
  * Schema matching either an async iterable or async iterator. Also accepts sync
@@ -1610,4 +1612,4 @@ export const AsyncIteratorSchema = z
 export const AsyncIterableOrIteratorSchema = z
   .union([AsyncIterableSchema, AsyncIteratorSchema, SyncIterableSchema])
   .register(BupkisRegistry, { name: 'async-iterable-or-iterator' })
-  .describe('An async iterable, async iterator, or sync iterable');
+  .meta({ description: 'An async iterable, async iterator, or sync iterable' });
