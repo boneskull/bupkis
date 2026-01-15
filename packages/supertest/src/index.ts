@@ -16,5 +16,7 @@
  * ```
  */
 
-// Placeholder - will be populated with exports
-export {};
+export {
+  supertestAssertions as default,
+  supertestAssertions,
+} from './assertions.js';
