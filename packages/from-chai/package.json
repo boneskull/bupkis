@@ -42,7 +42,8 @@
     "build": "tsc",
     "test": "npm run test:base -- \"test/**/*.test.ts\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:dev": "npm run test:base -- --watch \"test/**/*.test.ts\""
+    "test:dev": "npm run test:base -- --watch \"test/**/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/**/*.test.ts"
   },
   "dependencies": {
     "@boneskull/bargs": "4.0.0",
