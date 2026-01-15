@@ -128,7 +128,7 @@ The following plugins are supported:
 
 | Chai                               | bupkis                                 |
 | ---------------------------------- | -------------------------------------- |
-| `expect(p).to.eventually.equal(y)` | `expect(p, 'when fulfilled to be', y)` |
+| `expect(p).to.eventually.equal(y)` | `expect(p, 'to be fulfilled with', y)` |
 | `expect(p).to.be.fulfilled`        | `expect(p, 'to be fulfilled')`         |
 | `expect(p).to.be.rejected`         | `expect(p, 'to be rejected')`          |
 | `expect(p).to.be.rejectedWith(E)`  | `expect(p, 'to be rejected with', E)`  |

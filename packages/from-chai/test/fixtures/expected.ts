@@ -17,8 +17,6 @@ const getUser = (): User => ({
   email: 'alice@example.com',
 });
 
-const asyncGetUser = async (): Promise<User> => getUser();
-
 const throwError = (): never => {
   throw new Error('Something went wrong');
 };
