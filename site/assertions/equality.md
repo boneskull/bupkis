@@ -49,14 +49,39 @@ expect({}, 'not to equal', {});
 > ✏️ Aliases:
 >
 >     {unknown} to deep equal {any}
->     {unknown} to deep equal {any}
+>     {unknown} to deeply equal {any}
+
+Tests structural equality between any two values. Works with primitives, objects, arrays, Maps, Sets, and nested structures.
 
 **Success**:
 
 ```js
+// Primitives
+expect(42, 'to deep equal', 42);
+expect('hello', 'to deeply equal', 'hello');
+
+// Objects
 expect({ a: 1, b: 2 }, 'to deep equal', { a: 1, b: 2 });
-expect([1, 2, 3], 'to deeply equal', [1, 2, 3]);
 expect({ nested: { value: 42 } }, 'to deep equal', { nested: { value: 42 } });
+
+// Arrays
+expect([1, 2, 3], 'to deeply equal', [1, 2, 3]);
+
+// Maps
+expect(
+  new Map([
+    ['a', 1],
+    ['b', 2],
+  ]),
+  'to deep equal',
+  new Map([
+    ['a', 1],
+    ['b', 2],
+  ]),
+);
+
+// Sets
+expect(new Set([1, 2, 3]), 'to deeply equal', new Set([1, 2, 3]));
 ```
 
 **Failure**:
@@ -70,6 +95,73 @@ expect({ a: 1 }, 'to deep equal', { a: 1, b: 2 });
 
 ```js
 expect({ a: 1 }, 'not to deep equal', { a: 1, b: 2 });
+```
+
+### {unknown} to satisfy {any}
+
+> ✏️ Aliases:
+>
+>     {unknown} to satisfy {any}
+>     {unknown} to be like {any}
+>     {unknown} satisfies {any}
+
+A loose "deep equal" assertion similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual value contains _at least_ the properties and values specified in the expected pattern, ignoring additional properties.
+
+**Cross-Type Satisfaction**: This assertion also supports validating properties on any value that has them—including arrays (which have `length`), functions (which have `name`), and constructors (which have static properties).
+
+Any _regular expression_ in a property value position will be used to match the corresponding actual value (which will be coerced into a string). This makes it easy to assert that a string property contains a substring, starts with a prefix, or matches some other pattern.
+
+> Note: The parameter in this assertion is not strongly typed, even though regular expressions and `expect.it()` have special meaning. This is because the parameter can accept _literally any value_.
+
+**Success**:
+
+```js
+// Objects satisfying object shapes
+expect({ a: 1, b: 2, c: 3 }, 'to satisfy', { a: 1, b: 2 });
+expect({ name: 'John', age: 30 }, 'to be like', { name: 'John' });
+
+// Arrays satisfying array shapes
+expect([1, 2, 3], 'to satisfy', [1, 2, 3]);
+
+// Arrays satisfying object shapes (cross-type satisfaction)
+expect([1, 2, 3], 'to satisfy', { length: 3 });
+
+// Functions satisfying object shapes
+expect(function myFn() {}, 'to satisfy', { name: 'myFn' });
+
+// Constructors satisfying object shapes
+expect(Promise, 'to satisfy', {
+  reject: expect.it('to be a function'),
+  resolve: expect.it('to be a function'),
+});
+
+// Using regular expressions in property values
+expect(
+  {
+    email: 'user@example.com',
+    phone: '+1-555-0123',
+    id: 12345,
+  },
+  'to satisfy',
+  {
+    email: /^user@/,
+    phone: /^\+1-555/,
+    id: /123/,
+  },
+);
+```
+
+**Failure**:
+
+```js
+expect({ a: 1 }, 'to satisfy', { a: 1, b: 2 });
+// AssertionError: Expected { a: 1 } to satisfy { a: 1, b: 2 }
+```
+
+**Negation**:
+
+```js
+expect({ a: 1 }, 'not to satisfy', { a: 1, b: 2 });
 ```
 
 ### {unknown} to be one of {array}

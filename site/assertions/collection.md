@@ -133,6 +133,14 @@ expect([1, 2, 3], 'to contain', 5);
 expect([1, 2, 3], 'not to contain', 5);
 ```
 
+### {array} to deep equal {array}
+
+See [{unknown} to deep equal {any}](equality.md#unknown-to-deep-equal-any) in Equality & Comparison Assertions.
+
+### {array} to satisfy {any}
+
+See [{unknown} to satisfy {any}](equality.md#unknown-to-satisfy-any) in Equality & Comparison Assertions.
+
 ### {Map} to contain {any}
 
 > ✏️ Aliases:
@@ -215,49 +223,11 @@ expect(map, 'not to be empty');
 
 ### {Map} to deep equal {Map}
 
-> ✏️ Aliases:
->
->     {Map} to deep equal {Map}
->     {Map} to deeply equal {Map}
+See [{unknown} to deep equal {any}](equality.md#unknown-to-deep-equal-any) in Equality & Comparison Assertions.
 
-Tests that two Maps have the same keys and values using deep equality comparison.
+### {Map} to satisfy {any}
 
-**Success**:
-
-```js
-const map1 = new Map([
-  ['a', 1],
-  ['b', { nested: 'value' }],
-]);
-const map2 = new Map([
-  ['a', 1],
-  ['b', { nested: 'value' }],
-]);
-expect(map1, 'to deep equal', map2);
-```
-
-**Failure**:
-
-```js
-const map1 = new Map([
-  ['a', 1],
-  ['b', 2],
-]);
-const map2 = new Map([
-  ['a', 1],
-  ['b', 3],
-]);
-expect(map1, 'to deep equal', map2);
-// AssertionError: Expected Map to deep equal Map
-```
-
-**Negation**:
-
-```js
-const map1 = new Map([['a', 1]]);
-const map2 = new Map([['a', 2]]);
-expect(map1, 'not to deep equal', map2);
-```
+See [{unknown} to satisfy {any}](equality.md#unknown-to-satisfy-any) in Equality & Comparison Assertions.
 
 ### {Set} to contain {any}
 
@@ -335,37 +305,11 @@ expect(set, 'not to be empty');
 
 ### {Set} to deep equal {Set}
 
-> ✏️ Aliases:
->
->     {Set} to deep equal {Set}
->     {Set} to deeply equal {Set}
+See [{unknown} to deep equal {any}](equality.md#unknown-to-deep-equal-any) in Equality & Comparison Assertions.
 
-Tests that two Sets have the same values using deep equality comparison.
+### {Set} to satisfy {any}
 
-**Success**:
-
-```js
-const set1 = new Set([1, 2, { nested: 'value' }]);
-const set2 = new Set([1, 2, { nested: 'value' }]);
-expect(set1, 'to deep equal', set2);
-```
-
-**Failure**:
-
-```js
-const set1 = new Set([1, 2, 3]);
-const set2 = new Set([1, 2, 4]);
-expect(set1, 'to deep equal', set2);
-// AssertionError: Expected Set to deep equal Set
-```
-
-**Negation**:
-
-```js
-const set1 = new Set([1, 2, 3]);
-const set2 = new Set([1, 2, 4]);
-expect(set1, 'not to deep equal', set2);
-```
+See [{unknown} to satisfy {any}](equality.md#unknown-to-satisfy-any) in Equality & Comparison Assertions.
 
 ### {unknown} to be a Set
 

@@ -358,48 +358,8 @@ expect(obj, 'not to be extensible');
 
 ### {object} to satisfy {any}
 
-> ✏️ Aliases:
->
->     {object} to satisfy {any}
->     {object} to be like {any}
+See [{unknown} to satisfy {any}](equality.md#unknown-to-satisfy-any) in Equality & Comparison Assertions.
 
-"To satisfy" is a ~~wonky~~ _special_ loose "deep equal" assertion. It is similar to AVA's `t.like()` or Jest's `expect.objectContaining()`. It checks that the actual object contains _at least_ the properties and values specified in the expected object. It ignores any additional properties.
+### {object} to deep equal {any}
 
-In addition, any _regular expression_ in a property value position will be used to match the corresponding actual value (which will be coerced into a string). This makes it easy to assert that a string property contains a substring, starts with a prefix, or matches some other pattern.
-
-> Note: The parameter in this assertion and others supporting the "to satisfy" semantics are not strongly typed, even though regular expressions and `expect.it()` have special meaning. This is because the parameter can accept _literally any value_.
-
-**Success**:
-
-```js
-expect({ a: 1, b: 2, c: 3 }, 'to satisfy', { a: 1, b: 2 });
-expect({ name: 'John', age: 30 }, 'to be like', { name: 'John' });
-
-// Using regular expressions in property values
-expect(
-  {
-    email: 'user@example.com',
-    phone: '+1-555-0123',
-    id: 12345,
-  },
-  'to satisfy',
-  {
-    email: /^user@/,
-    phone: /^\+1-555/,
-    id: /123/,
-  },
-);
-```
-
-**Failure**:
-
-```js
-expect({ a: 1 }, 'to satisfy', { a: 1, b: 2 });
-// AssertionError: Expected { a: 1 } to satisfy { a: 1, b: 2 }
-```
-
-**Negation**:
-
-```js
-expect({ a: 1 }, 'not to satisfy', { a: 1, b: 2 });
-```
+See [{unknown} to deep equal {any}](equality.md#unknown-to-deep-equal-any) in Equality & Comparison Assertions.
