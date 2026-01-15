@@ -612,8 +612,8 @@ export const strictEqualityAssertion = createAssertion(
  * ```
  *
  * @group Parametric Assertions (Sync)
- * @bupkisAnchor to-deep-equal
- * @bupkisAssertionCategory comparison
+ * @bupkisAnchor unknown-to-deep-equal-any
+ * @bupkisAssertionCategory equality
  */
 export const deepEqualAssertion = createAssertion(
   [['to deep equal', 'to deeply equal'], UnknownSchema],
@@ -938,9 +938,8 @@ export const stringLengthAssertion = createAssertion(
  * ```
  *
  * @group Parametric Assertions (Sync)
- * @bupkisAnchor to-satisfy
- * @bupkisAssertionCategory comparison
- * @bupkisRedirect satisfies
+ * @bupkisAnchor unknown-to-satisfy-any
+ * @bupkisAssertionCategory equality
  */
 export const satisfiesAssertion = createAssertion(
   [['to satisfy', 'to be like', 'satisfies'], UnknownSchema],
