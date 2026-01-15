@@ -106,6 +106,17 @@ export interface Assertion<
   Slots extends AssertionSlots<Parts>,
 > {
   /**
+   * Extracts phrase literals from this assertion for use in dispatch indexing.
+   *
+   * Returns phrases from the first phrase literal slot found (typically slot 1
+   * for subject-first assertions, or slot 0 for phrase-first assertions).
+   * Handles both single phrase literals and phrase literal choices.
+   *
+   * @returns Array of phrase strings for indexing, or empty array if none found
+   */
+  getIndexPhrases(): readonly string[];
+
+  /**
    * Unique identifier for this assertion
    */
   readonly id: string;

@@ -491,4 +491,58 @@ describe('core API', () => {
       });
     });
   });
+
+  describe('phrase index optimization', () => {
+    it('should dispatch assertions correctly with phrase indexing', () => {
+      // Basic dispatch still works - this exercises the phrase index path
+      expect('hello', 'to be a string');
+      expect(42, 'to be a number');
+      expect(true, 'to be true');
+    });
+
+    it('should handle phrase literal choices correctly', () => {
+      // These use phrase literal choices internally
+      expect(5, 'to be greater than or equal to', 3);
+      expect(5, 'to be at least', 3); // alternate phrase for same assertion
+      expect(5, 'to be gte', 3); // another alternate
+    });
+
+    it('should handle assertions with subject-first slots', () => {
+      // Subject is at position 0, phrase at position 1
+      expect({ a: 1 }, 'to satisfy', { a: expect.it('to be a number') });
+    });
+
+    it('should index custom assertions correctly', () => {
+      // Custom assertions are indexed just like built-in ones
+      const customAssertion = expect.createAssertion(
+        ['to be custom thing'],
+        (subject) => subject === 'custom',
+      );
+      const { expect: customExpect } = expect.use([customAssertion]);
+
+      expect(
+        () => customExpect('custom', 'to be custom thing'),
+        'not to throw',
+      );
+    });
+
+    it('should work with negated assertions', () => {
+      // Negation is processed before phrase extraction
+      expect('hello', 'not to be a number');
+      expect(42, 'not to be a string');
+    });
+
+    it('should work with async assertions', async () => {
+      // Async path also uses phrase indexing
+      await expectAsync(Promise.resolve(42), 'to resolve');
+      await expectAsync(Promise.reject(new Error('fail')), 'to reject');
+    });
+
+    it('should handle exact match priority correctly', () => {
+      // When multiple assertions match, exactMatch should be prioritized
+      // The 'to be a' phrase is shared by instanceOf and typeOf assertions
+      expect([], 'to be a', 'Array'); // typeOf assertion (exact match on enum)
+      expect(new Date(), 'to be an instance of', Date); // instanceOf assertion
+    });
+  });
 });
