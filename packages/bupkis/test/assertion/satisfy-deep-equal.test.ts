@@ -162,6 +162,66 @@ describe('satisfiesAssertion (consolidated)', () => {
       expect(-Infinity, 'to satisfy', -Infinity);
     });
   });
+
+  describe('cross-type satisfaction (permissive property check)', () => {
+    it('should satisfy array with length property from object shape', () => {
+      expect([1, 2, 3], 'to satisfy', { length: 3 });
+    });
+
+    it('should fail array with wrong length from object shape', () => {
+      expect(() => expect([1, 2, 3], 'to satisfy', { length: 5 }), 'to throw');
+    });
+
+    it('should satisfy function with static properties', () => {
+      expect(Promise, 'to satisfy', { reject: expect.it('to be a function') });
+    });
+
+    it('should satisfy function with multiple static properties', () => {
+      expect(Promise, 'to satisfy', {
+        all: expect.it('to be a function'),
+        reject: expect.it('to be a function'),
+        resolve: expect.it('to be a function'),
+      });
+    });
+
+    it('should fail function missing expected property', () => {
+      expect(
+        () =>
+          expect(Promise, 'to satisfy', {
+            nonexistent: expect.it('to be a function'),
+          }),
+        'to throw',
+      );
+    });
+
+    it('should fail function with wrong property type', () => {
+      expect(
+        () =>
+          expect(Promise, 'to satisfy', {
+            reject: expect.it('to be a string'),
+          }),
+        'to throw',
+      );
+    });
+
+    it('should satisfy class constructor with prototype property', () => {
+      class MyClass {
+        static staticMethod() {}
+      }
+      expect(MyClass, 'to satisfy', {
+        prototype: expect.it('to be an object'),
+        staticMethod: expect.it('to be a function'),
+      });
+    });
+
+    it('should fail when subject is primitive and shape is object', () => {
+      expect(() => expect('hello', 'to satisfy', { length: 5 }), 'to throw');
+    });
+
+    it('should fail when subject is null and shape is object', () => {
+      expect(() => expect(null, 'to satisfy', { foo: 1 }), 'to throw');
+    });
+  });
 });
 
 describe('deepEqualAssertion (consolidated)', () => {

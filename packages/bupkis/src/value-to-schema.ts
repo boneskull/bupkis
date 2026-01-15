@@ -67,6 +67,7 @@ export const valueToSchema = (
     literalTuples = false,
     maxDepth = 10,
     noMixedArrays = false,
+    permissivePropertyCheck = false,
     strict = false,
   } = options;
 
@@ -431,7 +432,90 @@ export const valueToSchema = (
           }
         }
 
-        // Create the base object schema
+        // When permissivePropertyCheck is enabled, use a custom validator that
+        // checks properties via `in` operator. This allows validating properties
+        // on any value type (functions, arrays, etc.) not just plain objects.
+        if (permissivePropertyCheck && !strict) {
+          const capturedSchemaShape = schemaShape;
+          const capturedProtoSchema = protoSchema;
+          const capturedUndefinedKeys = undefinedKeys;
+
+          return z.any().superRefine((val, ctx) => {
+            // Can't use `in` operator on primitives
+            if (
+              val == null ||
+              (typeof val !== 'object' && typeof val !== 'function')
+            ) {
+              ctx.addIssue({
+                code: 'custom',
+                message: `Expected a value with properties, but received ${val === null ? 'null' : typeof val}`,
+              });
+              return;
+            }
+
+            // Check __proto__ if expected
+            // Cast is safe - we've verified val is object or function above
+            const valAsObject = val as object;
+            if (capturedProtoSchema) {
+              if (!hasOwn(valAsObject, '__proto__')) {
+                ctx.addIssue({
+                  code: 'custom',
+                  message: 'Expected property "__proto__" to exist',
+                  path: ['__proto__'],
+                });
+              } else {
+                const actualProto = (val as Record<string, unknown>)[
+                  '__proto__'
+                ];
+                const protoResult = capturedProtoSchema.safeParse(actualProto);
+                if (!protoResult.success) {
+                  for (const issue of protoResult.error.issues) {
+                    ctx.addIssue({
+                      ...issue,
+                      path: ['__proto__', ...issue.path],
+                    });
+                  }
+                }
+              }
+            }
+
+            // Check each expected property
+            for (const [key, schema] of entries(capturedSchemaShape)) {
+              if (!(key in val)) {
+                ctx.addIssue({
+                  code: 'custom',
+                  message: `Expected property "${key}" to exist`,
+                  path: [key],
+                });
+                continue;
+              }
+
+              const propValue = (val as Record<string, unknown>)[key];
+              const result = schema.safeParse(propValue);
+              if (!result.success) {
+                for (const issue of result.error.issues) {
+                  ctx.addIssue({
+                    ...issue,
+                    path: [key, ...issue.path],
+                  });
+                }
+              }
+            }
+
+            // Check undefined keys exist with undefined value
+            for (const key of capturedUndefinedKeys) {
+              if (!hasOwn(valAsObject, key)) {
+                ctx.addIssue({
+                  code: 'custom',
+                  message: `Expected property "${key}" to exist with value undefined`,
+                  path: [key],
+                });
+              }
+            }
+          });
+        }
+
+        // Create the base object schema (standard Zod object validation)
         const baseSchema = strict
           ? z.strictObject(schemaShape)
           : z.looseObject(schemaShape);
@@ -598,6 +682,18 @@ export interface ValueToSchemaOptions {
   noMixedArrays?: boolean;
 
   /**
+   * If `true`, use property checking that works on any value type (functions,
+   * arrays, etc.), not just plain objects. Properties are checked using the
+   * `in` operator which works with non-enumerable and inherited properties.
+   *
+   * Only applies when `strict` is `false`. When `strict` is `true`, standard
+   * Zod object validation is used which requires exact type matching.
+   *
+   * @defaultValue false
+   */
+  permissivePropertyCheck?: boolean;
+
+  /**
    * If `true`, will disallow unknown properties in parsed objects
    *
    * @defaultValue false
@@ -617,6 +713,7 @@ export const valueToSchemaOptionsForSatisfies = freeze({
   literalPrimitives: true,
   literalRegExp: false,
   literalTuples: true,
+  permissivePropertyCheck: true,
   strict: false,
 } as const) satisfies ValueToSchemaOptions;
 
