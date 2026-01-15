@@ -106,8 +106,7 @@ import {
 } from './sync-esoteric.js';
 import { SyncIterableAssertions } from './sync-iterable.js';
 import {
-  arrayDeepEqualAssertion,
-  arraySatisfiesAssertion,
+  deepEqualAssertion,
   errorMessageAssertion,
   errorMessageMatchingAssertion,
   functionArityAssertion,
@@ -116,17 +115,14 @@ import {
   functionThrowsTypeAssertion,
   functionThrowsTypeSatisfyingAssertion,
   instanceOfAssertion,
-  mapDeepEqualAssertion,
   numberCloseToAssertion,
   numberGreaterThanAssertion,
   numberGreaterThanOrEqualAssertion,
   numberLessThanAssertion,
   numberLessThanOrEqualAssertion,
   numberWithinRangeAssertion,
-  objectDeepEqualAssertion,
-  objectSatisfiesAssertion,
   oneOfAssertion,
-  setDeepEqualAssertion,
+  satisfiesAssertion,
   strictEqualityAssertion,
   stringBeginsWithAssertion,
   stringEndsWithAssertion,
@@ -242,10 +238,7 @@ export const SyncParametricAssertions = [
   errorMessageAssertion,
   errorMessageMatchingAssertion,
   strictEqualityAssertion,
-  objectDeepEqualAssertion,
-  arrayDeepEqualAssertion,
-  mapDeepEqualAssertion,
-  setDeepEqualAssertion,
+  deepEqualAssertion,
   functionThrowsAssertion,
   functionThrowsTypeAssertion,
   functionThrowsSatisfyingAssertion,
@@ -253,8 +246,7 @@ export const SyncParametricAssertions = [
   stringIncludesAssertion,
   stringLengthAssertion,
   stringMatchesAssertion,
-  objectSatisfiesAssertion,
-  arraySatisfiesAssertion,
+  satisfiesAssertion,
 ] as const;
 
 /**

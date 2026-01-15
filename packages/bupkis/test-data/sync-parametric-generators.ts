@@ -14,31 +14,70 @@ import { type AnyAssertion } from '../src/types.js';
 
 export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
   [
-    assertions.arrayDeepEqualAssertion,
+    assertions.deepEqualAssertion,
     fc
-      .array(filteredAnything, { minLength: 1, size: 'small' })
-      .filter(objectFilter)
+      .oneof(
+        // Primitives
+        fc.string(),
+        fc.integer(),
+        fc.boolean(),
+        fc.constant(null),
+        // Arrays
+        fc
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter),
+        // Objects
+        fc.object().filter(objectFilter),
+        // Maps
+        fc
+          .array(
+            fc.tuple(
+              fc.oneof(fc.string(), fc.integer()),
+              filteredAnything.filter(
+                (v) => typeof v !== 'function' && !(v instanceof Map),
+              ),
+            ),
+            { minLength: 1, size: 'small' },
+          )
+          .map((entries) => new Map(entries)),
+        // Sets
+        fc
+          .array(
+            filteredAnything.filter(
+              (v) => typeof v !== 'function' && !(v instanceof Set),
+            ),
+            { minLength: 1, size: 'small' },
+          )
+          .map((values) => new Set(values)),
+      )
       .chain((expected) =>
         fc.tuple(
           fc.constant(structuredClone(expected)),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arrayDeepEqualAssertion),
-          ),
+          fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
           fc.constant(expected),
         ),
       ),
   ],
   [
-    assertions.arraySatisfiesAssertion,
+    assertions.satisfiesAssertion,
     fc
-      .array(filteredAnything, { minLength: 1, size: 'small' })
-      .filter(objectFilter)
+      .oneof(
+        // Primitives
+        fc.string(),
+        fc.integer(),
+        fc.boolean(),
+        fc.constant(null),
+        // Arrays
+        fc
+          .array(filteredAnything, { minLength: 1, size: 'small' })
+          .filter(objectFilter),
+        // Objects
+        fc.object({ depthSize: 'small' }).filter(objectFilter),
+      )
       .chain((expected) =>
         fc.tuple(
           fc.constant(structuredClone(expected)),
-          fc.constantFrom(
-            ...extractPhrases(assertions.arraySatisfiesAssertion),
-          ),
+          fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
           fc.constant(expected),
         ),
       ),
@@ -247,75 +286,6 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
         ),
       ),
     ),
-  ],
-  [
-    assertions.objectDeepEqualAssertion,
-    fc
-      .object()
-      .filter(objectFilter)
-      .chain((expected) =>
-        fc.tuple(
-          fc.constant(structuredClone(expected)),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectDeepEqualAssertion),
-          ),
-          fc.constant(expected),
-        ),
-      ),
-  ],
-  [
-    assertions.mapDeepEqualAssertion,
-    fc
-      .array(
-        fc.tuple(
-          fc.oneof(fc.string(), fc.integer()),
-          filteredAnything.filter(
-            (v) => typeof v !== 'function' && !(v instanceof Map),
-          ),
-        ),
-        { minLength: 1, size: 'small' },
-      )
-      .chain((entries) => {
-        const expected = new Map(entries);
-        return fc.tuple(
-          fc.constant(new Map(entries)),
-          fc.constantFrom(...extractPhrases(assertions.mapDeepEqualAssertion)),
-          fc.constant(expected),
-        );
-      }),
-  ],
-  [
-    assertions.setDeepEqualAssertion,
-    fc
-      .array(
-        filteredAnything.filter(
-          (v) => typeof v !== 'function' && !(v instanceof Set),
-        ),
-        { minLength: 1, size: 'small' },
-      )
-      .chain((values) => {
-        const expected = new Set(values);
-        return fc.tuple(
-          fc.constant(new Set(values)),
-          fc.constantFrom(...extractPhrases(assertions.setDeepEqualAssertion)),
-          fc.constant(expected),
-        );
-      }),
-  ],
-  [
-    assertions.objectSatisfiesAssertion,
-    fc
-      .object({ depthSize: 'small' })
-      .filter(objectFilter)
-      .chain((expected) =>
-        fc.tuple(
-          fc.constant(structuredClone(expected)),
-          fc.constantFrom(
-            ...extractPhrases(assertions.objectSatisfiesAssertion),
-          ),
-          fc.constant(expected),
-        ),
-      ),
   ],
   [
     assertions.oneOfAssertion,
