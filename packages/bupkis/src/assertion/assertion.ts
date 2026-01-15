@@ -73,6 +73,11 @@ export abstract class BupkisAssertion<
    * for subject-first assertions, or slot 0 for phrase-first assertions).
    * Handles both single phrase literals and phrase literal choices.
    *
+   * **Limitation:** Only checks slots at positions 0 and 1. Assertions with
+   * phrase literals at position 2 or higher will not be indexed, falling back
+   * to O(n) full scan during dispatch. This covers the vast majority of
+   * assertion patterns (subject-phrase-... or phrase-subject-...).
+   *
    * @returns Array of phrase strings for indexing, or empty array if none found
    */
   public getIndexPhrases(): readonly string[] {

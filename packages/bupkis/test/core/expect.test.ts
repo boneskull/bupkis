@@ -540,7 +540,7 @@ describe('core API', () => {
 
     it('should handle exact match priority correctly', () => {
       // When multiple assertions match, exactMatch should be prioritized
-      // The 'to be a' phrase is shared by instanceOf and typeOf assertions
+      // The 'to be a' and 'to be an' phrases are shared by instanceOf and typeOf assertions
       expect([], 'to be a', 'Array'); // typeOf assertion (exact match on enum)
       expect(new Date(), 'to be an instance of', Date); // instanceOf assertion
     });

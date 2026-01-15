@@ -210,10 +210,11 @@ export function createExpectAsyncFunction<
       }> = [];
 
       // Use phrase index for O(1) candidate lookup, fall back to full scan
-      const phrase = extractPhraseFromArgs(processedArgs);
-      const assertionsToCheck =
-        (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
-        allAssertions;
+      const assertionsToCheck = getCandidateAssertions(
+        processedArgs,
+        phraseIndex,
+        allAssertions,
+      );
 
       for (const assertion of assertionsToCheck) {
         const parseResult = await assertion.parseValuesAsync(processedArgs);
@@ -267,10 +268,11 @@ export function createExpectAsyncFunction<
         }> = [];
 
         // Use phrase index for O(1) candidate lookup, fall back to full scan
-        const phrase = extractPhraseFromArgs(processedArgs);
-        const assertionsToCheck =
-          (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
-          allAssertions;
+        const assertionsToCheck = getCandidateAssertions(
+          processedArgs,
+          phraseIndex,
+          allAssertions,
+        );
 
         for (const assertion of assertionsToCheck) {
           const parseResult = await assertion.parseValuesAsync(processedArgs);
@@ -476,10 +478,11 @@ export function createExpectSyncFunction<
       }> = [];
 
       // Use phrase index for O(1) candidate lookup, fall back to full scan
-      const phrase = extractPhraseFromArgs(processedArgs);
-      const assertionsToCheck =
-        (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
-        allAssertions;
+      const assertionsToCheck = getCandidateAssertions(
+        processedArgs,
+        phraseIndex,
+        allAssertions,
+      );
 
       for (const assertion of assertionsToCheck) {
         const parseResult = assertion.parseValues(processedArgs);
@@ -533,10 +536,11 @@ export function createExpectSyncFunction<
         }> = [];
 
         // Use phrase index for O(1) candidate lookup, fall back to full scan
-        const phrase = extractPhraseFromArgs(processedArgs);
-        const assertionsToCheck =
-          (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
-          allAssertions;
+        const assertionsToCheck = getCandidateAssertions(
+          processedArgs,
+          phraseIndex,
+          allAssertions,
+        );
 
         for (const assertion of assertionsToCheck) {
           const parseResult = assertion.parseValues(processedArgs);
@@ -877,6 +881,31 @@ const extractPhraseFromArgs = (
     return args[0];
   }
   return undefined;
+};
+
+/**
+ * Gets candidate assertions for dispatch using phrase index lookup.
+ *
+ * Extracts the phrase from processed arguments and looks it up in the phrase
+ * index for O(1) candidate retrieval. Falls back to the full assertion list if
+ * no phrase is found or the phrase isn't indexed.
+ *
+ * @function
+ * @param processedArgs - Arguments after negation processing
+ * @param phraseIndex - Map from phrase strings to assertion arrays
+ * @param allAssertions - Complete assertion list for fallback
+ * @returns Array of candidate assertions to check
+ */
+const getCandidateAssertions = <T extends IndexableAssertion>(
+  processedArgs: readonly unknown[],
+  phraseIndex: Map<string, T[]>,
+  allAssertions: readonly T[],
+): readonly T[] => {
+  const phrase = extractPhraseFromArgs(processedArgs);
+  return (
+    (phrase !== undefined ? phraseIndex.get(phrase) : undefined) ??
+    allAssertions
+  );
 };
 
 /**
