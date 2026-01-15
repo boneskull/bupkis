@@ -139,4 +139,49 @@ const foo = 1;
       expect(code, 'not to contain', 'bupkis');
     });
   });
+
+  describe('unrecognized plugins', () => {
+    it('should remove any chai-* plugin import (broad pattern)', () => {
+      const { code } = transformCode(`
+import chaiFuzzy from 'chai-fuzzy';
+import { expect } from 'chai';
+chai.use(chaiFuzzy);
+expect(foo, 'to be', bar);
+      `);
+      expect(code, 'not to contain', 'chai-fuzzy');
+      expect(code, 'not to contain', 'chaiFuzzy');
+      expect(code, 'not to contain', 'chai.use');
+    });
+
+    it('should warn about unrecognized non-chai-* plugins', () => {
+      const { result } = transformCode(`
+import somePlugin from 'my-custom-plugin';
+import { expect } from 'chai';
+chai.use(somePlugin);
+expect(foo, 'to be', bar);
+      `);
+      expect(result.warnings, 'to have length', 1);
+      expect(result.warnings[0]?.message, 'to contain', 'my-custom-plugin');
+    });
+
+    it('should warn about chai.use with untracked identifier', () => {
+      const { result } = transformCode(`
+import { expect } from 'chai';
+chai.use(inlinePlugin);
+expect(foo, 'to be', bar);
+      `);
+      expect(result.warnings, 'to have length', 1);
+      expect(result.warnings[0]?.message, 'to contain', 'inlinePlugin');
+    });
+
+    it('should not warn about recognized chai-* plugins', () => {
+      const { result } = transformCode(`
+import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
+chai.use(chaiAsPromised);
+expect(foo, 'to be', bar);
+      `);
+      expect(result.warnings, 'to have length', 0);
+    });
+  });
 });

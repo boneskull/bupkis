@@ -1,24 +1,10 @@
 import type { MatcherTransform } from '../types.js';
 
-import { bddMatchers, getBddMatcher, isBddMatcherSupported } from './bdd.js';
-import {
-  getPluginMatcher,
-  isPluginMatcherSupported,
-  pluginMatchers,
-} from './plugins.js';
-import { getTddMatcher, isTddMatcherSupported, tddMatchers } from './tdd.js';
+import { bddMatchers } from './bdd.js';
+import { pluginMatchers } from './plugins.js';
+import { tddMatchers } from './tdd.js';
 
-export {
-  bddMatchers,
-  getBddMatcher,
-  getPluginMatcher,
-  getTddMatcher,
-  isBddMatcherSupported,
-  isPluginMatcherSupported,
-  isTddMatcherSupported,
-  pluginMatchers,
-  tddMatchers,
-};
+export { bddMatchers, pluginMatchers, tddMatchers };
 
 /**
  * All matchers combined (BDD + TDD + plugins).

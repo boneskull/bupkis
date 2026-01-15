@@ -1,6 +1,5 @@
 import {
   type CallExpression,
-  type ExpressionStatement,
   type PropertyAccessExpression,
   type SourceFile,
   SyntaxKind,
@@ -82,25 +81,27 @@ export const transformBddExpectCalls = (
   const errors: TransformError[] = [];
   let transformCount = 0;
 
-  // Get all expression statements - we need to handle both:
+  // Get all expression statements throughout the entire file (including nested in functions)
+  // We need to handle both:
   // 1. Call expressions: expect(x).to.equal(y)
   // 2. Property access expressions: expect(x).to.be.true
-  const statements = sourceFile.getStatements();
+  const allStatements = sourceFile.getDescendantsOfKind(
+    SyntaxKind.ExpressionStatement,
+  );
 
-  // Process in reverse to avoid position shifts
-  const expectStatements = statements
+  // Process in reverse to avoid position shifts when modifying
+  const expectStatements = allStatements
     .filter((stmt) => {
-      if (stmt.getKind() !== SyntaxKind.ExpressionStatement) {
-        return false;
-      }
       const text = stmt.getText();
       return text.startsWith('expect(');
     })
     .reverse();
 
   for (const stmt of expectStatements) {
-    const exprStmt = stmt as ExpressionStatement;
-    const expr = exprStmt.getExpression();
+    const exprStmt = stmt;
+    const expr = exprStmt.getExpression() as
+      | CallExpression
+      | PropertyAccessExpression;
 
     try {
       const result = transformSingleExpect(expr, mode);
@@ -375,7 +376,7 @@ const parseChainSegments = (chain: string): ChainParseResult => {
   const significantSegments: string[] = [];
 
   for (let i = 0; i < rawSegments.length; i++) {
-    const seg = rawSegments[i];
+    const seg = rawSegments[i]!;
     const nextSeg = rawSegments[i + 1];
 
     // Check for method call with arguments
@@ -386,8 +387,8 @@ const parseChainSegments = (chain: string): ChainParseResult => {
 
       if (name === 'not') {
         negated = true;
-      } else if (!LANGUAGE_CHAINS.has(name!)) {
-        significantSegments.push(name!);
+      } else if (name && !LANGUAGE_CHAINS.has(name)) {
+        significantSegments.push(name);
         if (argsStr?.trim()) {
           args = parseArguments(argsStr);
         }
