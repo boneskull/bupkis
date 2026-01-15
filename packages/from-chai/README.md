@@ -125,12 +125,13 @@ Negated assertions (`assert.notEqual`, `assert.isNotTrue`, etc.) are also suppor
 The following plugins are supported:
 
 **chai-as-promised**:
-| Chai | bupkis |
-|------|--------|
+
+| Chai                               | bupkis                                 |
+| ---------------------------------- | -------------------------------------- |
 | `expect(p).to.eventually.equal(y)` | `expect(p, 'when fulfilled to be', y)` |
-| `expect(p).to.be.fulfilled` | `expect(p, 'to be fulfilled')` |
-| `expect(p).to.be.rejected` | `expect(p, 'to be rejected')` |
-| `expect(p).to.be.rejectedWith(E)` | `expect(p, 'to be rejected with', E)` |
+| `expect(p).to.be.fulfilled`        | `expect(p, 'to be fulfilled')`         |
+| `expect(p).to.be.rejected`         | `expect(p, 'to be rejected')`          |
+| `expect(p).to.be.rejectedWith(E)`  | `expect(p, 'to be rejected with', E)`  |
 
 **chai-string**:
 
