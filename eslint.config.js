@@ -2,6 +2,7 @@ import jsPlugin from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import eslintPluginJsonc from 'eslint-plugin-jsonc';
 import perfectionist from 'eslint-plugin-perfectionist';
+import zodPlugin from 'eslint-plugin-zod';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -36,6 +37,7 @@ export default defineConfig(
           ),
         },
       },
+      zod: zodPlugin,
     },
     rules: {
       'custom/require-function-tag-in-arrow-functions': [
@@ -64,6 +66,26 @@ export default defineConfig(
           ],
         },
       ],
+      // Zod plugin rules
+      'zod/array-style': ['error', { style: 'function' }],
+      'zod/consistent-import-source': ['error', { sources: ['zod'] }],
+      'zod/consistent-object-schema-type': [
+        'error',
+        { allow: ['object', 'looseObject', 'strictObject'] },
+      ],
+      'zod/no-any-schema': 'off', // intentional for assertion library
+      'zod/no-empty-custom-schema': 'error',
+      'zod/no-number-schema-with-int': 'error',
+      'zod/no-optional-and-default-together': 'error',
+      'zod/no-throw-in-refine': 'error',
+      'zod/no-unknown-schema': 'off', // intentional for assertion library
+      'zod/prefer-enum-over-literal-union': 'error',
+      'zod/prefer-meta': 'error',
+      'zod/prefer-meta-last': 'error',
+      'zod/require-brand-type-parameter': 'error',
+      'zod/require-error-message': 'off', // too noisy
+      'zod/require-schema-suffix': 'off', // not our convention
+      'zod/schema-error-property-style': 'error',
     },
   },
   {

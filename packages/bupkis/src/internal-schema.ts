@@ -25,35 +25,48 @@ const AssertionFailureSchema = z
     actual: z
       .unknown()
       .optional()
-      .describe('The actual value or description of what actually occurred'),
+      .meta({
+        description:
+          'The actual value or description of what actually occurred',
+      }),
     diff: z
       .string()
       .optional()
-      .describe('Pre-computed diff string that bypasses jest-diff'),
+      .meta({
+        description: 'Pre-computed diff string that bypasses jest-diff',
+      }),
     diffOptions: z
       .record(z.string(), z.unknown())
       .optional()
-      .describe('Override options for jest-diff'),
+      .meta({ description: 'Override options for jest-diff' }),
     expected: z
       .unknown()
       .optional()
-      .describe(
-        'The expected value or description of what was expected to occur',
-      ),
+      .meta({
+        description:
+          'The expected value or description of what was expected to occur',
+      }),
     formatActual: z
       .function()
       .optional()
-      .describe('Custom formatter for actual value in diff output'),
+      .meta({
+        description: 'Custom formatter for actual value in diff output',
+      }),
     formatExpected: z
       .function()
       .optional()
-      .describe('Custom formatter for expected value in diff output'),
+      .meta({
+        description: 'Custom formatter for expected value in diff output',
+      }),
     message: z
       .string()
       .optional()
-      .describe('A human-readable message describing the failure'),
+      .meta({ description: 'A human-readable message describing the failure' }),
   })
-  .describe('Potential return type of an assertion implementation function');
+  .meta({
+    description:
+      'Potential return type of an assertion implementation function',
+  });
 
 /**
  * @internal
@@ -62,7 +75,7 @@ const ZodTypeSchema = z
   .custom<z.ZodType>(isZodType, {
     error: 'Must be a Zod schema',
   })
-  .describe('A Zod schema within AssertionParts');
+  .meta({ description: 'A Zod schema within AssertionParts' });
 
 /**
  * @internal
@@ -71,7 +84,7 @@ const StandardSchemaSchema = z
   .custom(isStandardSchema, {
     error: 'Must be a Standard Schema v1',
   })
-  .describe('A Standard Schema v1 within AssertionParts');
+  .meta({ description: 'A Standard Schema v1 within AssertionParts' });
 
 /**
  * Schema that accepts either Zod or Standard Schema validators.
@@ -80,11 +93,13 @@ const StandardSchemaSchema = z
  */
 const SchemaSchema = z
   .union([ZodTypeSchema, StandardSchemaSchema])
-  .describe('A Zod schema or Standard Schema v1');
+  .meta({ description: 'A Zod schema or Standard Schema v1' });
 
 /** @internal */
 const BaseAssertionParseRequestSchema = z.object({
-  subject: z.unknown().describe('The subject value to be validated'),
+  subject: z
+    .unknown()
+    .meta({ description: 'The subject value to be validated' }),
 });
 
 /**
@@ -109,7 +124,7 @@ const PhraseLiteralSchema = z
     error: 'Phrase literals may not begin with "not "',
   })
   .min(1, { error: 'Phrase literals must be at least 1 character long' })
-  .describe('A phrase literal within AssertionParts');
+  .meta({ description: 'A phrase literal within AssertionParts' });
 
 /**
  * @internal
@@ -117,9 +132,10 @@ const PhraseLiteralSchema = z
 const PhraseLiteralChoiceSchema = z
   .array(PhraseLiteralSchema)
   .min(1, { error: 'Phrase literal choices must have at least one option' })
-  .describe(
-    'A choice of phrase literals, represented as an array of strings, within AssertionParts',
-  );
+  .meta({
+    description:
+      'A choice of phrase literals, represented as an array of strings, within AssertionParts',
+  });
 /**
  * @internal
  */
@@ -137,7 +153,7 @@ const AssertionImplSchemaSync = z
       ]),
     }),
   ])
-  .describe('A synchronous assertion implementation function');
+  .meta({ description: 'A synchronous assertion implementation function' });
 
 const AssertionImplSchemaAsync = z
   .union([
@@ -158,7 +174,7 @@ const AssertionImplSchemaAsync = z
       ]),
     }),
   ])
-  .describe('An async assertion implementation function');
+  .meta({ description: 'An async assertion implementation function' });
 
 /**
  * Checks if a value is a schema (Zod or StandardSchema)
@@ -218,7 +234,9 @@ const AssertionPartsSchema = z
         'Assertions must have a phrase at position 0 (phrase-first shorthand) or position 1 (after subject schema)',
     },
   )
-  .describe('Assertion "parts" which define the input of an assertion');
+  .meta({
+    description: 'Assertion "parts" which define the input of an assertion',
+  });
 
 /**
  * Type guard for a {@link AssertionFailure}.
@@ -257,7 +275,7 @@ export const isAssertionParseRequest = (
  */
 export const CreateAssertionInputSchema = z
   .tuple([AssertionPartsSchema, AssertionImplSchemaSync])
-  .describe('Parameters for createAssertion()');
+  .meta({ description: 'Parameters for createAssertion()' });
 
 /**
  * Schema for the input parameters of {@link createAsyncAssertion}.
@@ -266,4 +284,4 @@ export const CreateAssertionInputSchema = z
  */
 export const CreateAssertionInputSchemaAsync = z
   .tuple([AssertionPartsSchema, AssertionImplSchemaAsync])
-  .describe('Parameters for createAsyncAssertion()');
+  .meta({ description: 'Parameters for createAsyncAssertion()' });

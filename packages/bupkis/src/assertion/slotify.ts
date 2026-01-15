@@ -81,7 +81,7 @@ export const slotify = <const Parts extends AssertionParts>(
   const slots = parts.flatMap((part, index) => {
     const result: z.ZodType[] = [];
     if (index === 0 && isPhrase(part)) {
-      result.push(z.unknown().describe('subject'));
+      result.push(z.unknown().meta({ description: 'subject' }));
     }
 
     if (isPhraseLiteralChoice(part)) {
@@ -171,7 +171,7 @@ const createPhraseLiteralChoiceSchema = (
 
   const schema = z
     .literal(part)
-    .brand('string-literal')
+    .brand<'string-literal'>('string-literal')
     .register(BupkisRegistry, {
       [kStringLiteral]: true,
       values: part,
@@ -202,7 +202,7 @@ const createPhraseLiteralSchema = (
 
   const schema = z
     .literal(part)
-    .brand('string-literal')
+    .brand<'string-literal'>('string-literal')
     .register(BupkisRegistry, {
       [kStringLiteral]: true,
       value: part,

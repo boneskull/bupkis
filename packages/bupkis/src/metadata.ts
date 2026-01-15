@@ -22,15 +22,18 @@ export const BupkisRegistry = z.registry<BupkisMeta>();
  * Base schema for all metadata
  */
 const BaseBupkisMetadataSchema = z.object({
-  description: z.string().optional().describe('Human-friendly description'),
+  description: z
+    .string()
+    .optional()
+    .meta({ description: 'Human-friendly description' }),
   name: z
     .string()
     .optional()
-    .describe('Name used when rendering Assertion as a string'),
+    .meta({ description: 'Name used when rendering Assertion as a string' }),
   parameter: z
     .string()
     .optional()
-    .describe('Parameter "type" to use in documentation'),
+    .meta({ description: 'Parameter "type" to use in documentation' }),
 });
 
 /**

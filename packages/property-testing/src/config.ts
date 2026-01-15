@@ -232,6 +232,7 @@ export const PropertyTestConfigVariantSchema = z.union([
     ...PropertyTestConfigParametersSchema.shape,
     property: z.function({
       input: [],
+      // eslint-disable-next-line zod/no-empty-custom-schema -- opaque type from fast-check
       output: z.custom<fc.IProperty<any> | fc.IPropertyWithHooks<any>>(),
     }),
   }),
@@ -239,6 +240,7 @@ export const PropertyTestConfigVariantSchema = z.union([
     ...PropertyTestConfigParametersSchema.shape,
     asyncProperty: z.function({
       input: [],
+      // eslint-disable-next-line zod/no-empty-custom-schema -- opaque type from fast-check
       output: z.custom<
         fc.IAsyncProperty<any> | fc.IAsyncPropertyWithHooks<any>
       >(),

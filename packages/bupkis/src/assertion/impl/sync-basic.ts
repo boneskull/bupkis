@@ -531,10 +531,11 @@ export const objectAssertion = createAssertion(
     .unknown()
     .nonoptional()
     .refine((value) => typeof value == 'object' && value !== null)
-    .describe(
-      'Returns true for any non-null value where `typeof value` is `object`',
-    )
-    .register(BupkisRegistry, { name: 'Object' }),
+    .register(BupkisRegistry, { name: 'Object' })
+    .meta({
+      description:
+        'Returns true for any non-null value where `typeof value` is `object`',
+    }),
 );
 
 /**
