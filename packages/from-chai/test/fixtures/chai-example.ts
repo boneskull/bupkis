@@ -1,3 +1,4 @@
+// @ts-nocheck - This is a Chai fixture file, intentionally not type-checked
 /**
  * Example Chai test file for integration testing. This file demonstrates
  * various Chai assertion patterns.
