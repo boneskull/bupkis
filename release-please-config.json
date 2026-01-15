@@ -33,6 +33,12 @@
       "initial-version": "0.1.0",
       "release-type": "node"
     },
+    "packages/rxjs": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/rxjs",
+      "initial-version": "0.1.0",
+      "release-type": "node"
+    },
     "packages/sinon": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/sinon",

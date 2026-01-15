@@ -1,0 +1,80 @@
+{
+  "name": "@bupkis/rxjs",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "RxJS Observable assertions for Bupkis",
+  "repository": {
+    "directory": "packages/rxjs",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "rxjs",
+    "observable",
+    "reactive",
+    "assert",
+    "assertion",
+    "test"
+  ],
+  "scripts": {
+    "build": "zshy",
+    "prepublishOnly": "npm run build",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
+    "test:base": "node --import tsx --test --test-reporter=spec",
+    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts",
+    "test:types": "tsd"
+  },
+  "peerDependencies": {
+    "bupkis": ">=0.15.0",
+    "rxjs": ">=7.0.0"
+  },
+  "devDependencies": {
+    "rxjs": "7.8.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
+  }
+}

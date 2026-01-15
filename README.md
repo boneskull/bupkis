@@ -18,8 +18,9 @@ This is the monorepo for [**BUPKIS**](https://bupkis.zip), the uncommonly extens
 
 ### Plugins
 
-- **[@bupkis/sinon](./packages/sinon/)** - Sinon spy/stub/mock assertions
 - **[@bupkis/events](./packages/events/)** - Event emitter assertions
+- **[@bupkis/rxjs](./packages/rxjs/)** - RxJS Observable assertions
+- **[@bupkis/sinon](./packages/sinon/)** - Sinon spy/stub/mock assertions
 
 ### Migration Tools
 
