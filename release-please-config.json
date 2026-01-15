@@ -44,6 +44,12 @@
       "component": "@bupkis/sinon",
       "initial-version": "0.1.0",
       "release-type": "node"
+    },
+    "packages/supertest": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/supertest",
+      "initial-version": "0.1.0",
+      "release-type": "node"
     }
   }
 }
