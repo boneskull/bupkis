@@ -293,9 +293,15 @@ const getBodyText = (response: HttpResponse): string | undefined => {
     return response.text;
   }
   if (response.body !== undefined) {
-    return typeof response.body === 'string'
-      ? response.body
-      : stringify(response.body);
+    if (typeof response.body === 'string') {
+      return response.body;
+    }
+    try {
+      return stringify(response.body);
+    } catch {
+      // Handle circular references or other unserializable values
+      return '[unserializable body]';
+    }
   }
   return undefined;
 };

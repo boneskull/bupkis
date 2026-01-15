@@ -11,16 +11,11 @@ import { type HttpResponse, isHttpResponse } from './guards.js';
 /**
  * Schema that validates HTTP response objects.
  *
- * @example
+ * This schema is used internally by the assertions to validate that the subject
+ * is an HTTP response object. It uses duck typing to accept any object with a
+ * numeric `status` property.
  *
- * ```ts
- * import { HttpResponseSchema } from '@bupkis/supertest';
- *
- * const result = HttpResponseSchema.safeParse(response);
- * if (result.success) {
- *   // result.data is typed as HttpResponse
- * }
- * ```
+ * @internal
  */
 export const HttpResponseSchema = z.custom<HttpResponse>(
   isHttpResponse,
