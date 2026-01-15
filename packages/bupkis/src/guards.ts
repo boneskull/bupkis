@@ -20,7 +20,6 @@ import { type z } from 'zod';
 import type { PhraseLiteralChoice } from './assertion/assertion-types.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
 import type {
-  AssertionPart,
   Constructor,
   ExpectItExecutor,
   PhraseLiteral,
@@ -228,29 +227,31 @@ export const isWeakKey = (value: unknown): value is WeakKey =>
   typeof value === 'symbol';
 
 /**
- * Type guard for a {@link PhraseLiteralChoice}, which is a tuple of strings.
- *
- * @function
- * @param value Assertion part to check
- * @returns `true` if the part is a `PhraseLiteralChoice`, `false` otherwise
- * @internal
- */
-export const isPhraseLiteralChoice = (
-  value: AssertionPart,
-): value is PhraseLiteralChoice =>
-  isArray(value) && value.length >= 1 && value.every(isPhraseLiteral);
-
-/**
  * Type guard for a {@link PhraseLiteral}, which is just a string that does not
  * begin with `not `.
  *
  * @function
- * @param value Assertion part to check
- * @returns `true` if the part is a `PhraseLiteral`, `false` otherwise
+ * @param value Value to check
+ * @returns `true` if the value is a `PhraseLiteral`, `false` otherwise
  * @internal
  */
-export const isPhraseLiteral = (value: AssertionPart): value is PhraseLiteral =>
+export const isPhraseLiteral = (value: unknown): value is PhraseLiteral =>
   isString(value) && value !== 'and';
+
+/**
+ * Type guard for a {@link PhraseLiteralChoice}, which is a tuple of strings.
+ *
+ * @function
+ * @param value Value to check
+ * @returns `true` if the value is a `PhraseLiteralChoice`, `false` otherwise
+ * @internal
+ */
+export const isPhraseLiteralChoice = (
+  value: unknown,
+): value is PhraseLiteralChoice =>
+  isArray(value) &&
+  value.length >= 1 &&
+  value.every((item): item is PhraseLiteral => isPhraseLiteral(item));
 
 /**
  * Type guard for a {@link PhraseLiteral} or {@link PhraseLiteralChoice}.
@@ -261,7 +262,7 @@ export const isPhraseLiteral = (value: AssertionPart): value is PhraseLiteral =>
  *   `false` otherwise
  */
 export const isPhrase = (
-  value: AssertionPart,
+  value: unknown,
 ): value is PhraseLiteral | PhraseLiteralChoice =>
   isPhraseLiteral(value) || isPhraseLiteralChoice(value);
 

@@ -532,7 +532,9 @@ export type AssertionPart = Phrase | StandardSchemaV1 | z.ZodType;
  * @see {@link AssertionSlots} for compiled slot representation
  * @see {@link createAssertion} for assertion creation from parts
  */
-export type AssertionParts = NonEmptyTuple<AssertionPart>;
+export type AssertionParts =
+  | readonly [Phrase, ...AssertionPart[]]
+  | readonly [StandardSchemaV1 | z.ZodType, Phrase, ...AssertionPart[]];
 
 /**
  * Type-level mapping from assertion parts to their corresponding validation

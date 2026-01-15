@@ -9,11 +9,14 @@ const { keys } = Object;
 
 /**
  * Matches any assertion instance.
+ *
+ * Uses z.custom() with explicit type annotation because z.instanceof() infers
+ * overly specific generic parameters that don't align with AnyAssertion's use
+ * of `any` type parameters.
  */
-const AnyAssertionSchema = z.instanceof(BupkisAssertion) as z.ZodCustom<
-  AnyAssertion,
-  AnyAssertion
->;
+const AnyAssertionSchema = z.custom<AnyAssertion>(
+  (val): val is AnyAssertion => val instanceof BupkisAssertion,
+);
 
 /**
  * Helper function to validate assertion coverage against a collection.

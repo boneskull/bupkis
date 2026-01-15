@@ -75,7 +75,8 @@ export const slotify = <const Parts extends AssertionParts>(
   parts: Parts,
 ): AssertionSlots<Parts> => {
   if (slotifyCache.has(parts)) {
-    return slotifyCache.get(parts)!;
+    // Safe cast: cache key is the exact same `parts` reference
+    return slotifyCache.get(parts) as AssertionSlots<Parts>;
   }
   const slots = parts.flatMap((part, index) => {
     const result: z.ZodType[] = [];

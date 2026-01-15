@@ -134,6 +134,109 @@ describe('core API', () => {
           AssertionImplementationError,
         );
       });
+
+      describe('phrase position validation', () => {
+        describe('invalid patterns', () => {
+          it('should reject schema-only (no phrase)', () => {
+            expect(
+              () =>
+                expect.createAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string()],
+                  () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+
+          it('should reject two schemas without phrase', () => {
+            expect(
+              () =>
+                expect.createAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string(), z.number()],
+                  () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+
+          it('should reject schema-schema-phrase pattern', () => {
+            expect(
+              () =>
+                expect.createAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string(), z.number(), 'to be weird'],
+                  () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+        });
+
+        describe('valid patterns', () => {
+          it('should accept phrase-first shorthand', () => {
+            const assertion = expect.createAssertion(
+              ['to be valid'],
+              () => true,
+            );
+            expect(assertion.parts, 'to deep equal', ['to be valid']);
+          });
+
+          it('should accept phrase-first with parameters', () => {
+            const assertion = expect.createAssertion(
+              ['to equal', z.unknown()],
+              () => true,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept subject-first pattern', () => {
+            const assertion = expect.createAssertion(
+              [z.string(), 'to be valid'],
+              () => true,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept subject-phrase-param pattern', () => {
+            const assertion = expect.createAssertion(
+              [z.string(), 'to equal', z.string()],
+              () => true,
+            );
+            expect(assertion.parts, 'to have length', 3);
+          });
+
+          it('should accept phrase choice at position 0', () => {
+            const assertion = expect.createAssertion(
+              [['to be foo', 'to be bar']],
+              () => true,
+            );
+            expect(assertion.parts, 'to deep equal', [
+              ['to be foo', 'to be bar'],
+            ]);
+          });
+
+          it('should accept phrase choice at position 1', () => {
+            const assertion = expect.createAssertion(
+              [z.number(), ['to be even', 'to be an even number']],
+              (n) => n % 2 === 0,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept pattern with "and" connector', () => {
+            const assertion = expect.createAssertion(
+              [z.number(), 'to be between', z.number(), 'and', z.number()],
+              () => true,
+            );
+            expect(assertion.parts, 'to have length', 5);
+          });
+        });
+      });
     });
   });
 
@@ -247,6 +350,109 @@ describe('core API', () => {
           'to throw a',
           AssertionImplementationError,
         );
+      });
+
+      describe('phrase position validation', () => {
+        describe('invalid patterns', () => {
+          it('should reject schema-only (no phrase)', () => {
+            expect(
+              () =>
+                expect.createAsyncAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string()],
+                  async () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+
+          it('should reject two schemas without phrase', () => {
+            expect(
+              () =>
+                expect.createAsyncAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string(), z.number()],
+                  async () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+
+          it('should reject schema-schema-phrase pattern', () => {
+            expect(
+              () =>
+                expect.createAsyncAssertion(
+                  // @ts-expect-error Testing invalid input
+                  [z.string(), z.number(), 'to be weird'],
+                  async () => true,
+                ),
+              'to throw a',
+              AssertionImplementationError,
+            );
+          });
+        });
+
+        describe('valid patterns', () => {
+          it('should accept phrase-first shorthand', () => {
+            const assertion = expect.createAsyncAssertion(
+              ['to be valid'],
+              async () => true,
+            );
+            expect(assertion.parts, 'to deep equal', ['to be valid']);
+          });
+
+          it('should accept phrase-first with parameters', () => {
+            const assertion = expect.createAsyncAssertion(
+              ['to equal', z.unknown()],
+              async () => true,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept subject-first pattern', () => {
+            const assertion = expect.createAsyncAssertion(
+              [z.string(), 'to be valid'],
+              async () => true,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept subject-phrase-param pattern', () => {
+            const assertion = expect.createAsyncAssertion(
+              [z.string(), 'to equal', z.string()],
+              async () => true,
+            );
+            expect(assertion.parts, 'to have length', 3);
+          });
+
+          it('should accept phrase choice at position 0', () => {
+            const assertion = expect.createAsyncAssertion(
+              [['to be foo', 'to be bar']],
+              async () => true,
+            );
+            expect(assertion.parts, 'to deep equal', [
+              ['to be foo', 'to be bar'],
+            ]);
+          });
+
+          it('should accept phrase choice at position 1', () => {
+            const assertion = expect.createAsyncAssertion(
+              [z.number(), ['to be even', 'to be an even number']],
+              async (n) => n % 2 === 0,
+            );
+            expect(assertion.parts, 'to have length', 2);
+          });
+
+          it('should accept pattern with "and" connector', () => {
+            const assertion = expect.createAsyncAssertion(
+              [z.number(), 'to be between', z.number(), 'and', z.number()],
+              async () => true,
+            );
+            expect(assertion.parts, 'to have length', 5);
+          });
+        });
       });
     });
   });

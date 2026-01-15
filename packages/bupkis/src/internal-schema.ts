@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 import type { AssertionFailure, AssertionParseRequest } from './types.js';
 
-import { isStandardSchema, isZodType } from './guards.js';
+import { isPhrase, isStandardSchema, isZodType } from './guards.js';
 
 /**
  * Schema for {@link AssertionFailure}.
@@ -161,6 +161,16 @@ const AssertionImplSchemaAsync = z
   .describe('An async assertion implementation function');
 
 /**
+ * Checks if a value is a schema (Zod or StandardSchema)
+ *
+ * @function
+ * @param value - Value to check
+ * @returns True if the value is a schema
+ */
+const isSchema = (value: unknown): boolean =>
+  isZodType(value) || isStandardSchema(value);
+
+/**
  * @internal
  */
 const AssertionPartsSchema = z
@@ -187,6 +197,27 @@ const AssertionPartsSchema = z
     },
     { error: '"and" can only appear when followed by a schema' },
   )
+  .refine(
+    (parts) => {
+      const first = parts[0];
+      // Position 0 must be a schema or phrase
+      if (isPhrase(first)) {
+        // Shorthand: phrase-first means subject is implicitly z.unknown()
+        return true;
+      }
+      if (isSchema(first)) {
+        // Subject-first: position 1 must be a phrase
+        const second = parts[1];
+        return second !== undefined && isPhrase(second);
+      }
+      // Position 0 is neither schema nor phrase (shouldn't happen after array validation)
+      return false;
+    },
+    {
+      error:
+        'Assertions must have a phrase at position 0 (phrase-first shorthand) or position 1 (after subject schema)',
+    },
+  )
   .describe('Assertion "parts" which define the input of an assertion');
 
 /**
@@ -206,7 +237,12 @@ export const isAssertionFailure = (
 };
 
 /**
+ * Type guard for an {@link AssertionParseRequest}.
+ *
  * @function
+ * @param value Value to check
+ * @returns `true` if value is an AssertionParseRequest
+ * @internal
  */
 export const isAssertionParseRequest = (
   value: unknown,
@@ -215,6 +251,8 @@ export const isAssertionParseRequest = (
 };
 
 /**
+ * Schema for the input parameters of {@link createAssertion}.
+ *
  * @internal
  */
 export const CreateAssertionInputSchema = z
@@ -222,6 +260,8 @@ export const CreateAssertionInputSchema = z
   .describe('Parameters for createAssertion()');
 
 /**
+ * Schema for the input parameters of {@link createAsyncAssertion}.
+ *
  * @internal
  */
 export const CreateAssertionInputSchemaAsync = z
