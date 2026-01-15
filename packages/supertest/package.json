@@ -58,6 +58,16 @@
   "publishConfig": {
     "access": "public"
   },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  },
   "zshy": {
     "exports": {
       ".": "./src/index.ts",

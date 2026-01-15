@@ -336,10 +336,7 @@ const hasBody = (response: HttpResponse): boolean => {
 const isJsonResponse = (response: HttpResponse): boolean => {
   // Check the type property (supertest normalizes this)
   if (response.type) {
-    return (
-      response.type.includes('json') ||
-      response.type.includes('application/json')
-    );
+    return response.type.includes('json');
   }
 
   // Fall back to checking headers
