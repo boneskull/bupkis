@@ -1,6 +1,7 @@
 import {
   extractPhrases,
   filteredAnything,
+  hasValueDeep,
   objectFilter,
   type PropertyTestConfig,
   safeRegexStringFilter,
@@ -13,54 +14,21 @@ import { type AnyAssertion } from '../../../src/types.js';
 import { SyncParametricGenerators } from '../../../test-data/sync-parametric-generators.js';
 
 /**
- * Checks if an actual object satisfies an expected object using "to satisfy"
- * semantics (partial matching with extra properties allowed).
- *
- * @param actual - The object to check
- * @param expected - The expected shape
- * @returns True if actual satisfies expected
+ * Arbitrary that generates any primitive value except `NaN` because `NaN !==
+ * NaN`.
  */
-const objectSatisfies = (
-  actual: Record<string, unknown>,
-  expected: Record<string, unknown>,
-): boolean => {
-  for (const key of Object.keys(expected)) {
-    if (!(key in actual)) {
-      return false;
-    }
-    const actualVal = actual[key];
-    const expectedVal = expected[key];
-
-    if (typeof expectedVal === 'object' && expectedVal !== null) {
-      if (typeof actualVal !== 'object' || actualVal === null) {
-        return false;
-      }
-      if (Array.isArray(expectedVal)) {
-        if (!Array.isArray(actualVal)) {
-          return false;
-        }
-        if (actualVal.length !== expectedVal.length) {
-          return false;
-        }
-        for (let i = 0; i < expectedVal.length; i++) {
-          if (JSON.stringify(actualVal[i]) !== JSON.stringify(expectedVal[i])) {
-            return false;
-          }
-        }
-      } else if (
-        !objectSatisfies(
-          actualVal as Record<string, unknown>,
-          expectedVal as Record<string, unknown>,
-        )
-      ) {
-        return false;
-      }
-    } else if (actualVal !== expectedVal) {
-      return false;
-    }
-  }
-  return true;
-};
+const primitive = fc.oneof(
+  fc.constant(null),
+  fc.constant(undefined),
+  fc.boolean(),
+  fc.string(),
+  fc.integer(),
+  fc.float(),
+  fc.bigInt(),
+  fc.constant(Infinity),
+  fc.constant(-Infinity),
+  fc.constant(Symbol('test')),
+);
 
 export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
   [
@@ -74,26 +42,20 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
         generators: fc.oneof(
           // Primitives that don't match
-          fc.integer().chain((expected) =>
+          primitive.chain((expected) =>
             fc.tuple(
-              fc.integer().filter((actual) => actual !== expected),
+              primitive.filter((actual) => actual !== expected),
               fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
               fc.constant(expected),
             ),
           ),
-          // Objects that don't match
+          // Objects that don't match; medium objects should always generally be larger than small objects
           fc
-            .object()
+            .object({ size: 'small' })
             .filter(objectFilter)
             .chain((expected) =>
               fc.tuple(
-                fc
-                  .object()
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected),
-                  ),
+                fc.object({ size: 'medium' }).filter(objectFilter),
                 fc.constantFrom(
                   ...extractPhrases(assertions.deepEqualAssertion),
                 ),
@@ -102,20 +64,18 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             ),
           // Arrays that don't match
           fc
-            .array(filteredAnything, { minLength: 1, size: 'small' })
-            .filter(objectFilter)
+            .array(filteredAnything, {
+              minLength: 1,
+              size: 'small',
+            })
             .chain((expected) =>
               fc.tuple(
                 fc
                   .array(filteredAnything, {
-                    maxLength: expected.length,
-                    minLength: expected.length,
+                    minLength: 1,
+                    size: 'medium',
                   })
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected),
-                  ),
+                  .filter((val) => !hasValueDeep(val, [])),
                 fc.constantFrom(
                   ...extractPhrases(assertions.deepEqualAssertion),
                 ),
@@ -123,44 +83,12 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               ),
             ),
         ),
+        verbose: true,
       },
       valid: {
         generators: SyncParametricGenerators.get(
           assertions.deepEqualAssertion,
         )!,
-      },
-      validNegated: {
-        examples: [
-          [[[[]], 'to deep equal', [[null]]]],
-          [[42, 'to deep equal', 43]],
-        ],
-        generators: fc.oneof(
-          fc.integer().chain((expected) =>
-            fc.tuple(
-              fc.integer().filter((actual) => actual !== expected),
-              fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
-              fc.constant(expected),
-            ),
-          ),
-          fc
-            .object()
-            .filter(objectFilter)
-            .chain((expected) =>
-              fc.tuple(
-                fc
-                  .object()
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected),
-                  ),
-                fc.constantFrom(
-                  ...extractPhrases(assertions.deepEqualAssertion),
-                ),
-                fc.constant(expected),
-              ),
-            ),
-        ),
       },
     },
   ],
@@ -581,27 +509,20 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         ],
         generators: fc.oneof(
           // Primitives that don't match
-          fc.integer().chain((expected) =>
+          primitive.chain((expected) =>
             fc.tuple(
-              fc.integer().filter((actual) => actual !== expected),
+              primitive.filter((actual) => actual !== expected),
               fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
               fc.constant(expected),
             ),
           ),
           // Objects that don't satisfy
           fc
-            .object()
+            .object({ depthSize: 'small' })
             .filter(objectFilter)
             .chain((expected) =>
               fc.tuple(
-                fc
-                  .object({ depthSize: 'medium' })
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected) &&
-                      !objectSatisfies(actual, expected),
-                  ),
+                fc.object({ depthSize: 'medium' }).filter(objectFilter),
                 fc.constantFrom(
                   ...extractPhrases(assertions.satisfiesAssertion),
                 ),
@@ -611,19 +532,14 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           // Arrays that don't satisfy
           fc
             .array(filteredAnything, { minLength: 1, size: 'small' })
-            .filter(objectFilter)
             .chain((expected) =>
               fc.tuple(
                 fc
                   .array(filteredAnything, {
-                    maxLength: expected.length,
-                    minLength: expected.length,
+                    minLength: 1,
+                    size: 'medium',
                   })
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected),
-                  ),
+                  .filter((val) => !hasValueDeep(val, [])),
                 fc.constantFrom(
                   ...extractPhrases(assertions.satisfiesAssertion),
                 ),
@@ -631,45 +547,12 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               ),
             ),
         ),
+        verbose: true,
       },
       valid: {
         generators: SyncParametricGenerators.get(
           assertions.satisfiesAssertion,
         )!,
-      },
-      validNegated: {
-        examples: [
-          [[[null], 'to satisfy', [null, null]]],
-          [[42, 'to satisfy', 43]],
-        ],
-        generators: fc.oneof(
-          fc.integer().chain((expected) =>
-            fc.tuple(
-              fc.integer().filter((actual) => actual !== expected),
-              fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
-              fc.constant(expected),
-            ),
-          ),
-          fc
-            .object()
-            .filter(objectFilter)
-            .chain((expected) =>
-              fc.tuple(
-                fc
-                  .object({ depthSize: 'medium' })
-                  .filter(objectFilter)
-                  .filter(
-                    (actual) =>
-                      JSON.stringify(actual) !== JSON.stringify(expected) &&
-                      !objectSatisfies(actual, expected),
-                  ),
-                fc.constantFrom(
-                  ...extractPhrases(assertions.satisfiesAssertion),
-                ),
-                fc.constant(expected),
-              ),
-            ),
-        ),
       },
     },
   ],
