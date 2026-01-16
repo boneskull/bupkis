@@ -236,6 +236,13 @@ HTTP response assertions for bupkis. Works with supertest, superagent, fetch, ax
 - Consume `type-fest` types instead of hand-rolled equivalents
 - Type inference flow: `AssertionParts` → `AssertionSlots` → `ParsedValues`
 
+## AssertionFailure Guidelines
+
+When returning `AssertionFailure` from an assertion, `actual`/`expected` feed into `jest-diff`:
+
+- **Include** when both are the same type (enables useful diff)
+- **Omit** when types differ or there's no meaningful comparison (just use `message`)
+
 ## Dependencies
 
 **Core (bupkis):**
