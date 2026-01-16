@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.1.0...@bupkis/property-testing-v0.1.1) (2026-01-16)
+
+
+### Bug Fixes
+
+* **property-testing:** hasValueDeep groks empty arrays; better verbose output in certain failure cases ([1640e2b](https://github.com/boneskull/bupkis/commit/1640e2be87fdccfb0a530529e95e4c1d2189036b))
+
 ## 0.1.0 (2026-01-14)
 
 

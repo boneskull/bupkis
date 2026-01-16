@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/boneskull/bupkis/compare/@bupkis/sinon-v0.1.1...@bupkis/sinon-v0.2.0) (2026-01-16)
+
+
+### Features
+
+* **from-chai:** Chai to bupkis migration codemod ([#331](https://github.com/boneskull/bupkis/issues/331)) ([ea43fb4](https://github.com/boneskull/bupkis/commit/ea43fb40332c81d0cad96ddf7fc9c8c49fcec048))
+* **sinon:** add return-related assertions ([4b6644b](https://github.com/boneskull/bupkis/commit/4b6644bc9d3b84089df6ec377ec88372acaf324a))
+
+
+### Bug Fixes
+
+* **from-jest:** address PR review feedback ([316148a](https://github.com/boneskull/bupkis/commit/316148af3ec698e35dca80425c67439da04d8450))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/sinon-v0.1.0...@bupkis/sinon-v0.1.1) (2026-01-14)
 
 

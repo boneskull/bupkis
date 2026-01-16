@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/boneskull/bupkis/compare/@bupkis/events-v0.1.1...@bupkis/events-v0.2.0) (2026-01-16)
+
+
+### Features
+
+* **bupkis:** consolidate satisfy and deep equal assertions ([#338](https://github.com/boneskull/bupkis/issues/338)) ([edf0aa0](https://github.com/boneskull/bupkis/commit/edf0aa05d8563ba54252ab46f52c2b26ad1f640f))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/events-v0.1.0...@bupkis/events-v0.1.1) (2026-01-14)
 
 
