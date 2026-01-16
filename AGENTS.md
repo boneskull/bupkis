@@ -15,9 +15,13 @@ This is an npm workspaces monorepo. All packages live in `packages/`:
 | Package                    | Path                        | Description                                   |
 | -------------------------- | --------------------------- | --------------------------------------------- |
 | `bupkis`                   | `packages/bupkis`           | Core assertion library                        |
+| `@bupkis/events`           | `packages/events`           | EventEmitter and EventTarget assertions       |
+| `@bupkis/from-chai`        | `packages/from-chai`        | Codemod to migrate Chai assertions            |
 | `@bupkis/from-jest`        | `packages/from-jest`        | Codemod to migrate Jest/Vitest assertions     |
 | `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
+| `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                    |
 | `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                |
+| `@bupkis/supertest`        | `packages/supertest`        | HTTP response assertions                      |
 
 ## Development Commands
 
@@ -127,6 +131,24 @@ expect(actual, 'not to be', expected);
 
 ## Other Packages
 
+### @bupkis/events (`packages/events`)
+
+EventEmitter and EventTarget assertions for bupkis. Supports:
+
+- Sync assertions for listener state (`to have listener for`, `to have listeners`)
+- Async assertions for event emission (`to emit from`, `to dispatch from`)
+- Duck-typed EventEmitter support (works with Node.js, eventemitter3, etc.)
+- Symbol event names and timeout options
+
+### @bupkis/from-chai (`packages/from-chai`)
+
+A codemod tool to migrate Chai assertions to bupkis. Supports:
+
+- BDD style (`expect/should`) and TDD style (`assert`)
+- Most common matchers and negation
+- Plugins: chai-as-promised, chai-string, chai-subset
+- Both CLI (`bupkis-from-chai`) and programmatic API
+
 ### @bupkis/from-jest (`packages/from-jest`)
 
 A codemod tool to migrate Jest and Vitest assertions to bupkis. Supports:
@@ -147,6 +169,15 @@ Key exports:
 - `getVariants()` - Extract test variants from config
 - `filteredAnything` / `filteredObject` - Safe generators for Zod
 
+### @bupkis/rxjs (`packages/rxjs`)
+
+RxJS Observable assertions for bupkis. All assertions are asynchronous. Provides:
+
+- Completion assertions (`to complete`, `to be empty`)
+- Error assertions (`to emit error`, `to emit error satisfying`)
+- Value assertions (`to emit values`, `to emit times`, `to emit once`)
+- Completion value assertions (`to complete with value`, `to complete with value satisfying`)
+
 ### @bupkis/sinon (`packages/sinon`)
 
 Sinon spy/stub/mock assertions for bupkis. Provides natural language assertions like:
@@ -155,6 +186,15 @@ Sinon spy/stub/mock assertions for bupkis. Provides natural language assertions 
 - `expect(spy, 'was called with', [arg1, arg2])`
 - `expect(spy, 'was called before', otherSpy)`
 - `expect(spy, 'to have calls satisfying', [...])`
+
+### @bupkis/supertest (`packages/supertest`)
+
+HTTP response assertions for bupkis. Works with supertest, superagent, fetch, axios, or any object with a `status` property. Provides:
+
+- Status assertions (`to have status`, with numeric codes or categories like `'ok'`)
+- Header assertions (`to have header`, with exact or regex matching)
+- Body assertions (`to have body`, `to have JSON body`, `to have JSON body satisfying`)
+- Redirect assertions (`to redirect`, `to redirect to`)
 
 ## Testing Conventions
 
@@ -239,14 +279,14 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) w
 
 **Commit Format:** `<type>(<scope>): <description>`
 
-- **Scopes** correspond to package names: `bupkis`, `property-testing`, `from-jest`, `sinon`
-- **Types** follow standard conventions: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`
+- **Scopes** correspond to package names: `bupkis`, `events`, `from-chai`, `from-jest`, `property-testing`, `rxjs`, `sinon`, `supertest`
+- **Types** follow a limited set of standard conventions: `feat`, `fix`, `chore`, `docs`
 
 **Cross-Package Changes Require Careful Consideration:**
 
 When a change spans multiple packages, ask: _"Is the commit type the same for all affected packages?"_
 
-- If **yes** (e.g., `refactor` across multiple packages), a single commit is fine
+- If **yes** (e.g., `chore` across multiple packages), a single commit is fine
 - If **no** (e.g., adding a new export to one package is a `feat`, but consuming it in another is a `chore`), **split into separate commits**
 
 **Example of when to split:**
