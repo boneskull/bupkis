@@ -1,6 +1,11 @@
 /**
- * This mini-plugin copies media files from `site/media/` to the output
- * directory's `media/` folder at end of rendering.
+ * This mini-plugin:
+ *
+ * 1. Copies media files from `site/media/` to the output directory's `media/`
+ *    folder
+ * 2. Registers dynamic redirects for assertion anchors
+ * 3. Replaces GitHub/npm links with icons
+ * 4. Generates llms.txt for LLM consumption
  *
  * @packageDocumentation
  */
@@ -16,6 +21,12 @@ const { freeze, fromEntries } = Object;
  */
 
 const SOURCE_DIR = fileURLToPath(new URL('../site/media/', import.meta.url));
+const SITE_DIR = fileURLToPath(new URL('../site/', import.meta.url));
+
+/**
+ * Base URL for the hosted documentation
+ */
+const BASE_URL = 'https://bupkis.zip';
 
 /**
  * Mapping of category names to doc filenames
@@ -38,6 +49,200 @@ const CATEGORY_DOC_MAP = freeze(
     strings: 'String___Pattern_Assertions',
   }),
 );
+
+/**
+ * Extracts YAML frontmatter from markdown content
+ *
+ * @param {string} content - Markdown file content
+ * @returns {{ title?: string; category?: string } | null}
+ */
+const extractFrontmatter = (content) => {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  const frontmatter = match?.[1];
+  if (!frontmatter) {
+    return null;
+  }
+
+  const result = /** @type {{ title?: string; category?: string }} */ ({});
+
+  const title = frontmatter.match(/^title:\s*(.+)$/m)?.[1]?.trim();
+  if (title) {
+    result.title = title;
+  }
+
+  const category = frontmatter.match(/^category:\s*(.+)$/m)?.[1]?.trim();
+  if (category) {
+    result.category = category;
+  }
+
+  return result;
+};
+
+/**
+ * Converts a title to TypeDoc document path format
+ *
+ * TypeDoc converts document titles to paths by:
+ *
+ * - Replacing `&` with `___`
+ * - Replacing remaining spaces with underscores
+ * - Keeping other characters as-is
+ *
+ * @param {string} title - The document title from frontmatter
+ * @returns {string}
+ */
+const titleToDocPath = (title) => {
+  return title.replace(/ & /g, '___').replace(/ /g, '_');
+};
+
+/**
+ * Converts a markdown file's metadata to TypeDoc document URL path
+ *
+ * @param {string} title - The document title from frontmatter
+ * @returns {string}
+ */
+const toDocPath = (title) => {
+  return `documents/${titleToDocPath(title)}/`;
+};
+
+/**
+ * Generates llms.txt content from site markdown files
+ *
+ * @returns {string}
+ */
+const generateLlmsTxt = () => {
+  /** @type {Map<
+  string,
+  { title: string; path: string; description?: string }[]
+>} */
+  const sections = new Map();
+
+  // Define section order and their display names
+  const sectionConfig = /** @type {const} */ ({
+    About: 'Optional',
+    Assertions: 'Assertions',
+    Guides: 'Docs',
+    Reference: 'Reference',
+  });
+
+  // Walk the site directory
+  const walkDir = (
+    /** @type {string} */ dir,
+    /** @type {string} */ base = '',
+  ) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.join(base, entry.name);
+
+      if (entry.isDirectory() && entry.name !== 'media') {
+        walkDir(fullPath, relativePath);
+      } else if (entry.isFile() && entry.name.endsWith('.md')) {
+        const content = fs.readFileSync(fullPath, 'utf8');
+        const frontmatter = extractFrontmatter(content);
+
+        if (frontmatter?.title && frontmatter?.category) {
+          // Skip the "all" aggregation file, we'll link individual assertion docs
+          if (relativePath === 'assertions/all.md') {
+            continue;
+          }
+
+          const category = frontmatter.category;
+          if (!sections.has(category)) {
+            sections.set(category, []);
+          }
+
+          sections.get(category)?.push({
+            path: toDocPath(frontmatter.title),
+            title: frontmatter.title,
+          });
+        }
+      }
+    }
+  };
+
+  walkDir(SITE_DIR);
+
+  // Build the llms.txt content
+  const lines = [
+    '# Bupkis',
+    '',
+    "> A TypeScript assertion library using natural language function calls instead of chainable methods. Write `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.",
+    '',
+    'Bupkis uses Zod v4 for validation and type inference. Key features:',
+    "- Natural language phrases: `expect(user, 'to satisfy', { name: expect.it('to be a string') })`",
+    "- Automatic negation: `expect(42, 'not to be a string')`",
+    "- Concatenation: `expect(n, 'to be a number', 'and', 'to be greater than', 0)`",
+    '- Embeddable assertions: `expect.it()` for nested validation',
+    "- Custom assertions: `createAssertion(['to be even'], (n) => n % 2 === 0)`",
+    '',
+  ];
+
+  // Add sections in order
+  for (const [category, displayName] of Object.entries(sectionConfig)) {
+    const items = sections.get(category);
+    if (items && items.length > 0) {
+      lines.push(`## ${displayName}`);
+
+      // Sort items alphabetically by title
+      items.sort((a, b) => a.title.localeCompare(b.title));
+
+      for (const item of items) {
+        const url = `${BASE_URL}/${item.path}`;
+        lines.push(`- [${item.title}](${url})`);
+      }
+
+      lines.push('');
+    }
+  }
+
+  // Add API reference section
+  lines.push('## API');
+  lines.push(
+    `- [API Reference](${BASE_URL}/api/): Full TypeScript API documentation`,
+  );
+  lines.push(
+    `- [expect()](${BASE_URL}/functions/bupkis.expect/): Main assertion function`,
+  );
+  lines.push(
+    `- [expectAsync()](${BASE_URL}/functions/bupkis.expectAsync/): Async assertion function`,
+  );
+  lines.push(
+    `- [createAssertion()](${BASE_URL}/functions/bupkis.createAssertion/): Create custom assertions`,
+  );
+  lines.push(
+    `- [use()](${BASE_URL}/functions/bupkis.use/): Register custom assertions`,
+  );
+  lines.push('');
+
+  // Add quick reference for common patterns
+  lines.push('## Quick Reference');
+  lines.push('');
+  lines.push('Common assertion patterns:');
+  lines.push('```javascript');
+  lines.push('// Type assertions');
+  lines.push("expect(value, 'to be a string');");
+  lines.push("expect(value, 'to be a number');");
+  lines.push("expect(value, 'to be an array');");
+  lines.push('');
+  lines.push('// Equality');
+  lines.push("expect(actual, 'to equal', expected);");
+  lines.push("expect(obj, 'to deep equal', expected);");
+  lines.push("expect(obj, 'to satisfy', { name: 'Alice' });");
+  lines.push('');
+  lines.push('// Negation');
+  lines.push("expect(42, 'not to be a string');");
+  lines.push('');
+  lines.push('// Concatenation');
+  lines.push("expect(n, 'to be a number', 'and', 'to be greater than', 0);");
+  lines.push('');
+  lines.push('// Embeddable assertions');
+  lines.push("expect(user, 'to satisfy', {");
+  lines.push("  name: expect.it('to be a string'),");
+  lines.push("  age: expect.it('to be greater than', 18)");
+  lines.push('});');
+  lines.push('```');
+
+  return lines.join('\n');
+};
 
 /**
  * @function
@@ -130,6 +335,7 @@ export const load = (app) => {
   );
 
   app.renderer.on(RendererEvent.END, () => {
+    // Copy media files
     for (const file of fs.readdirSync(SOURCE_DIR)) {
       const sourceFile = path.join(SOURCE_DIR, file);
       const destFile = path.join(mediaDir, file);
@@ -137,6 +343,16 @@ export const load = (app) => {
       app.logger.info(
         `Copied ${path.relative(process.cwd(), sourceFile)} to ${path.relative(process.cwd(), destFile)}`,
       );
+    }
+
+    // Generate llms.txt
+    try {
+      const llmsTxtContent = generateLlmsTxt();
+      const llmsTxtPath = path.join(outputDir, 'llms.txt');
+      fs.writeFileSync(llmsTxtPath, llmsTxtContent, 'utf8');
+      app.logger.info(`Generated ${path.relative(process.cwd(), llmsTxtPath)}`);
+    } catch (err) {
+      app.logger.error(`Failed to generate llms.txt: ${err}`);
     }
   });
 
