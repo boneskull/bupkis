@@ -258,6 +258,13 @@ Sync assertions use the standard generator pattern. Always include randomness:
 
 Async assertions require special handling because they involve triggers and timeouts.
 
+**⚠️ Critical: Never test async assertions where "nothing happens"**
+
+Do not write tests for async assertions where the trigger is never fired. For example, if the assertion waits for an event that never gets emitted, it will cause timeouts, performance problems, and a world of pain. If you need to test the "invalid" case for an async assertion that waits on something, either:
+
+1. Use a very short timeout (e.g., `within: 50`) and wrap in `'to reject'` (see invalid case example below)
+2. Skip the variant entirely if it doesn't make sense to test
+
 **Valid cases** use `async: true` flag:
 
 ```typescript
