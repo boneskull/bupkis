@@ -151,6 +151,7 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
     assertions.emptyObjectAssertion,
     {
       invalid: {
+        examples: [[{ length: 0 }, 'to be empty']],
         generators: [
           fc
             .dictionary(

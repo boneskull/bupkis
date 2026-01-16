@@ -51,7 +51,8 @@ import {
 } from './types.js';
 
 const { getPrototypeOf, prototype: objectPrototype } = Object;
-const { asyncIterator: asyncIteratorSymbol, iterator: iteratorSymbol } = Symbol;
+const { asyncIterator: asyncIteratorSymbol, iterator: symbolIterator } = Symbol;
+const { isInteger } = Number;
 
 /**
  * A Zod schema that validates JavaScript constructible functions.
@@ -671,11 +672,17 @@ export const PrimitiveSchema = z
  * @group Schema
  */
 export const ArrayLikeSchema = z
-  .union([
-    z.array(z.unknown()),
-    z.tuple([z.unknown()], z.unknown()),
-    z.looseObject({ length: z.int().nonnegative() }),
-  ])
+  .custom<ArrayLike<unknown>>(
+    (value): value is ArrayLike<unknown> =>
+      value != null &&
+      typeof value !== 'string' &&
+      typeof value === 'object' &&
+      symbolIterator in value &&
+      'length' in value &&
+      typeof value.length === 'number' &&
+      isInteger(value.length) &&
+      value.length >= 0,
+  )
   .register(BupkisRegistry, {
     name: 'arraylike',
   })
@@ -1395,7 +1402,7 @@ export const SyncIterableSchema = z
   .custom<Iterable<unknown>>(
     (val): val is Iterable<unknown> =>
       val != null &&
-      typeof (val as Record<symbol, unknown>)[iteratorSymbol] === 'function',
+      typeof (val as Record<symbol, unknown>)[symbolIterator] === 'function',
     { error: 'Expected a synchronous iterable' },
   )
   .register(BupkisRegistry, { name: 'sync-iterable' })
