@@ -699,9 +699,12 @@ export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
       result = await fc.check(asyncProperty, { ...finalParams, numRuns });
     }
     if (result.failed) {
-      throw new Error(
-        `Expected test to pass, but it failed: ${inspect(result)}`,
-      );
+      let message = `Expected test to pass, but it failed:`;
+      message += `\n👉 CAUSE: ${inspect(result)}`;
+      if (finalParams.verbose) {
+        message += `\n\n❌ FAILURES:\n${inspect(result.failures.slice(0, 3), { depth: null })}`;
+      }
+      throw new Error(message);
     }
   };
 

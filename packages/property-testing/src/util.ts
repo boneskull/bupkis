@@ -68,13 +68,13 @@ export const hasKeyDeep = (
  * find whether a specific value exists.
  *
  * Uses strict equality (===) to compare values, with special handling for empty
- * objects. Handles circular references by tracking visited objects to prevent
- * infinite recursion.
+ * objects and empty arrays. Handles circular references by tracking visited
+ * objects to prevent infinite recursion.
  *
  * @function
  * @param obj The object, array, or value to search within
  * @param value The value to search for (using strict equality, with special
- *   empty object handling)
+ *   empty object/array handling)
  * @param visited Internal set for circular reference detection
  * @returns True if the value is found anywhere in the structure, false
  *   otherwise
@@ -88,6 +88,17 @@ export const hasValueDeep = (
     return true;
   }
 
+  // Empty arrays are considered equal to each other
+  if (
+    isArray(obj) &&
+    isArray(value) &&
+    obj.length === 0 &&
+    value.length === 0
+  ) {
+    return true;
+  }
+
+  // Empty objects are considered equal to each other
   if (
     typeof obj === 'object' &&
     obj !== null &&
