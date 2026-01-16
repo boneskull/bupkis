@@ -68,7 +68,7 @@ const getStatusCategory = (status: number): string => {
  * expect(response, 'to have status', 404);
  * ```
  */
-const toHaveStatusAssertion = expect.createAssertion(
+export const toHaveStatusAssertion = expect.createAssertion(
   [
     HttpResponseSchema,
     ['to have status', 'to respond with status'],
@@ -98,7 +98,7 @@ const toHaveStatusAssertion = expect.createAssertion(
  * expect(response, 'to have status', 'server error'); // 5xx
  * ```
  */
-const toHaveStatusCategoryAssertion = expect.createAssertion(
+export const toHaveStatusCategoryAssertion = expect.createAssertion(
   [
     HttpResponseSchema,
     ['to have status', 'to respond with status'],
@@ -169,7 +169,7 @@ const getHeaderValue = (
  * expect(response, 'to have header', 'X-Request-Id');
  * ```
  */
-const toHaveHeaderAssertion = expect.createAssertion(
+export const toHaveHeaderAssertion = expect.createAssertion(
   [HttpResponseSchema, ['to have header', 'to include header'], z.string()],
   (response: HttpResponse, headerName: string) => {
     const value = getHeaderValue(response, headerName);
@@ -195,7 +195,7 @@ const toHaveHeaderAssertion = expect.createAssertion(
  * expect(response, 'to have header', 'cache-control', 'no-cache');
  * ```
  */
-const toHaveHeaderValueAssertion = expect.createAssertion(
+export const toHaveHeaderValueAssertion = expect.createAssertion(
   [
     HttpResponseSchema,
     ['to have header', 'to include header'],
@@ -241,7 +241,7 @@ const toHaveHeaderValueAssertion = expect.createAssertion(
  * expect(response, 'to have header', 'cache-control', /max-age=\d+/);
  * ```
  */
-const toHaveHeaderMatchingAssertion = expect.createAssertion(
+export const toHaveHeaderMatchingAssertion = expect.createAssertion(
   [
     HttpResponseSchema,
     ['to have header', 'to include header'],
@@ -412,7 +412,7 @@ const deepPartialMatch = (actual: unknown, expected: unknown): boolean => {
  * expect(response, 'to have body');
  * ```
  */
-const toHaveBodyAssertion = expect.createAssertion(
+export const toHaveBodyAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have body'],
   (response: HttpResponse) => {
     if (hasBody(response)) {
@@ -436,7 +436,7 @@ const toHaveBodyAssertion = expect.createAssertion(
  * expect(response, 'to have body', '{"users":[]}');
  * ```
  */
-const toHaveBodyStringAssertion = expect.createAssertion(
+export const toHaveBodyStringAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have body', z.string()],
   (response: HttpResponse, expected: string) => {
     const bodyText = getBodyText(response);
@@ -462,7 +462,7 @@ const toHaveBodyStringAssertion = expect.createAssertion(
  * expect(response, 'to have JSON body');
  * ```
  */
-const toHaveJsonBodyAssertion = expect.createAssertion(
+export const toHaveJsonBodyAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have JSON body'],
   (response: HttpResponse) => {
     if (!isJsonResponse(response)) {
@@ -497,7 +497,7 @@ const toHaveJsonBodyAssertion = expect.createAssertion(
  * expect(response, 'to have JSON body satisfying', { status: 'ok' });
  * ```
  */
-const toHaveJsonBodySatisfyingAssertion = expect.createAssertion(
+export const toHaveJsonBodySatisfyingAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have JSON body satisfying', schema.AnyObjectSchema],
   (response: HttpResponse, expected: Record<string, unknown>) => {
     const body = response.body;
@@ -540,7 +540,7 @@ const toHaveJsonBodySatisfyingAssertion = expect.createAssertion(
  * expect(response, 'to have body satisfying', /"id":\d+/);
  * ```
  */
-const toHaveBodySatisfyingRegexAssertion = expect.createAssertion(
+export const toHaveBodySatisfyingRegexAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have body satisfying', z.instanceof(RegExp)],
   (response: HttpResponse, pattern: RegExp) => {
     const bodyText = getBodyText(response);
@@ -574,7 +574,7 @@ const toHaveBodySatisfyingRegexAssertion = expect.createAssertion(
  * expect(response, 'to have body satisfying', { users: [] });
  * ```
  */
-const toHaveBodySatisfyingObjectAssertion = expect.createAssertion(
+export const toHaveBodySatisfyingObjectAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to have body satisfying', schema.AnyObjectSchema],
   (response: HttpResponse, expected: Record<string, unknown>) => {
     const body = response.body;
@@ -628,7 +628,7 @@ const isRedirect = (response: HttpResponse): boolean =>
  * expect(response, 'to redirect');
  * ```
  */
-const toRedirectAssertion = expect.createAssertion(
+export const toRedirectAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to redirect'],
   (response: HttpResponse) => {
     if (isRedirect(response)) {
@@ -652,7 +652,7 @@ const toRedirectAssertion = expect.createAssertion(
  * expect(response, 'to redirect to', 'https://example.com/auth');
  * ```
  */
-const toRedirectToUrlAssertion = expect.createAssertion(
+export const toRedirectToUrlAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to redirect to', z.string()],
   (response: HttpResponse, expectedUrl: string) => {
     if (!isRedirect(response)) {
@@ -696,7 +696,7 @@ const toRedirectToUrlAssertion = expect.createAssertion(
  * expect(response, 'to redirect to', /login\?redirect=/);
  * ```
  */
-const toRedirectToPatternAssertion = expect.createAssertion(
+export const toRedirectToPatternAssertion = expect.createAssertion(
   [HttpResponseSchema, 'to redirect to', z.instanceof(RegExp)],
   (response: HttpResponse, pattern: RegExp) => {
     if (!isRedirect(response)) {
