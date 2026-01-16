@@ -717,3 +717,20 @@ export const rxjsAssertions = [
   toCompleteWithValuesAssertion,
   toCompleteWithValueSatisfyingAssertion,
 ] as const;
+
+// Named exports for property testing (not re-exported from index.ts)
+export {
+  toBeEmptyAssertion,
+  toCompleteAssertion,
+  toCompleteWithValueAssertion,
+  toCompleteWithValuesAssertion,
+  toCompleteWithValueSatisfyingAssertion,
+  toEmitErrorAssertion,
+  toEmitErrorSatisfyingAssertion,
+  toEmitErrorWithMessageAssertion,
+  toEmitOnceAssertion,
+  toEmitThriceAssertion,
+  toEmitTimesAssertion,
+  toEmitTwiceAssertion,
+  toEmitValuesAssertion,
+};
