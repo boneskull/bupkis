@@ -96,6 +96,7 @@
     "pataphysical",
     "primordials",
     "granularities",
-    "rxjs"
+    "rxjs",
+    "shiki"
   ]
 }
