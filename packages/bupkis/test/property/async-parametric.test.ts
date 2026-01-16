@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 
 import { AsyncParametricAssertions } from '../../src/assertion/index.js';
 import { expect, expectAsync } from '../custom-assertions.js';
-import { testConfigs } from './configs/async-parametric.js';
+import { testConfigs } from './configs/async-parametric-config.js';
 
 const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 

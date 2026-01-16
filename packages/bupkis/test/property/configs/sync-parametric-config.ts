@@ -70,12 +70,10 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
             })
             .chain((expected) =>
               fc.tuple(
-                fc
-                  .array(filteredAnything, {
-                    minLength: 1,
-                    size: 'medium',
-                  })
-                  .filter((val) => !hasValueDeep(val, [])),
+                fc.array(filteredAnything, {
+                  minLength: 1,
+                  size: 'medium',
+                }),
                 fc.constantFrom(
                   ...extractPhrases(assertions.deepEqualAssertion),
                 ),
@@ -550,6 +548,7 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
         verbose: true,
       },
       valid: {
+        examples: [[[[true, 1, 'w', 1.23], 'to be like', []]]],
         generators: SyncParametricGenerators.get(
           assertions.satisfiesAssertion,
         )!,

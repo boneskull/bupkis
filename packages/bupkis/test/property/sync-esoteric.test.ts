@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 
 import { SyncEsotericAssertions } from '../../src/assertion/index.js';
 import { expect, expectAsync } from '../custom-assertions.js';
-import { testConfigs } from './configs/sync-esoteric.js';
+import { testConfigs } from './configs/sync-esoteric-config.js';
 
 const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 

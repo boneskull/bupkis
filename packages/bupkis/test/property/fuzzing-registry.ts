@@ -18,12 +18,12 @@ import type { AnyAssertion } from '../../src/types.js';
 
 import { valueToSchema } from '../../src/value-to-schema.js';
 import { expect, expectAsync } from '../custom-assertions.js';
-import { testConfigs as asyncParametricConfigs } from './configs/async-parametric.js';
-import { testConfigs as syncBasicConfigs } from './configs/sync-basic.js';
-import { testConfigs as syncCollectionConfigs } from './configs/sync-collection.js';
-import { testConfigs as syncDateConfigs } from './configs/sync-date.js';
-import { testConfigs as syncEsotericConfigs } from './configs/sync-esoteric.js';
-import { testConfigs as syncParametricConfigs } from './configs/sync-parametric.js';
+import { testConfigs as asyncParametricConfigs } from './configs/async-parametric-config.js';
+import { testConfigs as syncBasicConfigs } from './configs/sync-basic-config.js';
+import { testConfigs as syncCollectionConfigs } from './configs/sync-collection-config.js';
+import { testConfigs as syncDateConfigs } from './configs/sync-date-config.js';
+import { testConfigs as syncEsotericConfigs } from './configs/sync-esoteric-config.js';
+import { testConfigs as syncParametricConfigs } from './configs/sync-parametric-config.js';
 
 const harness = createPropertyTestHarness({ expect, expectAsync });
 
