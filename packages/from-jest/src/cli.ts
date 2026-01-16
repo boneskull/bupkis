@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import type { Theme } from '@boneskull/bargs';
+
 import { ansi, bargs, opt, pos } from '@boneskull/bargs';
 import { readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
@@ -11,6 +13,51 @@ import type {
 } from './types.js';
 
 import { transform } from './transform.js';
+
+/**
+ * Bupkis ANSI theme for CLI help output.
+ *
+ * Inspired by:
+ *
+ * - Bupkis brand colors from `bupkis-theme.css`
+ * - Shiki "red" syntax highlighting theme (sans the red background)
+ *
+ * Designed for standard dark terminals.
+ *
+ * @internal
+ */
+const bupkisTheme: Theme = {
+  colors: {
+    // Commands - bright red like keywords (#f12727)
+    command: ansi.brightRed,
+    // Command aliases - standard red (dimmer)
+    commandAlias: ansi.red,
+    // Default text label - dim gray
+    defaultText: ansi.brightBlack,
+    // Default values - yellow (from red theme's string constants #ffe862)
+    defaultValue: ansi.yellow,
+    // Description text - standard white
+    description: ansi.white,
+    // Epilog (footer) - dim
+    epilog: ansi.brightBlack,
+    // Examples - white
+    example: ansi.white,
+    // Flags - bright red to match brand
+    flag: ansi.brightRed,
+    // Positional arguments - bright magenta (from red theme's pinkish strings)
+    positional: ansi.brightMagenta,
+    // Script name - bold bright red for brand prominence
+    scriptName: `${ansi.bold}${ansi.brightRed}`,
+    // Section headers - bold bright yellow
+    sectionHeader: `${ansi.bold}${ansi.brightYellow}`,
+    // Type annotations - yellow
+    type: ansi.yellow,
+    // URLs - bright cyan for links
+    url: ansi.brightCyan,
+    // Usage line - white
+    usage: ansi.white,
+  },
+};
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const { parse } = JSON;
@@ -121,6 +168,7 @@ ${ansi.yellow}Note: You'll need to:${ansi.reset}
 
 const { positionals, values } = await bargs('bupkis-from-jest', {
   description: 'Migrate Jest and Vitest assertions to bupkis',
+  theme: bupkisTheme,
   version: pkg.version,
 })
   .globals(
