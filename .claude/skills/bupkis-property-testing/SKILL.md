@@ -378,6 +378,44 @@ fc.tuple(
   });
 ```
 
+### Ensuring Objects Don't Match (Deep Equality / Satisfies)
+
+For invalid cases testing `'to satisfy'` or `'deep equal'` semantics, use fast-check's `size` parameter to guarantee mismatches. Generate a smaller object as the subject and a larger one as the expected value—a bigger object will never be a subset of a smaller one:
+
+```typescript
+fc.tuple(
+  fc.object({ maxDepth: 1, size: 'small' }), // subject (fewer keys)
+  fc.object({ maxDepth: 1, size: 'medium' }), // expected (more keys)
+).chain(([subject, expected]) => {
+  return fc.tuple(
+    fc.constant(subject),
+    fc.constantFrom(...extractPhrases(assertions.toSatisfyAssertion)),
+    fc.constant(expected),
+  );
+});
+```
+
+This approach avoids flaky tests from random chance matches and doesn't require filtering (which can slow down generation).
+
+### ⚠️ The NaN Trap
+
+Remember that `NaN !== NaN` in JavaScript. Strict equality assertions won't behave as expected when `NaN` sneaks into your generated values:
+
+```typescript
+// This "invalid" case will PASS because NaN !== NaN
+const subject = NaN;
+const expected = NaN;
+expect(subject, 'to be', expected); // Throws! But you wanted it to pass.
+```
+
+When using `fc.double()` or `fc.float()`, exclude `NaN` if you're testing strict equality:
+
+```typescript
+fc.double({ noNaN: true }); // Safe for 'to be' assertions
+```
+
+If you actually need to test `NaN` handling, use `Number.isNaN()` or bupkis's `'to be NaN'` assertion instead of strict equality.
+
 ## Checklist Before Submitting
 
 Before considering property tests complete, verify:
