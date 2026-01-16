@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.18.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.17.0...bupkis-v0.18.0) (2026-01-16)
+
+
+### Features
+
+* **bupkis:** consolidate satisfy and deep equal assertions ([#338](https://github.com/boneskull/bupkis/issues/338)) ([edf0aa0](https://github.com/boneskull/bupkis/commit/edf0aa05d8563ba54252ab46f52c2b26ad1f640f))
+
+
+### Bug Fixes
+
+* **bupkis:** fix ArrayLike detection ([2a98011](https://github.com/boneskull/bupkis/commit/2a9801130f37ad85985c1bc2e8f2deabd3ad7897))
+* **bupkis:** validate phrase position in assertion parts ([49e6cac](https://github.com/boneskull/bupkis/commit/49e6cacacac79091b1107ab1786ce80398627d32))
+
+
+### Performance Improvements
+
+* **bupkis:** add phrase-keyed index for assertion dispatch ([#335](https://github.com/boneskull/bupkis/issues/335)) ([1a67238](https://github.com/boneskull/bupkis/commit/1a672388c637bff883825c8721425fcf354d2a7a))
+
 ## [0.17.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.16.0...bupkis-v0.17.0) (2026-01-14)
 
 

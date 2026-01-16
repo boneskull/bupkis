@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.1.1...@bupkis/from-jest-v0.2.0) (2026-01-16)
+
+
+### Features
+
+* **from-jest:** add mock/spy matcher transformation with --sinon flag ([c373a12](https://github.com/boneskull/bupkis/commit/c373a123e09579af3a6abf2ef9f8b25a9fa1b744))
+
+
+### Bug Fixes
+
+* **from-jest:** add bupkis ANSI theme for CLI help output ([015e66f](https://github.com/boneskull/bupkis/commit/015e66f2196971e68caf70368a08c07694cc23dd))
+* **from-jest:** address PR review feedback ([316148a](https://github.com/boneskull/bupkis/commit/316148af3ec698e35dca80425c67439da04d8450))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.1.0...@bupkis/from-jest-v0.1.1) (2026-01-14)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/property-testing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Property-based testing harness for bupkis assertions",
   "repository": {
