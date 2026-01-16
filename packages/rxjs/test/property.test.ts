@@ -143,11 +143,27 @@ const asyncTestConfigs = new Map<
       },
       valid: {
         async: true,
-        generators: nonEmptyValuesArbitrary.chain((values) =>
-          fc.tuple(
-            fc.constant(of(...values)),
-            fc.constantFrom(...extractPhrases(assertions.toCompleteAssertion)),
+        generators: fc.oneof(
+          // Observable that emits values then completes
+          nonEmptyValuesArbitrary.chain((values) =>
+            fc.tuple(
+              fc.constant(of(...values)),
+              fc.constantFrom(
+                ...extractPhrases(assertions.toCompleteAssertion),
+              ),
+            ),
           ),
+          // Empty Observable that completes immediately (EMPTY)
+          fc
+            .constant(null)
+            .chain(() =>
+              fc.tuple(
+                fc.constant(EMPTY),
+                fc.constantFrom(
+                  ...extractPhrases(assertions.toCompleteAssertion),
+                ),
+              ),
+            ),
         ),
       },
     },
