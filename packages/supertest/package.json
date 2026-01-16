@@ -55,6 +55,9 @@
   "peerDependencies": {
     "bupkis": ">=0.15.0"
   },
+  "devDependencies": {
+    "fast-check": "4.5.2"
+  },
   "publishConfig": {
     "access": "public"
   },
