@@ -2,7 +2,8 @@ import { Readable } from 'node:stream';
 import { describe, it } from 'node:test';
 
 import { AssertionError } from '../../src/error.js';
-import { expect, expectAsync } from '../../src/index.js';
+import { expectAsync } from '../../src/index.js';
+import { expect } from '../custom-assertions.js';
 
 // Helper: async generator factory
 const asyncGen = async function* <T>(values: T[]) {
@@ -44,12 +45,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when no value matches', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to yield', 5);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to yield', 5),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should support negation', async () => {
@@ -67,16 +67,16 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail with extra properties', async () => {
-      try {
-        await expectAsync(
-          asyncGen([{ a: 1, b: 2 }]),
-          'to yield value exhaustively satisfying',
-          { a: 1 },
-        );
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () =>
+          expectAsync(
+            asyncGen([{ a: 1, b: 2 }]),
+            'to yield value exhaustively satisfying',
+            { a: 1 },
+          ),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -102,16 +102,18 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when one item does not satisfy', async () => {
-      try {
-        await expectAsync(
-          asyncGen([{ a: 1 }, { b: 2 }]),
-          'to yield items satisfying',
-          { a: expect.it('to be a number') },
-        );
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () =>
+          expectAsync(
+            asyncGen([{ a: 1 }, { b: 2 }]),
+            'to yield items satisfying',
+            {
+              a: expect.it('to be a number'),
+            },
+          ),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -128,21 +130,19 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when first does not match', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to yield first', 2);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to yield first', 2),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should fail on empty async iterable', async () => {
-      try {
-        await expectAsync(asyncGen([]), 'to yield first', 1);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([]), 'to yield first', 1),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -154,12 +154,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when last does not match', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to yield last', 2);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to yield last', 2),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -177,12 +176,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail with wrong count', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to yield count', 5);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to yield count', 5),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -192,12 +190,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when count < minimum', async () => {
-      try {
-        await expectAsync(asyncGen([1]), 'to yield at least', 2);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1]), 'to yield at least', 2),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -207,12 +204,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when count > maximum', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3, 4]), 'to yield at most', 3);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3, 4]), 'to yield at most', 3),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -222,12 +218,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail for non-empty async iterable', async () => {
-      try {
-        await expectAsync(asyncGen([1]), 'to be an empty iterable');
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1]), 'to be an empty iterable'),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should support negation', async () => {
@@ -244,12 +239,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail with different sequence', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to yield exactly', [1, 2]);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to yield exactly', [1, 2]),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -286,12 +280,11 @@ describe('async iterable assertions', () => {
 
     it('should fail when iteration throws', async () => {
       const error = new Error('Test error');
-      try {
-        await expectAsync(failingGen(2, error), 'to complete');
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(failingGen(2, error), 'to complete'),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -302,12 +295,11 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when iteration completes successfully', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to reject');
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to reject'),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should work with "to be rejected" alias', async () => {
@@ -326,25 +318,24 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when rejecting with different error type', async () => {
-      try {
-        await expectAsync(
-          failingGen(1, new Error('not a type error')),
-          'to reject with a',
-          TypeError,
-        );
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () =>
+          expectAsync(
+            failingGen(1, new Error('not a type error')),
+            'to reject with a',
+            TypeError,
+          ),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should fail when completing successfully', async () => {
-      try {
-        await expectAsync(asyncGen([1, 2, 3]), 'to reject with an', Error);
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () => expectAsync(asyncGen([1, 2, 3]), 'to reject with an', Error),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 
@@ -369,16 +360,16 @@ describe('async iterable assertions', () => {
     });
 
     it('should fail when error does not match shape', async () => {
-      try {
-        await expectAsync(
-          failingGen(1, new Error('Wrong message')),
-          'to reject with error satisfying',
-          { message: 'Expected message' },
-        );
-        throw new Error('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an instance of', AssertionError);
-      }
+      await expectAsync(
+        () =>
+          expectAsync(
+            failingGen(1, new Error('Wrong message')),
+            'to reject with error satisfying',
+            { message: 'Expected message' },
+          ),
+        'to reject with an',
+        AssertionError,
+      );
     });
   });
 

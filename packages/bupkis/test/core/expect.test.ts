@@ -9,12 +9,12 @@ import {
 import {
   createAsyncAssertion,
   type Expect,
-  expect,
   expectAsync,
   use,
   z,
 } from '../../src/index.js';
 import { type AnySyncAssertions } from '../../src/types.js';
+import { expect } from '../custom-assertions.js';
 
 describe('core API', () => {
   describe('expect()', () => {
@@ -48,9 +48,9 @@ describe('core API', () => {
 
         const foo = new Foo();
 
-        expect(() => myExpected(foo, 'to be a Foo'), 'not to throw');
+        expect(() => myExpected(foo, 'to be a Foo'), 'to pass');
 
-        expect(() => myExpected(foo.bar, 'to be a string'), 'not to throw');
+        expect(() => myExpected(foo.bar, 'to be a string'), 'to pass');
 
         expect(myUse, 'to be a function');
       });
@@ -126,7 +126,7 @@ describe('core API', () => {
             error = err as Error;
             throw err;
           }
-        }, 'to throw');
+        }, 'to fail');
         expect(error, 'to be an Error');
         expect(
           stripVTControlCharacters(error!.message),
@@ -143,7 +143,7 @@ describe('core API', () => {
             error2 = err as Error;
             throw err;
           }
-        }, 'to throw');
+        }, 'to fail');
         expect(
           stripVTControlCharacters(error2!.message),
           'to match',
@@ -154,11 +154,11 @@ describe('core API', () => {
       it('should work with parameterized schema factory', () => {
         // Test that schema factories work with runtime parameters
         // These use z.number().gt() and z.number().lt() under the hood
-        expect(() => expect(5, 'to be greater than', 3), 'not to throw');
-        expect(() => expect(2, 'to be greater than', 5), 'to throw');
+        expect(() => expect(5, 'to be greater than', 3), 'to pass');
+        expect(() => expect(2, 'to be greater than', 5), 'to fail');
 
-        expect(() => expect(3, 'to be less than', 5), 'not to throw');
-        expect(() => expect(7, 'to be less than', 5), 'to throw');
+        expect(() => expect(3, 'to be less than', 5), 'to pass');
+        expect(() => expect(7, 'to be less than', 5), 'to fail');
       });
 
       it('should throw UnknownAssertionError for unknown assertions', () => {
@@ -287,38 +287,35 @@ describe('core API', () => {
     describe('Type assertion edge cases', () => {
       it('should handle capitalized type names in switch statement', () => {
         // Test uncovered switch cases for capitalized types
-        expect(() => expect({}, 'to be an', 'Object'), 'not to throw');
-        expect(() => expect('test', 'to be an', 'Object'), 'to throw');
+        expect(() => expect({}, 'to be an', 'Object'), 'to pass');
+        expect(() => expect('test', 'to be an', 'Object'), 'to fail');
 
-        expect(() => expect(() => {}, 'to be a', 'Function'), 'not to throw');
-        expect(() => expect(42, 'to be a', 'Function'), 'to throw');
+        expect(() => expect(() => {}, 'to be a', 'Function'), 'to pass');
+        expect(() => expect(42, 'to be a', 'Function'), 'to fail');
 
-        expect(() => expect([], 'to be an', 'Array'), 'not to throw');
-        expect(() => expect(42, 'to be an', 'Array'), 'to throw');
+        expect(() => expect([], 'to be an', 'Array'), 'to pass');
+        expect(() => expect(42, 'to be an', 'Array'), 'to fail');
 
-        expect(() => expect(10n, 'to be a', 'BigInt'), 'not to throw');
-        expect(() => expect(42, 'to be a', 'BigInt'), 'to throw');
+        expect(() => expect(10n, 'to be a', 'BigInt'), 'to pass');
+        expect(() => expect(42, 'to be a', 'BigInt'), 'to fail');
 
-        expect(
-          () => expect(Symbol('test'), 'to be a', 'Symbol'),
-          'not to throw',
-        );
-        expect(() => expect('test', 'to be a', 'Symbol'), 'to throw');
+        expect(() => expect(Symbol('test'), 'to be a', 'Symbol'), 'to pass');
+        expect(() => expect('test', 'to be a', 'Symbol'), 'to fail');
       });
 
       it('should handle the default case in type assertion switch', () => {
         // This tests the default case: if (typeof subject !== type) return false
-        expect(() => expect('hello', 'to be a', 'string'), 'not to throw');
-        expect(() => expect(42, 'to be a', 'string'), 'to throw');
+        expect(() => expect('hello', 'to be a', 'string'), 'to pass');
+        expect(() => expect(42, 'to be a', 'string'), 'to fail');
 
-        expect(() => expect(42, 'to be a', 'number'), 'not to throw');
-        expect(() => expect('42', 'to be a', 'number'), 'to throw');
+        expect(() => expect(42, 'to be a', 'number'), 'to pass');
+        expect(() => expect('42', 'to be a', 'number'), 'to fail');
 
-        expect(() => expect(true, 'to be a', 'boolean'), 'not to throw');
-        expect(() => expect('true', 'to be a', 'boolean'), 'to throw');
+        expect(() => expect(true, 'to be a', 'boolean'), 'to pass');
+        expect(() => expect('true', 'to be a', 'boolean'), 'to fail');
 
-        expect(() => expect(undefined, 'to be a', 'undefined'), 'not to throw');
-        expect(() => expect(null, 'to be a', 'undefined'), 'to throw');
+        expect(() => expect(undefined, 'to be a', 'undefined'), 'to pass');
+        expect(() => expect(null, 'to be a', 'undefined'), 'to fail');
       });
     });
 
@@ -335,7 +332,7 @@ describe('core API', () => {
             'to throw',
             { message: 'expected' },
           );
-        }, 'to throw');
+        }, 'to fail');
 
         expect(() => {
           expect(
@@ -346,7 +343,7 @@ describe('core API', () => {
             'to throw',
             { code: 'ERR_TEST' },
           );
-        }, 'to throw');
+        }, 'to fail');
 
         expect(() => {
           expect(
@@ -357,7 +354,7 @@ describe('core API', () => {
             'to throw',
             { message: 'expected' },
           );
-        }, 'to throw');
+        }, 'to fail');
       });
 
       it('should handle complex error object parameter matching', () => {
@@ -380,7 +377,7 @@ describe('core API', () => {
             'to throw',
             { message: 'test message' },
           );
-        }, 'not to throw');
+        }, 'to pass');
 
         // Test that it fails when object doesn't match
         expect(() => {
@@ -391,7 +388,7 @@ describe('core API', () => {
             'to throw',
             { message: 'expected message' },
           );
-        }, 'to throw');
+        }, 'to fail');
       });
     });
 
@@ -401,7 +398,7 @@ describe('core API', () => {
           expect(
             () =>
               expect(42, 'to be a', 'number', 'and', 'not to be less than', 10),
-            'not to throw',
+            'to pass',
           );
         });
       });
@@ -411,7 +408,7 @@ describe('core API', () => {
           expect(
             () =>
               expect(42, 'to be a', 'number', 'and', 'to be less than', 100),
-            'not to throw',
+            'to pass',
           );
         });
       });
@@ -429,7 +426,7 @@ describe('core API', () => {
                 'and',
                 'to be an integer',
               ),
-            'not to throw',
+            'to pass',
           );
         });
 
@@ -520,10 +517,7 @@ describe('core API', () => {
       );
       const { expect: customExpect } = expect.use([customAssertion]);
 
-      expect(
-        () => customExpect('custom', 'to be custom thing'),
-        'not to throw',
-      );
+      expect(() => customExpect('custom', 'to be custom thing'), 'to pass');
     });
 
     it('should work with negated assertions', () => {

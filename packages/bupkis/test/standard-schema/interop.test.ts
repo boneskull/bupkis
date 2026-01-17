@@ -14,8 +14,9 @@ import { z } from 'zod';
 import type { StandardSchemaV1 } from '../../src/standard-schema.js';
 
 import { createAssertion } from '../../src/assertion/create.js';
+import { AssertionError } from '../../src/error.js';
 import { isStandardSchema, isZodType } from '../../src/guards.js';
-import { AssertionError, expect } from '../../src/index.js';
+import { expect } from '../custom-assertions.js';
 
 describe('Standard Schema - Interoperability', () => {
   describe('Zod as Standard Schema', () => {
@@ -64,12 +65,11 @@ describe('Standard Schema - Interoperability', () => {
       // Should work exactly as before
       assertion.execute(['hello'] as any, ['hello'], () => {});
 
-      try {
-        assertion.execute([42] as any, [42], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => assertion.execute([42] as any, [42], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
 
     it('should still create function-based assertions as before', () => {
@@ -80,12 +80,11 @@ describe('Standard Schema - Interoperability', () => {
 
       assertion.execute([10, 5] as any, [10, 5], () => {});
 
-      try {
-        assertion.execute([3, 5] as any, [3, 5], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => assertion.execute([3, 5] as any, [3, 5], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
 
     it('should still handle function returning Zod schema', () => {
@@ -96,12 +95,11 @@ describe('Standard Schema - Interoperability', () => {
 
       assertion.execute([5, 1, 10] as any, [5, 1, 10], () => {});
 
-      try {
-        assertion.execute([15, 1, 10] as any, [15, 1, 10], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => assertion.execute([15, 1, 10] as any, [15, 1, 10], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
 
     it('should still handle AssertionParseRequest with Zod schema', () => {
@@ -115,12 +113,12 @@ describe('Standard Schema - Interoperability', () => {
 
       assertion.execute([{ age: 25 }] as any, [{ age: 25 }], () => {});
 
-      try {
-        assertion.execute([{ age: 150 }] as any, [{ age: 150 }], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () =>
+          assertion.execute([{ age: 150 }] as any, [{ age: 150 }], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
   });
 
@@ -145,19 +143,17 @@ describe('Standard Schema - Interoperability', () => {
       stdAssertion.execute(['hello'] as any, ['hello'], () => {});
 
       // Both should fail
-      try {
-        zodAssertion.execute([42] as any, [42], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => zodAssertion.execute([42] as any, [42], () => {}),
+        'to throw an',
+        AssertionError,
+      );
 
-      try {
-        stdAssertion.execute([42] as any, [42], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => stdAssertion.execute([42] as any, [42], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
 
     it('should allow defining assertion parts with Standard Schema', () => {
@@ -205,12 +201,11 @@ describe('Standard Schema - Interoperability', () => {
 
       assertion.execute(['hello', 5] as any, ['hello', 5], () => {});
 
-      try {
-        assertion.execute(['hello', 3] as any, ['hello', 3], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => assertion.execute(['hello', 3] as any, ['hello', 3], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
   });
 

@@ -16,7 +16,8 @@ import {
   createAssertion,
   createAsyncAssertion,
 } from '../../src/assertion/create.js';
-import { AssertionError, expect } from '../../src/index.js';
+import { AssertionError } from '../../src/error.js';
+import { expect, expectAsync } from '../custom-assertions.js';
 
 describe('Standard Schema - Function Assertions', () => {
   describe('sync function returning Standard Schema', () => {
@@ -90,17 +91,18 @@ describe('Standard Schema - Function Assertions', () => {
         },
       );
 
-      try {
-        assertion.execute(
-          [15, 1, 10] as unknown as readonly [number, number, number],
-          [15, 1, 10],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'between 1 and 10');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [15, 1, 10] as unknown as readonly [number, number, number],
+            [15, 1, 10],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /between 1 and 10/,
+      );
     });
 
     it('should reject async Standard Schema in sync context', () => {
@@ -119,16 +121,16 @@ describe('Standard Schema - Function Assertions', () => {
 
       const assertion = createAssertion(['to be valid'], () => asyncSchema);
 
-      try {
-        assertion.execute(
-          ['test'] as unknown as readonly [unknown],
-          ['test'],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect((err as Error).message, 'to contain', 'use expectAsync');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            ['test'] as unknown as readonly [unknown],
+            ['test'],
+            () => {},
+          ),
+        'to throw',
+        /use expectAsync/,
+      );
     });
   });
 
@@ -218,17 +220,18 @@ describe('Standard Schema - Function Assertions', () => {
       );
 
       // Should fail
-      try {
-        assertion.execute(
-          [{ email: 'invalid' }] as any,
-          [{ email: 'invalid' }],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Invalid email format');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [{ email: 'invalid' }] as any,
+            [{ email: 'invalid' }],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /Invalid email format/,
+      );
     });
 
     it('should handle async AssertionParseRequest with async Standard Schema', async () => {
@@ -264,17 +267,15 @@ describe('Standard Schema - Function Assertions', () => {
       );
 
       // Should fail
-      try {
-        await assertion.executeAsync(
+      await expectAsync(
+        assertion.executeAsync(
           [{ email: 'invalid' }] as any,
           [{ email: 'invalid' }],
           () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Invalid email format');
-      }
+        ),
+        'to reject with an',
+        AssertionError,
+      );
     });
 
     it('should reject async Standard Schema in sync AssertionParseRequest', () => {
@@ -296,16 +297,16 @@ describe('Standard Schema - Function Assertions', () => {
         };
       });
 
-      try {
-        assertion.execute(
-          [{ value: 'test' }] as unknown as readonly [unknown],
-          [{ value: 'test' }],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect((err as Error).message, 'to contain', 'async validation');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [{ value: 'test' }] as unknown as readonly [unknown],
+            [{ value: 'test' }],
+            () => {},
+          ),
+        'to throw',
+        /async validation/,
+      );
     });
 
     it('should handle AssertionParseRequest with mixed Zod and Standard Schema across assertions', () => {
@@ -342,19 +343,17 @@ describe('Standard Schema - Function Assertions', () => {
       stdAssertion.execute([5] as any, [5], () => {});
 
       // Both should fail
-      try {
-        zodAssertion.execute([-5] as any, [-5], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => zodAssertion.execute([-5] as any, [-5], () => {}),
+        'to throw an',
+        AssertionError,
+      );
 
-      try {
-        stdAssertion.execute([-5] as any, [-5], () => {});
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(
+        () => stdAssertion.execute([-5] as any, [-5], () => {}),
+        'to throw an',
+        AssertionError,
+      );
     });
   });
 });
