@@ -10,6 +10,7 @@ import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/sync-parametric.js';
+import { expect } from '../src/index.js';
 import { type AnyAssertion } from '../src/types.js';
 
 export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
@@ -60,27 +61,51 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
   ],
   [
     assertions.satisfiesAssertion,
-    fc
-      .oneof(
-        // Primitives
-        fc.string(),
-        fc.integer(),
-        fc.boolean(),
-        fc.constant(null),
-        // Arrays
-        fc
-          .array(filteredAnything, { minLength: 1, size: 'small' })
-          .filter(objectFilter),
-        // Objects
-        fc.object({ depthSize: 'small' }).filter(objectFilter),
-      )
-      .chain((expected) =>
-        fc.tuple(
-          fc.constant(structuredClone(expected)),
-          fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
-          fc.constant(expected),
+    fc.oneof(
+      // Standard cases: primitives, arrays, objects
+      fc
+        .oneof(
+          // Primitives
+          fc.string(),
+          fc.integer(),
+          fc.boolean(),
+          fc.constant(null),
+          // Arrays
+          fc
+            .array(filteredAnything, { minLength: 1, size: 'small' })
+            .filter(objectFilter),
+          // Objects
+          fc.object({ depthSize: 'small' }).filter(objectFilter),
+        )
+        .chain((expected) =>
+          fc.tuple(
+            fc.constant(structuredClone(expected)),
+            fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+            fc.constant(expected),
+          ),
         ),
+      // expect.it() cases
+      fc.tuple(
+        fc.string(),
+        fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+        fc.constant(expect.it('to be a string')),
       ),
+      fc.tuple(
+        fc.integer(),
+        fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+        fc.constant(expect.it('to be a number')),
+      ),
+      // Nested expect.it() in objects
+      fc
+        .string()
+        .chain((name) =>
+          fc.tuple(
+            fc.constant({ age: 42, name }),
+            fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
+            fc.constant({ name: expect.it('to be a string') }),
+          ),
+        ),
+    ),
   ],
   [
     assertions.errorMessageAssertion,
@@ -154,15 +179,29 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
   ],
   [
     assertions.functionThrowsSatisfyingAssertion,
-    [
-      fc.constant(() => {
-        throw new Error('hello world');
-      }),
-      fc.constantFrom(
-        ...extractPhrases(assertions.functionThrowsSatisfyingAssertion),
+    fc
+      .constantFrom(
+        // String match
+        ['hello world', 'hello world'] as const,
+        // RegExp match
+        ['hello world', /hello/] as const,
+        // Object match
+        ['test message', { message: 'test message' }] as const,
+        // expect.it() nested in object - validates error properties
+        ['test message', { message: expect.it('to be a string') }] as const,
+        ['hello world', { message: expect.it('to match', /hello/) }] as const,
+      )
+      .chain(([errorMsg, param]) =>
+        fc.tuple(
+          fc.constant(() => {
+            throw new Error(errorMsg);
+          }),
+          fc.constantFrom(
+            ...extractPhrases(assertions.functionThrowsSatisfyingAssertion),
+          ),
+          fc.constant(param),
+        ),
       ),
-      fc.constant(/hello/),
-    ],
   ],
   [
     assertions.functionThrowsTypeAssertion,
@@ -189,6 +228,9 @@ export const SyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>([
         { message: 'test message' },
         'test message',
         /test message/,
+        // expect.it() cases - nested in object to match error properties
+        { message: expect.it('to be a string') },
+        { message: expect.it('to match', /test/) },
       ),
     ],
   ],

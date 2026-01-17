@@ -7,6 +7,7 @@ import escapeStringRegexp from 'escape-string-regexp';
 import fc from 'fast-check';
 
 import * as assertions from '../src/assertion/impl/async-parametric.js';
+import { expect } from '../src/index.js';
 import { type AnyAssertion } from '../src/types.js';
 
 export const AsyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>(
@@ -44,30 +45,56 @@ export const AsyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>(
     ],
     [
       assertions.functionRejectWithErrorSatisfyingAssertion,
-      fc
-        .string({ maxLength: 5, minLength: 1 })
-        .map(safeRegexStringFilter)
-        .filter((actual) => !!actual.length)
-        .chain((expected) =>
-          fc.tuple(
-            fc.constant(async () => {
-              throw new Error(expected);
-            }),
-            fc.constantFrom(
-              ...extractPhrases(
-                assertions.functionRejectWithErrorSatisfyingAssertion,
+      fc.oneof(
+        // Standard cases: string, RegExp, object
+        fc
+          .string({ maxLength: 5, minLength: 1 })
+          .map(safeRegexStringFilter)
+          .filter((actual) => !!actual.length)
+          .chain((expected) =>
+            fc.tuple(
+              fc.constant(async () => {
+                throw new Error(expected);
+              }),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.functionRejectWithErrorSatisfyingAssertion,
+                ),
+              ),
+              fc.oneof(
+                fc.constant(expected),
+                fc.constant(new RegExp(escapeStringRegexp(expected))),
+                fc.constant({ message: expected }),
+                fc.constant({
+                  message: new RegExp(escapeStringRegexp(expected)),
+                }),
               ),
             ),
-            fc.oneof(
-              fc.constant(expected),
-              fc.constant(new RegExp(escapeStringRegexp(expected))),
-              fc.constant({ message: expected }),
-              fc.constant({
-                message: new RegExp(escapeStringRegexp(expected)),
-              }),
+          ),
+        // expect.it() cases - nested in object to match error properties
+        fc.tuple(
+          fc.constant(async () => {
+            throw new Error('test error');
+          }),
+          fc.constantFrom(
+            ...extractPhrases(
+              assertions.functionRejectWithErrorSatisfyingAssertion,
             ),
           ),
+          fc.constant({ message: expect.it('to be a string') }),
         ),
+        fc.tuple(
+          fc.constant(async () => {
+            throw new Error('test error');
+          }),
+          fc.constantFrom(
+            ...extractPhrases(
+              assertions.functionRejectWithErrorSatisfyingAssertion,
+            ),
+          ),
+          fc.constant({ message: expect.it('to match', /test/) }),
+        ),
+      ),
     ],
     [
       assertions.functionRejectWithTypeAssertion,
@@ -105,14 +132,76 @@ export const AsyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>(
     ],
     [
       assertions.promiseRejectWithErrorSatisfyingAssertion,
-      fc.string().chain((message) =>
+      fc.oneof(
+        // String match
+        fc.string().chain((message) =>
+          fc.tuple(
+            fc.constant({
+              then(
+                _resolve: (value: any) => void,
+                reject: (reason: any) => void,
+              ) {
+                reject(new Error(message));
+              },
+            }),
+            fc.constantFrom(
+              ...extractPhrases(
+                assertions.promiseRejectWithErrorSatisfyingAssertion,
+              ),
+            ),
+            fc.constant(message),
+          ),
+        ),
+        // RegExp match
+        fc
+          .string({ maxLength: 5, minLength: 1 })
+          .map(safeRegexStringFilter)
+          .filter((msg) => !!msg.length)
+          .chain((message) =>
+            fc.tuple(
+              fc.constant({
+                then(
+                  _resolve: (value: any) => void,
+                  reject: (reason: any) => void,
+                ) {
+                  reject(new Error(message));
+                },
+              }),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.promiseRejectWithErrorSatisfyingAssertion,
+                ),
+              ),
+              fc.constant(new RegExp(escapeStringRegexp(message))),
+            ),
+          ),
+        // Object match
+        fc.string().chain((message) =>
+          fc.tuple(
+            fc.constant({
+              then(
+                _resolve: (value: any) => void,
+                reject: (reason: any) => void,
+              ) {
+                reject(new Error(message));
+              },
+            }),
+            fc.constantFrom(
+              ...extractPhrases(
+                assertions.promiseRejectWithErrorSatisfyingAssertion,
+              ),
+            ),
+            fc.constant({ message }),
+          ),
+        ),
+        // expect.it() cases - nested in object to match error properties
         fc.tuple(
           fc.constant({
             then(
               _resolve: (value: any) => void,
               reject: (reason: any) => void,
             ) {
-              reject(new Error(message));
+              reject(new Error('test error'));
             },
           }),
           fc.constantFrom(
@@ -120,7 +209,23 @@ export const AsyncParametricGenerators = new Map<AnyAssertion, GeneratorParams>(
               assertions.promiseRejectWithErrorSatisfyingAssertion,
             ),
           ),
-          fc.constant(message),
+          fc.constant({ message: expect.it('to be a string') }),
+        ),
+        fc.tuple(
+          fc.constant({
+            then(
+              _resolve: (value: any) => void,
+              reject: (reason: any) => void,
+            ) {
+              reject(new Error('test error'));
+            },
+          }),
+          fc.constantFrom(
+            ...extractPhrases(
+              assertions.promiseRejectWithErrorSatisfyingAssertion,
+            ),
+          ),
+          fc.constant({ message: expect.it('to match', /test/) }),
         ),
       ),
     ],

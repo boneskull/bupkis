@@ -16,7 +16,6 @@
 import { inspect } from 'node:util';
 import { type z } from 'zod';
 
-import { InvalidObjectSchemaError } from '../../error.js';
 import { isA, isNonNullObject, isString } from '../../guards.js';
 import {
   ConstructibleSchema,
@@ -287,21 +286,13 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
       };
     }
 
-    let schema: undefined | z.ZodType;
-    // TODO: can valueToSchema handle the first two conditional branches?
+    let schema: z.ZodType;
     if (isString(param)) {
       schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
       schema = createErrorMessageRegexSchema(param);
-    } else if (isNonNullObject(param)) {
+    } else {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    }
-    /* c8 ignore next 5 */
-    if (!schema) {
-      throw new InvalidObjectSchemaError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        { schema: param },
-      );
     }
 
     return {
@@ -350,21 +341,13 @@ export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
         message: `Expected Promise to reject, but it fulfilled with ${inspect(result)}`,
       };
     }
-    let schema: undefined | z.ZodType;
-    // TODO: can valueToSchema handle the first two conditional branches?
+    let schema: z.ZodType;
     if (isString(param)) {
       schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
       schema = createErrorMessageRegexSchema(param);
-    } else if (isNonNullObject(param)) {
+    } else {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    }
-    /* c8 ignore next 5 */
-    if (!schema) {
-      throw new InvalidObjectSchemaError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        { schema: param },
-      );
     }
 
     return {
