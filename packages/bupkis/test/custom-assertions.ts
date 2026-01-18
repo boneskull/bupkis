@@ -2,7 +2,7 @@ import setDifference from 'set.prototype.difference';
 
 import { BupkisAssertion } from '../src/assertion/assertion.js';
 import { AssertionError } from '../src/error.js';
-import { expect as builtinExpect, z } from '../src/index.js';
+import { expect, z } from '../src/index.js';
 import { FunctionSchema } from '../src/schema.js';
 import { type AnyAssertion, type AssertionFailure } from '../src/types.js';
 import { keyBy } from '../src/util.js';
@@ -44,7 +44,7 @@ const validateAssertionCoverage = (
   const diff = setDifference(allCollectionIds, testedIds);
 
   try {
-    builtinExpect(diff, 'to be empty');
+    expect(diff, 'to be empty');
   } catch {
     /* c8 ignore next */
     const suffix =
@@ -63,7 +63,7 @@ const validateAssertionCoverage = (
  * Asserts that a configuration map exhaustively tests all assertions in a
  * collection.
  */
-const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
+const exhaustiveAssertionTestAssertion = expect.createAssertion(
   [
     z.map(AnyAssertionSchema, z.unknown()),
     'to exhaustively test collection',
@@ -80,7 +80,7 @@ const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
  * Asserts that a configuration map exhaustively tests all assertions in a
  * collection, excluding specified assertions.
  */
-const exhaustiveAssertionTestExceptingAssertion = builtinExpect.createAssertion(
+const exhaustiveAssertionTestExceptingAssertion = expect.createAssertion(
   [
     z.map(AnyAssertionSchema, z.unknown()),
     'to exhaustively test collection',
@@ -117,7 +117,7 @@ const exhaustiveAssertionTestExceptingAssertion = builtinExpect.createAssertion(
  * expect(() => expect('hello', 'to be a string'), 'to pass');
  * ```
  */
-const passingAssertionSync = builtinExpect.createAssertion(
+const passingAssertionSync = expect.createAssertion(
   [FunctionSchema, ['to be a passing assertion', 'to pass']],
   (fn) => {
     try {
@@ -150,7 +150,7 @@ const passingAssertionSync = builtinExpect.createAssertion(
  * expect(() => expect(42, 'to be a string'), 'to fail');
  * ```
  */
-const failingAssertionSync = builtinExpect.createAssertion(
+const failingAssertionSync = expect.createAssertion(
   [FunctionSchema, ['to be a failing assertion', 'to fail']],
   (fn) => {
     try {
@@ -197,7 +197,7 @@ const failingAssertionSync = builtinExpect.createAssertion(
  * );
  * ```
  */
-const failingAssertionWithMessageSync = builtinExpect.createAssertion(
+const failingAssertionWithMessageSync = expect.createAssertion(
   [
     FunctionSchema,
     [
@@ -237,7 +237,11 @@ const failingAssertionWithMessageSync = builtinExpect.createAssertion(
   },
 );
 
-const { expect, expectAsync, use } = builtinExpect.use([
+const {
+  expect: customExpect,
+  expectAsync: customExpectAsync,
+  use: customUse,
+} = expect.use([
   exhaustiveAssertionTestAssertion,
   exhaustiveAssertionTestExceptingAssertion,
   passingAssertionSync,
@@ -245,4 +249,8 @@ const { expect, expectAsync, use } = builtinExpect.use([
   failingAssertionWithMessageSync,
 ]);
 
-export { expect, expectAsync, use };
+export {
+  customExpect as expect,
+  customExpectAsync as expectAsync,
+  customUse as use,
+};
