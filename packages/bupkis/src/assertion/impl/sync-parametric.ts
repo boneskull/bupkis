@@ -16,7 +16,7 @@
 import { inspect } from 'node:util';
 import { z } from 'zod';
 
-import { BupkisError, InvalidObjectSchemaError } from '../../error.js';
+import { BupkisError } from '../../error.js';
 import { isA, isError, isNonNullObject, isString } from '../../guards.js';
 import {
   AnyObjectSchema,
@@ -752,14 +752,9 @@ export const functionThrowsSatisfyingAssertion = createAssertion(
         schema: createErrorMessageRegexSchema(param),
         subject: error,
       };
-    } else if (isNonNullObject(param)) {
+    } else {
       const schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
       return { schema, subject: error };
-    } else {
-      throw new InvalidObjectSchemaError(
-        `Invalid parameter schema: ${inspect(param, { depth: 2 })}`,
-        { schema: param },
-      );
     }
   },
 );
@@ -815,20 +810,13 @@ export const functionThrowsTypeSatisfyingAssertion = createAssertion(
           : `Expected function to throw an instance of ${ctor.name}, but it threw a non-object value: ${inspect(error)}`,
       };
     }
-    let schema: undefined | z.ZodType;
-    // TODO: can valueToSchema handle the first two conditional branches?
+    let schema: z.ZodType;
     if (isString(param)) {
       schema = createErrorMessageSchema(param);
     } else if (isA(param, RegExp)) {
       schema = createErrorMessageRegexSchema(param);
-    } else if (isNonNullObject(param)) {
+    } else {
       schema = valueToSchema(param, valueToSchemaOptionsForSatisfies);
-    }
-    if (!schema) {
-      throw new InvalidObjectSchemaError(
-        `Invalid parameter schema: ${inspect(param)}`,
-        { schema: param },
-      );
     }
 
     return {
