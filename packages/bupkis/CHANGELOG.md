@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.0...bupkis-v0.18.1) (2026-01-18)
+
+
+### Bug Fixes
+
+* **bupkis:** support expect.it() in error-satisfying assertions ([#342](https://github.com/boneskull/bupkis/issues/342)) ([11d485f](https://github.com/boneskull/bupkis/commit/11d485f7bdfef7c5c822ff91ae600cc304557607))
+
 ## [0.18.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.17.0...bupkis-v0.18.0) (2026-01-16)
 
 

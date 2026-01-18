@@ -1,5 +1,5 @@
 {
-  "packages/bupkis": "0.18.0",
+  "packages/bupkis": "0.18.1",
   "packages/events": "0.2.0",
   "packages/from-chai": "0.1.0",
   "packages/from-jest": "0.2.0",
