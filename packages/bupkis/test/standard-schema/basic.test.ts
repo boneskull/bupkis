@@ -205,8 +205,8 @@ describe('Standard Schema - Basic Support', () => {
           [42],
           () => {},
         ),
-        'to reject with an',
-        AssertionError,
+        'to reject with error satisfying',
+        /Expected string/,
       );
     });
 

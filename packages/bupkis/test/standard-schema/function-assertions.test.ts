@@ -273,8 +273,8 @@ describe('Standard Schema - Function Assertions', () => {
           [{ email: 'invalid' }],
           () => {},
         ),
-        'to reject with an',
-        AssertionError,
+        'to reject with error satisfying',
+        /Invalid email format/,
       );
     });
 
