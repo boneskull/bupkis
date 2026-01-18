@@ -85,6 +85,73 @@ export default {
     'TypeAlias',
   ],
   lightHighlightTheme: 'rose-pine-dawn',
+  llmsTxtDeclarations: [
+    {
+      description: 'Full TypeScript API documentation',
+      label: 'API Reference',
+      ref: 'bupkis!',
+    },
+    {
+      description: 'Main assertion function',
+      label: 'expect()',
+      ref: 'bupkis!expect',
+    },
+    {
+      description: 'Async assertion function',
+      label: 'expectAsync()',
+      ref: 'bupkis!expectAsync',
+    },
+    {
+      description: 'Create custom assertions',
+      label: 'createAssertion()',
+      ref: 'bupkis!createAssertion',
+    },
+    {
+      description: 'Register custom assertions',
+      label: 'use()',
+      ref: 'bupkis!use',
+    },
+  ],
+  // llms.txt configuration
+  llmsTxtHeader: {
+    description:
+      "A TypeScript assertion library using natural language function calls instead of chainable methods. Write `expect(value, 'to be a string')` instead of `expect(value).toBeString()`.",
+    features: [
+      "Natural language phrases: `expect(user, 'to satisfy', { name: expect.it('to be a string') })`",
+      "Automatic negation: `expect(42, 'not to be a string')`",
+      "Concatenation: `expect(n, 'to be a number', 'and', 'to be greater than', 0)`",
+      'Embeddable assertions: `expect.it()` for nested validation',
+      "Custom assertions: `createAssertion(['to be even'], (n) => n % 2 === 0)`",
+      'Uses Zod v4 for validation and type inference',
+    ],
+  },
+  llmsTxtQuickReference: `// Type assertions
+expect(value, 'to be a string');
+expect(value, 'to be a number');
+expect(value, 'to be an array');
+
+// Equality
+expect(actual, 'to equal', expected);
+expect(obj, 'to deep equal', expected);
+expect(obj, 'to satisfy', { name: 'Alice' });
+
+// Negation
+expect(42, 'not to be a string');
+
+// Concatenation
+expect(n, 'to be a number', 'and', 'to be greater than', 0);
+
+// Embeddable assertions
+expect(user, 'to satisfy', {
+  name: expect.it('to be a string'),
+  age: expect.it('to be greater than', 18)
+});`,
+  llmsTxtSections: {
+    About: { displayName: 'Optional', order: 4 },
+    Assertions: { displayName: 'Assertions', order: 2 },
+    Guides: { displayName: 'Docs', order: 1 },
+    Reference: { displayName: 'Reference', order: 3 },
+  },
   markdownLinkExternal: true,
   name: 'BUPKIS',
   navigation: {
@@ -98,6 +165,7 @@ export default {
   },
   out: '../docs',
   plugin: [
+    'typedoc-plugin-llms-txt',
     'typedoc-plugin-redirect',
     './typedoc-plugin-bupkis.js',
     'typedoc-plugin-mdn-links',
