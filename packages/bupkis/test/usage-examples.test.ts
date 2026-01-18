@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 
-import { expect } from '../src/index.js';
+import { expect } from './custom-assertions.js';
 
 describe('examples from usage.md', () => {
   describe('Embeddable assertions', () => {
@@ -20,14 +20,14 @@ describe('examples from usage.md', () => {
           count: isPositiveNumber,
           name: isString,
         });
-      }, 'to throw');
+      }, 'to fail');
 
       expect(() => {
         expect({ count: -5, name: 'hello' }, 'to satisfy', {
           count: isPositiveNumber,
           name: isString,
         });
-      }, 'to throw');
+      }, 'to fail');
     });
 
     it('should validate complex objects with embeddable assertions', () => {
@@ -128,7 +128,7 @@ describe('examples from usage.md', () => {
       expect(42, 'to be one of', [1, 2, 3, 42, 100]);
       expect(
         () => expect('yellow', 'to be one of', ['red', 'green', 'blue']),
-        'to throw',
+        'to fail',
       );
       expect('purple', 'not to be one of', ['red', 'green', 'blue']);
     });

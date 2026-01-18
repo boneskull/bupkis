@@ -14,8 +14,9 @@ import {
   createAssertion,
   createAsyncAssertion,
 } from '../../src/assertion/create.js';
+import { AssertionError } from '../../src/error.js';
 import { isStandardSchema } from '../../src/guards.js';
-import { AssertionError, expect } from '../../src/index.js';
+import { expect, expectAsync } from '../custom-assertions.js';
 
 describe('Standard Schema - Basic Support', () => {
   describe('isStandardSchema guard', () => {
@@ -103,17 +104,18 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAssertion(['to be a string'], stringSchema);
 
-      try {
-        assertion.execute(
-          [42] as unknown as readonly [unknown],
-          [42],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Expected string');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [42] as unknown as readonly [unknown],
+            [42],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /Expected string/,
+      );
     });
 
     it('should create Standard Schema assertion with path information', () => {
@@ -142,18 +144,18 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAssertion(['to be valid'], objectSchema);
 
-      try {
-        assertion.execute(
-          [{ name: 42 }] as unknown as readonly [unknown],
-          [{ name: 42 }],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'name');
-        expect((err as Error).message, 'to contain', 'must be string');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [{ name: 42 }] as unknown as readonly [unknown],
+            [{ name: 42 }],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /name.*must be string/,
+      );
     });
   });
 
@@ -197,17 +199,15 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAsyncAssertion(['to be a string'], asyncSchema);
 
-      try {
-        await assertion.executeAsync(
+      await expectAsync(
+        assertion.executeAsync(
           [42] as unknown as readonly [unknown],
           [42],
           () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Expected string');
-      }
+        ),
+        'to reject with error satisfying',
+        /Expected string/,
+      );
     });
 
     it('should handle sync Standard Schema in async context', async () => {
@@ -247,17 +247,18 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAssertion(['to be valid'], schema);
 
-      try {
-        assertion.execute(
-          ['invalid'] as unknown as readonly [unknown],
-          ['invalid'],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Validation failed');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            ['invalid'] as unknown as readonly [unknown],
+            ['invalid'],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /Validation failed/,
+      );
     });
 
     it('should format errors with nested paths', () => {
@@ -280,18 +281,18 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAssertion(['to be valid'], schema);
 
-      try {
-        assertion.execute(
-          [{}] as unknown as readonly [unknown],
-          [{}],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'user.address.zip');
-        expect((err as Error).message, 'to contain', 'Invalid nested value');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [{}] as unknown as readonly [unknown],
+            [{}],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /user\.address\.zip.*Invalid nested value/s,
+      );
     });
 
     it('should format multiple errors', () => {
@@ -312,20 +313,18 @@ describe('Standard Schema - Basic Support', () => {
 
       const assertion = createAssertion(['to be valid'], schema);
 
-      try {
-        assertion.execute(
-          [{}] as unknown as readonly [unknown],
-          [{}],
-          () => {},
-        );
-        expect(false, 'to be', true); // Should not reach here
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-        expect((err as Error).message, 'to contain', 'Error 1');
-        expect((err as Error).message, 'to contain', 'Error 2');
-        expect((err as Error).message, 'to contain', 'field1');
-        expect((err as Error).message, 'to contain', 'field2');
-      }
+      expect(
+        () =>
+          assertion.execute(
+            [{}] as unknown as readonly [unknown],
+            [{}],
+            () => {},
+          ),
+        'to throw an',
+        AssertionError,
+        'satisfying',
+        /Error 1.*Error 2/s,
+      );
     });
   });
 });

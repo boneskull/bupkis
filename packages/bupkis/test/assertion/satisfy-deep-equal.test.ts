@@ -22,7 +22,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail for different numbers', () => {
-      expect(() => expect(42, 'to satisfy', 43), 'to throw');
+      expect(() => expect(42, 'to satisfy', 43), 'to fail');
     });
 
     it('should satisfy identical strings', () => {
@@ -30,7 +30,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail for different strings', () => {
-      expect(() => expect('hello', 'to satisfy', 'world'), 'to throw');
+      expect(() => expect('hello', 'to satisfy', 'world'), 'to fail');
     });
 
     it('should satisfy identical booleans', () => {
@@ -39,7 +39,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail for different booleans', () => {
-      expect(() => expect(true, 'to satisfy', false), 'to throw');
+      expect(() => expect(true, 'to satisfy', false), 'to fail');
     });
 
     it('should satisfy null', () => {
@@ -55,7 +55,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail for different bigints', () => {
-      expect(() => expect(BigInt(42), 'to satisfy', BigInt(43)), 'to throw');
+      expect(() => expect(BigInt(42), 'to satisfy', BigInt(43)), 'to fail');
     });
   });
 
@@ -69,13 +69,13 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail when expected property is missing', () => {
-      expect(() => expect({ a: 1 }, 'to satisfy', { a: 1, b: 2 }), 'to throw');
+      expect(() => expect({ a: 1 }, 'to satisfy', { a: 1, b: 2 }), 'to fail');
     });
 
     it('should fail when property value differs', () => {
       expect(
         () => expect({ a: 1, b: 2 }, 'to satisfy', { a: 1, b: 3 }),
-        'to throw',
+        'to fail',
       );
     });
 
@@ -94,11 +94,11 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail for different arrays', () => {
-      expect(() => expect([1, 2, 3], 'to satisfy', [1, 2, 4]), 'to throw');
+      expect(() => expect([1, 2, 3], 'to satisfy', [1, 2, 4]), 'to fail');
     });
 
     it('should fail for different length arrays', () => {
-      expect(() => expect([1, 2], 'to satisfy', [1, 2, 3]), 'to throw');
+      expect(() => expect([1, 2], 'to satisfy', [1, 2, 3]), 'to fail');
     });
 
     it('should satisfy nested arrays', () => {
@@ -123,7 +123,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail when array elements differ', () => {
-      expect(() => expect([1, 2, 3], 'to satisfy', [1, 2, 4]), 'to throw');
+      expect(() => expect([1, 2, 3], 'to satisfy', [1, 2, 4]), 'to fail');
     });
 
     it('should work with arrays containing objects', () => {
@@ -141,7 +141,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail when actually satisfying', () => {
-      expect(() => expect(42, 'not to satisfy', 42), 'to throw');
+      expect(() => expect(42, 'not to satisfy', 42), 'to fail');
     });
   });
 
@@ -169,7 +169,7 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail array with wrong length from object shape', () => {
-      expect(() => expect([1, 2, 3], 'to satisfy', { length: 5 }), 'to throw');
+      expect(() => expect([1, 2, 3], 'to satisfy', { length: 5 }), 'to fail');
     });
 
     it('should satisfy function with static properties', () => {
@@ -190,7 +190,7 @@ describe('satisfiesAssertion (consolidated)', () => {
           expect(Promise, 'to satisfy', {
             nonexistent: expect.it('to be a function'),
           }),
-        'to throw',
+        'to fail',
       );
     });
 
@@ -200,7 +200,7 @@ describe('satisfiesAssertion (consolidated)', () => {
           expect(Promise, 'to satisfy', {
             reject: expect.it('to be a string'),
           }),
-        'to throw',
+        'to fail',
       );
     });
 
@@ -215,11 +215,11 @@ describe('satisfiesAssertion (consolidated)', () => {
     });
 
     it('should fail when subject is primitive and shape is object', () => {
-      expect(() => expect('hello', 'to satisfy', { length: 5 }), 'to throw');
+      expect(() => expect('hello', 'to satisfy', { length: 5 }), 'to fail');
     });
 
     it('should fail when subject is null and shape is object', () => {
-      expect(() => expect(null, 'to satisfy', { foo: 1 }), 'to throw');
+      expect(() => expect(null, 'to satisfy', { foo: 1 }), 'to fail');
     });
   });
 });
@@ -231,7 +231,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail for different numbers', () => {
-      expect(() => expect(42, 'to deep equal', 43), 'to throw');
+      expect(() => expect(42, 'to deep equal', 43), 'to fail');
     });
 
     it('should deep equal identical strings', () => {
@@ -239,7 +239,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail for different strings', () => {
-      expect(() => expect('hello', 'to deep equal', 'world'), 'to throw');
+      expect(() => expect('hello', 'to deep equal', 'world'), 'to fail');
     });
 
     it('should deep equal identical booleans', () => {
@@ -248,7 +248,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail for different booleans', () => {
-      expect(() => expect(true, 'to deep equal', false), 'to throw');
+      expect(() => expect(true, 'to deep equal', false), 'to fail');
     });
 
     it('should deep equal null', () => {
@@ -264,7 +264,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail for different bigints', () => {
-      expect(() => expect(BigInt(42), 'to deep equal', BigInt(43)), 'to throw');
+      expect(() => expect(BigInt(42), 'to deep equal', BigInt(43)), 'to fail');
     });
   });
 
@@ -276,14 +276,14 @@ describe('deepEqualAssertion (consolidated)', () => {
     it('should fail when object has extra properties (strict mode)', () => {
       expect(
         () => expect({ a: 1, b: 2, c: 3 }, 'to deep equal', { a: 1, b: 2 }),
-        'to throw',
+        'to fail',
       );
     });
 
     it('should fail when expected property is missing', () => {
       expect(
         () => expect({ a: 1 }, 'to deep equal', { a: 1, b: 2 }),
-        'to throw',
+        'to fail',
       );
     });
 
@@ -298,11 +298,11 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail for different arrays', () => {
-      expect(() => expect([1, 2, 3], 'to deep equal', [1, 2, 4]), 'to throw');
+      expect(() => expect([1, 2, 3], 'to deep equal', [1, 2, 4]), 'to fail');
     });
 
     it('should fail for different length arrays', () => {
-      expect(() => expect([1, 2], 'to deep equal', [1, 2, 3]), 'to throw');
+      expect(() => expect([1, 2], 'to deep equal', [1, 2, 3]), 'to fail');
     });
 
     it('should deep equal nested arrays', () => {
@@ -338,7 +338,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     it('should fail for different Maps', () => {
       expect(
         () => expect(new Map([['a', 1]]), 'to deep equal', new Map([['a', 2]])),
-        'to throw',
+        'to fail',
       );
     });
 
@@ -349,7 +349,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     it('should fail for different Sets', () => {
       expect(
         () => expect(new Set([1, 2]), 'to deep equal', new Set([1, 2, 3])),
-        'to throw',
+        'to fail',
       );
     });
   });
@@ -364,7 +364,7 @@ describe('deepEqualAssertion (consolidated)', () => {
     });
 
     it('should fail when actually deep equal', () => {
-      expect(() => expect(42, 'not to deep equal', 42), 'to throw');
+      expect(() => expect(42, 'not to deep equal', 42), 'to fail');
     });
   });
 

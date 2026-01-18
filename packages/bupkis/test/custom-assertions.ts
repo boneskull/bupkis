@@ -1,7 +1,9 @@
 import setDifference from 'set.prototype.difference';
 
 import { BupkisAssertion } from '../src/assertion/assertion.js';
-import { expect as builtinExpect, z } from '../src/index.js';
+import { AssertionError } from '../src/error.js';
+import { expect, z } from '../src/index.js';
+import { FunctionSchema } from '../src/schema.js';
 import { type AnyAssertion, type AssertionFailure } from '../src/types.js';
 import { keyBy } from '../src/util.js';
 
@@ -42,7 +44,7 @@ const validateAssertionCoverage = (
   const diff = setDifference(allCollectionIds, testedIds);
 
   try {
-    builtinExpect(diff, 'to be empty');
+    expect(diff, 'to be empty');
   } catch {
     /* c8 ignore next */
     const suffix =
@@ -61,7 +63,7 @@ const validateAssertionCoverage = (
  * Asserts that a configuration map exhaustively tests all assertions in a
  * collection.
  */
-const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
+const exhaustiveAssertionTestAssertion = expect.createAssertion(
   [
     z.map(AnyAssertionSchema, z.unknown()),
     'to exhaustively test collection',
@@ -78,7 +80,7 @@ const exhaustiveAssertionTestAssertion = builtinExpect.createAssertion(
  * Asserts that a configuration map exhaustively tests all assertions in a
  * collection, excluding specified assertions.
  */
-const exhaustiveAssertionTestExceptingAssertion = builtinExpect.createAssertion(
+const exhaustiveAssertionTestExceptingAssertion = expect.createAssertion(
   [
     z.map(AnyAssertionSchema, z.unknown()),
     'to exhaustively test collection',
@@ -98,9 +100,157 @@ const exhaustiveAssertionTestExceptingAssertion = builtinExpect.createAssertion(
   },
 );
 
-const { expect, expectAsync, use } = builtinExpect.use([
+/**
+ * Asserts that a function (thunk) executes without throwing an
+ * {@link AssertionError}.
+ *
+ * Use this for testing that assertions pass as expected. Non-assertion errors
+ * are re-thrown.
+ *
+ * @example
+ *
+ * ```ts
+ * expect(
+ *   () => expect('hello', 'to be a string'),
+ *   'to be a passing assertion',
+ * );
+ * expect(() => expect('hello', 'to be a string'), 'to pass');
+ * ```
+ */
+const passingAssertionSync = expect.createAssertion(
+  [FunctionSchema, ['to be a passing assertion', 'to pass']],
+  (fn) => {
+    try {
+      fn();
+      return true;
+    } catch (err) {
+      if (AssertionError.isAssertionError(err)) {
+        // No actual/expected here - there's no meaningful diff between
+        // "passed" and "failed". The message contains the relevant info.
+        return {
+          message: `Expected assertion to pass, but it threw:\n${err.message}`,
+        };
+      }
+      throw err; // Re-throw non-assertion errors
+    }
+  },
+);
+
+/**
+ * Asserts that a function (thunk) throws an {@link AssertionError}.
+ *
+ * Use this for testing that assertions fail as expected. More semantic than
+ * `'to throw'` because it specifically expects an AssertionError, not just any
+ * error.
+ *
+ * @example
+ *
+ * ```ts
+ * expect(() => expect(42, 'to be a string'), 'to be a failing assertion');
+ * expect(() => expect(42, 'to be a string'), 'to fail');
+ * ```
+ */
+const failingAssertionSync = expect.createAssertion(
+  [FunctionSchema, ['to be a failing assertion', 'to fail']],
+  (fn) => {
+    try {
+      fn();
+      // No actual/expected - "passed" vs "failed" isn't meaningfully diffable
+      return {
+        message:
+          'Expected assertion to fail with AssertionError, but it passed',
+      };
+    } catch (err) {
+      if (AssertionError.isAssertionError(err)) {
+        return true;
+      }
+      // Show error type mismatch - these are comparable strings
+      const actualType = (err as Error)?.constructor?.name ?? typeof err;
+      return {
+        actual: actualType,
+        expected: 'AssertionError',
+        message: `Expected AssertionError but got ${actualType}`,
+      };
+    }
+  },
+);
+
+/**
+ * Asserts that a function (thunk) throws an {@link AssertionError} whose message
+ * matches the provided pattern.
+ *
+ * Combines failure testing with error message inspection, eliminating try/catch
+ * boilerplate.
+ *
+ * @example
+ *
+ * ```ts
+ * expect(
+ *   () => expect(42, 'to be a string'),
+ *   'to be a failing assertion with message matching',
+ *   /expected string/,
+ * );
+ * expect(
+ *   () => expect(42, 'to be a string'),
+ *   'to fail with message matching',
+ *   /expected string/,
+ * );
+ * ```
+ */
+const failingAssertionWithMessageSync = expect.createAssertion(
+  [
+    FunctionSchema,
+    [
+      'to be a failing assertion with message matching',
+      'to fail with message matching',
+    ],
+    z.instanceof(RegExp),
+  ],
+  (fn, pattern) => {
+    try {
+      fn();
+      // No actual/expected - "passed" vs "failed" isn't meaningfully diffable
+      return {
+        message: `Expected assertion to fail with AssertionError matching ${pattern}, but it passed`,
+      };
+    } catch (err) {
+      if (AssertionError.isAssertionError(err)) {
+        if (pattern.test(err.message)) {
+          return true;
+        }
+        // Show message vs pattern - message is a string, pattern string repr
+        // is comparable for understanding what didn't match
+        return {
+          actual: err.message,
+          expected: String(pattern),
+          message: 'AssertionError message did not match pattern',
+        };
+      }
+      // Show error type mismatch - comparable strings
+      const actualType = (err as Error)?.constructor?.name ?? typeof err;
+      return {
+        actual: actualType,
+        expected: 'AssertionError',
+        message: `Expected AssertionError but got ${actualType}`,
+      };
+    }
+  },
+);
+
+const {
+  expect: customExpect,
+  expectAsync: customExpectAsync,
+  use: customUse,
+} = expect.use([
   exhaustiveAssertionTestAssertion,
   exhaustiveAssertionTestExceptingAssertion,
+  passingAssertionSync,
+  failingAssertionSync,
+  failingAssertionWithMessageSync,
 ]);
 
-export { expect, expectAsync, use };
+export {
+  customExpect as expect,
+  customExpectAsync as expectAsync,
+  customUse as use,
+};

@@ -231,7 +231,7 @@ One powerful feature of _function-based assertions_ is the ability to call {@lin
 
 ### Basic Composition
 
-You can call `expect()` within your assertion function to leverage existing assertions:
+You can call `expect()` within your assertion function to leverage existing assertions. However, since `expect()` throws on failure, you should wrap it in a `try`/`catch` and return an {@link bupkis!types.AssertionFailure | AssertionFailure} with context-specific information:
 
 ```ts
 import { createAssertion, z, use } from 'bupkis';
@@ -240,15 +240,17 @@ import { createAssertion, z, use } from 'bupkis';
 const validUserAssertion = createAssertion(
   ['to be a valid user'],
   (subject, _, expect) => {
-    // Use existing assertions to validate parts
-    expect(subject, 'to be an object');
-    expect(subject, 'to have property', 'name');
-    expect(subject, 'to have property', 'email');
-
-    // Validate specific properties
-    expect(subject.name, 'to be a string');
-    expect(subject.email, 'to be a valid email'); // assumes email assertion exists
-    expect(subject.name, 'to have length greater than', 0);
+    // Use 'to satisfy' to consolidate multiple property checks
+    try {
+      expect(subject, 'to satisfy', {
+        name: expect.it('to be a non-empty string'),
+        email: expect.it('to be a valid email'), // assumes email assertion exists
+      });
+    } catch (err) {
+      return {
+        message: `Expected a valid user object, but validation failed:\n${(err as Error).message}`,
+      };
+    }
   },
 );
 
@@ -257,9 +259,11 @@ const { expect } = use([validUserAssertion]);
 expect({ name: 'Alice', email: 'alice@example.com' }, 'to be a valid user');
 ```
 
+> **Tip**: Use `to satisfy` to consolidate multiple property checks into a single assertion. This reduces the number of `try`/`catch` blocks needed and provides clearer error messages showing exactly which property failed.
+
 ### Composition with Custom Logic
 
-You can combine assertion composition with your own validation logic:
+You can combine assertion composition with your own validation logic. Here, we use `to satisfy` for structure validation, then add custom business logic that returns an {@link bupkis!types.AssertionFailure | AssertionFailure} directly:
 
 ```ts
 import { createAssertion, z, use } from 'bupkis';
@@ -267,16 +271,24 @@ import { createAssertion, z, use } from 'bupkis';
 const validProductAssertion = createAssertion(
   ['to be a valid product'],
   (subject, _, expect) => {
-    // Basic structure validation
-    expect(subject, 'to be an object');
-    expect(subject, 'to have properties', ['name', 'price', 'category']);
+    // Structure and type validation consolidated with 'to satisfy'
+    try {
+      expect(subject, 'to satisfy', {
+        name: expect.it('to be a non-empty string'),
+        price: expect.it('to be a number'),
+        category: expect.it('to be one of', [
+          'electronics',
+          'books',
+          'clothing',
+        ]),
+      });
+    } catch (err) {
+      return {
+        message: `Expected a valid product object:\n${(err as Error).message}`,
+      };
+    }
 
-    // Type validation
-    expect(subject.name, 'to be a string');
-    expect(subject.price, 'to be a number');
-    expect(subject.category, 'to be a string');
-
-    // Business logic validation
+    // Business logic validation (returns AssertionFailure directly)
     if (subject.price <= 0) {
       return {
         actual: subject.price,
@@ -284,17 +296,13 @@ const validProductAssertion = createAssertion(
         message: 'Product price must be positive',
       };
     }
-
-    // Category validation using composition
-    const validCategories = ['electronics', 'books', 'clothing'];
-    expect(subject.category, 'to be one of', validCategories);
   },
 );
 ```
 
 ### Async Composition
 
-The same pattern works with asynchronous assertions:
+The same pattern works with asynchronous assertions. Wrap `expectAsync()` calls in `try`/`catch` and return context-specific {@link bupkis!types.AssertionFailure | AssertionFailure} objects:
 
 ```ts
 import { createAsyncAssertion, z, use } from 'bupkis';
@@ -302,18 +310,33 @@ import { createAsyncAssertion, z, use } from 'bupkis';
 const validAPIResponseAssertion = createAsyncAssertion(
   ['to be a valid API response'],
   async (subject, _, expectAsync) => {
-    // Validate structure
-    await expectAsync(subject, 'to be an object');
-    await expectAsync(subject, 'to have property', 'data');
-    await expectAsync(subject, 'to have property', 'status');
+    // Validate structure and status with 'to satisfy'
+    try {
+      await expectAsync(subject, 'to satisfy', {
+        data: expectAsync.it('to be defined'),
+        status: expectAsync.it(
+          'to be a number',
+          'and',
+          'to be within',
+          200,
+          299,
+        ),
+      });
+    } catch (err) {
+      return {
+        message: `Expected a valid API response:\n${(err as Error).message}`,
+      };
+    }
 
-    // Validate status
-    await expectAsync(subject.status, 'to be a number');
-    await expectAsync(subject.status, 'to be between', 200, 299);
-
-    // Custom async validation
+    // Optional nested validation with its own error context
     if (subject.data && typeof subject.data === 'object') {
-      await expectAsync(subject.data, 'to be a valid user'); // composition!
+      try {
+        await expectAsync(subject.data, 'to be a valid user'); // composition!
+      } catch (err) {
+        return {
+          message: `API response data failed user validation:\n${(err as Error).message}`,
+        };
+      }
     }
   },
 );
@@ -329,8 +352,8 @@ const validAPIResponseAssertion = createAsyncAssertion(
 ### Gotchas
 
 - **Infinite Recursion**: Be careful not to create circular assertion dependencies
-- **Error Handling**: Composed assertions will throw immediately on the first failure
-- **Performance**: Many composed assertions can be slower than a single comprehensive schema
+- **Error Handling**: Always wrap composed `expect()` calls in `try`/`catch` and return an {@link bupkis!types.AssertionFailure | AssertionFailure} with context-specific information (see examples above)
+- **Performance**: Many composed assertions can be slower than a single comprehensive schema—prefer `to satisfy` to consolidate checks
 
 ## Generally Applicable Concepts
 
@@ -739,6 +762,10 @@ expect(
 - **Provide helpful error messages & context**: Help users understand what went wrong
 - **Group related assertions**: Organize similar assertions into collections
 
+## Real-World Example
+
+Curious how <span class="bupkis">Bupkis</span> uses custom assertions itself? Check out [`packages/bupkis/test/custom-assertions.ts`][bupkis-custom-assertions], where we define assertions like `'to pass'`, `'to fail'`, and `'to fail with message matching'` for testing assertion behavior. It's a practical example of function-style assertions with error handling and message validation.
+
 ## Next Steps
 
 - [Testing Assertions](./testing.md)
@@ -751,6 +778,7 @@ expect(
 [assertion id]: /reference/glossary.md#assertion-id
 [assertion parts]: /reference/glossary.md#assertion-parts
 [asynchronous assertion]: /reference/glossary.md#asynchronous-assertion
+[bupkis-custom-assertions]: https://github.com/boneskull/bupkis/blob/main/packages/bupkis/test/custom-assertions.ts
 [issues]: https://github.com/boneskull/bupkis/issues
 [parameter]: /reference/glossary.md#parameter
 [parametric assertions]: /reference/glossary.md#parametric-assertion

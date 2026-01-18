@@ -8,7 +8,7 @@
 import { describe, it } from 'node:test';
 
 import { AssertionError } from '../../src/error.js';
-import { expect } from '../../src/index.js';
+import { expect } from '../custom-assertions.js';
 import {
   valibotArrayAssertion,
   valibotArrayContainsAssertion,
@@ -31,12 +31,11 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with non-string', () => {
-        try {
-          valibotStringAssertion.execute([42], [42], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotStringAssertion.execute([42], [42], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -46,21 +45,20 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with non-number', () => {
-        try {
-          valibotNumberAssertion.execute(['hello'], ['hello'], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotNumberAssertion.execute(['hello'], ['hello'], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
 
       it('should fail with Infinity', () => {
-        try {
-          valibotNumberAssertion.execute([Infinity], [Infinity], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotNumberAssertion.execute([Infinity], [Infinity], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -71,12 +69,11 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with non-boolean', () => {
-        try {
-          valibotBooleanAssertion.execute([1], [1], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotBooleanAssertion.execute([1], [1], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -87,16 +84,16 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with non-array', () => {
-        try {
-          valibotArrayAssertion.execute(
-            [{ foo: 'bar' }],
-            [{ foo: 'bar' }],
-            () => {},
-          );
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotArrayAssertion.execute(
+              [{ foo: 'bar' }],
+              [{ foo: 'bar' }],
+              () => {},
+            ),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
   });
@@ -113,12 +110,11 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with unequal values', () => {
-        try {
-          valibotEqualityAssertion.execute([5, 10], [5, 10], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotEqualityAssertion.execute([5, 10], [5, 10], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -128,21 +124,19 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail when subject is not greater', () => {
-        try {
-          valibotGreaterThanAssertion.execute([3, 5], [3, 5], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotGreaterThanAssertion.execute([3, 5], [3, 5], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
 
       it('should fail when subject equals expected', () => {
-        try {
-          valibotGreaterThanAssertion.execute([5, 5], [5, 5], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotGreaterThanAssertion.execute([5, 5], [5, 5], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -152,21 +146,19 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail when subject is not less', () => {
-        try {
-          valibotLessThanAssertion.execute([10, 5], [10, 5], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotLessThanAssertion.execute([10, 5], [10, 5], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
 
       it('should fail when subject equals expected', () => {
-        try {
-          valibotLessThanAssertion.execute([5, 5], [5, 5], () => {});
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () => valibotLessThanAssertion.execute([5, 5], [5, 5], () => {}),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -180,16 +172,16 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail when string does not contain substring', () => {
-        try {
-          valibotStringContainsAssertion.execute(
-            ['hello world', 'foo'],
-            ['hello world', 'foo'],
-            () => {},
-          );
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotStringContainsAssertion.execute(
+              ['hello world', 'foo'],
+              ['hello world', 'foo'],
+              () => {},
+            ),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -203,16 +195,16 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail with incorrect length', () => {
-        try {
-          valibotArrayLengthAssertion.execute(
-            [[1, 2, 3], 5],
-            [[1, 2, 3], 5],
-            () => {},
-          );
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotArrayLengthAssertion.execute(
+              [[1, 2, 3], 5],
+              [[1, 2, 3], 5],
+              () => {},
+            ),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
   });
@@ -228,16 +220,16 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail when object lacks property', () => {
-        try {
-          valibotObjectHasPropertyAssertion.execute(
-            [{ foo: 'bar' }, 'baz'],
-            [{ foo: 'bar' }, 'baz'],
-            () => {},
-          );
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotObjectHasPropertyAssertion.execute(
+              [{ foo: 'bar' }, 'baz'],
+              [{ foo: 'bar' }, 'baz'],
+              () => {},
+            ),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
 
@@ -251,16 +243,16 @@ describe('Valibot Standard Schema - Functional Tests', () => {
       });
 
       it('should fail when array does not contain value', () => {
-        try {
-          valibotArrayContainsAssertion.execute(
-            [[1, 2, 3], 5],
-            [[1, 2, 3], 5],
-            () => {},
-          );
-          expect.fail('Should have thrown AssertionError');
-        } catch (err) {
-          expect(err, 'to be an', AssertionError);
-        }
+        expect(
+          () =>
+            valibotArrayContainsAssertion.execute(
+              [[1, 2, 3], 5],
+              [[1, 2, 3], 5],
+              () => {},
+            ),
+          'to throw an',
+          AssertionError,
+        );
       });
     });
   });
@@ -275,12 +267,7 @@ describe('Valibot Standard Schema - Functional Tests', () => {
     });
 
     it('should throw AssertionError via expect() API on failure', () => {
-      try {
-        expect(5, 'to be greater than', 10);
-        expect.fail('Should have thrown');
-      } catch (err) {
-        expect(err, 'to be an', AssertionError);
-      }
+      expect(() => expect(5, 'to be greater than', 10), 'to fail');
     });
   });
 });
