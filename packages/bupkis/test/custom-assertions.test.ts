@@ -99,7 +99,7 @@ describe('custom test assertions', () => {
       expect(
         () => expect(42, 'to be a string'),
         'to be a failing assertion with message matching',
-        /expected string/i,
+        /expected.*string/is,
       );
     });
 
@@ -107,7 +107,7 @@ describe('custom test assertions', () => {
       expect(
         () => expect('hello', 'to be a number'),
         'to fail with message matching',
-        /expected number/i,
+        /expected.*number/is,
       );
     });
 
@@ -157,7 +157,7 @@ describe('custom test assertions', () => {
           expect(
             () => expect(42, 'to be a string'),
             'not to fail with message matching',
-            /expected string/i,
+            /expected.*string/is,
           ),
         'to fail',
       );
