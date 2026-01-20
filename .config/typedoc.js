@@ -193,5 +193,11 @@ expect(user, 'to satisfy', {
   router: 'kind-dir',
   searchInComments: true,
   searchInDocuments: true,
+  sort: [
+    'documents-first',
+    'kind',
+    'instance-first',
+    'alphabetical-ignoring-documents',
+  ],
   tsconfig: './tsconfig.typedoc.json',
 };
