@@ -47,10 +47,10 @@ export default {
     '@bupkisAssertionCategory',
   ],
   categoryOrder: [
-    'Guides',
     'Assertions',
-    'API',
+    'Guides',
     'Reference',
+    'API',
     'Plugins',
     'Migration Tools',
     'Testing Utilities',
