@@ -59,15 +59,3 @@ expect(Object.freeze({ foo: 'bar' }), 'to be readonly');
 ```
 
 > 👋 If you're aware of any other Zod schemas that mutate data, please open an [issue](https://github.com/boneskull/bupkis/issues)!
-
-## Errata
-
-Bits & bobs.
-
-### Under Construction
-
-<span class="bupkis">Bupkis</span> is not yet complete. There are features that We want to implement that We just haven't gotten to yet!
-
-See the [ROADMAP][] for details.
-
-[ROADMAP]: ../about/roadmap.md

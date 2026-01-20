@@ -1,6 +1,6 @@
 ---
-title: Release Notes
-category: About
+title: bupkis
+category: Release Notes
 ---
 
 {@include ../../packages/bupkis/CHANGELOG.md}

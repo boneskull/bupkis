@@ -76,6 +76,7 @@ export default {
   // @ts-expect-error from extras plugin
   footerLastModified: true,
   groupOrder: ['Core API'],
+  hostedBaseUrl: 'https://bupkis.zip',
   kindSortOrder: [
     'Reference',
     'Project',
@@ -174,7 +175,12 @@ expect(user, 'to satisfy', {
     'typedoc-plugin-extras',
   ],
   preserveWatchOutput: true,
-  projectDocuments: ['../site/**/*.md', '../packages/*/doc/readme.md'],
+  projectDocuments: [
+    '../site/release-notes/bupkis.md', // bupkis first in Release Notes
+    '../site/release-notes/bupkis-*.md', // then @bupkis/* packages
+    '../site/!(release-notes)/**/*.md', // other site docs
+    '../packages/*/doc/readme.md',
+  ],
   readme: '../packages/bupkis/README.md',
   redirects: {
     'api/': 'modules/bupkis',
@@ -187,6 +193,5 @@ expect(user, 'to satisfy', {
   router: 'kind-dir',
   searchInComments: true,
   searchInDocuments: true,
-  sort: ['kind', 'alphabetical'],
   tsconfig: './tsconfig.typedoc.json',
 };
