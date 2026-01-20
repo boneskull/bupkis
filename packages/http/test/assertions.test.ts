@@ -5,11 +5,11 @@
 import { use } from 'bupkis';
 import { describe, it } from 'node:test';
 
-import { supertestAssertions } from '../src/assertions.js';
+import { httpAssertions } from '../src/assertions.js';
 
-const { expect } = use(supertestAssertions);
+const { expect } = use(httpAssertions);
 
-describe('@bupkis/supertest assertions', () => {
+describe('@bupkis/http assertions', () => {
   describe('to have status', () => {
     describe('with numeric status code', () => {
       it('should pass when status matches exactly', () => {

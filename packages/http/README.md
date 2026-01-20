@@ -1,4 +1,4 @@
-# @bupkis/supertest
+# @bupkis/http
 
 HTTP response assertions for [Bupkis](https://bupkis.zip).
 
@@ -7,17 +7,17 @@ Works with [supertest](https://github.com/ladjs/supertest), [superagent](https:/
 ## Installation
 
 ```bash
-npm install @bupkis/supertest bupkis
+npm install @bupkis/http bupkis
 ```
 
 ## Usage
 
 ```typescript
 import { use } from 'bupkis';
-import supertestAssertions from '@bupkis/supertest';
+import httpAssertions from '@bupkis/http';
 import request from 'supertest';
 
-const { expect } = use(supertestAssertions);
+const { expect } = use(httpAssertions);
 
 // Status assertions
 const response = await request(app).get('/api/users');

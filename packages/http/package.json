@@ -1,10 +1,10 @@
 {
-  "name": "@bupkis/supertest",
+  "name": "@bupkis/http",
   "version": "0.1.0",
   "type": "module",
   "description": "HTTP response assertions for Bupkis - works with supertest, fetch, and axios",
   "repository": {
-    "directory": "packages/supertest",
+    "directory": "packages/http",
     "type": "git",
     "url": "git+https://github.com/boneskull/bupkis.git"
   },
@@ -34,7 +34,6 @@
   ],
   "keywords": [
     "bupkis",
-    "supertest",
     "http",
     "response",
     "assert",

@@ -45,9 +45,9 @@
       "initial-version": "0.1.0",
       "release-type": "node"
     },
-    "packages/supertest": {
+    "packages/http": {
       "changelog-path": "CHANGELOG.md",
-      "component": "@bupkis/supertest",
+      "component": "@bupkis/http",
       "initial-version": "0.1.0",
       "release-type": "node"
     }

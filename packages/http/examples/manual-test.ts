@@ -1,5 +1,5 @@
 /**
- * Manual testing script for @bupkis/supertest with real HTTP responses.
+ * Manual testing script for @bupkis/http with real HTTP responses.
  *
  * Run with: npx tsx examples/manual-test.ts
  */
@@ -8,12 +8,12 @@ import { createServer, type Server } from 'node:http';
 
 import { use } from 'bupkis';
 
-import supertestAssertions from '../src/index.js';
+import httpAssertions from '../src/index.js';
 
-const { expect } = use(supertestAssertions);
+const { expect } = use(httpAssertions);
 
 /**
- * Adapts a fetch Response to the shape expected by @bupkis/supertest.
+ * Adapts a fetch Response to the shape expected by @bupkis/http.
  */
 async function adaptFetchResponse(response: Response) {
   const text = await response.text();

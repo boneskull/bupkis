@@ -21,7 +21,7 @@ This is an npm workspaces monorepo. All packages live in `packages/`:
 | `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
 | `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                    |
 | `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                |
-| `@bupkis/supertest`        | `packages/supertest`        | HTTP response assertions                      |
+| `@bupkis/http`             | `packages/http`             | HTTP response assertions                      |
 
 ## Development Commands
 
@@ -187,7 +187,7 @@ Sinon spy/stub/mock assertions for bupkis. Provides natural language assertions 
 - `expect(spy, 'was called before', otherSpy)`
 - `expect(spy, 'to have calls satisfying', [...])`
 
-### @bupkis/supertest (`packages/supertest`)
+### @bupkis/http (`packages/http`)
 
 HTTP response assertions for bupkis. Works with supertest, superagent, fetch, axios, or any object with a `status` property. Provides:
 
@@ -286,7 +286,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) w
 
 **Commit Format:** `<type>(<scope>): <description>`
 
-- **Scopes** correspond to package names: `bupkis`, `events`, `from-chai`, `from-jest`, `property-testing`, `rxjs`, `sinon`, `supertest`
+- **Scopes** correspond to package names: `bupkis`, `events`, `from-chai`, `from-jest`, `http`, `property-testing`, `rxjs`, `sinon`
 - **Types** follow a limited set of standard conventions: `feat`, `fix`, `chore`, `docs`
 
 **Cross-Package Changes Require Careful Consideration:**
