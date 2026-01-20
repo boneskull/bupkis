@@ -21,7 +21,7 @@ This is the monorepo for [**BUPKIS**](https://bupkis.zip), the uncommonly extens
 - **[@bupkis/events](./packages/events/)** - Event emitter assertions
 - **[@bupkis/rxjs](./packages/rxjs/)** - RxJS Observable assertions
 - **[@bupkis/sinon](./packages/sinon/)** - Sinon spy/stub/mock assertions
-- **[@bupkis/supertest](./packages/supertest/)** - HTTP response assertions
+- **[@bupkis/http](./packages/http/)** - HTTP response assertions
 
 ### Migration Tools
 

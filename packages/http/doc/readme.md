@@ -1,5 +1,5 @@
 ---
-title: '@bupkis/supertest'
+title: '@bupkis/http'
 category: Plugins
 ---
 

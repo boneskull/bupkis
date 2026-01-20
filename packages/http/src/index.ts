@@ -1,22 +1,19 @@
 /**
  * HTTP response assertions for Bupkis.
  *
- * @module @bupkis/supertest
+ * @module @bupkis/http
  * @example
  *
  * ```ts
  * import { use } from 'bupkis';
- * import supertestAssertions from '@bupkis/supertest';
+ * import httpAssertions from '@bupkis/http';
  * import request from 'supertest';
  *
- * const { expect } = use(supertestAssertions);
+ * const { expect } = use(httpAssertions);
  *
  * const response = await request(app).get('/api/users');
  * expect(response, 'to have status', 200);
  * ```
  */
 
-export {
-  supertestAssertions as default,
-  supertestAssertions,
-} from './assertions.js';
+export { httpAssertions as default, httpAssertions } from './assertions.js';

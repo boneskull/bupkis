@@ -1,8 +1,8 @@
-# @bupkis/supertest Property Tests Implementation Plan
+# @bupkis/http Property Tests Implementation Plan (formerly @bupkis/supertest)
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add comprehensive property-based tests to `@bupkis/supertest` to validate HTTP response assertions across randomized inputs.
+**Goal:** Add comprehensive property-based tests to `@bupkis/http` to validate HTTP response assertions across randomized inputs.
 
 **Architecture:** Create a new `test/property.test.ts` file that mirrors the pattern established in `@bupkis/events` and `@bupkis/sinon`. Each assertion from `src/assertions.ts` gets a `PropertyTestConfig` with valid and invalid generators. All assertions are synchronous, avoiding async timeout issues.
 

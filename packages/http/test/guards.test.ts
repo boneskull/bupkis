@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 
 import { isHttpResponse } from '../src/guards.js';
 
-describe('@bupkis/supertest', () => {
+describe('@bupkis/http', () => {
   describe('isHttpResponse()', () => {
     it('should return true for object with numeric status', () => {
       expect(isHttpResponse({ status: 200 }), 'to be', true);

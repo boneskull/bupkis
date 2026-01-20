@@ -735,7 +735,7 @@ export const toRedirectToPatternAssertion = expect.createAssertion(
 /**
  * All HTTP response assertions for use with `expect.use()`.
  */
-export const supertestAssertions = [
+export const httpAssertions = [
   toHaveStatusAssertion,
   toHaveStatusCategoryAssertion,
   toHaveHeaderAssertion,

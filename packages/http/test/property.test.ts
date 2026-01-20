@@ -1,5 +1,5 @@
 /**
- * Property-based tests for @bupkis/supertest assertions.
+ * Property-based tests for @bupkis/http assertions.
  *
  * Uses fast-check to generate random inputs and validates that assertions
  * behave correctly across the input space.
@@ -21,7 +21,7 @@ import type { HttpResponse } from '../src/guards.js';
 
 import * as assertions from '../src/assertions.js';
 
-const { expect, expectAsync } = use(assertions.supertestAssertions);
+const { expect, expectAsync } = use(assertions.httpAssertions);
 const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 
 // Use 'small' run size to keep tests fast
@@ -171,7 +171,7 @@ const createResponse = (
 // ─────────────────────────────────────────────────────────────
 
 const statusCodeConfigs = new Map<
-  (typeof assertions.supertestAssertions)[number],
+  (typeof assertions.httpAssertions)[number],
   PropertyTestConfig
 >([
   // toHaveStatusAssertion - exact status code
@@ -270,7 +270,7 @@ const statusCodeConfigs = new Map<
 // ─────────────────────────────────────────────────────────────
 
 const headerConfigs = new Map<
-  (typeof assertions.supertestAssertions)[number],
+  (typeof assertions.httpAssertions)[number],
   PropertyTestConfig
 >([
   // toHaveHeaderAssertion - header existence
@@ -470,7 +470,7 @@ const headerConfigs = new Map<
 // ─────────────────────────────────────────────────────────────
 
 const bodyConfigs = new Map<
-  (typeof assertions.supertestAssertions)[number],
+  (typeof assertions.httpAssertions)[number],
   PropertyTestConfig
 >([
   // toHaveBodyAssertion - has any body
@@ -824,7 +824,7 @@ const bodyConfigs = new Map<
 // ─────────────────────────────────────────────────────────────
 
 const redirectConfigs = new Map<
-  (typeof assertions.supertestAssertions)[number],
+  (typeof assertions.httpAssertions)[number],
   PropertyTestConfig
 >([
   // toRedirectAssertion - is a redirect (3xx)
@@ -987,7 +987,7 @@ const allConfigs = new Map([
   ...redirectConfigs,
 ]);
 
-describe('@bupkis/supertest Property Tests', () => {
+describe('@bupkis/http Property Tests', () => {
   for (const [assertion, testConfig] of allConfigs) {
     const { id } = assertion;
     const { params, variants } = getVariants(testConfig);

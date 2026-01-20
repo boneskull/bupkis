@@ -1,8 +1,8 @@
-# @bupkis/supertest Implementation Plan
+# @bupkis/http Implementation Plan (formerly @bupkis/supertest)
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Create a `@bupkis/supertest` package providing type-safe, natural-language assertions for HTTP responses from supertest (and potentially generic enough to work with fetch/axios responses).
+**Goal:** Create a `@bupkis/http` package providing type-safe, natural-language assertions for HTTP responses from supertest (and potentially generic enough to work with fetch/axios responses).
 
 **Architecture:** Plugin package that exports assertions consumable via `expect.use()`. Assertions use function-based implementations to inspect HTTP response properties (status, headers, body). The response interface is designed to be generic, supporting supertest's Response object as the primary target while being flexible enough for other HTTP clients.
 
