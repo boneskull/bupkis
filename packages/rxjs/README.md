@@ -1,6 +1,6 @@
 # @bupkis/rxjs
 
-RxJS Observable assertions for [Bupkis](https://bupkis.zip).
+RxJS Observable assertions for [**BUPKIS**][bupkis].
 
 All assertions are **asynchronous** since Observable operations are inherently async.
 
@@ -454,3 +454,4 @@ await expectAsync(
 Copyright © 2026 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
 [boneskull]: https://github.com/boneskull
+[bupkis]: https://bupkis.zip

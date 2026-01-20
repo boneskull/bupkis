@@ -1,6 +1,6 @@
 # @bupkis/http
 
-HTTP response assertions for [Bupkis](https://bupkis.zip).
+HTTP response assertions for [**BUPKIS**][bupkis].
 
 Works with [supertest](https://github.com/ladjs/supertest), [superagent](https://github.com/ladjs/superagent), fetch responses, axios responses, or any object with a numeric `status` property.
 
@@ -668,3 +668,4 @@ expect(
 Copyright © 2026 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
 [boneskull]: https://github.com/boneskull
+[bupkis]: https://bupkis.zip

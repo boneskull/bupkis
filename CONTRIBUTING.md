@@ -1,6 +1,6 @@
-# Contributing to Bupkis
+# Contributing to **BUPKIS**
 
-Thank you for your interest in contributing to Bupkis! We welcome contributions from everyone and are grateful for every contribution made.
+Thank you for your interest in contributing to **BUPKIS**! We welcome contributions from everyone and are grateful for every contribution made.
 
 ## Code of Conduct
 
@@ -369,4 +369,4 @@ All contributors will be recognized in the project. We appreciate all forms of c
 - Feature suggestions
 - Testing and feedback
 
-Thank you for contributing to Bupkis! 🎉
+You are a peach for contributing to **BUPKIS**!

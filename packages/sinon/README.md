@@ -1,6 +1,6 @@
 # @bupkis/sinon
 
-Sinon spy/stub/mock assertions for [Bupkis](https://bupkis.zip).
+Sinon spy/stub/mock assertions for [**BUPKIS**][bupkis].
 
 ## Installation
 
@@ -1004,3 +1004,4 @@ expect(spy, 'not to have calls satisfying', [['x'], ['y']]);
 Copyright © 2026 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
 [boneskull]: https://github.com/boneskull
+[bupkis]: https://bupkis.zip
