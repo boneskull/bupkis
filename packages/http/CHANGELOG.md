@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/http-v0.1.0...@bupkis/http-v0.1.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* **http:** rename @bupkis/supertest to @bupkis/http ([#344](https://github.com/boneskull/bupkis/issues/344)) ([69c5dee](https://github.com/boneskull/bupkis/commit/69c5dee264d53a22b6b39624779feae5a5da1349))
+
 ## 0.1.0 (2026-01-16)
 
 
