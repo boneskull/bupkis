@@ -107,7 +107,7 @@ const analyzeProfile = async (
     }
 
     // Sort by hit count
-    const hotFunctions = Array.from(functionTimes.entries())
+    const hotFunctions = [...functionTimes.entries()]
       .sort(([, a], [, b]) => b - a)
       .slice(0, 10);
 
