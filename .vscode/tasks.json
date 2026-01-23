@@ -25,41 +25,12 @@
       "type": "npm"
     },
     {
-      "detail": "tshy --watch",
-      "group": {
-        "isDefault": true,
-        "kind": "build"
-      },
-      "isBackground": true,
-      "label": "npm: dev",
-      "problemMatcher": ["$tsc-watch"],
-      "script": "dev",
-      "type": "npm"
-    },
-    {
       "detail": "npm run lint:types -- --watch",
       "group": "test",
       "isBackground": true,
       "label": "npm: lint:types:dev",
       "problemMatcher": ["$tsc-watch"],
       "script": "lint:types:dev",
-      "type": "npm"
-    },
-    {
-      "detail": "node --import tsx --test \"test/property/**/*.test.ts\" --watch",
-      "group": "test",
-      "isBackground": true,
-      "label": "npm: test:property:dev",
-      "problemMatcher": [],
-      "script": "test:property:dev",
-      "type": "npm"
-    },
-    {
-      "detail": "node --import tsx --test \"test/property/**/*.test.ts\"",
-      "group": "test",
-      "label": "npm: test:property",
-      "problemMatcher": [],
-      "script": "test:property",
       "type": "npm"
     },
     {
@@ -88,22 +59,10 @@
       "type": "npm"
     },
     {
-      "dependsOn": ["npm: docs:build", "npm: serve"],
+      "dependsOn": ["npm: docs:build:watch", "npm: docs:serve"],
       "isBackground": true,
       "label": "docs: start",
       "problemMatcher": []
-    },
-    {
-      "command": "node scripts/dump-assertion-ids.js --collection async",
-      "group": "build",
-      "label": "dump-assertion-ids",
-      "type": "shell"
-    },
-    {
-      "command": "rm -rf dist",
-      "group": "build",
-      "label": "clear-cache",
-      "type": "shell"
     },
     {
       "command": "npm run lint:eslint",
