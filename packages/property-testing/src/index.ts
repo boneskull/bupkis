@@ -3,6 +3,31 @@
  *
  * @module @bupkis/property-testing
  * @category Testing Utilities
+ * @showGroups
+ *
+ * @groupDescription Test Harness
+ * Core functions for creating and running property-based tests.
+ *
+ * @groupDescription Direct Execution
+ * Functions for directly executing assertions without the full harness.
+ *
+ * @groupDescription Configuration
+ * Types for configuring property tests and their variants.
+ *
+ * @groupDescription Type Guards
+ * Type guards for runtime type checking of configuration variants.
+ *
+ * @groupDescription Applicability Registry
+ * Functions for tracking which assertions apply to which value types.
+ *
+ * @groupDescription Chain Generators
+ * Arbitraries for generating assertion chain arguments.
+ *
+ * @groupDescription Generator Utilities
+ * Helper functions for building fast-check arbitraries.
+ *
+ * @groupDescription Errors
+ * Error classes thrown by the property testing harness.
  */
 
 export {
@@ -26,18 +51,13 @@ export {
 
 export {
   type GeneratorParams,
-  type InferPropertyTestConfigVariantAsyncProperty,
-  type InferPropertyTestConfigVariantModel,
-  type InferPropertyTestConfigVariantProperty,
   type PropertyTestConfig,
   type PropertyTestConfigParameters,
-  PropertyTestConfigSchema,
   type PropertyTestConfigVariant,
   type PropertyTestConfigVariantAsyncGenerators,
   type PropertyTestConfigVariantAsyncProperty,
   type PropertyTestConfigVariantModel,
   type PropertyTestConfigVariantProperty,
-  PropertyTestConfigVariantSchema,
   type PropertyTestConfigVariantSyncGenerators,
 } from './config.js';
 

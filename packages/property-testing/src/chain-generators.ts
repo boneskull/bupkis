@@ -23,6 +23,8 @@ const { min } = Math;
  * Represents a generated 'and' chain ready to be passed to `expect()`.
  *
  * The args array is structured as `[subject, phrase1, 'and', phrase2, ...]`.
+ *
+ * @group Chain Generators
  */
 export interface ChainArgs {
   /**
@@ -43,6 +45,8 @@ export interface ChainArgs {
 
 /**
  * Configuration for chain generation.
+ *
+ * @group Chain Generators
  */
 export interface ChainGeneratorConfig {
   /**
@@ -72,6 +76,7 @@ const DEFAULT_CONFIG: Required<ChainGeneratorConfig> = {
  * @param subject The subject value
  * @param assertions The assertions to chain together
  * @returns ChainArgs ready for expect()
+ * @group Chain Generators
  */
 export const buildChainArgs = (
   subject: unknown,
@@ -110,6 +115,7 @@ export const buildChainArgs = (
  * applicable/inapplicable assertion combinations.
  *
  * @function
+ * @group Chain Generators
  */
 export const diverseValueArbitrary = () =>
   fc
@@ -181,6 +187,7 @@ export const diverseValueArbitrary = () =>
  * @param registry The assertion applicability registry
  * @param config Chain generation configuration
  * @returns Arbitrary producing valid chain args
+ * @group Chain Generators
  */
 export const validChainArbitrary = (
   registry: AssertionApplicability[],
@@ -219,6 +226,7 @@ export const validChainArbitrary = (
  * @param registry The assertion applicability registry
  * @param config Chain generation configuration
  * @returns Arbitrary producing invalid chain args
+ * @group Chain Generators
  */
 export const invalidChainArbitrary = (
   registry: AssertionApplicability[],
@@ -278,6 +286,7 @@ export const invalidChainArbitrary = (
  * @param registry The assertion applicability registry
  * @param config Chain generation configuration
  * @returns Arbitrary producing chain args for negated assertions
+ * @group Chain Generators
  */
 export const validNegatedChainArbitrary = (
   registry: AssertionApplicability[],
@@ -334,6 +343,7 @@ export const validNegatedChainArbitrary = (
  * @param config Chain generation configuration
  * @returns Arbitrary producing chain args for negated assertions that should
  *   fail
+ * @group Chain Generators
  */
 export const invalidNegatedChainArbitrary = (
   registry: AssertionApplicability[],

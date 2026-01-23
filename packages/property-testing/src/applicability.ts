@@ -16,6 +16,8 @@ import { extractPhrases } from './harness.js';
  *
  * Used to determine whether a given assertion would pass for a particular
  * runtime value.
+ *
+ * @group Applicability Registry
  */
 export interface AssertionApplicability {
   /**
@@ -285,6 +287,7 @@ const { keys } = Object;
  * @param assertions Object containing all sync-basic assertions, keyed by
  *   `{predicateName}Assertion`
  * @returns Array of assertion applicability entries
+ * @group Applicability Registry
  */
 export const createApplicabilityRegistry = (
   assertions: ApplicabilityAssertionMap,
@@ -304,6 +307,7 @@ export const createApplicabilityRegistry = (
  *
  * @function
  * @returns The assertion applicability registry
+ * @group Applicability Registry
  */
 export const getApplicabilityRegistry = async (): Promise<
   AssertionApplicability[]
@@ -325,6 +329,7 @@ export const getApplicabilityRegistry = async (): Promise<
  * @param value The runtime value to check
  * @param registryEntries The applicability registry to query
  * @returns Array of assertions that would pass
+ * @group Applicability Registry
  */
 export const getApplicableAssertions = (
   value: unknown,
@@ -339,6 +344,7 @@ export const getApplicableAssertions = (
  * @param value The runtime value to check
  * @param registryEntries The applicability registry to query
  * @returns Array of assertions that would fail
+ * @group Applicability Registry
  */
 export const getInapplicableAssertions = (
   value: unknown,

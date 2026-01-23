@@ -34,6 +34,8 @@ import { calculateNumRuns } from './util.js';
  *
  * This indicates a bug in the property test generator - it's producing inputs
  * that don't match the assertion being tested.
+ *
+ * @group Errors
  */
 export class PropertyTestGeneratorError extends Error {
   override name = 'PropertyTestGeneratorError';
@@ -56,6 +58,8 @@ export class PropertyTestGeneratorError extends Error {
  *
  * This indicates that the property generator produced input that matched a
  * different assertion than the one being tested.
+ *
+ * @group Errors
  */
 export class WrongAssertionError extends Error {
   override name = 'WrongAssertionError';
@@ -85,6 +89,8 @@ const isFunction = (value: unknown): value is (...args: any[]) => any =>
  *
  * Represents either a successful expectation (failed: false) or a failed
  * expectation with error details (failed: true, error: unknown).
+ *
+ * @group Direct Execution
  */
 export type ExpectationResult =
   | { error: unknown; failed: true }
@@ -95,6 +101,8 @@ export type ExpectationResult =
 
 /**
  * Options for expectUsing functions.
+ *
+ * @group Direct Execution
  */
 export interface ExpectUsingOptions {
   /**
@@ -108,6 +116,8 @@ export interface ExpectUsingOptions {
  * Context for creating a property test harness.
  *
  * Contains the expect functions that will be used to test assertions.
+ *
+ * @group Test Harness
  */
 export interface PropertyTestHarnessContext {
   expect: (value: unknown, ...args: unknown[]) => void;
@@ -127,6 +137,7 @@ export interface PropertyTestHarnessContext {
  * @throws {PropertyTestGeneratorError} If args don't parse for the assertion
  * @throws {AssertionError} If assertion fails (in non-negated mode)
  * @throws {NegatedAssertionError} If assertion passes (in negated mode)
+ * @group Direct Execution
  */
 export const expectUsing = <A extends AnySyncAssertion>(
   assertion: A,
@@ -172,6 +183,7 @@ export const expectUsing = <A extends AnySyncAssertion>(
  * @throws {PropertyTestGeneratorError} If args don't parse for the assertion
  * @throws {AssertionError} If assertion fails (in non-negated mode)
  * @throws {NegatedAssertionError} If assertion passes (in negated mode)
+ * @group Direct Execution
  */
 export const expectUsingAsync = async <A extends AnyAsyncAssertion>(
   assertion: A,
@@ -217,6 +229,7 @@ const GLOBAL_PROP_TEST_CONFIG_DEFAULTS =
 
 /**
  * @function
+ * @group Type Guards
  */
 export const isPropertyTestConfigVariantGenerators = (
   value: PropertyTestConfigVariant,
@@ -231,6 +244,7 @@ export const isPropertyTestConfigVariantGenerators = (
 
 /**
  * @function
+ * @group Type Guards
  */
 export const isPropertyTestConfigVariantAsyncGenerators = (
   value: PropertyTestConfigVariant,
@@ -246,6 +260,7 @@ export const isPropertyTestConfigVariantAsyncGenerators = (
 
 /**
  * @function
+ * @group Type Guards
  */
 export const isPropertyTestConfigVariantProperty = (
   value: PropertyTestConfigVariant,
@@ -260,6 +275,7 @@ export const isPropertyTestConfigVariantProperty = (
 
 /**
  * @function
+ * @group Type Guards
  */
 export const isPropertyTestConfigVariantAsyncProperty = (
   value: PropertyTestConfigVariant,
@@ -271,6 +287,7 @@ export const isPropertyTestConfigVariantAsyncProperty = (
 
 /**
  * @function
+ * @group Type Guards
  */
 export const isGeneratorsTuple = (
   value: PropertyTestConfigVariantAsyncGenerators['generators'],
@@ -294,6 +311,7 @@ export const isGeneratorsTuple = (
  * @function
  * @param assertion Assertion to extract phrases from
  * @returns One or more phrase literals
+ * @group Test Harness
  */
 export const extractPhrases = (
   assertion: AnyAssertion,
@@ -310,6 +328,7 @@ export const extractPhrases = (
  * @function
  * @param testConfig Property test configuration
  * @returns Object containing params and a map of variant names to variants
+ * @group Test Harness
  */
 export const getVariants = (testConfig: PropertyTestConfig) => {
   const {
@@ -337,6 +356,7 @@ export const getVariants = (testConfig: PropertyTestConfig) => {
  * @function
  * @param ctx Context containing expect and expectAsync functions
  * @returns Object containing all the harness functions
+ * @group Test Harness
  */
 export const createPropertyTestHarness = (ctx: PropertyTestHarnessContext) => {
   const { expect, expectAsync } = ctx;

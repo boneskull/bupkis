@@ -23,6 +23,7 @@ const { parseInt: parseIntNum } = Number;
  * @param key The key to search for
  * @param visited Internal set for circular reference detection
  * @returns True if the key is found anywhere in the structure, false otherwise
+ * @group Generator Utilities
  */
 export const hasKeyDeep = (
   obj: unknown,
@@ -78,6 +79,7 @@ export const hasKeyDeep = (
  * @param visited Internal set for circular reference detection
  * @returns True if the value is found anywhere in the structure, false
  *   otherwise
+ * @group Generator Utilities
  */
 export const hasValueDeep = (
   obj: unknown,
@@ -153,6 +155,7 @@ export const hasValueDeep = (
  * @function
  * @param value Arbitrary value
  * @returns `true` if the value does not have problematic keys/values
+ * @group Generator Utilities
  */
 export const objectFilter = (value: unknown) =>
   !hasKeyDeep(value, '__proto__') &&
@@ -163,12 +166,16 @@ export const objectFilter = (value: unknown) =>
 /**
  * Arbitrary that generates any value except objects with `__proto__` or
  * `valueOf` keys somewhere deep within them.
+ *
+ * @group Generator Utilities
  */
 export const filteredAnything = fc.anything().filter(objectFilter);
 
 /**
  * Arbitrary that generates only objects without `__proto__` or `valueOf` keys
  * somewhere deep within them.
+ *
+ * @group Generator Utilities
  */
 export const filteredObject = fc.object().filter(objectFilter);
 
@@ -179,6 +186,7 @@ export const filteredObject = fc.object().filter(objectFilter);
  * @function
  * @param str Input string
  * @returns String with problematic regex characters removed
+ * @group Generator Utilities
  */
 export const safeRegexStringFilter = (str: string) =>
   str.replace(/[[\](){}^$*+?.\\|]/g, '');
@@ -200,6 +208,7 @@ const RUN_SIZES = freeze({
  * @param runSize One of 'small', 'medium', or 'large' to indicate the desired
  *   number of runs
  * @returns The calculated number of runs
+ * @group Test Harness
  */
 export const calculateNumRuns = (
   runSize: keyof typeof RUN_SIZES = 'medium',

@@ -35,6 +35,8 @@ import { z } from 'zod';
  * ```ts
  * [fc.string(), fc.constantFrom('to be a string', 'to be str')];
  * ```
+ *
+ * @group Configuration
  */
 export type GeneratorParams =
   | fc.Arbitrary<readonly [subject: unknown, phrase: string, ...unknown[]]>
@@ -90,6 +92,8 @@ export type InferPropertyTestConfigVariantProperty<T> =
  * Generally, only `valid` and `invalid` are needed, since for most assertions,
  * `valid` will be the same as `invalidNegated`, and `invalid` will be the same
  * as `validNegated`.
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfig extends PropertyTestConfigParameters {
   /**
@@ -119,6 +123,8 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
  * our various use-cases. These configurations are applied in a cascading
  * manner, with variant-specific first, then config-level, then finally defaults
  * (defined elsewhere).
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfigParameters extends Parameters<any> {
   numRuns?: never;
@@ -136,6 +142,8 @@ export interface PropertyTestConfigParameters extends Parameters<any> {
  *
  * For parameterized assertions, the "rest" of the tuple contains generators for
  * the parameter and extra phrase literals / parameters that may follow.
+ *
+ * @group Configuration
  */
 export type PropertyTestConfigVariant =
   | PropertyTestConfigVariantAsyncGenerators
@@ -148,6 +156,8 @@ export type PropertyTestConfigVariant =
  *
  * Identical to {@link PropertyTestConfigVariantSyncGenerators} but with `async:
  * true`, indicating that `expectAsync` should be used instead of `expect`.
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfigVariantAsyncGenerators extends PropertyTestConfigVariantSyncGenerators {
   async: true;
@@ -159,6 +169,8 @@ export interface PropertyTestConfigVariantAsyncGenerators extends PropertyTestCo
  * Use this when generator-based testing is insufficient and you need full
  * control over the property logic, such as testing complex async flows or
  * assertions that require special setup/teardown.
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfigVariantAsyncProperty<
   T = any,
@@ -173,6 +185,7 @@ export interface PropertyTestConfigVariantAsyncProperty<
  * both a model (expected behavior) and a real implementation, verifying they
  * remain consistent.
  *
+ * @group Configuration
  * @see {@link https://fast-check.dev/docs/advanced/model-based-testing/ | fast-check Model-Based Testing}
  */
 export interface PropertyTestConfigVariantModel<
@@ -190,6 +203,8 @@ export interface PropertyTestConfigVariantModel<
  * Use this when generator-based testing is insufficient and you need full
  * control over the property logic, such as testing assertions with complex
  * preconditions or custom shrinking behavior.
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfigVariantProperty<
   T = any,
@@ -203,6 +218,8 @@ export interface PropertyTestConfigVariantProperty<
  * This is the most common variant type. The harness automatically combines the
  * generators, runs the assertion, and verifies behavior based on the variant
  * name (valid/invalid/negated).
+ *
+ * @group Configuration
  */
 export interface PropertyTestConfigVariantSyncGenerators extends PropertyTestConfigParameters {
   generators: GeneratorParams;
