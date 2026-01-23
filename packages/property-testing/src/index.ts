@@ -1,5 +1,7 @@
 /**
- * Property-based testing harness for bupkis assertions.
+ * Property-based testing harness for **BUPKIS** assertions.
+ *
+ * _See also:_ **[README](/documents/_bupkis_property-testing-1/)**
  *
  * @module @bupkis/property-testing
  * @category Testing Utilities

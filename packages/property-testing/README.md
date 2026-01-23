@@ -448,7 +448,7 @@ const extendedRegistry = [...registry, ...customEntries];
 
 ## Environment Variables
 
-- `WALLABY` - Set when running in Wallaby.js (reduces runs by 10x)
+- `WALLABY` - Set when running in [Wallaby.js][] (reduces runs by 10x)
 - `CI` - Set in CI environments (reduces runs by 5x)
 - `NUM_RUNS` - Override the number of runs directly
 
@@ -457,3 +457,4 @@ const extendedRegistry = [...registry, ...customEntries];
 Copyright © 2026 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
 
 [boneskull]: https://github.com/boneskull
+[Wallaby.js]: https://wallabyjs.com
