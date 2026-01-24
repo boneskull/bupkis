@@ -224,6 +224,8 @@ const formatTrackedRequests = (requests: TrackedRequest[]): string => {
  * ```ts
  * expect(server, 'to have handled request to', '/api/users');
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestToBasicAssertion = expect.createAssertion(
   [TrackedServerSchema, 'to have handled request to', PathMatcherSchema],
@@ -272,6 +274,8 @@ export const toHaveHandledRequestToBasicAssertion = expect.createAssertion(
  *   once: true,
  * });
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestToWithOptionsAssertion =
   expect.createAssertion(
@@ -327,6 +331,8 @@ export const toHaveHandledRequestToWithOptionsAssertion =
  * ```ts
  * expect(server, 'to have handled request matching', /\/api\/users\/\d+/);
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestMatchingBasicAssertion =
   expect.createAssertion(
@@ -362,6 +368,8 @@ export const toHaveHandledRequestMatchingBasicAssertion =
  *   method: 'DELETE',
  * });
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestMatchingWithOptionsAssertion =
   expect.createAssertion(
@@ -417,6 +425,8 @@ export const toHaveHandledRequestMatchingWithOptionsAssertion =
  * ```ts
  * expect(server, 'to have handled', 3, 'requests');
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledCountAssertion = expect.createAssertion(
   [
@@ -452,6 +462,8 @@ export const toHaveHandledCountAssertion = expect.createAssertion(
  * // Passes when no requests were handled
  * expect(server, 'not to have handled requests');
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestsAssertion = expect.createAssertion(
   [TrackedServerSchema, 'to have handled requests'],
@@ -484,6 +496,8 @@ export const toHaveHandledRequestsAssertion = expect.createAssertion(
  *   body: { name: 'Alice' },
  * });
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestToWithOptionsAsyncAssertion =
   createAsyncAssertion(
@@ -545,6 +559,8 @@ export const toHaveHandledRequestToWithOptionsAsyncAssertion =
  *   },
  * );
  * ```
+ *
+ * @knipignore Exported for property testing
  */
 export const toHaveHandledRequestMatchingWithOptionsAsyncAssertion =
   createAsyncAssertion(
