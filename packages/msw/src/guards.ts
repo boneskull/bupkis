@@ -37,6 +37,7 @@ export const kTrackedServer = symbolFor('@bupkis/msw:trackedServer');
  * @function
  * @param value - Value to check
  * @returns `true` if the value is a TrackedServer
+ * @group Tracked Server
  */
 export const isTrackedServer = (value: unknown): value is TrackedServer => {
   if (value === null || typeof value !== 'object') {

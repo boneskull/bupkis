@@ -345,6 +345,7 @@ class TrackedServerImpl
  * @function
  * @param handlers - MSW request handlers to register
  * @returns A TrackedServer instance with request tracking capabilities
+ * @group Tracked Server
  */
 export const createTrackedServer = (
   ...handlers: RequestHandler[]
@@ -370,6 +371,7 @@ export const createTrackedServer = (
  * @function
  * @param server - The tracked server
  * @returns Promise resolving to tracked requests with bodies parsed
+ * @group Tracked Server
  */
 export const waitForBodies = async (
   server: TrackedServer,

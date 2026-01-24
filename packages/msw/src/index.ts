@@ -1,7 +1,10 @@
 /**
  * MSW request verification assertions for Bupkis.
  *
+ * _See also:_ **[README](/documents/_bupkis_msw/)**
+ *
  * @module @bupkis/msw
+ * @category Extension APIs
  * @example
  *
  * ```ts
@@ -22,11 +25,13 @@
  *   // server.close() called automatically
  * }
  * ```
+ *
+ * @groupDescription Tracked Server
+ * Factory, types, and utilities for MSW servers with request tracking.
  */
 
 export { mswAssertions as default, mswAssertions } from './assertions.js';
 export { isTrackedServer } from './guards.js';
-export { PathMatcherSchema, TrackedServerSchema } from './schema.js';
 export { createTrackedServer, waitForBodies } from './tracker.js';
 export type {
   RequestMatchOptions,

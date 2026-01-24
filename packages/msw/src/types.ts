@@ -36,6 +36,8 @@ export type PathMatcher = RegExp | string;
  *   once: true,
  * });
  * ```
+ *
+ * @group Tracked Server
  */
 export interface RequestMatchOptions {
   /**
@@ -81,6 +83,8 @@ export interface RequestMatchOptions {
  * console.log(request.method); // 'GET'
  * console.log(request.pathname); // '/api/users'
  * ```
+ *
+ * @group Tracked Server
  */
 export interface TrackedRequest {
   /**
@@ -166,7 +170,7 @@ export interface TrackedRequest {
  * console.log(server.isTrackedServer); // true
  * ```
  *
- * @example Using `using` syntax (TypeScript 5.2+)
+ * @example Using "using" syntax (TypeScript 5.2+)
  *
  * ```ts
  * {
@@ -178,6 +182,8 @@ export interface TrackedRequest {
  *   // server.close() called automatically when block exits
  * }
  * ```
+ *
+ * @group Tracked Server
  */
 export interface TrackedServer extends Disposable, SetupServer {
   /**

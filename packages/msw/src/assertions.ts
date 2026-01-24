@@ -612,6 +612,7 @@ export const toHaveHandledRequestMatchingWithOptionsAsyncAssertion =
  * Includes both sync and async assertions. Use `expect` for sync assertions and
  * `expectAsync` for assertions that check body content.
  *
+ * @ignore
  * @example
  *
  * ```ts

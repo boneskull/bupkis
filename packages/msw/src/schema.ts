@@ -22,6 +22,8 @@ import { isTrackedServer } from './guards.js';
  *
  * TrackedServerSchema.parse(server); // Throws if not a TrackedServer
  * ```
+ *
+ * @group Zod Schemas
  */
 export const TrackedServerSchema = z.custom<TrackedServer>(
   isTrackedServer,
@@ -40,6 +42,8 @@ export const TrackedServerSchema = z.custom<TrackedServer>(
  * PathMatcherSchema.parse(/\/api\/users\/\d+/); // Valid
  * PathMatcherSchema.parse(123); // Throws
  * ```
+ *
+ * @group Zod Schemas
  */
 export const PathMatcherSchema = z.custom<PathMatcher>(
   (value): value is PathMatcher =>
