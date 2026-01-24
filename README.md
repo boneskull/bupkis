@@ -10,7 +10,7 @@
 
 ---
 
-This is the monorepo for [**BUPKIS**](https://bupkis.zip), the uncommonly extensible assertion library.
+This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertion library._
 
 ## Packages
 
@@ -19,26 +19,34 @@ This is the monorepo for [**BUPKIS**](https://bupkis.zip), the uncommonly extens
 ### Plugins
 
 - **[@bupkis/events](./packages/events/)** - Event emitter assertions
-- **[@bupkis/rxjs](./packages/rxjs/)** - RxJS Observable assertions
-- **[@bupkis/sinon](./packages/sinon/)** - Sinon spy/stub/mock assertions
 - **[@bupkis/http](./packages/http/)** - HTTP response assertions
+- **[@bupkis/msw](./packages/msw/)** - [MSW][] request verification assertions
+- **[@bupkis/rxjs](./packages/rxjs/)** - [RxJS][] Observable assertions
+- **[@bupkis/sinon](./packages/sinon/)** - [Sinon.JS][] spy/stub/mock assertions
 
 ### Migration Tools
 
-- **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate Jest/Vitest assertions to bupkis
+- **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate Jest/Vitest assertions to **BUPKIS**
 
 ### Testing Tools
 
-- **[@bupkis/property-testing](./packages/property-testing/)** - Property-based testing harness for bupkis assertions
+- **[@bupkis/property-testing](./packages/property-testing/)** - Property-based testing harness for **BUPKIS** assertions
 
 ## Resources
 
-- [Official Documentation](https://bupkis.zip)
-- [npm](https://www.npmjs.com/package/bupkis)
-- [GitHub](https://github.com/boneskull/bupkis)
+- [Official Documentation][docs]
+- **BUPKIS** on [npm][]
+- **BUPKIS** on [GitHub][]
 
 ## License
 
-Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0](https://blueoakcouncil.org/license/1.0.0).
+Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0][].
 
 [boneskull]: https://github.com/boneskull
+[MSW]: https://mswjs.io
+[RxJS]: https://rxjs.dev
+[Sinon.JS]: https://sinonjs.org
+[docs]: https://bupkis.zip
+[npm]: https://www.npmjs.com/package/bupkis
+[GitHub]: https://github.com/boneskull/bupkis
+[BlueOak-1.0.0]: https://blueoakcouncil.org/license/1.0.0
