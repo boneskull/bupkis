@@ -315,33 +315,6 @@ export const toHaveHandledRequestToWithOptionsAssertion =
     },
   );
 
-/**
- * Asserts that a tracked server did NOT handle a request to a specific path.
- *
- * @example
- *
- * ```ts
- * expect(server, 'to not have handled request to', '/api/admin');
- * ```
- */
-export const notToHaveHandledRequestToAssertion = expect.createAssertion(
-  [TrackedServerSchema, 'to not have handled request to', PathMatcherSchema],
-  (server, path) => {
-    const requests = server.trackedRequests;
-    const matches = filterMatchingRequests(requests, path);
-
-    if (matches.length === 0) {
-      return true;
-    }
-
-    return {
-      actual: formatTrackedRequests(matches),
-      expected: 'no matching requests',
-      message: `Expected server not to have handled request to "${path}", but found ${matches.length} matching request(s)`,
-    };
-  },
-);
-
 // #endregion
 
 // #region RegExp Pattern Matching
@@ -431,38 +404,6 @@ export const toHaveHandledRequestMatchingWithOptionsAssertion =
       };
     },
   );
-
-/**
- * Asserts that a tracked server did NOT handle a request matching a RegExp
- * pattern.
- *
- * @example
- *
- * ```ts
- * expect(server, 'to not have handled request matching', /\/api\/admin/);
- * ```
- */
-export const notToHaveHandledRequestMatchingAssertion = expect.createAssertion(
-  [
-    TrackedServerSchema,
-    'to not have handled request matching',
-    schema.RegExpSchema,
-  ],
-  (server, pattern) => {
-    const requests = server.trackedRequests;
-    const matches = filterMatchingRequests(requests, pattern);
-
-    if (matches.length === 0) {
-      return true;
-    }
-
-    return {
-      actual: formatTrackedRequests(matches),
-      expected: 'no matching requests',
-      message: `Expected server not to have handled request matching ${pattern}, but found ${matches.length} matching request(s)`,
-    };
-  },
-);
 
 // #endregion
 
@@ -676,11 +617,9 @@ export const mswAssertions = [
   // Basic path assertions (sync)
   toHaveHandledRequestToBasicAssertion,
   toHaveHandledRequestToWithOptionsAssertion,
-  notToHaveHandledRequestToAssertion,
   // RegExp pattern matching (sync)
   toHaveHandledRequestMatchingBasicAssertion,
   toHaveHandledRequestMatchingWithOptionsAssertion,
-  notToHaveHandledRequestMatchingAssertion,
   // Request count (sync)
   toHaveHandledCountAssertion,
   toHaveHandledRequestsAssertion,

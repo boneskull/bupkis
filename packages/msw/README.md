@@ -211,22 +211,10 @@ await fetch('https://api.example.com/api/users');
 expect(server, 'to have handled request to', '/api/users', { once: true });
 ```
 
-### {TrackedServer} to not have handled request to {path}
-
-Asserts that the server did NOT handle a request to the specified path.
-
-**Success**:
+**Negation** (assert no request was handled):
 
 ```js
-expect(server, 'to not have handled request to', '/api/admin');
-```
-
-**Failure**:
-
-```js
-await fetch('https://api.example.com/api/users');
-expect(server, 'to not have handled request to', '/api/users');
-// AssertionError: Expected server not to have handled request to "/api/users", but found 1 matching request(s)
+expect(server, 'not to have handled request to', '/api/admin');
 ```
 
 ### {TrackedServer} to have handled request matching {pattern}
@@ -258,22 +246,10 @@ expect(server, 'to have handled request matching', /\/api\/users\/\d+/, {
 });
 ```
 
-### {TrackedServer} to not have handled request matching {pattern}
-
-Asserts that the server did NOT handle a request matching a RegExp pattern.
-
-**Success**:
+**Negation** (assert no request matched):
 
 ```js
-expect(server, 'to not have handled request matching', /\/api\/admin/);
-```
-
-**Failure**:
-
-```js
-await fetch('https://api.example.com/api/users/123');
-expect(server, 'to not have handled request matching', /\/api\/users\/\d+/);
-// AssertionError: Expected server not to have handled request matching /\/api\/users\/\d+/, but found 1 matching request(s)
+expect(server, 'not to have handled request matching', /\/api\/admin/);
 ```
 
 ### {TrackedServer} to have handled {number} requests

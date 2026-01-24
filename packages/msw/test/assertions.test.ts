@@ -149,6 +149,19 @@ describe('@bupkis/msw', () => {
       });
     });
 
+    it('should match with array body', async () => {
+      await fetch(`${BASE_URL}/api/users`, {
+        body: JSON.stringify([{ name: 'Alice' }, { name: 'Bob' }]),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+      // Arrays work because they're objects - Object.entries gives indexed keys
+      await expectAsync(server, 'to have handled request to', '/api/users', {
+        body: [{ name: 'Alice' }, { name: 'Bob' }],
+        method: 'POST',
+      });
+    });
+
     it('should match with headers option (exact)', async () => {
       await fetch(`${BASE_URL}/api/users`, {
         headers: { 'x-custom': 'value' },
@@ -206,20 +219,6 @@ describe('@bupkis/msw', () => {
     });
   });
 
-  describe('to not have handled request to', () => {
-    it('should pass when request was not handled', () => {
-      expect(server, 'to not have handled request to', '/api/unknown');
-    });
-
-    it('should fail when request was handled', async () => {
-      await fetch(`${BASE_URL}/api/users`);
-      expect(
-        () => expect(server, 'to not have handled request to', '/api/users'),
-        'to throw',
-      );
-    });
-  });
-
   describe('to have handled request matching', () => {
     it('should pass when request matches pattern', async () => {
       await fetch(`${BASE_URL}/api/users/123`);
@@ -242,17 +241,21 @@ describe('@bupkis/msw', () => {
     });
   });
 
-  describe('to not have handled request matching', () => {
-    it('should pass when no request matches pattern', () => {
-      expect(server, 'to not have handled request matching', /\/api\/admin/);
+  describe('to have handled request matching (negation)', () => {
+    it('should pass negation when no request matches pattern', () => {
+      expect(server, 'not to have handled request matching', /\/api\/admin/);
     });
 
-    it('should fail when request matches pattern', async () => {
+    it('should fail negation when request matches pattern', async () => {
       await fetch(`${BASE_URL}/api/users/123`);
       expect(
-        server,
-        'not to not have handled request matching',
-        /\/api\/users\/\d+/,
+        () =>
+          expect(
+            server,
+            'not to have handled request matching',
+            /\/api\/users\/\d+/,
+          ),
+        'to throw',
       );
     });
   });
