@@ -6,5 +6,6 @@
   "packages/property-testing": "0.1.1",
   "packages/rxjs": "0.1.0",
   "packages/sinon": "0.2.0",
-  "packages/http": "0.1.1"
+  "packages/http": "0.1.1",
+  "packages/msw": "0.1.0"
 }
