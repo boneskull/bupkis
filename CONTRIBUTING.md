@@ -157,16 +157,16 @@ npm run test:types
 
 This is an **npm workspaces monorepo**. All packages live in `packages/`:
 
-| Package | Path | Description |
-| --- | --- | --- |
-| `bupkis` | `packages/bupkis` | Core assertion library |
-| `@bupkis/events` | `packages/events` | EventEmitter and EventTarget assertions |
-| `@bupkis/from-chai` | `packages/from-chai` | Codemod to migrate Chai assertions |
-| `@bupkis/from-jest` | `packages/from-jest` | Codemod to migrate Jest/Vitest assertions |
-| `@bupkis/http` | `packages/http` | HTTP response assertions (supertest, fetch, axios) |
-| `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
-| `@bupkis/rxjs` | `packages/rxjs` | RxJS Observable assertions |
-| `@bupkis/sinon` | `packages/sinon` | Sinon spy/stub/mock assertions |
+| Package                    | Path                        | Description                                        |
+| -------------------------- | --------------------------- | -------------------------------------------------- |
+| `bupkis`                   | `packages/bupkis`           | Core assertion library                             |
+| `@bupkis/events`           | `packages/events`           | EventEmitter and EventTarget assertions            |
+| `@bupkis/from-chai`        | `packages/from-chai`        | Codemod to migrate Chai assertions                 |
+| `@bupkis/from-jest`        | `packages/from-jest`        | Codemod to migrate Jest/Vitest assertions          |
+| `@bupkis/http`             | `packages/http`             | HTTP response assertions (supertest, fetch, axios) |
+| `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions      |
+| `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                         |
+| `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                     |
 
 ### Core Package Structure (`packages/bupkis`)
 
@@ -226,15 +226,29 @@ This is an **npm workspaces monorepo**. All packages live in `packages/`:
 For assertion logic, use [fast-check](https://fast-check.dev) and the `@bupkis/property-testing` harness:
 
 ```ts
-import { createPropertyTestHarness, extractPhrases, getVariants } from '@bupkis/property-testing';
+import {
+  createPropertyTestHarness,
+  extractPhrases,
+  getVariants,
+} from '@bupkis/property-testing';
 import fc from 'fast-check';
 
 const { runVariant } = createPropertyTestHarness({ expect, expectAsync });
 
 // Define generators for valid/invalid inputs
 const testConfig = {
-  valid: { generators: [fc.integer().filter(n => n % 2 === 0), fc.constantFrom(...extractPhrases(myAssertion))] },
-  invalid: { generators: [fc.integer().filter(n => n % 2 !== 0), fc.constantFrom(...extractPhrases(myAssertion))] },
+  valid: {
+    generators: [
+      fc.integer().filter((n) => n % 2 === 0),
+      fc.constantFrom(...extractPhrases(myAssertion)),
+    ],
+  },
+  invalid: {
+    generators: [
+      fc.integer().filter((n) => n % 2 !== 0),
+      fc.constantFrom(...extractPhrases(myAssertion)),
+    ],
+  },
 };
 ```
 
@@ -311,7 +325,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) w
 
 **Examples:**
 
-```
+```text
 feat(bupkis): add new 'to be a URL' assertion
 fix(sinon): handle spies with no calls in 'was called with'
 docs(http): add examples for redirect assertions
@@ -327,7 +341,7 @@ When a change spans multiple packages, ask: _"Is the commit type the same for al
 
 For example, adding a new export to `@bupkis/property-testing` and consuming it in `bupkis`:
 
-```
+```text
 feat(property-testing): add extractProperty helper
 chore(bupkis): use extractProperty from @bupkis/property-testing
 ```
