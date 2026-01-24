@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/msw",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "MSW request verification assertions for Bupkis",
   "repository": {
