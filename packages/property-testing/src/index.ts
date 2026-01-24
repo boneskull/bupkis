@@ -4,7 +4,7 @@
  * _See also:_ **[README](/documents/_bupkis_property-testing-1/)**
  *
  * @module @bupkis/property-testing
- * @category Testing Utilities
+ * @category Extension APIs
  * @showGroups
  *
  * @groupDescription Test Harness

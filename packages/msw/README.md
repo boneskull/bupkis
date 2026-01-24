@@ -57,67 +57,6 @@ const { expect, expectAsync } = use(mswAssertions);
 }
 ```
 
-## API
-
-### `createTrackedServer(...handlers)`
-
-Creates an MSW server with request tracking capabilities. This is a drop-in replacement for `setupServer` from `msw/node`.
-
-The returned server implements `Disposable`, so you can use `using` syntax (TypeScript 5.2+) for automatic cleanup:
-
-```typescript
-import { createTrackedServer } from '@bupkis/msw';
-import { http, HttpResponse } from 'msw';
-
-{
-  using server = createTrackedServer(
-    http.get('/api/users', () => HttpResponse.json([])),
-  );
-  server.listen();
-  // ... make requests and assertions ...
-  // server.close() called automatically when block exits
-}
-```
-
-### `isTrackedServer(value)`
-
-Type guard that checks if a value is a `TrackedServer` instance.
-
-```typescript
-import { isTrackedServer, createTrackedServer } from '@bupkis/msw';
-import { setupServer } from 'msw/node';
-
-const trackedServer = createTrackedServer();
-const plainServer = setupServer();
-
-isTrackedServer(trackedServer); // true
-isTrackedServer(plainServer); // false
-```
-
-### `waitForBodies(server)`
-
-Waits for all tracked request bodies to be parsed and returns the requests.
-
-**Note:** When using `expectAsync` for body matching, this is called automatically. Use this when you need to access `req.body` directly.
-
-```typescript
-await fetch(url, { method: 'POST', body: JSON.stringify({ name: 'Bob' }) });
-
-// Returns requests with bodies resolved
-const requests = await waitForBodies(server);
-console.log(requests[0].body); // { name: 'Bob' }
-
-// For body assertions, prefer expectAsync (body parsing is automatic)
-await expectAsync(server, 'to have handled request to', '/api', { body: data });
-```
-
-### TrackedServer Properties
-
-- `trackedRequests` - Array of all tracked requests (includes `bodyPromise` for each request)
-- `isTrackedServer` - Always `true` for tracked servers
-- `clearTrackedRequests()` - Clears all tracked request history
-- `[Symbol.dispose]()` - Calls `close()` (enables `using` syntax)
-
 ## Assertions
 
 ### {TrackedServer} to have handled request to {path}
@@ -313,6 +252,67 @@ export type {
   TrackedServer,
 } from './types.js';
 ```
+
+## API
+
+### `createTrackedServer(...handlers)`
+
+Creates an MSW server with request tracking capabilities. This is a drop-in replacement for `setupServer` from `msw/node`.
+
+The returned server implements `Disposable`, so you can use `using` syntax (TypeScript 5.2+) for automatic cleanup:
+
+```typescript
+import { createTrackedServer } from '@bupkis/msw';
+import { http, HttpResponse } from 'msw';
+
+{
+  using server = createTrackedServer(
+    http.get('/api/users', () => HttpResponse.json([])),
+  );
+  server.listen();
+  // ... make requests and assertions ...
+  // server.close() called automatically when block exits
+}
+```
+
+### `isTrackedServer(value)`
+
+Type guard that checks if a value is a `TrackedServer` instance.
+
+```typescript
+import { isTrackedServer, createTrackedServer } from '@bupkis/msw';
+import { setupServer } from 'msw/node';
+
+const trackedServer = createTrackedServer();
+const plainServer = setupServer();
+
+isTrackedServer(trackedServer); // true
+isTrackedServer(plainServer); // false
+```
+
+### `waitForBodies(server)`
+
+Waits for all tracked request bodies to be parsed and returns the requests.
+
+**Note:** When using `expectAsync` for body matching, this is called automatically. Use this when you need to access `req.body` directly.
+
+```typescript
+await fetch(url, { method: 'POST', body: JSON.stringify({ name: 'Bob' }) });
+
+// Returns requests with bodies resolved
+const requests = await waitForBodies(server);
+console.log(requests[0].body); // { name: 'Bob' }
+
+// For body assertions, prefer expectAsync (body parsing is automatic)
+await expectAsync(server, 'to have handled request to', '/api', { body: data });
+```
+
+### TrackedServer Properties
+
+- `trackedRequests` - Array of all tracked requests (includes `bodyPromise` for each request)
+- `isTrackedServer` - Always `true` for tracked servers
+- `clearTrackedRequests()` - Clears all tracked request history
+- `[Symbol.dispose]()` - Calls `close()` (enables `using` syntax)
 
 ## License
 

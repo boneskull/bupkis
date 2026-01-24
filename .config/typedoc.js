@@ -67,6 +67,7 @@ export default {
     '../packages/bupkis/src/util.ts',
     '../packages/bupkis/src/guards.ts',
     '../packages/property-testing/src/index.ts',
+    '../packages/msw/src/index.ts',
   ],
   excludeExternals: true,
   excludeInternal: true,
