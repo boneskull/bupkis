@@ -47,30 +47,6 @@ export type GeneratorParams =
     ];
 
 /**
- * Extracts the concrete async property variant type from a union.
- *
- * Used in type guards to narrow `PropertyTestConfigVariant` to its async
- * property form.
- */
-export type InferPropertyTestConfigVariantAsyncProperty<T> =
-  T extends PropertyTestConfigVariantAsyncProperty<infer U>
-    ? PropertyTestConfigVariantAsyncProperty<U>
-    : never;
-
-/**
- * Extracts the concrete model-based testing variant type from a union.
- *
- * Used in type guards to narrow `PropertyTestConfigVariant` to its model-based
- * testing form.
- */
-export type InferPropertyTestConfigVariantModel<
-  T extends PropertyTestConfigVariant,
-> =
-  T extends PropertyTestConfigVariantModel<infer M, infer R>
-    ? PropertyTestConfigVariantModel<M, R>
-    : never;
-
-/**
  * Extracts the concrete sync property variant type from a union.
  *
  * Used in type guards to narrow `PropertyTestConfigVariant` to its sync
