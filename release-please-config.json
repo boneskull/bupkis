@@ -27,6 +27,12 @@
       "initial-version": "0.1.0",
       "release-type": "node"
     },
+    "packages/msw": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/msw",
+      "initial-version": "0.1.0",
+      "release-type": "node"
+    },
     "packages/property-testing": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/property-testing",

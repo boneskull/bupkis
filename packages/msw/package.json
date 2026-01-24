@@ -1,0 +1,81 @@
+{
+  "name": "@bupkis/msw",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "MSW request verification assertions for Bupkis",
+  "repository": {
+    "directory": "packages/msw",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "msw",
+    "mock",
+    "http",
+    "api",
+    "assert",
+    "assertion",
+    "test",
+    "mock-service-worker"
+  ],
+  "scripts": {
+    "build": "zshy",
+    "prepublishOnly": "npm run build",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
+    "test:base": "node --import tsx --test --test-reporter=spec",
+    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts",
+    "test:types": "exit 0"
+  },
+  "peerDependencies": {
+    "bupkis": ">=0.15.0",
+    "msw": ">=2.0.0"
+  },
+  "devDependencies": {
+    "msw": "2.8.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
+  }
+}

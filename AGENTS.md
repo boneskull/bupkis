@@ -18,6 +18,7 @@ This is an npm workspaces monorepo. All packages live in `packages/`:
 | `@bupkis/events`           | `packages/events`           | EventEmitter and EventTarget assertions       |
 | `@bupkis/from-chai`        | `packages/from-chai`        | Codemod to migrate Chai assertions            |
 | `@bupkis/from-jest`        | `packages/from-jest`        | Codemod to migrate Jest/Vitest assertions     |
+| `@bupkis/msw`              | `packages/msw`              | MSW request verification assertions           |
 | `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
 | `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                    |
 | `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                |
@@ -158,6 +159,16 @@ A codemod tool to migrate Jest and Vitest assertions to bupkis. Supports:
 - Negation (`.not` → `'not to ...'`)
 - Both CLI (`bupkis-from-jest`) and programmatic API
 
+### @bupkis/msw (`packages/msw`)
+
+MSW (Mock Service Worker) request verification assertions for bupkis. Provides:
+
+- `createTrackedServer()` - Wraps MSW's `setupServer` with request tracking
+- Path assertions (`to have handled request to`, `to have handled request matching`)
+- Request options (method, body, headers, times, once)
+- Body matching uses "to satisfy" semantics
+- Header matching supports exact strings or RegExp patterns
+
 ### @bupkis/property-testing (`packages/property-testing`)
 
 Property-based testing harness using fast-check. Provides utilities for systematically testing assertions across four variants: valid, invalid, validNegated, invalidNegated.
@@ -286,7 +297,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) w
 
 **Commit Format:** `<type>(<scope>): <description>`
 
-- **Scopes** correspond to package names: `bupkis`, `events`, `from-chai`, `from-jest`, `http`, `property-testing`, `rxjs`, `sinon`
+- **Scopes** correspond to package names: `bupkis`, `events`, `from-chai`, `from-jest`, `http`, `msw`, `property-testing`, `rxjs`, `sinon`
 - **Types** follow a limited set of standard conventions: `feat`, `fix`, `chore`, `docs`
 
 **Cross-Package Changes Require Careful Consideration:**
