@@ -184,9 +184,13 @@ const handleRejectsToThrow = (
 
   const arg = matcherArgs[0]!;
 
-  // Check if arg is an Error class (starts with uppercase, no quotes/regex)
+  // Check if arg is an Error class (starts with uppercase, no quotes/regex/template literal)
   const isErrorClass =
-    /^[A-Z]/.test(arg) && !arg.startsWith('/') && !arg.startsWith("'");
+    /^[A-Z]/.test(arg) &&
+    !arg.startsWith('/') &&
+    !arg.startsWith("'") &&
+    !arg.startsWith('"') &&
+    !arg.startsWith('`');
 
   if (isErrorClass) {
     const phrase = negated ? 'not to reject with a' : 'to reject with a';

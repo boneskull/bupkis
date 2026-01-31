@@ -518,6 +518,34 @@ expect(promise).resolves.toBe(42);
         );
         expect(result.transformCount, 'to equal', 2);
       });
+
+      it('should add expectAsync to existing bupkis import when needed', async () => {
+        const input = `
+import { expect } from 'bupkis';
+expect(promise).resolves.toBe(42);
+`.trim();
+        const result = await transformCode(input);
+        // Should not create duplicate import, should add expectAsync
+        expect(
+          result.code,
+          'to contain',
+          `import { expect, expectAsync } from 'bupkis'`,
+        );
+        // Should not have duplicate bupkis imports
+        const importCount = (result.code.match(/from 'bupkis'/g) || []).length;
+        expect(importCount, 'to equal', 1);
+      });
+
+      it('should not duplicate imports when bupkis already has expectAsync', async () => {
+        const input = `
+import { expect, expectAsync } from 'bupkis';
+expect(promise).resolves.toBe(42);
+`.trim();
+        const result = await transformCode(input);
+        // Should not create duplicate import
+        const importCount = (result.code.match(/from 'bupkis'/g) || []).length;
+        expect(importCount, 'to equal', 1);
+      });
     });
   });
 });
