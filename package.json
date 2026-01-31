@@ -132,7 +132,7 @@
       "prettier --write",
       "cspell lint --no-must-find-files"
     ],
-    "*.{ts,cts,js,cjs,yml,json5}": [
+    "*.{ts,js,cjs,yaml,yml,json5}": [
       "eslint --fix",
       "prettier --write",
       "cspell lint --no-must-find-files"
