@@ -185,6 +185,12 @@ const handleRejectsToThrow = (
   const arg = matcherArgs[0]!;
 
   // Check if arg is an Error class (starts with uppercase, no quotes/regex/template literal)
+  // Limitations of this heuristic:
+  // - UPPERCASE_CONSTANTS like MAX_VALUE will be incorrectly treated as Error classes
+  // - Variable references like `const Err = TypeError; toThrow(Err)` will work correctly
+  //   (variable starts with uppercase, which is intentional for error class variables)
+  // - Property access like CustomErrors.NetworkError will be correctly treated as Error class
+  //   (this is the expected behavior since you'd want `to reject with a, CustomErrors.NetworkError`)
   const isErrorClass =
     /^[A-Z]/.test(arg) &&
     !arg.startsWith('/') &&

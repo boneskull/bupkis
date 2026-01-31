@@ -547,5 +547,80 @@ expect(promise).resolves.toBe(42);
         expect(importCount, 'to equal', 1);
       });
     });
+
+    describe('promise matchers with function call subjects', () => {
+      it('should handle resolves with function call subject', async () => {
+        const input = `expect(fetchData()).resolves.toBe(42);`;
+        const result = await transformCode(input);
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(fetchData(), 'to fulfill with value satisfying', 42)`,
+        );
+      });
+
+      it('should handle rejects with function call subject', async () => {
+        const input = `expect(getPromise()).rejects.toThrow();`;
+        const result = await transformCode(input);
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(getPromise(), 'to reject')`,
+        );
+      });
+
+      it('should handle nested function calls in subject', async () => {
+        const input = `expect(fetchUser(getId())).resolves.toEqual({ name: 'test' });`;
+        const result = await transformCode(input);
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(fetchUser(getId()), 'to fulfill with value satisfying', { name: 'test' })`,
+        );
+      });
+
+      it('should handle method calls in subject', async () => {
+        const input = `expect(service.fetchData()).resolves.toBeTruthy();`;
+        const result = await transformCode(input);
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(service.fetchData(), 'to fulfill with value satisfying', expect.it('to be truthy'))`,
+        );
+      });
+    });
+
+    describe('promise matchers with sinon enabled', () => {
+      it('should handle promise matchers with expect.it() when sinon is enabled', async () => {
+        const input = `
+import { expect } from '@jest/globals';
+expect(promise).resolves.toBeTruthy();
+`.trim();
+        const result = await transformCode(input, { sinon: true });
+        // Verify the transformed code uses expectAsync
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(promise, 'to fulfill with value satisfying', expect.it('to be truthy'))`,
+        );
+        // Verify expect is imported (needed for expect.it())
+        expect(result.code, 'to contain', `import { expect, expectAsync }`);
+      });
+
+      it('should handle mixed sync and async assertions with sinon', async () => {
+        const input = `
+import { expect } from '@jest/globals';
+expect(42).toBe(42);
+expect(promise).resolves.toBe('value');
+`.trim();
+        const result = await transformCode(input, { sinon: true });
+        expect(result.code, 'to contain', `expect(42, 'to be', 42)`);
+        expect(
+          result.code,
+          'to contain',
+          `expectAsync(promise, 'to fulfill with value satisfying', 'value')`,
+        );
+      });
+    });
   });
 });

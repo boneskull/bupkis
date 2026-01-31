@@ -398,6 +398,63 @@ interface ParsedExpectChain {
 }
 
 /**
+ * Extract the subject from an expect() call by finding the matching closing
+ * parenthesis.
+ *
+ * This handles nested parentheses correctly (e.g., `expect(fetchData())`).
+ *
+ * @function
+ * @param code - The code string starting with `expect(`
+ * @returns The subject and the rest of the string after the closing paren, or
+ *   null if parsing fails
+ */
+const extractExpectSubject = (
+  code: string,
+): null | { rest: string; subject: string } => {
+  // Must start with 'expect('
+  if (!code.startsWith('expect(')) {
+    return null;
+  }
+
+  let depth = 1; // We're already inside the opening paren
+  let inString: null | string = null;
+  const startIndex = 7; // Length of 'expect('
+
+  for (let i = startIndex; i < code.length; i++) {
+    const char = code[i];
+    const prevChar = code[i - 1];
+
+    // Handle string boundaries
+    if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
+      if (inString === char) {
+        inString = null;
+      } else if (!inString) {
+        inString = char;
+      }
+    }
+
+    // Track nesting depth (only outside strings)
+    if (!inString) {
+      if (char === '(') {
+        depth++;
+      } else if (char === ')') {
+        depth--;
+        if (depth === 0) {
+          // Found the matching closing paren
+          return {
+            rest: code.slice(i + 1),
+            subject: code.slice(startIndex, i).trim(),
+          };
+        }
+      }
+    }
+  }
+
+  // No matching closing paren found
+  return null;
+};
+
+/**
  * Parse a Jest expect() chain into its components.
  *
  * Supports patterns like:
@@ -412,16 +469,23 @@ interface ParsedExpectChain {
  * @function
  */
 const parseExpectChain = (code: string): null | ParsedExpectChain => {
-  // Match: expect(subject).[resolves.|rejects.]?[not.]?matcher(args)
-  const regex =
-    /^expect\((.+?)\)\.((?:resolves|rejects)\.)?(not\.)?(\w+)\((.*)\)$/s;
-  const match = code.match(regex);
+  // First, extract the subject using balanced parenthesis matching
+  const extracted = extractExpectSubject(code);
+  if (!extracted) {
+    return null;
+  }
+
+  const { rest, subject } = extracted;
+
+  // Now parse the rest: .[resolves.|rejects.]?[not.]?matcher(args)
+  const restRegex = /^\.((?:resolves|rejects)\.)?(not\.)?(\w+)\((.*)\)$/s;
+  const match = rest.match(restRegex);
 
   if (!match) {
     return null;
   }
 
-  const [, subject, modifierPart, notPart, matcher, argsStr] = match;
+  const [, modifierPart, notPart, matcher, argsStr] = match;
 
   // Ensure required matches are present
   if (!subject || !matcher) {
