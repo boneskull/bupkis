@@ -122,7 +122,8 @@
     ]
   },
   "lint-staged": {
-    "**/!(.github/prompts)/*.md": [
+    "*.md": [
+      "markdownlint-cli2 --fix",
       "prettier --write",
       "cspell lint --no-must-find-files"
     ],
