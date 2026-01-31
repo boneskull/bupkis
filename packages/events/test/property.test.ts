@@ -445,7 +445,8 @@ const asyncTestConfigs = new Map<
     {
       invalid: {
         async: true,
-        generators: fc.integer({ max: 100, min: 1 }).chain((maxListeners) => {
+        // min: 2 because we add one listener here + the assertion adds another
+        generators: fc.integer({ max: 100, min: 2 }).chain((maxListeners) => {
           const emitter = new EventEmitter();
           emitter.setMaxListeners(maxListeners);
           emitter.on('error', () => {}); // Prevent unhandled error
