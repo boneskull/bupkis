@@ -26,7 +26,8 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 
 ### Migration Tools
 
-- **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate Jest/Vitest assertions to **BUPKIS**
+- **[@bupkis/from-chai](./packages/from-chai/)** - Codemod to migrate [Chai][] assertions to **BUPKIS**
+- **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate [Jest][]/[Vitest][] assertions to **BUPKIS**
 
 ### Testing Tools
 
@@ -34,9 +35,9 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 
 ## Resources
 
-- [Official Documentation][docs]
-- **BUPKIS** on [npm][]
-- **BUPKIS** on [GitHub][]
+- [Official Documentation][docs] (accept no substitutes)
+- [**BUPKIS** on npm][npm]
+- [**BUPKIS** on GitHub][GitHub]
 
 ## License
 
@@ -50,3 +51,6 @@ Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [B
 [npm]: https://www.npmjs.com/package/bupkis
 [GitHub]: https://github.com/boneskull/bupkis
 [BlueOak-1.0.0]: https://blueoakcouncil.org/license/1.0.0
+[Jest]: https://jestjs.io
+[Vitest]: https://vitest.dev
+[Chai]: https://www.chaijs.com
