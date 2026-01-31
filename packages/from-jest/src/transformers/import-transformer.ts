@@ -7,6 +7,11 @@ const JEST_IMPORT_SOURCES = ['@jest/globals', 'vitest', 'jest'];
  */
 export interface ImportTransformOptions {
   /**
+   * Whether expectAsync is needed (promise matchers were transformed).
+   */
+  useExpectAsync?: boolean;
+
+  /**
    * Whether sinon assertions are being used (adds @bupkis/sinon imports).
    */
   useSinon?: boolean;
@@ -23,11 +28,13 @@ export const transformImports = (
 ): {
   modified: boolean;
 } => {
-  const { useSinon = false } = options;
+  const { useExpectAsync = false, useSinon = false } = options;
 
   let hasBupkisImport = false;
+  let hasExpectAsyncImport = false;
   let hasSinonImport = false;
   let hasExpectUsage = false;
+  let hasExpectAsyncUsage = false;
   let modified = false;
 
   // Check if bupkis import already exists
@@ -44,6 +51,10 @@ export const transformImports = (
       ) {
         hasBupkisImport = true;
       }
+      // Check for 'expectAsync'
+      if (namedImports.some((n) => n.getName() === 'expectAsync')) {
+        hasExpectAsyncImport = true;
+      }
     } else if (moduleSpecifier === '@bupkis/sinon') {
       hasSinonImport = true;
     }
@@ -53,6 +64,9 @@ export const transformImports = (
   const identifiers = sourceFile.getDescendantsOfKind(SyntaxKind.Identifier);
   hasExpectUsage = identifiers.some(
     (id) => id.getText() === 'expect' && isExpectCall(id),
+  );
+  hasExpectAsyncUsage = identifiers.some(
+    (id) => id.getText() === 'expectAsync' && isExpectCall(id),
   );
 
   // Transform Jest/Vitest imports
@@ -76,19 +90,37 @@ export const transformImports = (
     }
   }
 
+  // Determine what imports are needed
+  const needsExpectAsync =
+    (useExpectAsync || hasExpectAsyncUsage) && !hasExpectAsyncImport;
+  // Need expect if: there are expect() calls OR we need expectAsync (for expect.it())
+  const needsExpect = (hasExpectUsage || needsExpectAsync) && !hasBupkisImport;
+
   // Add bupkis import if needed
-  if (hasExpectUsage && !hasBupkisImport) {
+  if (needsExpect || needsExpectAsync) {
     if (useSinon) {
-      // When using sinon, import { use } from bupkis
+      // When using sinon, import { use } from bupkis (and optionally expectAsync)
+      const namedImports: string[] = ['use'];
+      if (needsExpectAsync) {
+        namedImports.push('expectAsync');
+      }
       sourceFile.addImportDeclaration({
         moduleSpecifier: 'bupkis',
-        namedImports: ['use'],
+        namedImports,
       });
     } else {
-      // Standard bupkis import
+      // Standard bupkis import - always include expect when expectAsync is needed
+      // because expect.it() may be used in transformations
+      const namedImports: string[] = [];
+      if (needsExpect) {
+        namedImports.push('expect');
+      }
+      if (needsExpectAsync) {
+        namedImports.push('expectAsync');
+      }
       sourceFile.addImportDeclaration({
         moduleSpecifier: 'bupkis',
-        namedImports: ['expect'],
+        namedImports,
       });
     }
     modified = true;

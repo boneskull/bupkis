@@ -133,24 +133,149 @@ export const coreMatchers: MatcherTransform[] = [
     jestMatcher: 'toThrowError',
   },
 
-  // Promises (these need expectAsync)
-  {
-    bupkisPhrase: 'to be fulfilled',
-    jestMatcher: 'resolves',
-    /**
-     * @function
-     */
-    transform: () => null, // Complex - needs restructuring to expectAsync
-  },
-  {
-    bupkisPhrase: 'to reject',
-    jestMatcher: 'rejects',
-    /**
-     * @function
-     */
-    transform: () => null, // Complex - needs restructuring to expectAsync
-  },
+  // Note: resolves/rejects are handled as modifiers in expect-transformer.ts,
+  // not as standalone matchers. See transformPromiseChain().
 
   // Mock/spy matchers are handled separately via @bupkis/sinon
   // See: matchers/sinon.ts and the --sinon CLI flag
 ];
+
+/**
+ * Matchers that pass their argument directly as the expected value.
+ *
+ * For these matchers, we can use `'to fulfill with value satisfying', value`
+ * directly without wrapping in `expect.it()`.
+ */
+const DIRECT_VALUE_MATCHERS = new Set([
+  'toBe',
+  'toEqual',
+  'toMatchObject',
+  'toStrictEqual',
+]);
+
+/**
+ * Look up the bupkis phrase for a Jest matcher.
+ *
+ * @function
+ */
+const jestMatcherToBupkisPhrase = (jestMatcher: string): null | string => {
+  const transform = coreMatchers.find((m) => m.jestMatcher === jestMatcher);
+  return transform?.bupkisPhrase ?? null;
+};
+
+/**
+ * Handle `rejects.toThrow()` special cases.
+ *
+ * - No args: `'to reject'`
+ * - Error class: `'to reject with a', ErrorClass`
+ * - String/regex: `'to reject with error satisfying', arg`
+ *
+ * @function
+ */
+const handleRejectsToThrow = (
+  subject: string,
+  matcherArgs: string[],
+  negated: boolean,
+): string => {
+  if (matcherArgs.length === 0) {
+    const phrase = negated ? 'not to reject' : 'to reject';
+    return `expectAsync(${subject}, '${phrase}')`;
+  }
+
+  const arg = matcherArgs[0]!;
+
+  // Check if arg is an Error class (starts with uppercase, no quotes/regex)
+  const isErrorClass =
+    /^[A-Z]/.test(arg) && !arg.startsWith('/') && !arg.startsWith("'");
+
+  if (isErrorClass) {
+    const phrase = negated ? 'not to reject with a' : 'to reject with a';
+    return `expectAsync(${subject}, '${phrase}', ${arg})`;
+  }
+
+  // String or regex - use 'to reject with error satisfying'
+  const phrase = negated
+    ? 'not to reject with error satisfying'
+    : 'to reject with error satisfying';
+  return `expectAsync(${subject}, '${phrase}', ${arg})`;
+};
+
+export interface PromiseChainTransformResult {
+  /** The transformed code */
+  code: string;
+  /** Whether the transformation was successful */
+  success: boolean;
+}
+
+/**
+ * Transform a Jest promise modifier chain to bupkis `expectAsync`.
+ *
+ * Handles patterns like:
+ *
+ * - `expect(p).resolves.toBe(v)` → `expectAsync(p, 'to fulfill with value
+ *   satisfying', v)`
+ * - `expect(p).resolves.toBeTruthy()` → `expectAsync(p, 'to fulfill with value
+ *   satisfying', expect.it('to be truthy'))`
+ * - `expect(p).rejects.toThrow()` → `expectAsync(p, 'to reject')`
+ *
+ * @function
+ */
+export const transformPromiseChain = (
+  subject: string,
+  modifier: 'rejects' | 'resolves',
+  matcher: string,
+  matcherArgs: string[],
+  negated: boolean,
+): PromiseChainTransformResult => {
+  const bupkisPhrase = jestMatcherToBupkisPhrase(matcher);
+
+  // If we don't have a mapping for this matcher, we can't transform it
+  if (!bupkisPhrase) {
+    return { code: '', success: false };
+  }
+
+  const negatedPhrase = negated ? `not ${bupkisPhrase}` : bupkisPhrase;
+
+  if (modifier === 'resolves') {
+    // Direct value matchers - pass the value directly
+    if (DIRECT_VALUE_MATCHERS.has(matcher) && matcherArgs.length > 0) {
+      const phrase = negated
+        ? 'not to fulfill with value satisfying'
+        : 'to fulfill with value satisfying';
+      return {
+        code: `expectAsync(${subject}, '${phrase}', ${matcherArgs[0]})`,
+        success: true,
+      };
+    }
+
+    // All other matchers - wrap in expect.it()
+    const expectItArgs =
+      matcherArgs.length > 0 ? `, ${matcherArgs.join(', ')}` : '';
+    const phrase = negated
+      ? 'not to fulfill with value satisfying'
+      : 'to fulfill with value satisfying';
+    return {
+      code: `expectAsync(${subject}, '${phrase}', expect.it('${negatedPhrase}'${expectItArgs}))`,
+      success: true,
+    };
+  }
+
+  // rejects handling
+  if (matcher === 'toThrow' || matcher === 'toThrowError') {
+    return {
+      code: handleRejectsToThrow(subject, matcherArgs, negated),
+      success: true,
+    };
+  }
+
+  // All other rejects matchers - wrap in expect.it()
+  const expectItArgs =
+    matcherArgs.length > 0 ? `, ${matcherArgs.join(', ')}` : '';
+  const phrase = negated
+    ? 'not to reject with error satisfying'
+    : 'to reject with error satisfying';
+  return {
+    code: `expectAsync(${subject}, '${phrase}', expect.it('${negatedPhrase}'${expectItArgs}))`,
+    success: true,
+  };
+};

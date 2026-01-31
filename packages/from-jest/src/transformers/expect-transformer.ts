@@ -13,6 +13,7 @@ import {
   getSinonMatcherTransform,
   isMatcherSupported,
   isMockMatcher,
+  transformPromiseChain,
 } from '../matchers/index.js';
 
 /**
@@ -43,6 +44,9 @@ interface ExpectTransformResult {
   /** Number of mock matchers transformed (when sinon enabled) */
   mockMatcherTransformCount: number;
 
+  /** Number of promise matchers transformed (resolves/rejects) */
+  promiseMatcherTransformCount: number;
+
   transformCount: number;
   warnings: TransformWarning[];
 }
@@ -61,6 +65,7 @@ export const transformExpectCalls = (
   const mockMatchers: MockMatcherInfo[] = [];
   let transformCount = 0;
   let mockMatcherTransformCount = 0;
+  let promiseMatcherTransformCount = 0;
 
   const { mode, sinon = false } = options;
 
@@ -80,6 +85,9 @@ export const transformExpectCalls = (
         transformCount++;
         if (result.wasMockMatcher) {
           mockMatcherTransformCount++;
+        }
+        if (result.wasPromiseMatcher) {
+          promiseMatcherTransformCount++;
         }
       }
 
@@ -107,6 +115,7 @@ export const transformExpectCalls = (
     errors,
     mockMatchers,
     mockMatcherTransformCount,
+    promiseMatcherTransformCount,
     transformCount,
     warnings,
   };
@@ -115,11 +124,13 @@ export const transformExpectCalls = (
 /**
  * Check if a call expression is a Jest expect() chain. Matches patterns like:
  *
- * - Expect(x).toBe(y)
- * - Expect(x).not.toBe(y)
- * - Expect(x).resolves.toBe(y)
- * - Expect(x).lastCalledWith(y) // Jest 29 alias
- * - Expect(x).nthCalledWith(n, y) // Jest 29 alias
+ * - `expect(x).toBe(y)`
+ * - `expect(x).not.toBe(y)`
+ * - `expect(x).resolves.toBe(y)`
+ * - `expect(x).rejects.toBe(y)`
+ * - `expect(x).resolves.not.toBe(y)`
+ * - `expect(x).lastCalledWith(y)` // Jest 29 alias
+ * - `expect(x).nthCalledWith(n, y)` // Jest 29 alias
  *
  * @function
  */
@@ -137,10 +148,12 @@ const isJestExpectChain = (node: CallExpression): boolean => {
     return false;
   }
 
-  // Check for .toXxx(), .not.xxx(), or Jest 29 aliases (last*, nth*)
+  // Check for .toXxx(), .not.xxx(), .resolves., .rejects., or Jest 29 aliases (last*, nth*)
   return (
     text.includes(').to') ||
     text.includes(').not.') ||
+    text.includes(').resolves.') ||
+    text.includes(').rejects.') ||
     text.includes(').last') ||
     text.includes(').nth')
   );
@@ -155,6 +168,9 @@ interface SingleTransformResult {
 
   /** Whether a mock matcher was transformed (when sinon enabled) */
   wasMockMatcher?: boolean;
+
+  /** Whether a promise matcher was transformed (resolves/rejects) */
+  wasPromiseMatcher?: boolean;
 }
 
 /**
@@ -235,7 +251,39 @@ const transformSingleExpect = (
     return { transformed: false };
   }
 
-  const { matcher, matcherArgs, negated, subject } = parsed;
+  const { matcher, matcherArgs, negated, promiseModifier, subject } = parsed;
+
+  // Handle promise modifiers (resolves/rejects)
+  if (promiseModifier) {
+    const result = transformPromiseChain(
+      subject,
+      promiseModifier,
+      matcher,
+      matcherArgs,
+      negated,
+    );
+
+    if (result.success) {
+      node.replaceWithText(result.code);
+      return { transformed: true, wasPromiseMatcher: true };
+    }
+
+    // Transformation failed - add TODO comment
+    if (mode !== 'strict') {
+      const comment = `// TODO: Manual migration needed - unsupported '${promiseModifier}.${matcher}' pattern`;
+      node.replaceWithText(`${comment}\n${fullText}`);
+    }
+
+    return {
+      transformed: false,
+      warning: {
+        column: col,
+        line: pos,
+        message: `Unsupported promise matcher pattern: ${promiseModifier}.${matcher}`,
+        originalCode: fullText,
+      },
+    };
+  }
 
   // Check for mock matchers
   if (isMockMatcher(matcher)) {
@@ -344,24 +392,36 @@ interface ParsedExpectChain {
   matcher: string;
   matcherArgs: string[];
   negated: boolean;
+  /** Promise modifier (resolves/rejects) if present */
+  promiseModifier?: 'rejects' | 'resolves';
   subject: string;
 }
 
 /**
  * Parse a Jest expect() chain into its components.
  *
+ * Supports patterns like:
+ *
+ * - `expect(x).toBe(y)`
+ * - `expect(x).not.toBe(y)`
+ * - `expect(x).resolves.toBe(y)`
+ * - `expect(x).rejects.toBe(y)`
+ * - `expect(x).resolves.not.toBe(y)`
+ * - `expect(x).rejects.not.toBe(y)`
+ *
  * @function
  */
 const parseExpectChain = (code: string): null | ParsedExpectChain => {
-  // Match: expect(subject).matcher(args) or expect(subject).not.matcher(args)
-  const regex = /^expect\((.+?)\)\.(not\.)?(\w+)\((.*)\)$/s;
+  // Match: expect(subject).[resolves.|rejects.]?[not.]?matcher(args)
+  const regex =
+    /^expect\((.+?)\)\.((?:resolves|rejects)\.)?(not\.)?(\w+)\((.*)\)$/s;
   const match = code.match(regex);
 
   if (!match) {
     return null;
   }
 
-  const [, subject, notPart, matcher, argsStr] = match;
+  const [, subject, modifierPart, notPart, matcher, argsStr] = match;
 
   // Ensure required matches are present
   if (!subject || !matcher) {
@@ -371,10 +431,16 @@ const parseExpectChain = (code: string): null | ParsedExpectChain => {
   // Parse arguments using parseArguments which handles nested structures
   const matcherArgs = argsStr?.trim() ? parseArguments(argsStr) : [];
 
+  // Extract promise modifier (remove trailing dot)
+  const promiseModifier = modifierPart
+    ? (modifierPart.slice(0, -1) as 'rejects' | 'resolves')
+    : undefined;
+
   return {
     matcher,
     matcherArgs,
     negated: Boolean(notPart),
+    promiseModifier,
     subject: subject.trim(),
   };
 };
