@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.2.0...@bupkis/from-jest-v0.3.0) (2026-01-31)
+
+
+### Features
+
+* **from-jest:** add support for resolves/rejects promise matchers ([#348](https://github.com/boneskull/bupkis/issues/348)) ([6a9497e](https://github.com/boneskull/bupkis/commit/6a9497e93e17bf3f3df294c6bbf6101fe4677424))
+
 ## [0.2.0](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.1.1...@bupkis/from-jest-v0.2.0) (2026-01-16)
 
 
