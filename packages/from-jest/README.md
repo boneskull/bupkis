@@ -99,6 +99,39 @@ When transforming, the codemod:
 | `expect(x).toEndWith(s)`   | `expect(x, 'to end with', s)`    |
 | `expect(x).toBeOneOf(arr)` | `expect(x, 'to be one of', arr)` |
 
+### Promise Matchers (resolves/rejects)
+
+The codemod transforms Jest's promise matchers to bupkis's `expectAsync`:
+
+| Jest                              | bupkis                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| `expect(p).resolves.toBe(v)`      | `expectAsync(p, 'to fulfill with value satisfying', v)`                         |
+| `expect(p).resolves.toEqual(v)`   | `expectAsync(p, 'to fulfill with value satisfying', v)`                         |
+| `expect(p).resolves.toBeTruthy()` | `expectAsync(p, 'to fulfill with value satisfying', expect.it('to be truthy'))` |
+| `expect(p).rejects.toThrow()`     | `expectAsync(p, 'to reject')`                                                   |
+| `expect(p).rejects.toThrow(Err)`  | `expectAsync(p, 'to reject with a', Err)`                                       |
+| `expect(p).rejects.toThrow(msg)`  | `expectAsync(p, 'to reject with error satisfying', msg)`                        |
+
+For matchers that check properties of the resolved/rejected value (like `toBeTruthy`, `toContain`, `toHaveLength`), the codemod wraps them in `expect.it()` to preserve the assertion semantics.
+
+**Example:**
+
+```javascript
+// Before (Jest)
+await expect(fetchData()).resolves.toBe('success');
+await expect(fetchData()).resolves.toContain('data');
+await expect(badPromise).rejects.toThrow(TypeError);
+
+// After (bupkis)
+await expectAsync(fetchData(), 'to fulfill with value satisfying', 'success');
+await expectAsync(
+  fetchData(),
+  'to fulfill with value satisfying',
+  expect.it('to contain', 'data'),
+);
+await expectAsync(badPromise, 'to reject with a', TypeError);
+```
+
 ### Negation
 
 All matchers support negation:
@@ -106,9 +139,11 @@ All matchers support negation:
 ```javascript
 // Jest/Vitest
 expect(x).not.toBe(y);
+expect(p).resolves.not.toBe(y);
 
 // bupkis
 expect(x, 'not to be', y);
+expectAsync(p, 'not to fulfill with value satisfying', y);
 ```
 
 ### Mock/Spy Matchers (with `--sinon`)
@@ -166,11 +201,15 @@ import { transform, transformCode } from '@bupkis/from-jest';
 const result = await transformCode(`expect(42).toBe(42);`);
 console.log(result.code); // expect(42, 'to be', 42);
 
+// Transform promise matchers
+const promiseResult = await transformCode(`expect(p).resolves.toBe(42);`);
+console.log(promiseResult.code); // expectAsync(p, 'to fulfill with value satisfying', 42);
+
 // Transform with sinon support
-const result = await transformCode(`expect(spy).toHaveBeenCalled();`, {
+const sinonResult = await transformCode(`expect(spy).toHaveBeenCalled();`, {
   sinon: true,
 });
-console.log(result.code); // expect(spy, 'was called');
+console.log(sinonResult.code); // expect(spy, 'was called');
 
 // Transform files
 const results = await transform({
@@ -188,7 +227,7 @@ Some Jest/Vitest patterns cannot be automatically transformed:
 
 - **Mock/spy creation**: `jest.fn()`, `jest.spyOn()`, `vi.fn()` must be manually migrated to Sinon (`sinon.spy()`, `sinon.stub()`)
 - **DOM matchers**: `@testing-library/jest-dom` matchers like `toBeInTheDocument`
-- **Promise matchers**: `resolves`/`rejects` need restructuring to `expectAsync`
+- **Asymmetric matchers in promise chains**: `expect(p).resolves.toEqual(expect.anything())` needs manual migration
 - **Complex `toHaveProperty`**: When checking property value, not just existence
 
 These cases will be marked with `// TODO: Manual migration needed` comments when using `--best-effort` mode.

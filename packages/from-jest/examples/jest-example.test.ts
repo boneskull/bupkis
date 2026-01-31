@@ -189,3 +189,51 @@ describe('Negation examples', () => {
     }).not.toThrow();
   });
 });
+
+describe('Promise matchers (resolves/rejects)', () => {
+  it('resolves.toBe - promise resolves to value', async () => {
+    await expect(Promise.resolve(42)).resolves.toBe(42);
+  });
+
+  it('resolves.toEqual - promise resolves to object', async () => {
+    await expect(Promise.resolve({ a: 1 })).resolves.toEqual({ a: 1 });
+  });
+
+  it('resolves.toBeTruthy - promise resolves to truthy value', async () => {
+    await expect(Promise.resolve('hello')).resolves.toBeTruthy();
+  });
+
+  it('resolves.toContain - promise resolves to array containing value', async () => {
+    await expect(Promise.resolve([1, 2, 3])).resolves.toContain(2);
+  });
+
+  it('resolves.toHaveLength - promise resolves to array with length', async () => {
+    await expect(Promise.resolve([1, 2, 3])).resolves.toHaveLength(3);
+  });
+
+  it('resolves.not.toBe - promise resolves but not to specific value', async () => {
+    await expect(Promise.resolve(42)).resolves.not.toBe(0);
+  });
+
+  it('rejects.toThrow - promise rejects', async () => {
+    await expect(Promise.reject(new Error('oops'))).rejects.toThrow();
+  });
+
+  it('rejects.toThrow - promise rejects with specific error type', async () => {
+    await expect(Promise.reject(new TypeError('bad type'))).rejects.toThrow(
+      TypeError,
+    );
+  });
+
+  it('rejects.toThrow - promise rejects with message', async () => {
+    await expect(Promise.reject(new Error('specific error'))).rejects.toThrow(
+      'specific error',
+    );
+  });
+
+  it('rejects.toThrow - promise rejects with regex match', async () => {
+    await expect(Promise.reject(new Error('something failed'))).rejects.toThrow(
+      /failed/,
+    );
+  });
+});

@@ -9,7 +9,7 @@
  *    jest-example.transformed.test.ts)
  */
 import { describe, it } from '@jest/globals';
-import { expect } from 'bupkis';
+import { expect, expectAsync } from 'bupkis';
 
 describe('Equality matchers', () => {
   it('toBe - strict equality', () => {
@@ -200,5 +200,83 @@ describe('Negation examples', () => {
       // This function doesn't throw
       return 42;
     }, 'not to throw');
+  });
+});
+
+describe('Promise matchers (resolves/rejects)', () => {
+  it('resolves.toBe - promise resolves to value', async () => {
+    await expectAsync(
+      Promise.resolve(42),
+      'to fulfill with value satisfying',
+      42,
+    );
+  });
+
+  it('resolves.toEqual - promise resolves to object', async () => {
+    await expectAsync(
+      Promise.resolve({ a: 1 }),
+      'to fulfill with value satisfying',
+      { a: 1 },
+    );
+  });
+
+  it('resolves.toBeTruthy - promise resolves to truthy value', async () => {
+    await expectAsync(
+      Promise.resolve('hello'),
+      'to fulfill with value satisfying',
+      expect.it('to be truthy'),
+    );
+  });
+
+  it('resolves.toContain - promise resolves to array containing value', async () => {
+    await expectAsync(
+      Promise.resolve([1, 2, 3]),
+      'to fulfill with value satisfying',
+      expect.it('to contain', 2),
+    );
+  });
+
+  it('resolves.toHaveLength - promise resolves to array with length', async () => {
+    await expectAsync(
+      Promise.resolve([1, 2, 3]),
+      'to fulfill with value satisfying',
+      expect.it('to have length', 3),
+    );
+  });
+
+  it('resolves.not.toBe - promise resolves but not to specific value', async () => {
+    await expectAsync(
+      Promise.resolve(42),
+      'not to fulfill with value satisfying',
+      0,
+    );
+  });
+
+  it('rejects.toThrow - promise rejects', async () => {
+    await expectAsync(Promise.reject(new Error('oops')), 'to reject');
+  });
+
+  it('rejects.toThrow - promise rejects with specific error type', async () => {
+    await expectAsync(
+      Promise.reject(new TypeError('bad type')),
+      'to reject with a',
+      TypeError,
+    );
+  });
+
+  it('rejects.toThrow - promise rejects with message', async () => {
+    await expectAsync(
+      Promise.reject(new Error('specific error')),
+      'to reject with error satisfying',
+      'specific error',
+    );
+  });
+
+  it('rejects.toThrow - promise rejects with regex match', async () => {
+    await expectAsync(
+      Promise.reject(new Error('something failed')),
+      'to reject with error satisfying',
+      /failed/,
+    );
   });
 });

@@ -108,3 +108,27 @@ describe('Negation examples', () => {
     expect([1, 2, 3]).not.toContain(4);
   });
 });
+
+describe('Promise matchers (resolves/rejects)', () => {
+  it('resolves.toBe - promise resolves to value', async () => {
+    await expect(Promise.resolve(42)).resolves.toBe(42);
+  });
+
+  it('resolves.toEqual - promise resolves to object', async () => {
+    await expect(Promise.resolve({ a: 1 })).resolves.toEqual({ a: 1 });
+  });
+
+  it('resolves.toBeTruthy - promise resolves to truthy value', async () => {
+    await expect(Promise.resolve('hello')).resolves.toBeTruthy();
+  });
+
+  it('rejects.toThrow - promise rejects', async () => {
+    await expect(Promise.reject(new Error('oops'))).rejects.toThrow();
+  });
+
+  it('rejects.toThrow - promise rejects with error type', async () => {
+    await expect(Promise.reject(new TypeError('bad'))).rejects.toThrow(
+      TypeError,
+    );
+  });
+});

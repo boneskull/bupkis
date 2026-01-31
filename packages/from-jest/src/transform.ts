@@ -51,7 +51,9 @@ export const transformCode = async (
 
   // Transform imports after expect calls
   // Use sinon imports if any mock matchers were transformed
+  // Use expectAsync imports if any promise matchers were transformed
   transformImports(sourceFile, {
+    useExpectAsync: result.promiseMatcherTransformCount > 0,
     useSinon: options.sinon && result.mockMatcherTransformCount > 0,
   });
 
@@ -149,7 +151,9 @@ export const transform = async (
 
     // Transform imports after expect calls
     // Use sinon imports if any mock matchers were transformed
+    // Use expectAsync imports if any promise matchers were transformed
     transformImports(sourceFile, {
+      useExpectAsync: result.promiseMatcherTransformCount > 0,
       useSinon: sinon && result.mockMatcherTransformCount > 0,
     });
 

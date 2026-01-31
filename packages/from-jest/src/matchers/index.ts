@@ -97,6 +97,6 @@ export const isMatcherSupported = (jestMatcher: string): boolean =>
 export const isMockMatcher = (jestMatcher: string): boolean =>
   MOCK_MATCHERS.has(jestMatcher);
 
-export { coreMatchers } from './core.js';
+export { coreMatchers, transformPromiseChain } from './core.js';
 export { jestExtendedMatchers } from './jest-extended.js';
 export { testingLibraryMatchers } from './testing-library.js';
