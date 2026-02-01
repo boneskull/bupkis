@@ -22,42 +22,26 @@ import { isPhrase, isStandardSchema, isZodType } from './guards.js';
 // This schema is only used for validation (safeParse), not for type inference.
 const AssertionFailureSchema = z
   .object({
-    actual: z
-      .unknown()
-      .optional()
-      .meta({
-        description:
-          'The actual value or description of what actually occurred',
-      }),
-    diff: z
-      .string()
-      .optional()
-      .meta({
-        description: 'Pre-computed diff string that bypasses jest-diff',
-      }),
+    actual: z.unknown().optional().meta({
+      description: 'The actual value or description of what actually occurred',
+    }),
+    diff: z.string().optional().meta({
+      description: 'Pre-computed diff string that bypasses jest-diff',
+    }),
     diffOptions: z
       .record(z.string(), z.unknown())
       .optional()
       .meta({ description: 'Override options for jest-diff' }),
-    expected: z
-      .unknown()
-      .optional()
-      .meta({
-        description:
-          'The expected value or description of what was expected to occur',
-      }),
-    formatActual: z
-      .function()
-      .optional()
-      .meta({
-        description: 'Custom formatter for actual value in diff output',
-      }),
-    formatExpected: z
-      .function()
-      .optional()
-      .meta({
-        description: 'Custom formatter for expected value in diff output',
-      }),
+    expected: z.unknown().optional().meta({
+      description:
+        'The expected value or description of what was expected to occur',
+    }),
+    formatActual: z.function().optional().meta({
+      description: 'Custom formatter for actual value in diff output',
+    }),
+    formatExpected: z.function().optional().meta({
+      description: 'Custom formatter for expected value in diff output',
+    }),
     message: z
       .string()
       .optional()

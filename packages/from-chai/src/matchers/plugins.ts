@@ -287,4 +287,3 @@ export const getPluginMatcher = (
 ): MatcherTransform | undefined => {
   return pluginMatcherMap.get(chaiMatcher);
 };
-
