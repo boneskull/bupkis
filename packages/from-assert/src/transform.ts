@@ -1,4 +1,11 @@
-import { Project, QuoteKind } from 'ts-morph';
+import {
+  addSourceFiles,
+  aggregateResults,
+  createInMemoryProject,
+  createProject,
+  DEFAULT_PATTERNS,
+  shouldExcludeFile,
+} from '@bupkis/codemod-core';
 
 import type {
   FileTransformResult,
@@ -55,15 +62,7 @@ export const transformCode = async (
   code: string,
   options: { mode?: TransformOptions['mode'] } = {},
 ): Promise<CodeTransformResult> => {
-  const project = new Project({
-    compilerOptions: {
-      allowJs: true,
-    },
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    useInMemoryFileSystem: true,
-  });
+  const project = createInMemoryProject();
 
   const sourceFile = project.createSourceFile('temp.ts', code);
   const mode = options.mode ?? 'best-effort';
@@ -123,52 +122,21 @@ export const transform = async (
   const {
     cwd = process.cwd(),
     exclude = ['**/node_modules/**'],
-    include = [
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
-    ],
+    include = DEFAULT_PATTERNS,
     mode = 'best-effort',
     write = true,
   } = options;
 
-  const project = new Project({
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    skipAddingFilesFromTsConfig: true,
-    tsConfigFilePath: `${cwd}/tsconfig.json`,
-  });
-
-  // Add files matching include patterns
-  for (const pattern of include) {
-    project.addSourceFilesAtPaths(`${cwd}/${pattern}`);
-  }
+  const project = createProject(cwd);
+  addSourceFiles(project, cwd, include);
 
   const files: FileTransformResult[] = [];
-  let totalTransformations = 0;
-  let totalWarnings = 0;
-  let totalErrors = 0;
-  let modifiedFiles = 0;
 
   for (const sourceFile of project.getSourceFiles()) {
     const filePath = sourceFile.getFilePath();
 
-    // Skip excluded files using simple substring matching for common patterns
-    // This handles patterns like '**/node_modules/**' by checking for '/node_modules/'
-    const shouldExclude = exclude.some((pattern) => {
-      // Extract the core directory/file name from glob patterns
-      const corePath = pattern
-        .replace(/^\*\*\//, '') // Remove leading **/
-        .replace(/\/\*\*$/, '') // Remove trailing /**
-        .replace(/\*/g, ''); // Remove remaining wildcards
-
-      // Check if the path contains the core pattern as a directory segment
-      return corePath && filePath.includes(`/${corePath}/`);
-    });
-
-    if (shouldExclude) {
+    // Skip excluded files
+    if (shouldExcludeFile(filePath, exclude)) {
       continue;
     }
 
@@ -204,24 +172,16 @@ export const transform = async (
     };
 
     files.push(fileResult);
-    totalTransformations += fileTransformCount;
-    totalWarnings += warnings.length;
-    totalErrors += errors.length;
 
-    if (fileModified) {
-      modifiedFiles++;
-      if (write) {
-        await sourceFile.save();
-      }
+    if (fileModified && write) {
+      await sourceFile.save();
     }
   }
 
+  const stats = aggregateResults(files);
+
   return {
     files,
-    modifiedFiles,
-    totalErrors,
-    totalFiles: files.length,
-    totalTransformations,
-    totalWarnings,
+    ...stats,
   };
 };
