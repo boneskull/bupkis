@@ -1,4 +1,11 @@
-import { Project, QuoteKind } from 'ts-morph';
+import {
+  addSourceFiles,
+  aggregateResults,
+  createInMemoryProject,
+  createProject,
+  DEFAULT_PATTERNS,
+  shouldExcludeFile,
+} from '@bupkis/codemod-core';
 
 import type { MockMatcherInfo } from './transformers/expect-transformer.js';
 import type {
@@ -28,20 +35,15 @@ export interface CodeTransformResult {
  * Transform a code string from Jest to bupkis assertions.
  *
  * @function
+ * @param code - The code to transform
+ * @param options - Transform options
+ * @returns The transformed code and metadata
  */
 export const transformCode = async (
   code: string,
   options: { mode?: TransformOptions['mode']; sinon?: boolean } = {},
 ): Promise<CodeTransformResult> => {
-  const project = new Project({
-    compilerOptions: {
-      allowJs: true,
-    },
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    useInMemoryFileSystem: true,
-  });
+  const project = createInMemoryProject();
 
   const sourceFile = project.createSourceFile('temp.ts', code);
   const result = transformExpectCalls(sourceFile, {
@@ -92,6 +94,8 @@ const aggregateMockMatchers = (
  * Transform files matching glob patterns.
  *
  * @function
+ * @param options - Transform options
+ * @returns Results including per-file details and summary statistics
  */
 export const transform = async (
   options: TransformOptions = {},
@@ -99,44 +103,23 @@ export const transform = async (
   const {
     cwd = process.cwd(),
     exclude = ['**/node_modules/**'],
-    include = [
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
-    ],
+    include = DEFAULT_PATTERNS,
     mode = 'best-effort',
     sinon = false,
     write = true,
   } = options;
 
-  const project = new Project({
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    skipAddingFilesFromTsConfig: true,
-    tsConfigFilePath: `${cwd}/tsconfig.json`,
-  });
-
-  // Add files matching include patterns
-  for (const pattern of include) {
-    project.addSourceFilesAtPaths(`${cwd}/${pattern}`);
-  }
+  const project = createProject(cwd);
+  addSourceFiles(project, cwd, include);
 
   const files: FileTransformResult[] = [];
   const mockMatcherDetections: MockMatcherDetection[] = [];
-  let totalTransformations = 0;
-  let totalWarnings = 0;
-  let totalErrors = 0;
-  let modifiedFiles = 0;
 
   for (const sourceFile of project.getSourceFiles()) {
     const filePath = sourceFile.getFilePath();
 
     // Skip excluded files
-    if (
-      exclude.some((pattern) => filePath.includes(pattern.replace('**/', '')))
-    ) {
+    if (shouldExcludeFile(filePath, exclude)) {
       continue;
     }
 
@@ -166,25 +149,17 @@ export const transform = async (
     };
 
     files.push(fileResult);
-    totalTransformations += result.transformCount;
-    totalWarnings += result.warnings.length;
-    totalErrors += result.errors.length;
 
-    if (result.transformCount > 0) {
-      modifiedFiles++;
-      if (write) {
-        await sourceFile.save();
-      }
+    if (result.transformCount > 0 && write) {
+      await sourceFile.save();
     }
   }
+
+  const stats = aggregateResults(files);
 
   return {
     files,
     mockMatcherDetections,
-    modifiedFiles,
-    totalErrors,
-    totalFiles: files.length,
-    totalTransformations,
-    totalWarnings,
+    ...stats,
   };
 };
