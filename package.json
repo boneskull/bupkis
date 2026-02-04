@@ -30,7 +30,6 @@
     "lint:prettier": "prettier --check .",
     "lint:spelling": "cspell .",
     "lint:types": "tsc --noEmit",
-    "lint:types:dev": "tsc --noEmit --watch",
     "prepare": "husky; npm run build",
     "test": "npm run test --workspaces",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
