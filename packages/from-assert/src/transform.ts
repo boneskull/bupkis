@@ -155,10 +155,20 @@ export const transform = async (
   for (const sourceFile of project.getSourceFiles()) {
     const filePath = sourceFile.getFilePath();
 
-    // Skip excluded files
-    if (
-      exclude.some((pattern) => filePath.includes(pattern.replace('**/', '')))
-    ) {
+    // Skip excluded files using simple substring matching for common patterns
+    // This handles patterns like '**/node_modules/**' by checking for '/node_modules/'
+    const shouldExclude = exclude.some((pattern) => {
+      // Extract the core directory/file name from glob patterns
+      const corePath = pattern
+        .replace(/^\*\*\//, '') // Remove leading **/
+        .replace(/\/\*\*$/, '') // Remove trailing /**
+        .replace(/\*/g, ''); // Remove remaining wildcards
+
+      // Check if the path contains the core pattern as a directory segment
+      return corePath && filePath.includes(`/${corePath}/`);
+    });
+
+    if (shouldExclude) {
       continue;
     }
 
@@ -182,10 +192,13 @@ export const transform = async (
     });
     warnings.push(...importResult.warnings);
 
+    // File is modified if either assertions or imports were changed
+    const fileModified = fileTransformCount > 0 || importResult.modified;
+
     const fileResult: FileTransformResult = {
       errors,
       filePath,
-      modified: fileTransformCount > 0,
+      modified: fileModified,
       transformCount: fileTransformCount,
       warnings,
     };
@@ -195,7 +208,7 @@ export const transform = async (
     totalWarnings += warnings.length;
     totalErrors += errors.length;
 
-    if (fileTransformCount > 0) {
+    if (fileModified) {
       modifiedFiles++;
       if (write) {
         await sourceFile.save();

@@ -184,24 +184,38 @@ const transformSingleAssert = (
   }
 
   // Determine subject and matcher args
+  // Note: node:assert methods often have an optional trailing 'message' argument
+  // that bupkis doesn't support, so we strip it for most assertions
   const subject = args[0] ?? '';
-  const matcherArgs = args.slice(1);
+  const allMatcherArgs = args.slice(1);
 
-  // Check for legacy loose assertions and add warning
+  // For most assertions, only take the expected value, not the message
+  // 'ok' assertions take only a value with no expected arg
+  const hasExpectedArg = baseMatcher !== 'ok';
+  const matcherArgs = hasExpectedArg ? allMatcherArgs.slice(0, 1) : [];
+
+  // Check for legacy loose assertions
   // Note: baseMatcher will be 'equal' for both 'equal' and 'notEqual' (via getBaseMethod)
   if (
     assertStyle === 'legacy' &&
     isLegacyMethod(baseMatcher) &&
     baseMatcher === 'equal'
   ) {
-    // In legacy mode with loose equality, transform but return a warning
+    // In strict mode, refuse to transform loose equality (behavior change is too risky)
+    if (mode === 'strict') {
+      throw new Error(
+        `Loose equality assertion '${method}' cannot be safely transformed - use node:assert/strict`,
+      );
+    }
+
+    // In best-effort mode, transform but return a warning
     // The warning alerts the user that behavior may differ (loose vs strict equality)
     const phrase = negated
       ? `not ${transform.bupkisPhrase}`
       : transform.bupkisPhrase;
     const newCode =
       matcherArgs.length > 0
-        ? `expect(${subject}, '${phrase}', ${matcherArgs.join(', ')})`
+        ? `expect(${subject}, '${phrase}', ${matcherArgs[0]})`
         : `expect(${subject}, '${phrase}')`;
     call.replaceWithText(newCode);
 
@@ -257,10 +271,10 @@ const transformSingleAssert = (
 
   if (matcherArgs.length > 0) {
     // Handle special case for rejects with Error type
-    if (baseMatcher === 'rejects' && matcherArgs.length > 0 && !negated) {
-      newCode = `${expectFn}(${subject}, 'to reject with', ${matcherArgs.join(', ')})`;
+    if (baseMatcher === 'rejects' && !negated) {
+      newCode = `${expectFn}(${subject}, 'to reject with', ${matcherArgs[0]})`;
     } else {
-      newCode = `${expectFn}(${subject}, '${phrase}', ${matcherArgs.join(', ')})`;
+      newCode = `${expectFn}(${subject}, '${phrase}', ${matcherArgs[0]})`;
     }
   } else {
     newCode = `${expectFn}(${subject}, '${phrase}')`;

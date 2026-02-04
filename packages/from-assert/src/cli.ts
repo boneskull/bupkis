@@ -116,7 +116,7 @@ const printResult = (result: TransformResult): void => {
 
   if (result.totalWarnings > 0) {
     console.log(
-      `${ansi.yellow}Note: Search for "TODO: Manual migration needed" in your code for items requiring manual review.${ansi.reset}`,
+      `${ansi.yellow}Note: Review the warnings above and the referenced files for assertions that may require manual migration.${ansi.reset}`,
     );
   }
 };
