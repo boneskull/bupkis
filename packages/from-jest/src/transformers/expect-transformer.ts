@@ -1,3 +1,4 @@
+import { extractCallSubject, parseArguments } from '@bupkis/codemod-core';
 import { type CallExpression, type SourceFile, SyntaxKind } from 'ts-morph';
 
 import type {
@@ -398,63 +399,6 @@ interface ParsedExpectChain {
 }
 
 /**
- * Extract the subject from an expect() call by finding the matching closing
- * parenthesis.
- *
- * This handles nested parentheses correctly (e.g., `expect(fetchData())`).
- *
- * @function
- * @param code - The code string starting with `expect(`
- * @returns The subject and the rest of the string after the closing paren, or
- *   null if parsing fails
- */
-const extractExpectSubject = (
-  code: string,
-): null | { rest: string; subject: string } => {
-  // Must start with 'expect('
-  if (!code.startsWith('expect(')) {
-    return null;
-  }
-
-  let depth = 1; // We're already inside the opening paren
-  let inString: null | string = null;
-  const startIndex = 7; // Length of 'expect('
-
-  for (let i = startIndex; i < code.length; i++) {
-    const char = code[i];
-    const prevChar = code[i - 1];
-
-    // Handle string boundaries
-    if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
-      if (inString === char) {
-        inString = null;
-      } else if (!inString) {
-        inString = char;
-      }
-    }
-
-    // Track nesting depth (only outside strings)
-    if (!inString) {
-      if (char === '(') {
-        depth++;
-      } else if (char === ')') {
-        depth--;
-        if (depth === 0) {
-          // Found the matching closing paren
-          return {
-            rest: code.slice(i + 1),
-            subject: code.slice(startIndex, i).trim(),
-          };
-        }
-      }
-    }
-  }
-
-  // No matching closing paren found
-  return null;
-};
-
-/**
  * Parse a Jest expect() chain into its components.
  *
  * Supports patterns like:
@@ -470,7 +414,7 @@ const extractExpectSubject = (
  */
 const parseExpectChain = (code: string): null | ParsedExpectChain => {
   // First, extract the subject using balanced parenthesis matching
-  const extracted = extractExpectSubject(code);
+  const extracted = extractCallSubject(code, 'expect(');
   if (!extracted) {
     return null;
   }
@@ -507,54 +451,4 @@ const parseExpectChain = (code: string): null | ParsedExpectChain => {
     promiseModifier,
     subject: subject.trim(),
   };
-};
-
-/**
- * Parse function arguments, handling nested structures.
- *
- * @function
- */
-const parseArguments = (argsStr: string): string[] => {
-  const args: string[] = [];
-  let current = '';
-  let depth = 0;
-  let inString: null | string = null;
-
-  for (let i = 0; i < argsStr.length; i++) {
-    const char = argsStr[i];
-    const prevChar = argsStr[i - 1];
-
-    // Handle string boundaries
-    if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
-      if (inString === char) {
-        inString = null;
-      } else if (!inString) {
-        inString = char;
-      }
-    }
-
-    // Track nesting depth (only outside strings)
-    if (!inString) {
-      if (char === '(' || char === '[' || char === '{') {
-        depth++;
-      } else if (char === ')' || char === ']' || char === '}') {
-        depth--;
-      }
-
-      // Split on comma at depth 0
-      if (char === ',' && depth === 0) {
-        args.push(current.trim());
-        current = '';
-        continue;
-      }
-    }
-
-    current += char;
-  }
-
-  if (current.trim()) {
-    args.push(current.trim());
-  }
-
-  return args;
 };
