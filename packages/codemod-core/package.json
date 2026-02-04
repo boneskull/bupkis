@@ -1,0 +1,63 @@
+{
+  "name": "@bupkis/codemod-core",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Shared utilities for bupkis codemods",
+  "repository": {
+    "directory": "packages/codemod-core",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "homepage": "https://bupkis.zip",
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "codemod",
+    "migration",
+    "assertions"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run test:base -- \"test/*.test.ts\"",
+    "test:base": "node --test --test-reporter=spec --import tsx",
+    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/*.test.ts"
+  },
+  "dependencies": {
+    "@boneskull/bargs": "4.0.0",
+    "ts-morph": "^25.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  }
+}

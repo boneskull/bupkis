@@ -1,5 +1,6 @@
 {
   "packages/bupkis": "0.18.1",
+  "packages/codemod-core": "0.0.0",
   "packages/events": "0.2.0",
   "packages/from-assert": "0.0.0",
   "packages/from-chai": "0.1.0",

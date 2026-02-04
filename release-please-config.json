@@ -62,6 +62,12 @@
       "component": "@bupkis/http",
       "initial-version": "0.1.0",
       "release-type": "node"
+    },
+    "packages/codemod-core": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/codemod-core",
+      "initial-version": "0.1.0",
+      "release-type": "node"
     }
   }
 }
