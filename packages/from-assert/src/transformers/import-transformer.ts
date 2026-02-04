@@ -1,4 +1,11 @@
-import { type SourceFile, SyntaxKind } from 'ts-morph';
+import type { SourceFile } from 'ts-morph';
+
+import {
+  addBupkisImport,
+  getBupkisImport,
+  hasBupkisImport,
+  hasCallUsage,
+} from '@bupkis/codemod-core';
 
 import type { AssertStyle, TransformWarning } from '../types.js';
 
@@ -56,36 +63,17 @@ export const transformImports = (
 ): ImportTransformResult => {
   const { useExpectAsync = false } = options;
 
-  let hasBupkisImport = false;
-  let hasBupkisExpectAsync = false;
-  let hasExpectUsage = false;
-  let hasExpectAsyncUsage = false;
   let modified = false;
   let assertStyle: AssertStyle = 'strict';
   const warnings: TransformWarning[] = [];
 
-  // Check if bupkis import already exists
-  const imports = sourceFile.getImportDeclarations();
-  for (const imp of imports) {
-    if (imp.getModuleSpecifierValue() === 'bupkis') {
-      const namedImports = imp.getNamedImports();
-      if (namedImports.some((n) => n.getName() === 'expect')) {
-        hasBupkisImport = true;
-      }
-      if (namedImports.some((n) => n.getName() === 'expectAsync')) {
-        hasBupkisExpectAsync = true;
-      }
-    }
-  }
+  // Check if bupkis imports already exist
+  const hasExpectImport = hasBupkisImport(sourceFile, 'expect');
+  const hasExpectAsyncImport = hasBupkisImport(sourceFile, 'expectAsync');
 
   // Check for expect/expectAsync usage in code
-  const identifiers = sourceFile.getDescendantsOfKind(SyntaxKind.Identifier);
-  hasExpectUsage = identifiers.some(
-    (id) => id.getText() === 'expect' && isExpectCall(id),
-  );
-  hasExpectAsyncUsage = identifiers.some(
-    (id) => id.getText() === 'expectAsync' && isExpectCall(id),
-  );
+  const hasExpectUsage = hasCallUsage(sourceFile, 'expect');
+  const hasExpectAsyncUsage = hasCallUsage(sourceFile, 'expectAsync');
 
   // Get fresh imports list and process assert imports
   const currentImports = sourceFile.getImportDeclarations();
@@ -122,26 +110,24 @@ export const transformImports = (
   }
 
   // Determine what bupkis imports are needed
-  const needsExpect = hasExpectUsage && !hasBupkisImport;
+  const needsExpect = hasExpectUsage && !hasExpectImport;
   const needsExpectAsync =
-    (useExpectAsync || hasExpectAsyncUsage) && !hasBupkisExpectAsync;
+    (useExpectAsync || hasExpectAsyncUsage) && !hasExpectAsyncImport;
 
   // Add bupkis imports if needed
   if (needsExpect || needsExpectAsync) {
-    // Check if there's an existing bupkis import to extend
-    const existingBupkisImport = sourceFile
-      .getImportDeclarations()
-      .find((imp) => imp.getModuleSpecifierValue() === 'bupkis');
+    const existingBupkisImport = getBupkisImport(sourceFile);
 
     if (existingBupkisImport) {
       // Add to existing bupkis import
       if (needsExpect) {
         existingBupkisImport.addNamedImport('expect');
+        modified = true;
       }
       if (needsExpectAsync) {
         existingBupkisImport.addNamedImport('expectAsync');
+        modified = true;
       }
-      modified = true;
     } else {
       // Create new bupkis import
       const namedImports: string[] = [];
@@ -152,11 +138,7 @@ export const transformImports = (
         namedImports.push('expectAsync');
       }
 
-      if (namedImports.length > 0) {
-        sourceFile.addImportDeclaration({
-          moduleSpecifier: 'bupkis',
-          namedImports,
-        });
+      if (addBupkisImport(sourceFile, namedImports)) {
         modified = true;
       }
     }
@@ -202,16 +184,4 @@ export const detectAssertStyle = (sourceFile: SourceFile): AssertStyle => {
 
   // Default to strict if no import found (shouldn't happen in practice)
   return 'strict';
-};
-
-/**
- * Check if an identifier is an expect() or expectAsync() call.
- *
- * @function
- */
-const isExpectCall = (
-  identifier: ReturnType<SourceFile['getDescendantsOfKind']>[0],
-): boolean => {
-  const parent = identifier.getParent();
-  return parent?.getKind() === SyntaxKind.CallExpression;
 };
