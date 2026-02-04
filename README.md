@@ -34,6 +34,10 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 
 - **[@bupkis/property-testing](./packages/property-testing/)** - Property-based testing harness for **BUPKIS** assertions
 
+### Internal
+
+- **[@bupkis/codemod-core](./packages/codemod-core/)** - Shared utilities for **BUPKIS** codemods
+
 ## Resources
 
 - [Official Documentation][docs] (accept no substitutes)
