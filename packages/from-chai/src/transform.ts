@@ -1,4 +1,11 @@
-import { Project, QuoteKind } from 'ts-morph';
+import {
+  addSourceFiles,
+  aggregateResults,
+  createInMemoryProject,
+  createProject,
+  DEFAULT_PATTERNS,
+  shouldExcludeFile,
+} from '@bupkis/codemod-core';
 
 import type {
   FileTransformResult,
@@ -55,15 +62,7 @@ export const transformCode = async (
   code: string,
   options: { mode?: TransformOptions['mode'] } = {},
 ): Promise<CodeTransformResult> => {
-  const project = new Project({
-    compilerOptions: {
-      allowJs: true,
-    },
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    useInMemoryFileSystem: true,
-  });
+  const project = createInMemoryProject();
 
   const sourceFile = project.createSourceFile('temp.ts', code);
   const mode = options.mode ?? 'best-effort';
@@ -124,42 +123,21 @@ export const transform = async (
   const {
     cwd = process.cwd(),
     exclude = ['**/node_modules/**'],
-    include = [
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
-    ],
+    include = DEFAULT_PATTERNS,
     mode = 'best-effort',
     write = true,
   } = options;
 
-  const project = new Project({
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-    },
-    skipAddingFilesFromTsConfig: true,
-    tsConfigFilePath: `${cwd}/tsconfig.json`,
-  });
-
-  // Add files matching include patterns
-  for (const pattern of include) {
-    project.addSourceFilesAtPaths(`${cwd}/${pattern}`);
-  }
+  const project = createProject(cwd);
+  addSourceFiles(project, cwd, include);
 
   const files: FileTransformResult[] = [];
-  let totalTransformations = 0;
-  let totalWarnings = 0;
-  let totalErrors = 0;
-  let modifiedFiles = 0;
 
   for (const sourceFile of project.getSourceFiles()) {
     const filePath = sourceFile.getFilePath();
 
     // Skip excluded files
-    if (
-      exclude.some((pattern) => filePath.includes(pattern.replace('**/', '')))
-    ) {
+    if (shouldExcludeFile(filePath, exclude)) {
       continue;
     }
 
@@ -193,24 +171,16 @@ export const transform = async (
     };
 
     files.push(fileResult);
-    totalTransformations += fileTransformCount;
-    totalWarnings += warnings.length;
-    totalErrors += errors.length;
 
-    if (fileTransformCount > 0) {
-      modifiedFiles++;
-      if (write) {
-        await sourceFile.save();
-      }
+    if (fileTransformCount > 0 && write) {
+      await sourceFile.save();
     }
   }
 
+  const stats = aggregateResults(files);
+
   return {
     files,
-    modifiedFiles,
-    totalErrors,
-    totalFiles: files.length,
-    totalTransformations,
-    totalWarnings,
+    ...stats,
   };
 };

@@ -1,3 +1,4 @@
+import { parseArguments } from '@bupkis/codemod-core';
 import {
   type CallExpression,
   type PropertyAccessExpression,
@@ -454,54 +455,4 @@ const buildMatcherName = (segments: string[]): null | string => {
 
   // Return the full compound as a last resort (will likely be unsupported)
   return segments.join('.');
-};
-
-/**
- * Parse function arguments, handling nested structures.
- *
- * @function
- */
-const parseArguments = (argsStr: string): string[] => {
-  const args: string[] = [];
-  let current = '';
-  let depth = 0;
-  let inString: null | string = null;
-
-  for (let i = 0; i < argsStr.length; i++) {
-    const char = argsStr[i];
-    const prevChar = argsStr[i - 1];
-
-    // Handle string boundaries
-    if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
-      if (inString === char) {
-        inString = null;
-      } else if (!inString) {
-        inString = char;
-      }
-    }
-
-    // Track nesting depth (only outside strings)
-    if (!inString) {
-      if (char === '(' || char === '[' || char === '{') {
-        depth++;
-      } else if (char === ')' || char === ']' || char === '}') {
-        depth--;
-      }
-
-      // Split on comma at depth 0
-      if (char === ',' && depth === 0) {
-        args.push(current.trim());
-        current = '';
-        continue;
-      }
-    }
-
-    current += char;
-  }
-
-  if (current.trim()) {
-    args.push(current.trim());
-  }
-
-  return args;
 };

@@ -1,3 +1,8 @@
+import {
+  addBupkisImport,
+  hasBupkisImport,
+  hasCallUsage,
+} from '@bupkis/codemod-core';
 import { type SourceFile, SyntaxKind } from 'ts-morph';
 
 import type { TransformWarning } from '../types.js';
@@ -50,27 +55,14 @@ export interface ImportTransformResult {
 export const transformImports = (
   sourceFile: SourceFile,
 ): ImportTransformResult => {
-  let hasBupkisImport = false;
-  let hasExpectUsage = false;
   let modified = false;
   const warnings: TransformWarning[] = [];
 
   // Check if bupkis import already exists
-  const imports = sourceFile.getImportDeclarations();
-  for (const imp of imports) {
-    if (imp.getModuleSpecifierValue() === 'bupkis') {
-      const namedImports = imp.getNamedImports();
-      if (namedImports.some((n) => n.getName() === 'expect')) {
-        hasBupkisImport = true;
-      }
-    }
-  }
+  const hasExistingBupkisImport = hasBupkisImport(sourceFile, 'expect');
 
-  // Check for expect usage in code (look for expect() calls)
-  const identifiers = sourceFile.getDescendantsOfKind(SyntaxKind.Identifier);
-  hasExpectUsage = identifiers.some(
-    (id) => id.getText() === 'expect' && isExpectCall(id),
-  );
+  // Check for expect usage in code
+  const hasExpectUsage = hasCallUsage(sourceFile, 'expect');
 
   // Build a map of imported plugin identifiers for warning detection
   const pluginImportMap = buildPluginImportMap(sourceFile);
@@ -109,12 +101,10 @@ export const transformImports = (
   }
 
   // Add bupkis import if needed
-  if (hasExpectUsage && !hasBupkisImport) {
-    sourceFile.addImportDeclaration({
-      moduleSpecifier: 'bupkis',
-      namedImports: ['expect'],
-    });
-    modified = true;
+  if (hasExpectUsage && !hasExistingBupkisImport) {
+    if (addBupkisImport(sourceFile, ['expect'])) {
+      modified = true;
+    }
   }
 
   return { modified, warnings };
@@ -222,16 +212,4 @@ const removeChaUseStatements = (
   }
 
   return warnings;
-};
-
-/**
- * Check if an identifier is an expect() call.
- *
- * @function
- */
-const isExpectCall = (
-  identifier: ReturnType<SourceFile['getDescendantsOfKind']>[0],
-): boolean => {
-  const parent = identifier.getParent();
-  return parent?.getKind() === SyntaxKind.CallExpression;
 };
