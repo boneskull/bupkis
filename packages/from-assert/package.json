@@ -1,0 +1,69 @@
+{
+  "name": "@bupkis/from-assert",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Migrate node:assert assertions to bupkis",
+  "repository": {
+    "directory": "packages/from-assert",
+    "type": "git",
+    "url": "git+https://github.com/boneskull/bupkis.git"
+  },
+  "homepage": "https://bupkis.zip",
+  "author": {
+    "email": "boneskull@boneskull.com",
+    "name": "Christopher Hiller"
+  },
+  "license": "BlueOak-1.0.0",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
+  },
+  "bin": {
+    "bupkis-from-assert": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bupkis",
+    "assert",
+    "node:assert",
+    "codemod",
+    "migration",
+    "assertions"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run test:base -- \"test/**/*.test.ts\"",
+    "test:base": "node --test --test-reporter=spec --import tsx",
+    "test:dev": "npm run test:base -- --watch \"test/**/*.test.ts\"",
+    "test:node20": "npm run test:base -- test/**/*.test.ts"
+  },
+  "dependencies": {
+    "@boneskull/bargs": "4.0.0",
+    "ts-morph": "^25.0.0"
+  },
+  "devDependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "prettier": {
+    "jsdocCommentLineStrategy": "keep",
+    "jsdocPreferCodeFences": true,
+    "plugins": [
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-pkg"
+    ],
+    "singleQuote": true,
+    "tsdoc": true
+  }
+}

@@ -26,6 +26,7 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 
 ### Migration Tools
 
+- **[@bupkis/from-assert](./packages/from-assert/)** - Codemod to migrate [node:assert][] assertions to **BUPKIS**
 - **[@bupkis/from-chai](./packages/from-chai/)** - Codemod to migrate [Chai][] assertions to **BUPKIS**
 - **[@bupkis/from-jest](./packages/from-jest/)** - Codemod to migrate [Jest][]/[Vitest][] assertions to **BUPKIS**
 
@@ -54,3 +55,4 @@ Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [B
 [Jest]: https://jestjs.io
 [Vitest]: https://vitest.dev
 [Chai]: https://www.chaijs.com
+[node:assert]: https://nodejs.org/api/assert.html

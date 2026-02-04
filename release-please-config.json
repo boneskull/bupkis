@@ -21,6 +21,12 @@
       "initial-version": "0.1.0",
       "release-type": "node"
     },
+    "packages/from-assert": {
+      "changelog-path": "CHANGELOG.md",
+      "component": "@bupkis/from-assert",
+      "initial-version": "0.1.0",
+      "release-type": "node"
+    },
     "packages/from-jest": {
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-jest",
