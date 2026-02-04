@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/from-chai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Migrate Chai assertions to bupkis",
   "repository": {
