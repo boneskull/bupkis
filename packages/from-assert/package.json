@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/from-assert",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Migrate node:assert assertions to bupkis",
   "repository": {

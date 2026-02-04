@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/from-chai-v0.1.0...@bupkis/from-chai-v0.1.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* **from-chai,from-jest:** export package.json ([a14a3ec](https://github.com/boneskull/bupkis/commit/a14a3eccaf85946163ad9302c5b165159e4902fe))
+
 ## 0.1.0 (2026-01-16)
 
 
