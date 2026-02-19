@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@boneskull/bargs": "4.0.0",
-    "@bupkis/codemod-core": "^0.0.0",
+    "@bupkis/codemod-core": "^0.1.0",
     "ts-morph": "^25.0.0"
   },
   "devDependencies": {
