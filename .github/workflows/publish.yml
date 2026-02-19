@@ -22,7 +22,7 @@ jobs:
         id: paths
         run: |
           # Convert comma-separated paths to JSON array
-          json=$(echo '${{ inputs.paths }}' | jq -R 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          json=$(echo '${{ inputs.paths }}' | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
           echo "json=$json" >> "$GITHUB_OUTPUT"
         shell: bash
       - uses: ./.github/actions/publish
