@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/from-jest",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "description": "Migrate Jest and Vitest assertions to bupkis",
   "repository": {
