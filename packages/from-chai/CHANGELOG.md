@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/boneskull/bupkis/compare/@bupkis/from-chai-v0.1.1...@bupkis/from-chai-v0.1.2) (2026-02-19)
+
+
+### Bug Fixes
+
+* **deps:** fix @bupkis/codemod-core version ([47465e4](https://github.com/boneskull/bupkis/commit/47465e4203a560de738fbaaba04224fec75a7b10))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/from-chai-v0.1.0...@bupkis/from-chai-v0.1.1) (2026-02-04)
 
 

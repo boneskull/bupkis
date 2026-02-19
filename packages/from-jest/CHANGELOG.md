@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.1...@bupkis/from-jest-v0.3.2) (2026-02-19)
+
+
+### Bug Fixes
+
+* **deps:** fix @bupkis/codemod-core version ([47465e4](https://github.com/boneskull/bupkis/commit/47465e4203a560de738fbaaba04224fec75a7b10))
+
 ## [0.3.1](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.0...@bupkis/from-jest-v0.3.1) (2026-02-04)
 
 
