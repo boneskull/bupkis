@@ -59,5 +59,11 @@
     ],
     "singleQuote": true,
     "tsdoc": true
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
   }
 }
