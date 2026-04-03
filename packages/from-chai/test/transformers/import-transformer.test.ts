@@ -161,7 +161,7 @@ chai.use(somePlugin);
 expect(foo, 'to be', bar);
       `);
       expect(result.warnings, 'to have length', 1);
-      expect(result.warnings[0]?.message, 'to contain', 'my-custom-plugin');
+      expect(result.warnings[0]!.message, 'to contain', 'my-custom-plugin');
     });
 
     it('should warn about chai.use with untracked identifier', () => {
@@ -171,7 +171,7 @@ chai.use(inlinePlugin);
 expect(foo, 'to be', bar);
       `);
       expect(result.warnings, 'to have length', 1);
-      expect(result.warnings[0]?.message, 'to contain', 'inlinePlugin');
+      expect(result.warnings[0]!.message, 'to contain', 'inlinePlugin');
     });
 
     it('should not warn about recognized chai-* plugins', () => {

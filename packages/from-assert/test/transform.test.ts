@@ -120,7 +120,7 @@ assert.ifError(err);
         { mode: 'best-effort' },
       );
       expect(warnings, 'to have length', 1);
-      expect(warnings[0]?.message, 'to contain', 'ifError');
+      expect(warnings[0]!.message, 'to contain', 'ifError');
       // Code is left unchanged for unsupported methods
       expect(code, 'to contain', 'assert.ifError(err)');
     });

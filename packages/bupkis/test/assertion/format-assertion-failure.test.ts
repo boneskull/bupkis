@@ -64,8 +64,9 @@ describe('formatAssertionFailure', () => {
       };
       const result = formatAssertionFailure(failure);
       expect(result, 'to be a string');
-      expect(result, 'to contain', '[A:a]');
-      expect(result, 'to contain', '[E:b]');
+      const stringResult = result as string;
+      expect(stringResult, 'to contain', '[A:a]');
+      expect(stringResult, 'to contain', '[E:b]');
     });
 
     it('should apply formatters to matching types for clean diff', () => {
@@ -77,8 +78,9 @@ describe('formatAssertionFailure', () => {
       };
       const result = formatAssertionFailure(failure);
       expect(result, 'to be a string');
-      expect(result, 'to contain', 'Alice');
-      expect(result, 'to contain', 'Bob');
+      const stringResult = result as string;
+      expect(stringResult, 'to contain', 'Alice');
+      expect(stringResult, 'to contain', 'Bob');
     });
   });
 

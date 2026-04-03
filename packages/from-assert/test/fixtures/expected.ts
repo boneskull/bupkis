@@ -103,7 +103,7 @@ describe('User Service', () => {
     });
 
     it('should handle rejects with Error type', async () => {
-      await expectAsync(asyncReject, 'to reject with', Error);
+      await expectAsync(asyncReject, 'to reject with a', Error);
     });
 
     it('should handle doesNotReject', async () => {
