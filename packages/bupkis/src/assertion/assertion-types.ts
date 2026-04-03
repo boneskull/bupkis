@@ -16,7 +16,11 @@
  * Types related to the implementation of an assertion.
  */
 
-import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
+import {
+  type ArrayValues,
+  type NonEmptyTuple,
+  type TupleToUnion,
+} from 'type-fest';
 import { type z } from 'zod';
 
 import type { DiffOptions } from '../diff.js';
@@ -57,6 +61,7 @@ export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
  * @see {@link AssertionSchemaAsync} for schema-based async assertions
  */
 export type AnyAsyncAssertion = AssertionAsync<any, any, any>;
+export type AnyAsyncAssertions = Extendable<AnyAsyncAssertion>;
 
 /**
  * Non-empty tuple type containing any asynchronous assertions.
@@ -66,7 +71,7 @@ export type AnyAsyncAssertion = AssertionAsync<any, any, any>;
  *
  * @see {@link AnyAsyncAssertion} for individual async assertion types
  */
-export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
+export type AnyAsyncAssertionsList = NonEmptyTuple<AnyAsyncAssertion>;
 
 /**
  * Union type representing any synchronous assertion.
@@ -80,6 +85,8 @@ export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
  */
 export type AnySyncAssertion = AssertionSync<any, any, any>;
 
+export type AnySyncAssertions = Extendable<AnySyncAssertion>;
+
 /**
  * Non-empty tuple type containing any synchronous assertions.
  *
@@ -89,7 +96,7 @@ export type AnySyncAssertion = AssertionSync<any, any, any>;
  * @group Internal Assertion Types
  * @see {@link AnySyncAssertion} for individual sync assertion types
  */
-export type AnySyncAssertions = NonEmptyTuple<AnySyncAssertion>;
+export type AnySyncAssertionsList = NonEmptyTuple<AnySyncAssertion>;
 
 /**
  * Interface for the base abstract `Assertion` class.
@@ -818,7 +825,9 @@ export interface BaseParsedResult<Parts extends AssertionParts> {
  * @see {@link BuiltinAsyncAssertions} for the full array type
  * @see {@link AsyncAssertions} for the actual assertion implementations
  */
-export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
+export type BuiltinAsyncAssertion = ArrayValues<typeof AsyncAssertions>;
+
+export type BuiltinAsyncAssertions = CollectAssertions<typeof AsyncAssertions>;
 
 /**
  * Type representing the collection of all builtin async assertions.
@@ -830,7 +839,12 @@ export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
  * @group Builtin Assertions
  * @see {@link AsyncAssertions} for the actual assertion implementations
  */
-export type BuiltinAsyncAssertions = typeof AsyncAssertions;
+export type BuiltinAsyncAssertionsList = typeof AsyncAssertions;
+
+export type BuiltinAsyncAssertionsListAndMore = readonly [
+  ...typeof AsyncAssertions,
+  ...AnyAsyncAssertion[],
+];
 
 /**
  * Type for extracting individual builtin sync assertion types.
@@ -844,8 +858,9 @@ export type BuiltinAsyncAssertions = typeof AsyncAssertions;
  * @see {@link BuiltinSyncAssertions} for the full array type
  * @see {@link SyncAssertions} for the actual assertion implementations
  */
-export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
+export type BuiltinSyncAssertion = ArrayValues<typeof SyncAssertions>;
 
+export type BuiltinSyncAssertions = CollectAssertions<typeof SyncAssertions>;
 /**
  * Type representing the collection of all builtin sync assertions.
  *
@@ -856,7 +871,16 @@ export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
  * @group Builtin Assertions
  * @see {@link SyncAssertions} for the actual assertion implementations
  */
-export type BuiltinSyncAssertions = typeof SyncAssertions;
+export type BuiltinSyncAssertionsList = typeof SyncAssertions;
+export type BuiltinSyncAssertionsListAndMore = readonly [
+  ...BuiltinSyncAssertionsList,
+  ...AnySyncAssertion[],
+];
+
+export type CollectAssertions<T extends readonly AnyAssertion[]> =
+  TupleToUnion<{
+    [K in keyof T]: NonExtendable<T[K]>;
+  }>;
 
 /**
  * The main factory function for creating synchronous assertions.
@@ -986,6 +1010,10 @@ export interface CreateAsyncAssertionFn {
     impl: Impl,
   ): AssertionFunctionAsync<Parts, Impl, Slots>;
 }
+export interface Extendable<T> {
+  __extendable: true;
+  type: T;
+}
 
 /**
  * Utility type for parsed values that may be empty.
@@ -1015,7 +1043,6 @@ export type MaybeEmptyParsedValues<Parts extends readonly AssertionPart[]> =
         : readonly [AssertionImplPart<First>, ...AssertionImplParts<Rest>]
       : readonly []
   >;
-
 /**
  * Utility type that removes `never` entries from a tuple while preserving tuple
  * structure.
@@ -1047,6 +1074,11 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
     ? readonly [...NoNeverTuple<Rest>]
     : readonly [First, ...NoNeverTuple<Rest>]
   : readonly [];
+
+export interface NonExtendable<T> extends Extendable<T> {
+  __nonextendable: true;
+  (val: T): T;
+}
 
 /**
  * Union type representing the result of parsing assertion arguments.
@@ -1222,6 +1254,7 @@ export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
+
 /**
  * Type representing a single phrase literal string.
  *
@@ -1251,7 +1284,6 @@ export type Phrase = PhraseLiteral | PhraseLiteralChoice;
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type PhraseLiteral = string;
-
 /**
  * Type representing a choice between multiple phrase literals.
  *
@@ -1360,3 +1392,6 @@ export type RawAssertionImplSchemaAsync<Parts extends AssertionParts> =
  */
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;
+
+export type SpreadAssertions<T extends Extendable<AnyAssertion>> =
+  (T extends Extendable<infer U extends AnyAssertion> ? U : never)[];

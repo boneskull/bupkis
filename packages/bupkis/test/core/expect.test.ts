@@ -13,7 +13,7 @@ import {
   use,
   z,
 } from '../../src/index.js';
-import { type AnySyncAssertions } from '../../src/types.js';
+import { type AnySyncAssertionsList } from '../../src/types.js';
 import { expect } from '../custom-assertions.js';
 
 describe('core API', () => {
@@ -38,7 +38,9 @@ describe('core API', () => {
           z.instanceof(Foo),
         );
 
-        const assertions = [myAssertion] as const satisfies AnySyncAssertions;
+        const assertions = [
+          myAssertion,
+        ] as const satisfies AnySyncAssertionsList;
 
         const {
           expect: myExpected,
@@ -164,7 +166,10 @@ describe('core API', () => {
       it('should throw UnknownAssertionError for unknown assertions', () => {
         expect(
           () => {
+            // @ts-expect-error -- intentional failure
             expect(42, 'to do something impossible');
+            // @ts-expect-error -- intentional failure
+            expect(42, 'to equal');
           },
           'to throw a',
           UnknownAssertionError,
@@ -449,6 +454,34 @@ describe('core API', () => {
           );
         });
       });
+
+      it('should throw UnknownAssertionError for unknown assertions', () => {
+        expect(
+          () => {
+            // @ts-expect-error -- intentional failure
+            expect(13, 'to equal', 13, 'and');
+          },
+          'to throw a',
+          UnknownAssertionError,
+        );
+
+        expect(
+          () => {
+            // @ts-expect-error -- intentional failure
+            expect(13, 'to equal', 13, 'and', 42);
+          },
+          'to throw a',
+          UnknownAssertionError,
+        );
+
+        expect(
+          () => {
+            expect(13, 'to equal', 13, 'and', 'not a real assertion');
+          },
+          'to throw a',
+          UnknownAssertionError,
+        );
+      });
     });
 
     describe('Schema-based async assertions', () => {
@@ -462,6 +495,7 @@ describe('core API', () => {
           const { expectAsync } = use([customAsyncAssertion]);
           await expectAsync(
             () =>
+              // @ts-expect-error -- intentional failure
               expectAsync('hello', 'to be valid with param', 'not-a-number'),
             'to reject with an',
             UnknownAssertionError,
@@ -480,6 +514,7 @@ describe('core API', () => {
 
           await expectAsync(
             () =>
+              // @ts-expect-error -- intentional failure
               expectAsync('test', 'to validate against', { not: 'boolean' }),
             'to reject with an',
             UnknownAssertionError,
@@ -518,6 +553,32 @@ describe('core API', () => {
       const { expect: customExpect } = expect.use([customAssertion]);
 
       expect(() => customExpect('custom', 'to be custom thing'), 'to pass');
+    });
+
+    it('should support negated custom assertions', () => {
+      const customAssertion = expect.createAssertion(
+        ['to be custom thing'],
+        (subject) => subject === 'custom',
+      );
+      const { expect: customExpect } = expect.use([customAssertion]);
+
+      expect(() => customExpect('coztum', 'not to be custom thing'), 'to pass');
+    });
+
+    it('should enforce typing on custom assertions correctly', () => {
+      const customAssertion = expect.createAssertion(
+        ['to be custom thing'],
+        (subject) => subject === 'custom',
+      );
+      const { expect: customExpect } = expect.use([customAssertion]);
+
+      expect(
+        () =>
+          // @ts-expect-error -- intentional failure
+          customExpect('custom', 'to be coztum thing'),
+        'to throw a',
+        UnknownAssertionError,
+      );
     });
 
     it('should work with negated assertions', () => {

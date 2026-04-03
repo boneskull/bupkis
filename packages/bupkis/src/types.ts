@@ -42,10 +42,12 @@ import type {
   CreateAssertionFn,
   CreateAsyncAssertionFn,
   NoNeverTuple,
+  NonExtendable,
   PhraseLiteral,
   PhraseLiteralChoice,
   PhraseLiteralChoiceSlot,
   PhraseLiteralSlot,
+  SpreadAssertions,
 } from './assertion/assertion-types.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
 import type { ValueToSchemaOptions } from './value-to-schema.js';
@@ -91,7 +93,15 @@ export type AddNegation<Parts extends readonly AssertionPart[]> =
  * @preventExpand
  * @group Expect-Related
  */
-export interface BaseExpect {
+export interface BaseExpect<
+  SyncAssertions extends AnySyncAssertions,
+  AsyncAssertions extends AnyAsyncAssertions,
+> {
+  __type: {
+    async: AsyncAssertions;
+    sync: SyncAssertions;
+  };
+
   /**
    * Creates a new synchronous assertion.
    */
@@ -188,24 +198,24 @@ export type { StandardSchemaV1 };
 export interface Bupkis<
   BaseSyncAssertions extends AnySyncAssertions,
   BaseAsyncAssertions extends AnyAsyncAssertions,
-  ExtendedSyncAssertions extends readonly AnySyncAssertion[] = readonly [],
-  ExtendedAsyncAssertions extends readonly AnyAsyncAssertion[] = readonly [],
+  ExtendedSyncAssertions extends AnySyncAssertions,
+  ExtendedAsyncAssertions extends AnyAsyncAssertions,
 > {
   /**
    * A new {@link Expect} function which handles {@link ExtendedSyncAssertions}
    * and {@link BaseSyncAssertions}
    */
   expect: Expect<
-    Concat<BaseSyncAssertions, ExtendedSyncAssertions>,
-    Concat<BaseAsyncAssertions, ExtendedAsyncAssertions>
+    BaseSyncAssertions | ExtendedSyncAssertions,
+    BaseAsyncAssertions | ExtendedAsyncAssertions
   >;
   /**
    * A new {@link ExpectAsync} function which handles
    * {@link ExtendedAsyncAssertions} and {@link BaseAsyncAssertions}
    */
   expectAsync: ExpectAsync<
-    Concat<BaseAsyncAssertions, ExtendedAsyncAssertions>,
-    Concat<BaseSyncAssertions, ExtendedSyncAssertions>
+    BaseAsyncAssertions | ExtendedAsyncAssertions,
+    BaseSyncAssertions | ExtendedSyncAssertions
   >;
   /**
    * For composing arrays of assertions, one after another.
@@ -220,8 +230,8 @@ export interface Bupkis<
    * ```
    */
   use: UseFn<
-    Concat<BaseSyncAssertions, ExtendedSyncAssertions>,
-    Concat<BaseAsyncAssertions, ExtendedAsyncAssertions>
+    BaseSyncAssertions | ExtendedSyncAssertions,
+    BaseAsyncAssertions | ExtendedAsyncAssertions
   >;
 }
 
@@ -348,15 +358,13 @@ export type ExpectAsync<
  * @see {@link ExpectFunction} for the synchronous equivalent
  * @see {@link SlotsFromParts} for how assertion parts are converted to function parameters
  */
-export type ExpectAsyncFunction<
-  AsyncAssertions extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-> = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof AsyncAssertions]: (
-      ...args: MutableOrReadonly<SlotsFromParts<AsyncAssertions[K]['parts']>>
-    ) => Promise<void>;
-  }>
->;
+export type ExpectAsyncFunction<AsyncAssertions extends AnyAsyncAssertions> = (
+  ...args: AndExpectPhrase<
+    AsyncAssertions extends NonExtendable<infer U extends AnyAsyncAssertion>
+      ? SlotsFromParts<U['parts']>
+      : never
+  >
+) => Promise<void>;
 
 /**
  * Properties available on asynchronous expect functions.
@@ -389,13 +397,13 @@ export type ExpectAsyncFunction<
 export interface ExpectAsyncProps<
   AsyncAssertions extends AnyAsyncAssertions,
   SyncAssertions extends AnySyncAssertions,
-> extends BaseExpect {
+> extends BaseExpect<SyncAssertions, AsyncAssertions> {
   /**
    * Tuple of all assertions available in this `expect()`.
    *
    * @preventExpand
    */
-  assertions: AsyncAssertions;
+  assertions: SpreadAssertions<AsyncAssertions>;
 
   /**
    * {@inheritDoc ExpectItAsync}
@@ -414,15 +422,13 @@ export interface ExpectAsyncProps<
  * This is an intersection of all function signatures derived from the available
  * synchronous assertions.
  */
-export type ExpectFunction<
-  SyncAssertions extends AnySyncAssertions = BuiltinSyncAssertions,
-> = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof SyncAssertions]: (
-      ...args: MutableOrReadonly<SlotsFromParts<SyncAssertions[K]['parts']>>
-    ) => void;
-  }>
->;
+export type ExpectFunction<SyncAssertions extends AnySyncAssertions> = (
+  ...args: SyncAssertions extends NonExtendable<
+    infer U extends AnySyncAssertion
+  >
+    ? AndExpectPhrase<SlotsFromParts<U['parts']>>
+    : never
+) => void;
 
 /**
  * Creates embeddable assertion functions that can be used with `'to satisfy'`.
@@ -461,13 +467,11 @@ export type ExpectFunction<
 export type ExpectIt<
   SyncAssertions extends AnySyncAssertions = BuiltinSyncAssertions,
 > = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof SyncAssertions]: SyncAssertions[K] extends AnySyncAssertion
-      ? SyncAssertions[K]['parts'] extends AssertionParts
-        ? ExpectItFunction<SyncAssertions[K]['parts']>
-        : never
-      : never;
-  }>
+  SyncAssertions extends NonExtendable<infer U extends AnySyncAssertion>
+    ? U['parts'] extends AssertionParts
+      ? ExpectItFunction<U['parts']>
+      : never
+    : never
 >;
 
 /**
@@ -506,15 +510,10 @@ export type ExpectIt<
  */
 export type ExpectItAsync<
   AsyncAssertions extends AnyAsyncAssertions = BuiltinAsyncAssertions,
-> = UnionToIntersection<
-  TupleToUnion<{
-    [K in keyof AsyncAssertions]: AsyncAssertions[K] extends AnyAsyncAssertion
-      ? AsyncAssertions[K]['parts'] extends AssertionParts
-        ? ExpectItFunctionAsync<AsyncAssertions[K]['parts']>
-        : never
-      : never;
-  }>
->;
+> =
+  AsyncAssertions extends NonExtendable<infer U extends AnyAsyncAssertion>
+    ? ExpectItFunctionAsync<U['parts']>
+    : never;
 
 /**
  * Interface for executor functions created by `expect.it()`.
@@ -546,8 +545,8 @@ export type ExpectItAsync<
  * @group Expect-Related
  * @see {@link ExpectItFunction} for the factory function that creates executors
  */
-export interface ExpectItExecutor<Subject extends z.ZodType> {
-  (subject: z.infer<Subject>): void;
+export interface ExpectItExecutor<Subject extends StandardSchemaV1> {
+  (subject: StandardSchemaV1.InferInput<Subject>): void;
   [kExpectIt]: true;
 }
 
@@ -629,7 +628,7 @@ export interface ExpectItExecutorAsync<Subject extends z.ZodType> {
  */
 export type ExpectItFunction<Parts extends AssertionParts> = (
   ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
-) => Parts[0] extends z.ZodType ? ExpectItExecutor<Parts[0]> : never;
+) => Parts[0] extends StandardSchemaV1 ? ExpectItExecutor<Parts[0]> : never;
 
 /**
  * Function signature for creating async `ExpectItExecutorAsync` instances.
@@ -676,13 +675,13 @@ export type ExpectItFunctionAsync<Parts extends AssertionParts> = (
 export interface ExpectSyncProps<
   SyncAssertions extends AnySyncAssertions,
   AsyncAssertions extends AnyAsyncAssertions,
-> extends BaseExpect {
+> extends BaseExpect<SyncAssertions, AsyncAssertions> {
   /**
    * Tuple of all assertions available in this `expect()`.
    *
    * @preventExpand
    */
-  assertions: SyncAssertions;
+  assertions: SpreadAssertions<SyncAssertions>;
 
   it: ExpectIt<SyncAssertions>;
 
@@ -737,28 +736,22 @@ export type FailFn = (reason?: string) => never;
  */
 export type FilterAsyncAssertions<
   MixedAssertions extends readonly AnyAssertion[],
-> = MixedAssertions extends readonly [
-  infer MixedAssertion extends AnyAssertion,
-  ...infer Rest extends readonly AnyAssertion[],
-]
-  ? MixedAssertion extends AnyAsyncAssertion
-    ? readonly [MixedAssertion, ...FilterAsyncAssertions<Rest>]
-    : FilterAsyncAssertions<Rest>
-  : readonly [];
+> = TupleToUnion<{
+  [K in keyof MixedAssertions]: MixedAssertions[K] extends AnyAsyncAssertion
+    ? NonExtendable<MixedAssertions[K]>
+    : never;
+}>;
 
 /**
  * Given a mixed array of assertions, extracts only the synchronous assertions.
  */
 export type FilterSyncAssertions<
   MixedAssertions extends readonly AnyAssertion[],
-> = MixedAssertions extends readonly [
-  infer MixedAssertion extends AnyAssertion,
-  ...infer Rest extends readonly AnyAssertion[],
-]
-  ? MixedAssertion extends AnySyncAssertion
-    ? readonly [MixedAssertion, ...FilterSyncAssertions<Rest>]
-    : FilterSyncAssertions<Rest>
-  : readonly [];
+> = TupleToUnion<{
+  [K in keyof MixedAssertions]: MixedAssertions[K] extends AnySyncAssertion
+    ? NonExtendable<MixedAssertions[K]>
+    : never;
+}>;
 
 /**
  * Options for test data generation.
@@ -850,17 +843,14 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
             ?
                 | ArrayValues<StringLiterals>
                 | Negation<ArrayValues<StringLiterals>>
-            : AssertionSlot<First> extends z.ZodType
-              ? z.infer<AssertionSlot<First>>
+            : AssertionSlot<First> extends StandardSchemaV1<infer U>
+              ? U extends (infer V)[]
+                ? MutableOrReadonly<V[]>
+                : U
               : never,
         ...MapExpectSlots<Rest>,
       ]
     : readonly [];
-
-/**
- * @groupDescription Benchmark Types
- * Types for valueToSchema() benchmark functionality.
- */
 
 /**
  * Memory usage statistics.
@@ -873,6 +863,11 @@ export interface MemoryStats {
   /** Heap memory used */
   heapUsed: number;
 }
+
+/**
+ * @groupDescription Benchmark Types
+ * Types for valueToSchema() benchmark functionality.
+ */
 
 /**
  * Makes tuple types accept both mutable and readonly variants.
@@ -902,10 +897,10 @@ export interface MemoryStats {
  * @see {@link ExpectFunction} and {@link ExpectAsyncFunction} which use this for parameter flexibility
  */
 export type MutableOrReadonly<Tuple extends readonly unknown[]> =
-  Tuple extends readonly (infer Item)[]
-    ? Item[] | readonly Item[]
-    : Tuple extends readonly [infer First, ...infer Rest]
-      ? [First, ...Rest] | readonly [First, ...Rest]
+  Tuple extends readonly [infer First, ...infer Rest]
+    ? [First, ...Rest] | readonly [First, ...Rest]
+    : Tuple extends readonly (infer Item)[]
+      ? Item[] | readonly Item[]
       : Tuple;
 
 /**
@@ -1071,25 +1066,17 @@ export interface UseFn<
   /**
    * @template MixedAssertions Mixed set of assertions to add; may include both
    *   sync and async assertions
-   * @template ExtendedSyncAssertions Synchronous assertions extracted from
-   *   `MixedAssertions`
-   * @template ExtendedAsyncAssertions Asynchronous assertions extracted from
-   *   `MixedAssertions`
    * @param assertions Array of assertion classes to add
    * @returns New {@link expect} and {@link expectAsync} functions with the
    *   combined assertions
    */
-  <
-    MixedAssertions extends readonly AnyAssertion[],
-    ExtendedSyncAssertions extends FilterSyncAssertions<MixedAssertions>,
-    ExtendedAsyncAssertions extends FilterAsyncAssertions<MixedAssertions>,
-  >(
+  <const MixedAssertions extends readonly AnyAssertion[]>(
     assertions: MixedAssertions,
   ): Bupkis<
     BaseSyncAssertions,
     BaseAsyncAssertions,
-    ExtendedSyncAssertions,
-    ExtendedAsyncAssertions
+    FilterSyncAssertions<MixedAssertions>,
+    FilterAsyncAssertions<MixedAssertions>
   >;
 }
 
@@ -1136,3 +1123,14 @@ export interface ZodTypeMap {
   unknown: z.ZodUnknown;
   void: z.ZodVoid;
 }
+
+/**
+ * Support "assertion" "and" "other assertion".
+ *
+ * Technically it is possible to fully type the "and" statements (up to some
+ * depth) but the cardinality of so high (N phrases, X depth -> N^X) that
+ * Typescript cannot efficiently enforce the types.
+ */
+type AndExpectPhrase<BaseAssertions extends readonly unknown[]> =
+  | BaseAssertions
+  | readonly [...BaseAssertions, 'and', string, ...(readonly unknown[])];
