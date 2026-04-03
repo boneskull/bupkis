@@ -148,7 +148,7 @@ export const ConstructibleSchema = z
  * @group Schema
  */
 export const FunctionSchema = z
-  .custom<(...args: MutableOrReadonly<unknown[]>) => unknown>(isFunction)
+  .custom<(...args: MutableOrReadonly<any>) => unknown>(isFunction)
   .register(BupkisRegistry, {
     name: 'function',
   })
@@ -190,7 +190,7 @@ export const FunctionSchema = z
  * @group Schema
  */
 export const NonCollectionObjectSchema = z
-  .custom<((...args: any[]) => any) | Record<PropertyKey, unknown>>(
+  .custom<((...args: any[]) => any) | object | Record<PropertyKey, unknown>>(
     (v) =>
       (isNonNullObject(v) || isFunction(v)) &&
       !(v instanceof Map) &&
