@@ -8,7 +8,12 @@
  */
 
 import { AsyncAssertions, SyncAssertions } from './assertion/index.js';
-import { type Expect, type ExpectAsync } from './types.js';
+import {
+  type BuiltinAsyncAssertions,
+  type BuiltinSyncAssertions,
+  type Expect,
+  type ExpectAsync,
+} from './types.js';
 import { createUse } from './use.js';
 
 /**
@@ -20,8 +25,8 @@ import { createUse } from './use.js';
  * @internal
  */
 const bootstrap = (): {
-  expect: Expect<typeof SyncAssertions>;
-  expectAsync: ExpectAsync<typeof AsyncAssertions>;
+  expect: Expect<BuiltinSyncAssertions>;
+  expectAsync: ExpectAsync<BuiltinAsyncAssertions>;
 } => {
   const { expect, expectAsync } = createUse(
     SyncAssertions,
@@ -40,7 +45,7 @@ const api = bootstrap();
  * @function
  * @group Core API
  */
-export const expect: Expect<typeof SyncAssertions> = api.expect;
+export const expect: Expect<BuiltinSyncAssertions> = api.expect;
 
 /**
  * The main asynchronous assertion function which can execute only built-in
@@ -49,4 +54,4 @@ export const expect: Expect<typeof SyncAssertions> = api.expect;
  * @function
  * @group Core API
  */
-export const expectAsync: ExpectAsync<typeof AsyncAssertions> = api.expectAsync;
+export const expectAsync: ExpectAsync<BuiltinAsyncAssertions> = api.expectAsync;

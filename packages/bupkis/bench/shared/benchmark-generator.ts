@@ -27,7 +27,7 @@ export const createSyncBenchmark = (
     config,
     fn() {
       try {
-        expect(...testData);
+        expect(...(testData as [[], 'to be empty']));
       } catch (error) {
         if (!isThrowingAssertion(assertion)) {
           console.warn(`Unexpected error in ${assertion}:`, error);
@@ -48,7 +48,7 @@ export const createAsyncBenchmark = (
     config,
     async fn() {
       try {
-        await expectAsync(...testData);
+        await expectAsync(...(testData as [Promise<void>, 'to resolve']));
       } catch (error) {
         if (!isThrowingAssertion(assertion)) {
           console.warn(`Unexpected error in ${assertion}:`, error);
