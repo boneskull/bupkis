@@ -18,6 +18,7 @@ import {
   getApplicabilityRegistry,
   invalidChainArbitrary,
   invalidNegatedChainArbitrary,
+  type PropertyTestHarnessContext,
   validChainArbitrary,
   validNegatedChainArbitrary,
 } from '@bupkis/property-testing';
@@ -44,7 +45,7 @@ let registry: AssertionApplicability[];
  */
 const runExpect = (args: readonly unknown[]): void => {
   const [subject, ...rest] = args;
-  expect(subject, ...rest);
+  (expect as PropertyTestHarnessContext['expect'])(subject, ...rest);
 };
 
 /**

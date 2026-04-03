@@ -120,8 +120,8 @@ export interface ExpectUsingOptions {
  * @group Test Harness
  */
 export interface PropertyTestHarnessContext {
-  expect: (value: unknown, ...args: unknown[]) => void;
-  expectAsync: (value: unknown, ...args: unknown[]) => Promise<void>;
+  expect: (...args: any[]) => void;
+  expectAsync: (...args: any[]) => Promise<void>;
 }
 
 /**
