@@ -9,8 +9,8 @@
 
 import { AsyncAssertions, SyncAssertions } from './assertion/index.js';
 import {
-  type BuiltinAsyncAssertions,
-  type BuiltinSyncAssertions,
+  type BuiltinAsyncAssertionWrapper,
+  type BuiltinSyncAssertionWrapper,
   type Expect,
   type ExpectAsync,
 } from './types.js';
@@ -25,8 +25,8 @@ import { createUse } from './use.js';
  * @internal
  */
 const bootstrap = (): {
-  expect: Expect<BuiltinSyncAssertions>;
-  expectAsync: ExpectAsync<BuiltinAsyncAssertions>;
+  expect: Expect<BuiltinSyncAssertionWrapper>;
+  expectAsync: ExpectAsync<BuiltinAsyncAssertionWrapper>;
 } => {
   const { expect, expectAsync } = createUse(
     SyncAssertions,
@@ -45,7 +45,7 @@ const api = bootstrap();
  * @function
  * @group Core API
  */
-export const expect: Expect<BuiltinSyncAssertions> = api.expect;
+export const expect: Expect<BuiltinSyncAssertionWrapper> = api.expect;
 
 /**
  * The main asynchronous assertion function which can execute only built-in
@@ -54,4 +54,5 @@ export const expect: Expect<BuiltinSyncAssertions> = api.expect;
  * @function
  * @group Core API
  */
-export const expectAsync: ExpectAsync<BuiltinAsyncAssertions> = api.expectAsync;
+export const expectAsync: ExpectAsync<BuiltinAsyncAssertionWrapper> =
+  api.expectAsync;

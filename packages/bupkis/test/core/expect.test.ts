@@ -13,7 +13,7 @@ import {
   use,
   z,
 } from '../../src/index.js';
-import { type AnySyncAssertionsList } from '../../src/types.js';
+import { type AnySyncAssertionList } from '../../src/types.js';
 import { expect } from '../custom-assertions.js';
 
 describe('core API', () => {
@@ -40,7 +40,7 @@ describe('core API', () => {
 
         const assertions = [
           myAssertion,
-        ] as const satisfies AnySyncAssertionsList;
+        ] as const satisfies AnySyncAssertionList;
 
         const {
           expect: myExpected,
@@ -455,6 +455,36 @@ describe('core API', () => {
         });
       });
 
+      describe('when chained with mutually exclusive assertions', () => {
+        it('should type-check each assertion individually', () => {
+          expect(() => expect(5, 'to be greater than', 3), 'to pass');
+
+          // Type-legal but throws at runtime
+          expect(
+            () => expect(5, 'to end with', 'x'),
+            'to throw an',
+            UnknownAssertionError,
+          );
+        });
+
+        it('should fail to type-check and to execute', () => {
+          expect(
+            () =>
+              expect(
+                // @ts-expect-error -- mutually exclusive assertions
+                5,
+                'to be greater than',
+                3,
+                'and',
+                'to end with',
+                'x',
+              ),
+            'to throw an',
+            UnknownAssertionError,
+          );
+        });
+      });
+
       it('should throw UnknownAssertionError for unknown assertions', () => {
         expect(
           () => {
@@ -476,6 +506,7 @@ describe('core API', () => {
 
         expect(
           () => {
+            // @ts-expect-error -- Intentional failure
             expect(13, 'to equal', 13, 'and', 'not a real assertion');
           },
           'to throw a',
@@ -520,6 +551,32 @@ describe('core API', () => {
             UnknownAssertionError,
           );
         });
+      });
+    });
+  });
+
+  describe('sync/async assertion isolation', () => {
+    describe('when an async assertion is used with the sync expect', () => {
+      it('should be a type error and throw at runtime', () => {
+        expect(
+          () =>
+            // @ts-expect-error -- sync expect cannot access async assertions
+            expect(Promise.resolve(1), 'to resolve'),
+          'to throw an',
+          UnknownAssertionError,
+        );
+      });
+    });
+
+    describe('when a sync assertion is used with the async expectAsync', () => {
+      it('should be a type error and throw at runtime', async () => {
+        await expectAsync(
+          () =>
+            // @ts-expect-error -- async expectAsync cannot access sync assertions
+            expectAsync(42, 'to be a number'),
+          'to reject with an',
+          UnknownAssertionError,
+        );
       });
     });
   });

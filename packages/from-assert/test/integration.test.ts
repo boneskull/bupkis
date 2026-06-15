@@ -186,6 +186,6 @@ assert.notEqual(c, d);
     expect(code, 'to contain', "expect(a, 'to be', b)");
     expect(code, 'to contain', "expect(c, 'not to be', d)");
     // Warnings are returned, not embedded in code
-    expect(warnings[0]!.message, 'to contain', 'Loose equality');
+    expect(warnings[0]?.message, 'to contain', 'Loose equality');
   });
 });

@@ -106,10 +106,10 @@ const failingAssertions: TestCase[] = [
     testFn: async () => {
       // Use thenable object to avoid unhandled rejection
       const rejectingThenable = {
-        async then(_resolve, reject): Promise<any> {
-          reject!(new Error('wrong message'));
+        then(_resolve: (value: any) => void, reject: (reason: any) => void) {
+          reject(new Error('wrong message'));
         },
-      } satisfies PromiseLike<void>;
+      };
       await expectAsync(rejectingThenable, 'to reject with error satisfying', {
         message: 'expected message',
       });
@@ -120,10 +120,10 @@ const failingAssertions: TestCase[] = [
     testFn: async () => {
       // Use thenable object to avoid unhandled rejection
       const rejectingThenable = {
-        then(_resolve, reject): any {
-          reject!(new Error('error'));
+        then(_resolve: (value: any) => void, reject: (reason: any) => void) {
+          reject(new Error('error'));
         },
-      } satisfies PromiseLike<unknown>;
+      };
       await expectAsync(rejectingThenable, 'to reject with a', TypeError);
     },
   },
@@ -132,10 +132,10 @@ const failingAssertions: TestCase[] = [
     testFn: async () => {
       // Use thenable object to avoid unhandled rejection
       const rejectingThenable = {
-        async then(_resolve, reject): Promise<any> {
-          reject!(new Error('failure'));
+        then(_resolve: (value: any) => void, reject: (reason: any) => void) {
+          reject(new Error('failure'));
         },
-      } satisfies PromiseLike<any>;
+      };
       await expectAsync(rejectingThenable, 'to resolve');
     },
   },

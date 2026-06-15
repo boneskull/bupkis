@@ -7,11 +7,7 @@
 
 import { BupkisAssertionAsync } from './assertion/assertion-async.js';
 import { BupkisAssertionSync } from './assertion/assertion-sync.js';
-import {
-  type AnyAssertion,
-  type AnyAsyncAssertions,
-  type AnySyncAssertions,
-} from './assertion/assertion-types.js';
+import { type AnyAssertion } from './assertion/assertion-types.js';
 import { kExpectIt } from './constant.js';
 import {
   createBaseExpect,
@@ -20,21 +16,21 @@ import {
 } from './expect.js';
 import {
   type AnyAsyncAssertion,
+  type AnyAsyncAssertionWrapper,
   type AnySyncAssertion,
+  type AnySyncAssertionWrapper,
   type BuiltinAsyncAssertionsListAndMore,
   type BuiltinSyncAssertionsListAndMore,
   type Bupkis,
-  type CollectAssertions,
   type Expect,
   type ExpectAsync,
-  type ExpectAsyncFunction,
-  type ExpectFunction,
   type ExpectIt,
   type ExpectItAsync,
-  type FilterAsyncAssertions,
-  type FilterSyncAssertions,
+  type FilterAndWrapAsyncAssertions,
+  type FilterAndWrapSyncAssertions,
   type SpreadAssertions,
   type UseFn,
+  type WrapAssertions,
 } from './types.js';
 
 const { assign } = Object;
@@ -82,7 +78,7 @@ const { assign } = Object;
  * @see {@link ExpectItExecutor} for the executor function interface
  * @see {@link kExpectIt} for the internal marking symbol
  */
-const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
+const createExpectIt = <SyncAssertions extends AnySyncAssertionWrapper>(
   expect: any,
 ): ExpectIt<SyncAssertions> => {
   /**
@@ -148,7 +144,7 @@ const createExpectIt = <SyncAssertions extends AnySyncAssertions>(
  * @see {@link kExpectIt} for the internal marking symbol
  * @see {@link createExpectIt} for the synchronous equivalent
  */
-const createExpectItAsync = <AsyncAssertions extends AnyAsyncAssertions>(
+const createExpectItAsync = <AsyncAssertions extends AnyAsyncAssertionWrapper>(
   expectAsync: any,
 ): ExpectItAsync<AsyncAssertions> => {
   /**
@@ -249,30 +245,27 @@ export const createUse = <
 >(
   syncAssertions: SyncAssertions,
   asyncAssertions: AsyncAssertions,
-): UseFn<
-  CollectAssertions<SyncAssertions>,
-  CollectAssertions<AsyncAssertions>
-> => {
+): UseFn<WrapAssertions<SyncAssertions>, WrapAssertions<AsyncAssertions>> => {
   /**
    * @function
    */
   const use: UseFn<
-    CollectAssertions<SyncAssertions>,
-    CollectAssertions<AsyncAssertions>
+    WrapAssertions<SyncAssertions>,
+    WrapAssertions<AsyncAssertions>
   > = <AllAssertions extends readonly AnyAssertion[]>(
     assertions: AllAssertions,
   ): Bupkis<
-    CollectAssertions<SyncAssertions>,
-    CollectAssertions<AsyncAssertions>,
-    FilterSyncAssertions<AllAssertions>,
-    FilterAsyncAssertions<AllAssertions>
+    WrapAssertions<SyncAssertions>,
+    WrapAssertions<AsyncAssertions>,
+    FilterAndWrapSyncAssertions<AllAssertions>,
+    FilterAndWrapAsyncAssertions<AllAssertions>
   > => {
     const newSyncAssertions = assertions.filter(
       (a): a is AnySyncAssertion => a instanceof BupkisAssertionSync,
-    ) as SpreadAssertions<FilterSyncAssertions<AllAssertions>>;
+    ) as SpreadAssertions<FilterAndWrapSyncAssertions<AllAssertions>>;
     const newAsyncAssertions = assertions.filter(
       (a): a is AnyAsyncAssertion => a instanceof BupkisAssertionAsync,
-    ) as SpreadAssertions<FilterAsyncAssertions<AllAssertions>>;
+    ) as SpreadAssertions<FilterAndWrapAsyncAssertions<AllAssertions>>;
     const allSyncAssertions = [
       ...syncAssertions,
       ...newSyncAssertions,
@@ -283,18 +276,14 @@ export const createUse = <
     ] as const;
 
     type AllSyncAssertions =
-      | CollectAssertions<SyncAssertions>
-      | FilterSyncAssertions<AllAssertions>;
+      | FilterAndWrapSyncAssertions<AllAssertions>
+      | WrapAssertions<SyncAssertions>;
     type AllAsyncAssertions =
-      | CollectAssertions<AsyncAssertions>
-      | FilterAsyncAssertions<AllAssertions>;
+      | FilterAndWrapAsyncAssertions<AllAssertions>
+      | WrapAssertions<AsyncAssertions>;
 
-    const expectFunction = createExpectSyncFunction(
-      allSyncAssertions,
-    ) as ExpectFunction<AllSyncAssertions>;
-    const expectAsyncFunction = createExpectAsyncFunction(
-      allAsyncAssertions,
-    ) as ExpectAsyncFunction<AllAsyncAssertions>;
+    const expectFunction = createExpectSyncFunction(allSyncAssertions);
+    const expectAsyncFunction = createExpectAsyncFunction(allAsyncAssertions);
 
     const expect = assign(expectFunction, {
       ...createBaseExpect(allSyncAssertions, allAsyncAssertions, 'sync'),

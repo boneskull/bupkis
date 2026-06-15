@@ -148,7 +148,7 @@ export const ConstructibleSchema = z
  * @group Schema
  */
 export const FunctionSchema = z
-  .custom<(...args: MutableOrReadonly<any>) => unknown>(isFunction)
+  .custom<(...args: MutableOrReadonly<unknown[]>) => unknown>(isFunction)
   .register(BupkisRegistry, {
     name: 'function',
   })

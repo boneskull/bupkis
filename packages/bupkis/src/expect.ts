@@ -3,9 +3,7 @@ import { inspect } from 'util';
 
 import {
   type AnyAsyncAssertion,
-  type AnyAsyncAssertions,
   type AnySyncAssertion,
-  type AnySyncAssertions,
   type AssertionAsync,
   type AssertionImplAsync,
   type AssertionImplSync,
@@ -25,6 +23,10 @@ import {
 } from './error.js';
 import { isString } from './guards.js';
 import {
+  type AnyAsyncAssertionList,
+  type AnySyncAssertionList,
+  type BuiltinAsyncAssertionsListAndMore,
+  type BuiltinSyncAssertionsListAndMore,
   type Expect,
   type ExpectAsync,
   type ExpectAsyncFunction,
@@ -34,6 +36,7 @@ import {
   type FailFn,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   type UseFn,
+  type WrapAssertions,
 } from './types.js';
 import { createUse } from './use.js';
 
@@ -75,9 +78,12 @@ const debug = createDebug('bupkis:expect');
  *   arguments
  */
 export function createExpectAsyncFunction<
-  T extends AnyAsyncAssertions,
-  U extends ExpectAsync<AnyAsyncAssertions>,
->(assertions: T, expect: U): ExpectAsyncFunction<T & U['assertions']>;
+  T extends AnyAsyncAssertionList,
+  U extends ExpectAsync,
+>(
+  assertions: T,
+  expect: U,
+): ExpectAsyncFunction<U['__type']['async'] | WrapAssertions<T>>;
 /**
  * Creates a new asynchronous expect function with the provided assertions.
  *
@@ -105,9 +111,9 @@ export function createExpectAsyncFunction<
  * @throws {Error} When no matching assertion can be found for the provided
  *   arguments
  */
-export function createExpectAsyncFunction<T extends AnyAsyncAssertions>(
+export function createExpectAsyncFunction<T extends AnyAsyncAssertionList>(
   assertions: T,
-): ExpectAsyncFunction<T>;
+): ExpectAsyncFunction<WrapAssertions<T>>;
 /**
  * Implementation function that creates an asynchronous expect function with
  * optional parent inheritance.
@@ -171,8 +177,8 @@ export function createExpectAsyncFunction<T extends AnyAsyncAssertions>(
  * @see {@link ExpectAsync} for the main expectAsync interface
  */
 export function createExpectAsyncFunction<
-  T extends AnyAsyncAssertions,
-  U extends ExpectAsync<AnyAsyncAssertions>,
+  T extends AnyAsyncAssertionList,
+  U extends ExpectAsync,
 >(assertions: T, expect?: U) {
   // Combine all assertions once at creation time
   const allAssertions: AnyAsyncAssertion[] = [
@@ -348,12 +354,12 @@ export function createExpectAsyncFunction<
  *   arguments
  */
 export function createExpectSyncFunction<
-  Assertions extends AnySyncAssertions,
-  ParentExpect extends Expect<AnySyncAssertions>,
+  Assertions extends AnySyncAssertionList,
+  ParentExpect extends Expect,
 >(
   assertions: Assertions,
   expect: ParentExpect,
-): ExpectFunction<Assertions & ParentExpect['assertions']>;
+): ExpectFunction<ParentExpect['__type']['sync'] | WrapAssertions<Assertions>>;
 /**
  * Creates a new synchronous expect function with the provided assertions.
  *
@@ -381,9 +387,9 @@ export function createExpectSyncFunction<
  * @throws {Error} When no matching assertion can be found for the provided
  *   arguments
  */
-export function createExpectSyncFunction<Assertions extends AnySyncAssertions>(
-  assertions: Assertions,
-): ExpectFunction<Assertions>;
+export function createExpectSyncFunction<
+  Assertions extends AnySyncAssertionList,
+>(assertions: Assertions): ExpectFunction<WrapAssertions<Assertions>>;
 /**
  * Implementation function that creates a synchronous expect function with
  * optional parent inheritance.
@@ -438,8 +444,8 @@ export function createExpectSyncFunction<Assertions extends AnySyncAssertions>(
  * @see {@link Expect} for the main expect interface
  */
 export function createExpectSyncFunction<
-  Assertions extends AnySyncAssertions,
-  ParentExpect extends Expect<AnySyncAssertions>,
+  Assertions extends AnySyncAssertionList,
+  ParentExpect extends Expect,
 >(assertions: Assertions, expect?: ParentExpect) {
   // Combine all assertions once at creation time
   const allAssertions: AnySyncAssertion[] = [
@@ -961,23 +967,31 @@ const fail: FailFn = (reason?: string): never => {
  * Used by a {@link UseFn} to create base properties of {@link Expect}.
  */
 export function createBaseExpect<
-  T extends AnySyncAssertions,
-  U extends AnyAsyncAssertions,
->(syncAssertions: T, asyncAssertions: U, type: 'sync'): ExpectSyncProps<T, U>;
+  T extends AnySyncAssertionList,
+  U extends AnyAsyncAssertionList,
+>(
+  syncAssertions: T,
+  asyncAssertions: U,
+  type: 'sync',
+): ExpectSyncProps<WrapAssertions<T>, WrapAssertions<U>>;
 /**
  * Used by a {@link UseFn} to create base properties of {@link ExpectAsync}.
  */
 export function createBaseExpect<
-  T extends AnySyncAssertions,
-  U extends AnyAsyncAssertions,
->(syncAssertions: T, asyncAssertions: U, type: 'async'): ExpectAsyncProps<U, T>;
+  T extends AnySyncAssertionList,
+  U extends AnyAsyncAssertionList,
+>(
+  syncAssertions: T,
+  asyncAssertions: U,
+  type: 'async',
+): ExpectAsyncProps<WrapAssertions<U>, WrapAssertions<T>>;
 /**
  * Used by a {@link UseFn} to create base properties of {@link Expect} or
  * {@link ExpectAsync}.
  */
 export function createBaseExpect<
-  T extends AnySyncAssertions,
-  U extends AnyAsyncAssertions,
+  T extends BuiltinSyncAssertionsListAndMore,
+  U extends BuiltinAsyncAssertionsListAndMore,
 >(syncAssertions: T, asyncAssertions: U, type: 'async' | 'sync') {
   const assertions = type === 'sync' ? syncAssertions : asyncAssertions;
   return {

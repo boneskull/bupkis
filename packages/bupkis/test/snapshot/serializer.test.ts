@@ -175,10 +175,9 @@ describe('defaultSerializer', () => {
 
       // Parse and check order
       const lines = result.split('\n').filter((l) => l.includes(':'));
-      const [line0, line1, line2] = lines;
-      expect(line0!, 'to contain', '"a"');
-      expect(line1!, 'to contain', '"m"');
-      expect(line2!, 'to contain', '"z"');
+      expect(lines[0], 'to contain', '"a"');
+      expect(lines[1], 'to contain', '"m"');
+      expect(lines[2], 'to contain', '"z"');
     });
 
     it('should sort keys in nested objects', () => {

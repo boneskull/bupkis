@@ -313,7 +313,7 @@ describe('NegatedAssertionError', () => {
     it('should handle stack traces properly', () => {
       const error = new AssertionError({ id: 'foo', message: 'test error' });
       expect(error.stack, 'to be a string');
-      expect(error.stack!, 'to contain', 'test error');
+      expect(error.stack, 'to contain', 'test error');
     });
 
     it('should respect stackStartFn parameter for stack trace modification', () => {
@@ -361,14 +361,11 @@ describe('NegatedAssertionError', () => {
 
       // Both errors should have stack traces
       expect(errorWithoutStackStart.stack, 'to be a string');
-      const errorWithoutStackStartStack =
-        errorWithoutStackStart.stack as string;
       expect(errorWithStackStart.stack, 'to be a string');
-      const errorWithStackStartStack = errorWithStackStart.stack as string;
 
       // Error without stackStartFn should include createErrorWithStackStart in stack
       expect(
-        errorWithoutStackStartStack,
+        errorWithoutStackStart.stack,
         'to contain',
         'createErrorWithStackStart',
       );
@@ -376,16 +373,16 @@ describe('NegatedAssertionError', () => {
       // Error with stackStartFn should NOT include createErrorWithStackStart in stack
       // (because stackStartFn points to createErrorWithStackStart, omitting it)
       expect(
-        errorWithStackStartStack,
+        errorWithStackStart.stack,
         'not to contain',
         'createErrorWithStackStart',
       );
 
       // Both should still contain the outer function calls
-      expect(errorWithoutStackStartStack, 'to contain', 'innerFunction');
-      expect(errorWithStackStartStack, 'to contain', 'innerFunction');
-      expect(errorWithoutStackStartStack, 'to contain', 'outerFunction');
-      expect(errorWithStackStartStack, 'to contain', 'outerFunction');
+      expect(errorWithoutStackStart.stack, 'to contain', 'innerFunction');
+      expect(errorWithStackStart.stack, 'to contain', 'innerFunction');
+      expect(errorWithoutStackStart.stack, 'to contain', 'outerFunction');
+      expect(errorWithStackStart.stack, 'to contain', 'outerFunction');
 
       // The error with stackStartFn should have a shorter stack trace
       const stackLinesWithout =

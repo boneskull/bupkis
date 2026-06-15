@@ -25,7 +25,7 @@ import { AssertionError, InvalidMetadataError } from '../error.js';
 import { isZodType } from '../guards.js';
 import { BupkisRegistry } from '../metadata.js';
 import { type StandardSchemaV1 } from '../standard-schema.js';
-import { type DefFromZodType } from '../types.js';
+import { type AssertionTypes, type DefFromZodType } from '../types.js';
 import {
   type Assertion,
   type AssertionImpl,
@@ -55,6 +55,8 @@ export abstract class BupkisAssertion<
   Impl extends AssertionImpl<Parts>,
   Slots extends AssertionSlots<Parts>,
 > implements Assertion<Parts, Impl, Slots> {
+  declare readonly __types: AssertionTypes<Parts>;
+
   readonly id: string;
 
   constructor(

@@ -52,7 +52,7 @@ describe('Assert transformer', () => {
       );
       expect(code, 'to contain', "expect(foo, 'to be', bar)");
       expect(result.warnings, 'to have length', 1);
-      expect(result.warnings[0]!.message, 'to contain', 'Loose equality');
+      expect(result.warnings[0]?.message, 'to contain', 'Loose equality');
     });
 
     it('should transform assert.notEqual(a, b) with warning in legacy mode', () => {
@@ -62,7 +62,7 @@ describe('Assert transformer', () => {
       );
       expect(code, 'to contain', "expect(foo, 'not to be', bar)");
       expect(result.warnings, 'to have length', 1);
-      expect(result.warnings[0]!.message, 'to contain', 'Loose equality');
+      expect(result.warnings[0]?.message, 'to contain', 'Loose equality');
     });
 
     it('should transform assert.equal(a, b) without warning in strict mode', () => {
@@ -193,7 +193,7 @@ describe('Assert transformer', () => {
       expect(code, 'to contain', 'assert.ifError(err)');
       // Warning is returned
       expect(result.warnings, 'to have length', 1);
-      expect(result.warnings[0]!.message, 'to contain', 'ifError');
+      expect(result.warnings[0]?.message, 'to contain', 'ifError');
     });
   });
 

@@ -24,11 +24,7 @@ describe('fuzzing counterexamples', () => {
     it('should throw when subject is null (not a function)', async () => {
       let threw = false;
       try {
-        await expectAsync(
-          null as unknown as Promise<unknown>,
-          'to reject with error satisfying',
-          {},
-        );
+        await expectAsync(null, 'to reject with error satisfying', {});
       } catch {
         threw = true;
       }

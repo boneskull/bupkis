@@ -44,8 +44,7 @@ let registry: AssertionApplicability[];
  * @param args Args to pass to expect()
  */
 const runExpect = (args: readonly unknown[]): void => {
-  const [subject, ...rest] = args;
-  (expect as PropertyTestHarnessContext['expect'])(subject, ...rest);
+  (expect as PropertyTestHarnessContext['expect'])(...args);
 };
 
 /**
