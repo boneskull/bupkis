@@ -93,16 +93,22 @@ export function isZodType<T extends keyof ZodTypeMap>(
  * @see {@link https://standardschema.dev | Standard Schema Specification}
  */
 export const isStandardSchema = (value: unknown): value is StandardSchemaV1 => {
+  // Some Standard Schema compliant libraries (e.g. ArkType) implement schemas
+  // as callable objects (functions with properties), so we must accept both
+  // plain objects and functions here.
+  if (!isObject(value) && !isFunction(value)) {
+    return false;
+  }
+  const v = value as Record<string | symbol, unknown>;
+  const std = v['~standard'];
   return (
-    isObject(value) &&
-    '~standard' in value &&
-    isObject(value['~standard']) &&
-    'version' in value['~standard'] &&
-    value['~standard'].version === 1 &&
-    'vendor' in value['~standard'] &&
-    typeof value['~standard'].vendor === 'string' &&
-    'validate' in value['~standard'] &&
-    typeof value['~standard'].validate === 'function'
+    isObject(std) &&
+    'version' in std &&
+    std.version === 1 &&
+    'vendor' in std &&
+    typeof std.vendor === 'string' &&
+    'validate' in std &&
+    typeof std.validate === 'function'
   );
 };
 
@@ -116,16 +122,6 @@ export const isStandardSchema = (value: unknown): value is StandardSchemaV1 => {
 export const isObject = (value: unknown): value is NonNullable<object> => {
   return typeof value === 'object' && value !== null && !isArray(value);
 };
-
-/**
- * Returns `true` if the given value is a {@link z.ZodPromise} schema.
- *
- * @function
- * @param value - Value to test
- * @returns `true` if the value is a `ZodPromise` schema; `false` otherwise
- */
-export const isZodPromise = (value: unknown): value is z.ZodPromise =>
-  isZodType(value, 'promise');
 
 /**
  * Checks if a value is "promise-like", meaning it is a "thenable" object.
@@ -222,9 +218,7 @@ export const isNonNullObject = (value: unknown): value is object =>
  *   symbol), `false` otherwise
  */
 export const isWeakKey = (value: unknown): value is WeakKey =>
-  (typeof value === 'object' && value !== null) ||
-  typeof value === 'function' ||
-  typeof value === 'symbol';
+  isNonNullObject(value) || isFunction(value) || typeof value === 'symbol';
 
 /**
  * Type guard for a {@link PhraseLiteral}, which is just a string that does not
@@ -305,6 +299,8 @@ export const isA = <T extends Constructor>(
  * its subclasses. It's useful for error handling and type narrowing when
  * working with unknown values that might be errors.
  *
+ * Uses `Error.isError` if available.
+ *
  * @example
  *
  * ```typescript
@@ -322,7 +318,12 @@ export const isA = <T extends Constructor>(
  * @param value - Value to test
  * @returns `true` if the value is an Error instance, `false` otherwise
  */
-export const isError = (value: unknown): value is Error => isA(value, Error);
+export const isError =
+  'isError' in Error && isFunction(Error.isError)
+    ? // @ts-expect-error - Error.isError is new
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+      (value: unknown): value is Error => Error.isError(value)
+    : (value: unknown): value is Error => isA(value, Error);
 
 /**
  * Type guard for {@link ExpectItExecutor} functions.

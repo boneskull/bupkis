@@ -5,11 +5,14 @@ import {
   filteredAnything,
   filteredObject,
 } from '@bupkis/property-testing';
+import * as arktype from 'arktype';
 import * as fc from 'fast-check';
 import { describe, it } from 'node:test';
+import * as valibot from 'valibot';
+import { z } from 'zod';
 
 import { expect } from '../../src/bootstrap.js';
-import { isConstructible } from '../../src/guards.js';
+import { isConstructible, isStandardSchema } from '../../src/guards.js';
 
 const numRuns = calculateNumRuns();
 
@@ -213,5 +216,40 @@ describe('type guard property tests', () => {
         { numRuns },
       );
     });
+  });
+
+  describe('isStandardSchema()', () => {
+    it('should return true for Standard Schema v1 schemas', () => {
+      fc.assert(
+        fc.property(
+          fc.constantFrom(
+            z.string(),
+            z.number(),
+            z.boolean(),
+            z.array(z.string()),
+            z.object({ foo: z.string() }),
+            arktype.type('string'),
+            arktype.type('number'),
+            arktype.type('boolean'),
+            arktype.type('string[]'),
+            arktype.type({ foo: 'string' }),
+            valibot.string(),
+            valibot.number(),
+            valibot.boolean(),
+            valibot.array(valibot.string()),
+            valibot.object({ foo: valibot.string() }),
+          ),
+          (schema) => isStandardSchema(schema),
+        ),
+        { numRuns },
+      );
+    });
+  });
+
+  it('should return false for non-Standard Schema v1 schemas', () => {
+    fc.assert(
+      fc.property(fc.anything(), (value) => !isStandardSchema(value)),
+      { numRuns },
+    );
   });
 });
