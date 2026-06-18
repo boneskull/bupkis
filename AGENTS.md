@@ -241,6 +241,7 @@ HTTP response assertions for bupkis. Works with supertest, superagent, fetch, ax
 - When completing a task, _always_ run `npm run fix:eslint` and then manually fix any outstanding issues.
 - If you encounter ESLint errors otherwise, always run `npm run fix:eslint` first before attempting manual fixes.
 - **ALWAYS** use arrow functions unless you have a good reason not to (e.g., overloads, use of `this`). ESLint will enforce this rule.
+- The docstrings of `const` arrow functions _must_ be tagged with `@function` (helps TypeDoc).
 
 **TypeScript Patterns:**
 
