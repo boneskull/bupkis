@@ -15,14 +15,16 @@ This is an npm workspaces monorepo. All packages live in `packages/`:
 | Package                    | Path                        | Description                                   |
 | -------------------------- | --------------------------- | --------------------------------------------- |
 | `bupkis`                   | `packages/bupkis`           | Core assertion library                        |
-| `@bupkis/events`           | `packages/events`           | EventEmitter and EventTarget assertions       |
+| `@bupkis/events`           | `packages/events`           | `EventEmitter` and `EventTarget` assertions   |
 | `@bupkis/from-chai`        | `packages/from-chai`        | Codemod to migrate Chai assertions            |
 | `@bupkis/from-jest`        | `packages/from-jest`        | Codemod to migrate Jest/Vitest assertions     |
 | `@bupkis/msw`              | `packages/msw`              | MSW request verification assertions           |
 | `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions |
-| `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                    |
+| `@bupkis/rxjs`             | `packages/rxjs`             | RxJS `Observable` assertions                  |
 | `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                |
 | `@bupkis/http`             | `packages/http`             | HTTP response assertions                      |
+| `@bupkis/codemod-core`     | `packages/codemod-core`     | Shared utilities for codemods                 |
+| `@bupkis/from-assert`      | `packages/from-assert`      | Codemod to migrate `node:assert` assertions   |
 
 ## Development Commands
 
@@ -42,7 +44,6 @@ This is an npm workspaces monorepo. All packages live in `packages/`:
 - `npm run fix` - Auto-fix all fixable issues
 - `npm run fix:eslint` - Auto-fix ESLint issues only
 - `npm run lint:types` - TypeScript type checking only
-- `npm run lint:types:dev` - Watch mode type checking
 
 **Documentation (bupkis package only):**
 
@@ -221,7 +222,7 @@ HTTP response assertions for bupkis. Works with supertest, superagent, fetch, ax
 - Use `@bupkis/property-testing` harness for new assertion tests
 - Coordinated generators for valid input combinations
 - Avoid `fc.constant()` - prefer `fc.func().map()` for coverage
-- Use `getVariants()` and `runVariant()` utilities
+- Use `getVariants()` to extract variants; use `runVariant()` from the object returned by `createPropertyTestHarness()`
 
 ### Test Organization (bupkis package)
 
