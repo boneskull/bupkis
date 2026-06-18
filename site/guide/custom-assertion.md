@@ -5,9 +5,11 @@ category: Guides
 
 <!-- markdownlint-disable MD038 MD026 -->
 
-This guide shows you how to create and register custom assertions in <span class="bupkis">Bupkis</span>. You'll learn to build both simple and parameterized assertions using Zod schemas or custom functions.
+This guide shows you how to create and register custom assertions in <span class="bupkis">Bupkis</span>. You'll learn to build both simple and parameterized assertions using schemas or custom functions.
 
-> Before you proceed, you should be familiar with the [basic usage](./usage.md) of <span class="bupkis">Bupkis</span> and [Zod][].
+> Before you proceed, you should be familiar with the [basic usage](./usage.md) of <span class="bupkis">Bupkis</span>.
+
+> **Note:** The examples in this guide use [Zod][] for familiarity, but <span class="bupkis">Bupkis</span> supports **any [Standard Schema V1][standard schema]-compliant library**—including [Valibot][], [ArkType][], [Effect Schema][], and others. See [Using Other Standard Schema Libraries](#using-other-standard-schema-libraries) for examples.
 
 ## Wait… do I need a custom assertion?
 
@@ -25,9 +27,9 @@ Of course, these mundane reasons may also apply:
 
 [_Static assertions_](../reference/glossary.md#static-assertionexpectation) are assertions about the way things _are_. They do not test [_behavior_](#behavioral-assertions).
 
-### Static Assertions: "Zod Schema" Style
+### Static Assertions: "Schema" Style
 
-Implementing a static assertion as a [Zod schema][] is the simplest and most robust approach:
+Implementing a static assertion as a schema is the simplest and most robust approach. Any [Standard Schema V1][standard schema]-compliant library works here; these examples use [Zod][]:
 
 ```ts
 import { createAssertion, z, use } from 'bupkis';
@@ -47,7 +49,7 @@ This is also be called a [schema-based assertion][].
 
 ### Static Assertions: "Function" Style
 
-When Zod schemas aren't the best way forward (note: `z.custom()` and `.refine()` can take a lot of abuse!), you can implement the assertion logic as a function:
+When schemas aren't the best way forward (note: Zod's `z.custom()` and `.refine()` can take a lot of abuse!), you can implement the assertion logic as a function:
 
 ```ts
 import { createAssertion, z, use } from 'bupkis';
@@ -64,7 +66,7 @@ The function receives the _subject_ of the assertion and any parameters (if appl
 
 ## Behavioral Assertions
 
-[Behavioral assertions](../reference/glossary.md#behavioral-assertion) typically avoid Zod schemas for their implementations, and instead use a _function-style_ assertion. Instead, they test the _behavior_ of functions or Promises. Example:
+[Behavioral assertions](../reference/glossary.md#behavioral-assertion) typically avoid schemas for their implementations, and instead use a _function-style_ assertion. Instead, they test the _behavior_ of functions or Promises. Example:
 
 ```ts
 import { z, use, createAssertion } from 'bupkis';
@@ -108,7 +110,7 @@ This is a parametric assertion because it needs the [parameter][] `10` to compar
 
 ### Parametric Assertions: "Schema-Returning-Function" Style
 
-Due to their nature of needing a yet-as-of-unknown parameter, a parametric assertion implementation is _always_ a function. In these two examples below, the function returns a Zod schema:
+Due to their nature of needing a yet-as-of-unknown parameter, a parametric assertion implementation is _always_ a function. In these two examples below, the function returns a Zod schema (any Standard Schema library would work equally well):
 
 ```ts
 import { createAssertion, z, use } from 'bupkis';
@@ -184,6 +186,56 @@ expect(5, 'to be between', 1, 'and', 10);
 ```
 
 Add as many as you want. Yes… yes. Keep adding them. Goood.
+
+## Using Other Standard Schema Libraries
+
+Because <span class="bupkis">Bupkis</span> speaks [Standard Schema V1][standard schema], you can swap out Zod for any compliant library in your schema-based assertions.
+
+### Valibot
+
+[Valibot][] is a modular, tree-shakeable alternative to Zod. Schemas are composed with `pipe()` rather than method chaining:
+
+```ts
+import * as v from 'valibot';
+import { createAssertion, use } from 'bupkis';
+
+// A simple static assertion using a Valibot schema
+const stringAssertion = createAssertion(['to be a string'], v.string());
+
+// A parametric assertion — the function returns a Valibot schema
+const greaterThanAssertion = createAssertion(
+  [v.number(), 'to be greater than', v.number()],
+  (_, threshold) => v.pipe(v.number(), v.minValue(threshold + 1)),
+);
+
+const { expect } = use([stringAssertion, greaterThanAssertion]);
+
+expect('hello', 'to be a string');
+expect(10, 'to be greater than', 5);
+```
+
+### ArkType
+
+[ArkType][] uses a concise string-expression syntax that can be parsed at runtime. That makes parametric schemas especially terse — just interpolate the parameter:
+
+```ts
+import { type } from 'arktype';
+import { createAssertion, use } from 'bupkis';
+
+// A simple static assertion
+const stringAssertion = createAssertion(['to be a string'], type('string'));
+
+// A parametric assertion — interpolate the threshold right into the expression
+const greaterThanAssertion = createAssertion(
+  [type('number'), 'to be greater than', type('number')],
+  (_, threshold) => type(`number > ${threshold}`),
+);
+
+const { expect } = use([stringAssertion, greaterThanAssertion]);
+
+expect('hello', 'to be a string');
+expect(10, 'to be greater than', 5);
+```
 
 ## Asynchronous Assertions
 
@@ -363,12 +415,12 @@ This section describes some important concepts to understand when creating asser
 
 > 🥱 **TL;DR:**
 >
-> Only return Zod schemas, {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} objects, or {@link bupkis!types.AssertionFailure | AssertionFailure} objects. Don't throw anything.
+> Only return schemas (Zod or any Standard Schema library), {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} objects, or {@link bupkis!types.AssertionFailure | AssertionFailure} objects. Don't throw anything.
 
 If a function-style assertion must indicate failure, it can:
 
-1. _Return_ a Zod schema (**strongly recommended** if feasible)
-2. _Return_ a {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} function containing a Zod schema and a `subject` to parse (**strongly recommended** if feasible). This is only needed if the subject you want to parse is not the same `subject` as passed to the assertion function implementation.
+1. _Return_ a schema (**strongly recommended** if feasible — works with Zod or any Standard Schema library)
+2. _Return_ a {@link bupkis!types.AssertionParseRequest | AssertionParseRequest} function containing a schema and a `subject` to parse (**strongly recommended** if feasible). This is only needed if the subject you want to parse is not the same `subject` as passed to the assertion function implementation.
 3. _Return_ an {@link bupkis!types.AssertionFailure | AssertionFailure} object to indicate failure with details (_only recommended if 1. or 2. is infeasible_)
 4. _Return_ a `ZodError` object to indicate failure with details (_not recommended_, but could be worse; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
 5. _Throw/reject_ a `ZodError` (_not recommended_; only slightly worse than previous; prefer {@link bupkis!types.AssertionParseRequest | AssertionParseRequest})
@@ -390,9 +442,9 @@ If a function-style assertion must indicate failure, it can:
 
 The following subsections will describe each of the non-_non-recommended_ options in more detail.
 
-#### Returning a Zod Schema
+#### Returning a Schema
 
-You can return a Zod schema from your function; you do not need to call `.parse()` or `.safeParse()`. <span class="bupkis">Bupkis</span> will do that for you. For example, the above assertion could be written like this:
+You can return a schema (Zod or any Standard Schema library) from your function; you do not need to call `.parse()` or `.safeParse()`. <span class="bupkis">Bupkis</span> will do that for you. For example, the above assertion could be written like this:
 
 ```ts
 const isEvenAssertion = createAssertion(['to be even'], (_subject) =>
@@ -400,7 +452,7 @@ const isEvenAssertion = createAssertion(['to be even'], (_subject) =>
 );
 ```
 
-You'll note that `_subject` is unused. Functions returning Zod schemas will generally _always_ ignore the `subject` unless there's something weird you're trying to do. More on this in [Parametric Assertions][] later. You can even use Zod's own facilities to provide custom error messages!
+You'll note that `_subject` is unused. Functions returning schemas will generally _always_ ignore the `subject` unless there's something weird you're trying to do. More on this in [Parametric Assertions][] later. You can even use Zod's own facilities to provide custom error messages!
 
 If you're looking side-eyed at this, then I'll be happy to tell you that _you didn't need a function at all_, and could have just returned the schema:
 
@@ -589,7 +641,7 @@ If, for some reason, you need to call `.safeParse` (or `.parse` + `try`/`catch`)
 
 ### The Implicit "Unknown"
 
-Any assertion (be it static, parametric, behavioral, metaphysical, pataphysical, etc.) defined in such a way that the _first_ item in the tuple of phrases passed to `createAssertion()` is _not a Zod schema_ is considered to have an implicit [subject][] of type `unknown`. To illustrate:
+Any assertion (be it static, parametric, behavioral, metaphysical, pataphysical, etc.) defined in such a way that the _first_ item in the tuple of phrases passed to `createAssertion()` is _not a schema_ is considered to have an implicit [subject][] of type `unknown`. To illustrate:
 
 ```ts
 const stringAssertion = createAssertion(['to be a string'], z.string());
@@ -648,7 +700,7 @@ There are certain phrases which are disallowed in custom assertions. These are:
    expect(42, 'not to be a string');
    ```
 
-2. A phrase may be a bare `and` _if and only if_ it is directly followed by a Zod schema. This is because it conflicts with the [assertion conjunction](../reference/glossary.md#conjunction) functionality provided by <span class="bupkis">BUPKIS</span>. Example:
+2. A phrase may be a bare `and` _if and only if_ it is directly followed by a schema (Zod or Standard Schema). This is because it conflicts with the [assertion conjunction](../reference/glossary.md#conjunction) functionality provided by <span class="bupkis">BUPKIS</span>. Example:
 
    ```ts
    // ❌ Disallowed
@@ -700,7 +752,7 @@ expect(42, 'to be a number');
 
 You could even do something _wild_ like publish your assertions as package for others to use.
 
-> Someone should probably go in and create assertions for all of the fancy string validation in Zod…
+> Someone should probably go in and create assertions for all of the fancy string validation in Zod—or Valibot, or ArkType…
 
 ## Troubleshooting
 
@@ -758,7 +810,7 @@ expect(
 
 - **Keep assertions focused**: Each assertion should test one specific thing
 - **Use descriptive phrases**: Make assertion phrases read naturally
-- **Use All of Zod**: Prefer a Zod schema over a bespoke function; leverage Zod's error reporting and metadata to your advantage
+- **Lean on your schema library**: Prefer a schema over a bespoke function; leverage your validation library's error reporting and metadata to your advantage
 - **Provide helpful error messages & context**: Help users understand what went wrong
 - **Group related assertions**: Organize similar assertions into collections
 
@@ -775,15 +827,18 @@ Curious how <span class="bupkis">Bupkis</span> uses custom assertions itself? Ch
 - [About Assertions][]
 
 [about assertions]: /reference/assertions.md
+[arktype]: https://arktype.io
 [assertion id]: /reference/glossary.md#assertion-id
 [assertion parts]: /reference/glossary.md#assertion-parts
 [asynchronous assertion]: /reference/glossary.md#asynchronous-assertion
 [bupkis-custom-assertions]: https://github.com/boneskull/bupkis/blob/main/packages/bupkis/test/custom-assertions.ts
+[effect schema]: https://effect.website/docs/schema/introduction
 [issues]: https://github.com/boneskull/bupkis/issues
 [parameter]: /reference/glossary.md#parameter
 [parametric assertions]: /reference/glossary.md#parametric-assertion
 [phrase]: /reference/glossary.md#phrase
 [schema-based assertion]: /reference/glossary.md#schema-based-assertion
+[standard schema]: https://standardschema.dev
 [subject]: /reference/glossary.md#subject
-[zod schema]: https://zod.dev/api
+[valibot]: https://valibot.dev
 [zod]: https://zod.dev
