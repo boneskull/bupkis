@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/property-testing",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Property-based testing harness for bupkis assertions",
   "repository": {
@@ -51,7 +51,7 @@
     "fast-check": "^4.0.0"
   },
   "dependencies": {
-    "zod": "4.3.5"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "fast-check": "4.5.2"

@@ -479,9 +479,7 @@ export type AssertionImplSync<Parts extends AssertionParts> =
  *
  * @group Assertion Creation
  */
-export type AssertionParseRequest = {
-  subject: unknown;
-} & (
+export type AssertionParseRequest = (
   | {
       asyncSchema: StandardSchemaV1 | z.ZodType;
       schema?: never;
@@ -490,7 +488,9 @@ export type AssertionParseRequest = {
       asyncSchema?: never;
       schema: StandardSchemaV1 | z.ZodType;
     }
-);
+) & {
+  subject: unknown;
+};
 
 /**
  * Union type representing the fundamental building blocks of an assertion.

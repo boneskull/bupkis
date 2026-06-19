@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.1.1...@bupkis/property-testing-v0.1.2) (2026-06-19)
+
+
+### Bug Fixes
+
+* **deps:** upgrade zod to v4.4.3 ([9851188](https://github.com/boneskull/bupkis/commit/985118839ab0e95093df235b616612d723045b30))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.1.0...@bupkis/property-testing-v0.1.1) (2026-01-16)
 
 

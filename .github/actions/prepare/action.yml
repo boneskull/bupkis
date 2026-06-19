@@ -16,4 +16,6 @@ runs:
       uses: bahmutov/npm-install@3e063b974f0d209807684aa23e534b3dde517fd9 # v1.11.2
       with:
         install-command: npm ci --foreground-scripts
+    - run: npm run build
+      shell: bash
   using: composite

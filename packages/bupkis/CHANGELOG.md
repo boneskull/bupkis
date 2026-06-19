@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.1...bupkis-v0.18.2) (2026-06-19)
+
+
+### Bug Fixes
+
+* **bupkis:** fix ArkType support ([79d3f00](https://github.com/boneskull/bupkis/commit/79d3f0058cc96eaff2e649b0b4220db5de830d98))
+
 ## [0.18.1](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.0...bupkis-v0.18.1) (2026-01-18)
 
 

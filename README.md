@@ -44,6 +44,27 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 - [**BUPKIS** on npm][npm]
 - [**BUPKIS** on GitHub][GitHub]
 
+## ~~Slop~~ AI Usage Disclosure
+
+The `bupkis` package itself is very much the work of a human ([boneskull][])
+with AI assistance. _However_, this human freely (though not _proudly_) admits
+to vibe-coding most of the other packages. They were vibe-coded _carefully_, but
+vibe-coded nonetheless.
+
+| Package                    | Details                                                |
+| -------------------------- | ------------------------------------------------------ |
+| `bupkis`                   | API doc gen (docstrings), debugging, automating tedium |
+| `@bupkis/property-testing` | Debugging, automating tedium                           |
+| `@bupkis/sinon`            | Mostly slop                                            |
+| `@bupkis/rxjs`             | Mostly slop                                            |
+| `@bupkis/msw`              | Slop                                                   |
+| `@bupkis/http`             | Slop                                                   |
+| `@bupkis/events`           | Mostly slop                                            |
+| `@bupkis/codemod-core`     | Slop                                                   |
+| `@bupkis/from-assert`      | Slop                                                   |
+| `@bupkis/from-chai`        | Slop                                                   |
+| `@bupkis/from-jest`        | Slop                                                   |
+
 ## License
 
 Copyright © 2025 [Christopher "boneskull" Hiller][boneskull]. Licensed under [BlueOak-1.0.0][].
