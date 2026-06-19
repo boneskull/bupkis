@@ -88,5 +88,6 @@ export {
   hasKeyDeep,
   hasValueDeep,
   objectFilter,
+  rejectPassing,
   safeRegexStringFilter,
 } from './util.js';

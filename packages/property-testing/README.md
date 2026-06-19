@@ -272,6 +272,23 @@ Removes regex metacharacters from a string. Useful when generating strings that 
 fc.string().map(safeRegexStringFilter);
 ```
 
+#### `rejectPassing(expectFn)`
+
+Builds a filter predicate that drops any `[subject, phrase, ...params]` tuple the assertion _accepts_. Apply it to invalid generators for subset-style assertions (`to satisfy`, `to be like`) where independently-generated subject/params pairs can coincidentally satisfy — and where `fast-check`'s shrinker will actively hunt for that overlap.
+
+```ts
+import { expect } from 'bupkis';
+import { rejectPassing } from '@bupkis/property-testing';
+
+const invalidArgs = fc
+  .oneof(objectsThatUsuallyDoNotSatisfy, arraysThatUsuallyDoNotSatisfy)
+  .filter(rejectPassing(expect));
+```
+
+Throws a `TypeError` if `expectFn` returns a `PromiseLike` — `fc.Arbitrary.filter` is synchronous, so async expect functions are not supported.
+
+This function does not catch rejections from any `PromiseLike` erroneously returned by `expectFn`.
+
 #### `calculateNumRuns(runSize?)`
 
 Calculates the number of test runs based on the environment:
