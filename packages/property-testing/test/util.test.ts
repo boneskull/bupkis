@@ -12,6 +12,7 @@ import {
   hasKeyDeep,
   hasValueDeep,
   objectFilter,
+  rejectPassing,
   safeRegexStringFilter,
 } from '../src/util.js';
 
@@ -635,6 +636,44 @@ describe('util', () => {
         expect(calculateNumRuns('medium'), 'to equal', 50);
         restoreEnv();
       });
+    });
+  });
+
+  describe('rejectPassing()', () => {
+    it('should keep tuples the assertion rejects (genuinely invalid)', () => {
+      const filter = rejectPassing(expect);
+      // 1 is not a string -> assertion throws -> tuple kept
+      expect(filter([1, 'to be a string']), 'to be true');
+    });
+
+    it('should reject tuples the assertion accepts (false positives)', () => {
+      const filter = rejectPassing(expect);
+      // 'hi' is a string -> assertion passes -> tuple dropped
+      expect(filter(['hi', 'to be a string']), 'to be false');
+    });
+
+    it('should reject coincidentally-satisfying subset-style tuples', () => {
+      const filter = rejectPassing(expect);
+      // superset subject satisfies the smaller expected -> dropped
+      expect(filter([{ a: 1, b: 2 }, 'to satisfy', { a: 1 }]), 'to be false');
+    });
+
+    it('should pass subject, phrase, and params through to expectFn', () => {
+      const calls: unknown[][] = [];
+      const spyExpect = (value: unknown, ...args: unknown[]) => {
+        calls.push([value, ...args]);
+      };
+      const filter = rejectPassing(spyExpect);
+      // spyExpect never throws, so every tuple is treated as passing -> dropped
+      expect(filter([42, 'to equal', 42]), 'to be false');
+      expect(calls, 'to deep equal', [[42, 'to equal', 42]]);
+    });
+
+    it('should throw TypeError when expectFn returns a Promise', () => {
+      const asyncExpect = async (_value: unknown, ..._args: unknown[]) => {};
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      const filter = rejectPassing(asyncExpect);
+      expect(() => filter(['hi', 'to be a string']), 'to throw a', TypeError);
     });
   });
 });

@@ -192,6 +192,63 @@ export const safeRegexStringFilter = (str: string) =>
   str.replace(/[[\](){}^$*+?.\\|]/g, '');
 
 /**
+ * Builds a fast-check tuple filter that rejects assertion-argument tuples for
+ * which the assertion actually _passes_.
+ *
+ * "Invalid" generators commonly build `[subject, phrase, ...params]` tuples by
+ * generating the subject and params independently, assuming the result won't
+ * satisfy the assertion. That assumption breaks for _subset-style_ assertions
+ * such as `to satisfy`/`to be like`: a superset subject legitimately passes,
+ * and fast-check's shrinker actively drives generated values toward that
+ * overlap (e.g. collapsing both sides to `{ '': null }`). Filtering with this
+ * guard keeps an "invalid" generator's outputs genuinely invalid.
+ *
+ * The returned predicate invokes `expectFn` once per generated (and shrunk)
+ * tuple, so pass the same bound `expect` the assertion is tested with. Because
+ * `fc.Arbitrary.filter` is synchronous, this guard only supports synchronous
+ * assertions.
+ *
+ * @example
+ *
+ * ```ts
+ * import { expect } from 'bupkis';
+ *
+ * const invalidArgs = fc
+ *   .oneof(objectsThatUsuallyDoNotSatisfy, arraysThatUsuallyDoNotSatisfy)
+ *   .filter(rejectPassing(expect));
+ * ```
+ *
+ * @function
+ * @param expectFn The synchronous `expect` function used to evaluate each tuple
+ * @returns A predicate suitable for `fc.Arbitrary.filter` over argument tuples
+ *   of the form `[subject, phrase, ...params]`
+ * @group Generator Utilities
+ */
+export const rejectPassing =
+  (
+    expectFn: (value: unknown, ...args: [phrase: string, ...unknown[]]) => void,
+  ) =>
+  (
+    args: readonly [subject: unknown, phrase: string, ...unknown[]],
+  ): boolean => {
+    const [subject, ...rest] = args;
+    let result: unknown;
+    try {
+      result = expectFn(subject, ...rest);
+    } catch {
+      return true;
+    }
+    if (
+      typeof (result as PromiseLike<unknown> | undefined)?.then === 'function'
+    ) {
+      throw new TypeError(
+        'rejectPassing() only supports synchronous expect functions',
+      );
+    }
+    return false;
+  };
+
+/**
  * Predefined run sizes for property-based tests.
  */
 const RUN_SIZES = freeze({
