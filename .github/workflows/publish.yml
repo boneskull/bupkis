@@ -1,5 +1,9 @@
 name: Publish to npm
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
     inputs:
@@ -10,21 +14,27 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   publish:
+    name: Run publish action
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
       - name: Convert paths to JSON array
         id: paths
         run: |
           # Convert comma-separated paths to JSON array
-          json=$(echo '${{ inputs.paths }}' | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          json=$(echo '${INPUTS_PATHS}' | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
           echo "json=$json" >> "$GITHUB_OUTPUT"
         shell: bash
+        env:
+          INPUTS_PATHS: ${{ inputs.paths }}
       - uses: ./.github/actions/publish
         with:
           token: ${{ secrets.NPM_TOKEN }}
