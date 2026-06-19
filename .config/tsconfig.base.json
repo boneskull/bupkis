@@ -12,6 +12,18 @@
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
+    // fast-check >=4.6 (rolldown build) ships separate, nominally-incompatible
+    // CJS and ESM type declarations. Our zshy-built packages expose fast-check
+    // types via flat `.d.cts` declarations, so an ESM consumer ends up loading
+    // both the CJS and ESM `Arbitrary`/`Stream` (private member `g`) and tsc
+    // treats them as distinct identities. Pinning every `fast-check` import to a
+    // single declaration file restores one type identity. Path is relative to
+    // this config's dir so it resolves to the hoisted root install everywhere.
+    // See https://github.com/dubzzz/fast-check/issues/5105 -- once that lands,
+    // this workaround should no longer be necessary.
+    "paths": {
+      "fast-check": ["../node_modules/fast-check/lib/fast-check.d.ts"]
+    },
     "sourceMap": true,
     "stripInternal": true,
     "types": ["node"],

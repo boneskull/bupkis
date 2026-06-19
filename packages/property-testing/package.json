@@ -22,9 +22,9 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./package.json": "./package.json"
   },
@@ -52,9 +52,6 @@
   },
   "dependencies": {
     "zod": "4.4.3"
-  },
-  "devDependencies": {
-    "fast-check": "4.8.0"
   },
   "publishConfig": {
     "access": "public",
