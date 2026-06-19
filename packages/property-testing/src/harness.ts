@@ -38,18 +38,20 @@ import { calculateNumRuns } from './util.js';
  * @group Errors
  */
 export class PropertyTestGeneratorError extends Error {
+  public readonly args: unknown[];
+
+  public readonly assertionId: string;
+
   override name = 'PropertyTestGeneratorError';
 
-  constructor(
-    public readonly assertionId: string,
-    public readonly args: unknown[],
-    message?: string,
-  ) {
+  constructor(assertionId: string, args: unknown[], message?: string) {
     super(
       message ??
         `Generator bug: Arguments don't parse for assertion '${assertionId}'. ` +
           `Args: ${inspect(args)}`,
     );
+    this.assertionId = assertionId;
+    this.args = args;
   }
 }
 
@@ -62,17 +64,26 @@ export class PropertyTestGeneratorError extends Error {
  * @group Errors
  */
 export class WrongAssertionError extends Error {
+  public readonly actualAssertionId: string;
+
+  public readonly args: unknown[];
+
+  public readonly expectedAssertionId: string;
+
   override name = 'WrongAssertionError';
 
   constructor(
-    public readonly expectedAssertionId: string,
-    public readonly actualAssertionId: string,
-    public readonly args: unknown[],
+    expectedAssertionId: string,
+    actualAssertionId: string,
+    args: unknown[],
   ) {
     super(
       `Wrong assertion failed: expected '${expectedAssertionId}', ` +
         `but '${actualAssertionId}' failed instead. Args: ${inspect(args)}`,
     );
+    this.expectedAssertionId = expectedAssertionId;
+    this.actualAssertionId = actualAssertionId;
+    this.args = args;
   }
 }
 
