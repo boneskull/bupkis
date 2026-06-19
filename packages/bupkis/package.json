@@ -22,45 +22,45 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.cts"
     },
     "./assertions": {
-      "types": "./dist/assertion/index.d.cts",
       "import": "./dist/assertion/index.js",
-      "require": "./dist/assertion/index.cjs"
+      "require": "./dist/assertion/index.cjs",
+      "types": "./dist/assertion/index.d.cts"
     },
     "./diff": {
-      "types": "./dist/diff.d.cts",
       "import": "./dist/diff.js",
-      "require": "./dist/diff.cjs"
+      "require": "./dist/diff.cjs",
+      "types": "./dist/diff.d.cts"
     },
     "./guards": {
-      "types": "./dist/guards.d.cts",
       "import": "./dist/guards.js",
-      "require": "./dist/guards.cjs"
+      "require": "./dist/guards.cjs",
+      "types": "./dist/guards.d.cts"
     },
     "./package.json": "./package.json",
     "./schema": {
-      "types": "./dist/schema.d.cts",
       "import": "./dist/schema.js",
-      "require": "./dist/schema.cjs"
+      "require": "./dist/schema.cjs",
+      "types": "./dist/schema.d.cts"
     },
     "./snapshot": {
-      "types": "./dist/snapshot/index.d.cts",
       "import": "./dist/snapshot/index.js",
-      "require": "./dist/snapshot/index.cjs"
+      "require": "./dist/snapshot/index.cjs",
+      "types": "./dist/snapshot/index.d.cts"
     },
     "./types": {
-      "types": "./dist/types.d.cts",
       "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
+      "require": "./dist/types.cjs",
+      "types": "./dist/types.d.cts"
     },
     "./util": {
-      "types": "./dist/util.d.cts",
       "import": "./dist/util.js",
-      "require": "./dist/util.cjs"
+      "require": "./dist/util.cjs",
+      "types": "./dist/util.d.cts"
     }
   },
   "files": [
@@ -121,9 +121,9 @@
     "zod": "^4.1.5"
   },
   "dependencies": {
-    "debug": "^4.4.1",
     "jest-diff": "30.4.1",
     "json-stable-stringify": "1.3.0",
+    "obug": "2.1.3",
     "set.prototype.difference": "^1.1.7",
     "set.prototype.intersection": "^1.1.7",
     "set.prototype.isdisjointfrom": "^1.1.5",

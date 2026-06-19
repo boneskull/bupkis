@@ -9,7 +9,7 @@
  * @packageDocumentation
  */
 
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import slug from 'slug';
 import { type ArrayValues } from 'type-fest';
 import { inspect } from 'util';
