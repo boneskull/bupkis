@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { inspect } from 'util';
 
 import {
