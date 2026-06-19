@@ -118,7 +118,7 @@ const predicates = {
   /**
    * @function
    */
-  nan: (v: unknown): boolean => isNaN(v as number),
+  nan: (v: unknown): boolean => isNaN(v),
 
   /**
    * @function

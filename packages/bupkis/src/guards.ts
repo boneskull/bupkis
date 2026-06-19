@@ -45,7 +45,6 @@ export function isZodType<T extends keyof ZodTypeMap>(
   value: unknown,
   type: T,
 ): value is ZodTypeMap[T];
-
 /**
  * Returns `true` if the given value looks like a Zod v4 schema, determined by
  * the presence of an internal {@link z.core.$ZodTypeDef} field.

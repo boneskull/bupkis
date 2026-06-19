@@ -125,7 +125,7 @@ export const typeOfAssertion = createAssertion(
     ),
   ],
   (_, type) => {
-    type = type.toLowerCase() as Lowercase<typeof type>;
+    type = type.toLowerCase();
     // these first three are names that are _not_ results of the `typeof` operator; i.e. `typeof x` will never return these strings
     switch (type) {
       case 'array':
