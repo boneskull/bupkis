@@ -57,11 +57,16 @@ export abstract class BupkisAssertion<
 > implements Assertion<Parts, Impl, Slots> {
   readonly id: string;
 
-  constructor(
-    readonly parts: Parts,
-    readonly slots: Slots,
-    readonly impl: Impl,
-  ) {
+  readonly impl: Impl;
+
+  readonly parts: Parts;
+
+  readonly slots: Slots;
+
+  constructor(parts: Parts, slots: Slots, impl: Impl) {
+    this.parts = parts;
+    this.slots = slots;
+    this.impl = impl;
     this.id = this.generateAssertionId();
     debug('ℹ Created assertion %s', this);
   }

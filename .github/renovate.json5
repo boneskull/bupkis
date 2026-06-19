@@ -11,6 +11,8 @@
     ':configMigration',
     ':automergeDigest',
     ':automergeMinor',
+    'workarounds:typesNodeVersioning',
+    'helpers:disableTypesNodeMajor',
   ],
   labels: ['dependencies'],
   ignorePaths: [
