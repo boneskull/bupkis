@@ -74,7 +74,7 @@
     "tsd": "0.33.0",
     "tsx": "4.21.0",
     "typedoc": "0.28.15",
-    "typedoc-plugin-dt-links": "2.0.34",
+    "typedoc-plugin-dt-links": "2.0.59",
     "typedoc-plugin-extras": "4.0.1",
     "typedoc-plugin-llms-txt": "0.1.1",
     "typedoc-plugin-mdn-links": "5.0.10",
