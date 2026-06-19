@@ -287,11 +287,7 @@ export const toHaveHandledRequestToWithOptionsAssertion =
     ],
     (server, path, options) => {
       const requests = server.trackedRequests;
-      const matches = filterMatchingRequests(
-        requests,
-        path,
-        options as RequestMatchOptions,
-      );
+      const matches = filterMatchingRequests(requests, path, options);
 
       // Check count requirements
       const expectedCount = options?.once ? 1 : options?.times;
@@ -381,11 +377,7 @@ export const toHaveHandledRequestMatchingWithOptionsAssertion =
     ],
     (server, pattern, options) => {
       const requests = server.trackedRequests;
-      const matches = filterMatchingRequests(
-        requests,
-        pattern,
-        options as RequestMatchOptions,
-      );
+      const matches = filterMatchingRequests(requests, pattern, options);
 
       // Check count requirements
       const expectedCount = options?.once ? 1 : options?.times;
@@ -512,7 +504,7 @@ export const toHaveHandledRequestToWithOptionsAsyncAssertion =
       const matches = await filterMatchingRequestsAsync(
         requests,
         path,
-        options as RequestMatchOptions,
+        options,
       );
 
       // Check count requirements
@@ -575,7 +567,7 @@ export const toHaveHandledRequestMatchingWithOptionsAsyncAssertion =
       const matches = await filterMatchingRequestsAsync(
         requests,
         pattern,
-        options as RequestMatchOptions,
+        options,
       );
 
       // Check count requirements

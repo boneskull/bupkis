@@ -199,10 +199,10 @@ describe('Standard Schema - Interoperability', () => {
         ((str: string, len: number) => str.length === len) as any,
       );
 
-      assertion.execute(['hello', 5] as any, ['hello', 5], () => {});
+      assertion.execute(['hello', 5], ['hello', 5], () => {});
 
       expect(
-        () => assertion.execute(['hello', 3] as any, ['hello', 3], () => {}),
+        () => assertion.execute(['hello', 3], ['hello', 3], () => {}),
         'to throw an',
         AssertionError,
       );
@@ -214,8 +214,8 @@ describe('Standard Schema - Interoperability', () => {
       const numberSchema: StandardSchemaV1<number> = {
         '~standard': {
           types: {
-            input: 0 as number,
-            output: 0 as number,
+            input: 0,
+            output: 0,
           },
           validate: (value: unknown) => {
             return typeof value === 'number'
@@ -236,7 +236,7 @@ describe('Standard Schema - Interoperability', () => {
         }) as any,
       );
 
-      assertion.execute([42] as any, [42], () => {});
+      assertion.execute([42], [42], () => {});
     });
   });
 

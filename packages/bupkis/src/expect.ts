@@ -78,7 +78,6 @@ export function createExpectAsyncFunction<
   T extends AnyAsyncAssertions,
   U extends ExpectAsync<AnyAsyncAssertions>,
 >(assertions: T, expect: U): ExpectAsyncFunction<T & U['assertions']>;
-
 /**
  * Creates a new asynchronous expect function with the provided assertions.
  *
@@ -109,7 +108,6 @@ export function createExpectAsyncFunction<
 export function createExpectAsyncFunction<T extends AnyAsyncAssertions>(
   assertions: T,
 ): ExpectAsyncFunction<T>;
-
 /**
  * Implementation function that creates an asynchronous expect function with
  * optional parent inheritance.
@@ -356,7 +354,6 @@ export function createExpectSyncFunction<
   assertions: Assertions,
   expect: ParentExpect,
 ): ExpectFunction<Assertions & ParentExpect['assertions']>;
-
 /**
  * Creates a new synchronous expect function with the provided assertions.
  *
@@ -387,7 +384,6 @@ export function createExpectSyncFunction<
 export function createExpectSyncFunction<Assertions extends AnySyncAssertions>(
   assertions: Assertions,
 ): ExpectFunction<Assertions>;
-
 /**
  * Implementation function that creates a synchronous expect function with
  * optional parent inheritance.

@@ -89,7 +89,7 @@ export const valueToSchema = (
         })
       : z.undefined();
   }
-  if (isNaN(value as number)) {
+  if (isNaN(value)) {
     return z.nan();
   }
   if (value === Infinity || value === -Infinity) {

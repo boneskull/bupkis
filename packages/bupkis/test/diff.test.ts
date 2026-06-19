@@ -274,7 +274,7 @@ describe('diff utilities', () => {
       // Create a valid string first, then add a custom error code
       const schema = z.string().superRefine((val, ctx) => {
         ctx.addIssue({
-          code: 'custom' as any, // Use custom code which behaves like unknown
+          code: 'custom', // Use custom code which behaves like unknown
           message: 'Unknown error code for testing',
           path: [],
         });
