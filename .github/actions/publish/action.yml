@@ -29,7 +29,7 @@ runs:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
         INPUTS_PATHS_RELEASED: ${{ inputs.paths-released }}
       run: |
-        paths='${INPUTS_PATHS_RELEASED}'
+        paths="${INPUTS_PATHS_RELEASED}"
         if [ -z "$paths" ] || [ "$paths" = "[]" ]; then
           echo "No paths to publish, nothing to do."
           exit 0
