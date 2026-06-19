@@ -17,7 +17,7 @@ npm install bupkis -D
 
 ### Prerequisites
 
-<span class="bupkis">BUPKIS</span> requires Node.js version **^20.19.0 || ^22.12.0 || >=23**. Take it or leave it.
+<span class="bupkis">BUPKIS</span> requires Node.js version **^22.13.0 || >=24.0.0**. Take it or leave it.
 
 The library supports both **ESM** and **CommonJS** module systems, because we're not ~~monsters~~ ~~pedants~~ _ideologues_ about this sort of thing.
 

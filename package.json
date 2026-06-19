@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=23"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "scripts": {
     "bench": "npm run bench --workspaces --if-present",
@@ -35,7 +35,6 @@
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "test:dev": "npm run test:dev --workspaces --if-present",
     "test:fuzz": "npm run test:fuzz --workspace=bupkis",
-    "test:node20": "npm run test:node20 --workspaces",
     "test:property": "npm run test:property --workspaces --if-present",
     "test:snapshots": "npm run test:snapshots --workspaces --if-present",
     "test:types": "npm run test:types --workspaces --if-present"

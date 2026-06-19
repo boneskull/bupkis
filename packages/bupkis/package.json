@@ -15,7 +15,7 @@
   },
   "license": "BlueOak-1.0.0",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=23"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
@@ -108,8 +108,6 @@
     "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
     "test:dev": "run-s \"test:base -- --watch \\\"test/**/*.test.ts\\\"\"",
     "test:fuzz": "node --import tsx --no-warnings scripts/fuzz.ts",
-    "test:node20": "run-s test:node20:runtime test:types",
-    "test:node20:runtime": "node --test --test-reporter=spec --import tsx test/**/*.test.ts",
     "test:profile": "run-s \"test:base -- --cpu-prof --cpu-prof-dir=.profiles  \\\"test/**/*.test.ts\\\"\"",
     "test:property": "run-s \"test:base -- \\\"test/property/*.test.ts\\\"\"",
     "test:property:dev": "run-s \"test:base -- --watch \\\"test/property/*.test.ts\\\"\"",

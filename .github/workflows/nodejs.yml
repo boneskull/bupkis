@@ -72,8 +72,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: '^20.19.0'
-          - node-version: '^22.12.0'
+          - node-version: '^22.13.0'
           - node-version: '^24.0.0'
           - node-version: '^26.0.0'
     steps:
@@ -85,10 +84,5 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm run build
-      - name: Test (Node v20.x)
-        if: startsWith(matrix.node-version, '^20')
-        # CAUTION: this only works in POSIX environments
-        run: npm run test:node20
       - name: Test
-        if: ${{ !startsWith(matrix.node-version, '^20') }}
         run: npm test
