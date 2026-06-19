@@ -3,8 +3,8 @@ import type { MatcherTransform } from '../types.js';
 /**
  * @testing-library/jest-dom matchers.
  *
- * These are DOM-specific and may have limited bupkis equivalents.
- * Most will need TODO markers for manual migration.
+ * These are DOM-specific and may have limited bupkis equivalents. Most will
+ * need TODO markers for manual migration.
  *
  * Reference: https://testing-library.com/docs/ecosystem-jest-dom/
  */
