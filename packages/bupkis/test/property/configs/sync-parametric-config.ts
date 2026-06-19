@@ -4,6 +4,7 @@ import {
   hasValueDeep,
   objectFilter,
   type PropertyTestConfig,
+  rejectPassing,
   safeRegexStringFilter,
 } from '@bupkis/property-testing';
 import escapeStringRegexp from 'escape-string-regexp';
@@ -12,6 +13,7 @@ import fc from 'fast-check';
 import * as assertions from '../../../src/assertion/impl/sync-parametric.js';
 import { type AnyAssertion } from '../../../src/types.js';
 import { SyncParametricGenerators } from '../../../test-data/sync-parametric-generators.js';
+import { expect } from '../../custom-assertions.js';
 
 /**
  * Arbitrary that generates any primitive value except `NaN` because `NaN !==
@@ -40,47 +42,53 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           [[42, 'to deep equal', 43]],
           [['hello', 'to deeply equal', 'world']],
         ],
-        generators: fc.oneof(
-          // Primitives that don't match
-          primitive.chain((expected) =>
-            fc.tuple(
-              primitive.filter((actual) => actual !== expected),
-              fc.constantFrom(...extractPhrases(assertions.deepEqualAssertion)),
-              fc.constant(expected),
-            ),
-          ),
-          // Objects that don't match; medium objects should always generally be larger than small objects
-          fc
-            .object({ size: 'small' })
-            .filter(objectFilter)
-            .chain((expected) =>
+        generators: fc
+          .oneof(
+            // Primitives that don't match
+            primitive.chain((expected) =>
               fc.tuple(
-                fc.object({ size: 'medium' }).filter(objectFilter),
+                primitive.filter((actual) => actual !== expected),
                 fc.constantFrom(
                   ...extractPhrases(assertions.deepEqualAssertion),
                 ),
                 fc.constant(expected),
               ),
             ),
-          // Arrays that don't match
-          fc
-            .array(filteredAnything, {
-              minLength: 1,
-              size: 'small',
-            })
-            .chain((expected) =>
-              fc.tuple(
-                fc.array(filteredAnything, {
-                  minLength: 1,
-                  size: 'medium',
-                }),
-                fc.constantFrom(
-                  ...extractPhrases(assertions.deepEqualAssertion),
+            // Objects that don't match; medium objects should always generally be larger than small objects
+            fc
+              .object({ size: 'small' })
+              .filter(objectFilter)
+              .chain((expected) =>
+                fc.tuple(
+                  fc.object({ size: 'medium' }).filter(objectFilter),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.deepEqualAssertion),
+                  ),
+                  fc.constant(expected),
                 ),
-                fc.constant(expected),
               ),
-            ),
-        ),
+            // Arrays that don't match
+            fc
+              .array(filteredAnything, {
+                minLength: 1,
+                size: 'small',
+              })
+              .chain((expected) =>
+                fc.tuple(
+                  fc.array(filteredAnything, {
+                    minLength: 1,
+                    size: 'medium',
+                  }),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.deepEqualAssertion),
+                  ),
+                  fc.constant(expected),
+                ),
+              ),
+          )
+          // Belt-and-suspenders: independently-generated actual/expected pairs
+          // can shrink toward equality, so drop any tuple the assertion accepts.
+          .filter(rejectPassing(expect)),
         verbose: true,
       },
       valid: {
@@ -505,46 +513,54 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
           [[42, 'to satisfy', 43]],
           [['hello', 'satisfies', 'world']],
         ],
-        generators: fc.oneof(
-          // Primitives that don't match
-          primitive.chain((expected) =>
-            fc.tuple(
-              primitive.filter((actual) => actual !== expected),
-              fc.constantFrom(...extractPhrases(assertions.satisfiesAssertion)),
-              fc.constant(expected),
-            ),
-          ),
-          // Objects that don't satisfy
-          fc
-            .object({ depthSize: 'small' })
-            .filter(objectFilter)
-            .chain((expected) =>
+        generators: fc
+          .oneof(
+            // Primitives that don't match
+            primitive.chain((expected) =>
               fc.tuple(
-                fc.object({ depthSize: 'medium' }).filter(objectFilter),
+                primitive.filter((actual) => actual !== expected),
                 fc.constantFrom(
                   ...extractPhrases(assertions.satisfiesAssertion),
                 ),
                 fc.constant(expected),
               ),
             ),
-          // Arrays that don't satisfy
-          fc
-            .array(filteredAnything, { minLength: 1, size: 'small' })
-            .chain((expected) =>
-              fc.tuple(
-                fc
-                  .array(filteredAnything, {
-                    minLength: 1,
-                    size: 'medium',
-                  })
-                  .filter((val) => !hasValueDeep(val, [])),
-                fc.constantFrom(
-                  ...extractPhrases(assertions.satisfiesAssertion),
+            // Objects that don't satisfy
+            fc
+              .object({ depthSize: 'small' })
+              .filter(objectFilter)
+              .chain((expected) =>
+                fc.tuple(
+                  fc.object({ depthSize: 'medium' }).filter(objectFilter),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.satisfiesAssertion),
+                  ),
+                  fc.constant(expected),
                 ),
-                fc.constant(expected),
               ),
-            ),
-        ),
+            // Arrays that don't satisfy
+            fc
+              .array(filteredAnything, { minLength: 1, size: 'small' })
+              .chain((expected) =>
+                fc.tuple(
+                  fc
+                    .array(filteredAnything, {
+                      minLength: 1,
+                      size: 'medium',
+                    })
+                    .filter((val) => !hasValueDeep(val, [])),
+                  fc.constantFrom(
+                    ...extractPhrases(assertions.satisfiesAssertion),
+                  ),
+                  fc.constant(expected),
+                ),
+              ),
+          )
+          // "to satisfy" is a subset check, so independently-generated pairs can
+          // coincidentally satisfy (and the shrinker actively seeks those out).
+          // Reject any tuple the assertion actually accepts so that "invalid"
+          // inputs remain genuinely invalid.
+          .filter(rejectPassing(expect)),
         verbose: true,
       },
       valid: {
