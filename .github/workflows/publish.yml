@@ -30,7 +30,7 @@ jobs:
         id: paths
         run: |
           # Convert comma-separated paths to JSON array
-          json=$(echo '${INPUTS_PATHS}' | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          json=$(echo "$INPUTS_PATHS" | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
           echo "json=$json" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
