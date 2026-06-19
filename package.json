@@ -73,7 +73,7 @@
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-pkg": "0.21.2",
     "tsd": "0.33.0",
-    "tsx": "4.21.0",
+    "tsx": "4.22.4",
     "typedoc": "0.28.15",
     "typedoc-plugin-dt-links": "2.0.59",
     "typedoc-plugin-extras": "4.0.1",
