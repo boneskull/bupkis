@@ -1,6 +1,7 @@
 import jsPlugin from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import eslintPluginJsonc from 'eslint-plugin-jsonc';
+import nodePlugin from 'eslint-plugin-n';
 import perfectionist from 'eslint-plugin-perfectionist';
 import zodPlugin from 'eslint-plugin-zod';
 import { defineConfig } from 'eslint/config';
@@ -10,7 +11,6 @@ import tseslint from 'typescript-eslint';
 import requireFunctionTagInArrowFunctions from './.config/eslint-rules/require-function-tag-in-arrow-functions.js';
 import requireIntrinsicDestructuring from './.config/eslint-rules/require-intrinsic-destructuring.js';
 
-// TODO: setup eslint-plugin-n
 export default defineConfig(
   jsPlugin.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -25,6 +25,7 @@ export default defineConfig(
     },
   },
   {
+    extends: ['n/recommended-module'],
     files: ['packages/**/src/**/*.ts'],
     plugins: {
       custom: {
@@ -37,6 +38,7 @@ export default defineConfig(
           ),
         },
       },
+      n: nodePlugin,
       zod: zodPlugin,
     },
     rules: {
@@ -66,6 +68,16 @@ export default defineConfig(
           ],
         },
       ],
+      'n/hashbang': [
+        'error',
+        { convertPath: { 'src/cli.ts': ['src/cli.ts', 'dist/cli.js'] } },
+      ],
+      'n/no-missing-import': [
+        'error',
+        {
+          ignoreTypeImport: true,
+        },
+      ],
       // Zod plugin rules
       'zod/array-style': ['error', { style: 'function' }],
       'zod/consistent-import-source': ['error', { sources: ['zod'] }],
@@ -86,6 +98,11 @@ export default defineConfig(
       'zod/require-error-message': 'off', // too noisy
       'zod/require-schema-suffix': 'off', // not our convention
       'zod/schema-error-property-style': 'error',
+    },
+    settings: {
+      n: {
+        allowModules: ['type-fest'],
+      },
     },
   },
   {
