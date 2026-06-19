@@ -59,6 +59,7 @@
     "escape-string-regexp": "5.0.0",
     "eslint": "9.39.4",
     "eslint-plugin-jsonc": "2.21.1",
+    "eslint-plugin-n": "18.1.0",
     "eslint-plugin-perfectionist": "5.9.1",
     "eslint-plugin-zod": "3.12.1",
     "fast-check": "4.5.2",
