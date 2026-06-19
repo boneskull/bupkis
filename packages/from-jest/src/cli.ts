@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable n/no-process-exit */
 import { ansi, bargs, opt, pos } from '@boneskull/bargs';
 import {
   bupkisTheme,
