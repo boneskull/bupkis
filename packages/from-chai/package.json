@@ -52,8 +52,8 @@
     "ts-morph": "^25.0.0"
   },
   "devDependencies": {
-    "chai": "^5.0.0",
-    "chai-as-promised": "^8.0.0"
+    "chai": "5.3.3",
+    "chai-as-promised": "8.0.2"
   },
   "publishConfig": {
     "access": "public",
