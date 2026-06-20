@@ -1,0 +1,49 @@
+name: Assign Labels From Commits
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  assign-labels:
+    name: Run mauroalderete/action-assign-labels action
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign labels based on conventional commits
+        uses: mauroalderete/action-assign-labels@671a4ca2da0f900464c58b8b5540a1e07133e915 # v1.5.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          maintain-labels-not-matched: true
+          conventional-commits: |
+            conventional-commits:
+              - type: 'fix'
+                nouns: ['fix', 'Fix', 'FIX']
+                labels: ['bug']
+              - type: 'feat'
+                nouns: ['feat', 'Feat', 'FEAT', 'feature', 'Feature', 'FEATURE']
+                labels: ['enhancement']
+              - type: 'chore'
+                nouns: ['chore', 'Chore', 'CHORE']
+                labels: ['chore']
+              - type: 'docs'
+                nouns: ['docs', 'Docs', 'DOCS', 'doc', 'Doc', 'DOC']
+                labels: ['docs']
+              - type: 'breaking'
+                nouns:
+                  [
+                    'BREAKING CHANGE',
+                    'BREAKING CHANGES',
+                    'breaking change',
+                    'breaking changes',
+                  ]
+                labels: ['semver-major']
