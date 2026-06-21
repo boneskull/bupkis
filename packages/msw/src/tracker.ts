@@ -170,7 +170,7 @@ class TrackedServerImpl
   #trackedRequests: InternalTrackedRequest[] = [];
 
   constructor(...handlers: RequestHandler[]) {
-    super(handlers);
+    super(handlers, []);
     this.#setupEventListeners();
   }
 
