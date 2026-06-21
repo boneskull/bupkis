@@ -57,7 +57,7 @@
     "msw": ">=2.0.0"
   },
   "devDependencies": {
-    "msw": "2.8.4"
+    "msw": "2.14.6"
   },
   "publishConfig": {
     "access": "public"
