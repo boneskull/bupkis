@@ -20,6 +20,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/prepare
+      - run: npm run build
       - run: npm run lint
 
   zizmor:

@@ -30,6 +30,7 @@ jobs:
       - uses: ./.github/actions/prepare
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm run build
       - name: Test (Node v20.x)
         if: startsWith(matrix.node-version, '^20')
         # CAUTION: this only works in POSIX environments
