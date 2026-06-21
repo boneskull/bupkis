@@ -85,7 +85,7 @@
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "5.9.3",
     "typescript-eslint": "8.61.1",
-    "valibot": "1.2.0",
+    "valibot": "1.4.1",
     "zshy": "0.7.3"
   },
   "knip": {
