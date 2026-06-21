@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "eventemitter3": "5.0.4",
-    "fast-check": "4.5.2"
+    "fast-check": "4.8.0"
   },
   "publishConfig": {
     "access": "public",
