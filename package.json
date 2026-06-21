@@ -66,7 +66,7 @@
     "globals": "16.5.0",
     "husky": "9.1.7",
     "knip": "5.78.0",
-    "lint-staged": "16.2.7",
+    "lint-staged": "16.4.0",
     "markdownlint-cli2": "0.21.0",
     "markdownlint-cli2-formatter-pretty": "0.0.10",
     "modestbench": "0.9.3",
