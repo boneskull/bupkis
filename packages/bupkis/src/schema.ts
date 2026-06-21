@@ -190,7 +190,7 @@ export const FunctionSchema = z
  * @group Schema
  */
 export const NonCollectionObjectSchema = z
-  .custom<((...args: any[]) => any) | object | Record<PropertyKey, unknown>>(
+  .custom<((...args: any[]) => any) | Record<PropertyKey, unknown>>(
     (v) =>
       (isNonNullObject(v) || isFunction(v)) &&
       !(v instanceof Map) &&
