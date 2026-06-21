@@ -80,7 +80,7 @@
     "typedoc-plugin-dt-links": "2.0.59",
     "typedoc-plugin-extras": "4.0.1",
     "typedoc-plugin-llms-txt": "0.1.2",
-    "typedoc-plugin-mdn-links": "5.0.10",
+    "typedoc-plugin-mdn-links": "5.1.1",
     "typedoc-plugin-redirect": "1.2.1",
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "5.9.3",
