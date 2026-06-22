@@ -38,4 +38,4 @@ jobs:
           persona: pedantic
           advanced-security: 'false'
           annotations: 'true'
-          version: '1.26.1'
+          version: '1.25.2'
