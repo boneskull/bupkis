@@ -1,6 +1,16 @@
 name: Lint
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '.husky/**'
+      - '**/CHANGELOG.md'
+      - 'assets/**'
+  pull_request:
+    paths-ignore:
+      - '.husky/**'
+      - '**/CHANGELOG.md'
+      - 'assets/**'
 
 permissions:
   contents: read
