@@ -10,7 +10,6 @@
     'helpers:pinGitHubActionDigests',
     ':configMigration',
     ':automergeDigest',
-    ':automergeMinor',
     'workarounds:typesNodeVersioning',
     'helpers:disableTypesNodeMajor',
   ],
