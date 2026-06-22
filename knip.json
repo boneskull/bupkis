@@ -4,22 +4,14 @@
   "tags": ["-knipignore"],
   "workspaces": {
     ".": {
+      "entry": [".config/eslint-rules/*.js"],
+      "ignore": [".wallaby.js", ".claude/**", "**/examples/**"],
       "ignoreDependencies": [
         "@types/wallabyjs",
         "markdownlint-cli2-formatter-pretty"
-      ],
-      "ignore": [
-        ".wallaby.js",
-        "**/*.cts",
-        "**/*.d.ts",
-        "site/media/**/*",
-        "worktrees/**/*",
-        ".worktrees/**/*"
-      ],
-      "entry": [".config/eslint-rules/*.js"]
+      ]
     },
     "packages/bupkis": {
-      "ignore": ["test-d/**/*.test-d.ts"],
       "entry": [
         "src/assertion/index.ts",
         "src/index.ts",
@@ -33,7 +25,8 @@
         "bench/**/*.bench.ts",
         "scripts/*.ts",
         "test/**/*.test.ts"
-      ]
+      ],
+      "ignore": ["test-d/**/*.test-d.ts"]
     },
     "packages/sinon": {
       "entry": ["src/index.ts", "test/**/*.test.ts"]
