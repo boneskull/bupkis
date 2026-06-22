@@ -12,7 +12,7 @@ import { getMatcherTransform, isMatcherSupported } from '../matchers/index.js';
 /**
  * Result of transforming TDD assert calls in a file.
  */
-export interface TddTransformResult {
+interface TddTransformResult {
   errors: TransformError[];
   transformCount: number;
   warnings: TransformWarning[];

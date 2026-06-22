@@ -37,7 +37,7 @@ const CHAI_PLUGIN_PATTERN = /^chai-/;
 /**
  * Result of transforming imports.
  */
-export interface ImportTransformResult {
+interface ImportTransformResult {
   /** Whether any imports were modified */
   modified: boolean;
 

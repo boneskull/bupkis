@@ -27,7 +27,7 @@ const STRICT_IMPORT_SOURCES = new Set(['assert/strict', 'node:assert/strict']);
 /**
  * Options for import transformation.
  */
-export interface ImportTransformOptions {
+interface ImportTransformOptions {
   /**
    * Whether expectAsync is needed (async assertions were transformed).
    */
@@ -37,7 +37,7 @@ export interface ImportTransformOptions {
 /**
  * Result of transforming imports.
  */
-export interface ImportTransformResult {
+interface ImportTransformResult {
   /** The detected assert style (strict or legacy) */
   assertStyle: AssertStyle;
 

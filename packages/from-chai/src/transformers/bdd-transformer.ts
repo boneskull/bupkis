@@ -17,7 +17,7 @@ import { getMatcherTransform, isMatcherSupported } from '../matchers/index.js';
 /**
  * Result of transforming BDD expect calls in a file.
  */
-export interface BddTransformResult {
+interface BddTransformResult {
   errors: TransformError[];
   transformCount: number;
   warnings: TransformWarning[];

@@ -21,7 +21,7 @@ import {
 /**
  * Result of transforming assert calls in a file.
  */
-export interface AssertTransformResult {
+interface AssertTransformResult {
   errors: TransformError[];
   transformCount: number;
 

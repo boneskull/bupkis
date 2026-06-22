@@ -18,22 +18,22 @@ import {
 } from '../matchers/index.js';
 
 /**
- * Options for transforming expect calls.
- */
-export interface ExpectTransformOptions {
-  /** Transform mode */
-  mode: TransformMode;
-
-  /** Enable mock matcher transformations (requires @bupkis/sinon) */
-  sinon?: boolean;
-}
-
-/**
  * Detected mock matcher.
  */
 export interface MockMatcherInfo {
   /** Jest matcher name */
   matcher: string;
+}
+
+/**
+ * Options for transforming expect calls.
+ */
+interface ExpectTransformOptions {
+  /** Transform mode */
+  mode: TransformMode;
+
+  /** Enable mock matcher transformations (requires @bupkis/sinon) */
+  sinon?: boolean;
 }
 
 interface ExpectTransformResult {

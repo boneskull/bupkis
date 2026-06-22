@@ -30,7 +30,7 @@ export type AsyncIterableInput<T> =
  *
  * @internal
  */
-export interface AsyncIterationResult<T> {
+interface AsyncIterationResult<T> {
   /** Whether iteration completed successfully (no error) */
   completed: boolean;
   /** The total count of items */
@@ -48,7 +48,7 @@ export interface AsyncIterationResult<T> {
  *
  * @internal
  */
-export interface SyncIterationResult<T> {
+interface SyncIterationResult<T> {
   /** The total count of items */
   count: number;
   /** Whether the iterator had any values */

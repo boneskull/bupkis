@@ -10,9 +10,9 @@ import type { Observable } from 'rxjs';
  * Result of collecting all emissions from an Observable until completion or
  * error.
  *
- * @typeParam T - The type of values emitted by the Observable
+ * @template T - The type of values emitted by the Observable
  */
-export interface CollectResult<T> {
+interface CollectResult<T> {
   /**
    * Whether the Observable completed successfully (called the `complete`
    * callback).
@@ -63,7 +63,7 @@ export interface CollectResult<T> {
  * // { completed: false, error: Error('oops'), values: [] }
  * ```
  *
- * @typeParam T - The type of values emitted by the Observable
+ * @template T - The type of values emitted by the Observable
  * @function
  * @param observable - The Observable to collect emissions from
  * @returns A Promise resolving to the collection result

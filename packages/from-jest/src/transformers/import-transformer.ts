@@ -15,7 +15,7 @@ const JEST_IMPORT_SOURCES = ['@jest/globals', 'vitest', 'jest'];
 /**
  * Options for import transformation.
  */
-export interface ImportTransformOptions {
+interface ImportTransformOptions {
   /**
    * Whether expectAsync is needed (promise matchers were transformed).
    */

@@ -260,7 +260,7 @@ let registry: AssertionApplicability[] | undefined;
  *
  * Derived from {@link predicates} keys with `Assertion` suffix.
  */
-export type ApplicabilityAssertionMap = {
+type ApplicabilityAssertionMap = {
   [K in PredicateKey as AssertionKey<K>]: AnySyncAssertion;
 };
 

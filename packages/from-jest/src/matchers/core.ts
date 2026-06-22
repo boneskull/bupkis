@@ -210,7 +210,7 @@ const handleRejectsToThrow = (
   return `expectAsync(${subject}, '${phrase}', ${arg})`;
 };
 
-export interface PromiseChainTransformResult {
+interface PromiseChainTransformResult {
   /** The transformed code */
   code: string;
   /** Whether the transformation was successful */
