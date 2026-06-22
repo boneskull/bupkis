@@ -13,37 +13,7 @@ npm install @bupkis/property-testing --save-dev
 **Peer dependencies:**
 
 - `bupkis` >= 0.15.0
-- `fast-check` >= 4.0.0
-
-### Known issue: `fast-check` type resolution
-
-If you're on an ESM project using `fast-check` >= 4.6.0 and `tsc` greets you with:
-
-```text
-Argument of type 'Arbitrary<...>' is not assignable to parameter of type 'Arbitrary<...>'.
-  ...
-  Types have separate declarations of a private property 'g'.
-```
-
-…you've hit a known type-resolution issue. Since v4.6.0, `fast-check` ships separate type declarations for its CommonJS and ESM builds. This package's public types reference `fast-check`, so when your ESM code imports both this package and `fast-check` directly, TypeScript can end up loading _two_ copies of `fast-check`'s types (one CJS, one ESM) and treats them as incompatible.
-
-The workaround is to pin every `fast-check` import to a single declaration file via `paths` in your `tsconfig.json`:
-
-```jsonc
-{
-  "compilerOptions": {
-    "paths": {
-      // adjust the path to wherever fast-check resolves in your project
-      // (it may be hoisted to a workspace root in a monorepo)
-      "fast-check": ["./node_modules/fast-check/lib/fast-check.d.ts"],
-    },
-  },
-}
-```
-
-This has no runtime effect; it only collapses the two type identities back into one during type-checking.
-
-Once [dubzzz/fast-check#5105](https://github.com/dubzzz/fast-check/issues/5105) lands (replacing `fast-check`'s custom `Stream` — whose private `g` member is what TypeScript trips over — with native iterator helpers), this workaround should no longer be necessary.
+- `fast-check` >= 4.0.0 < 4.6.0
 
 ## Quick Start
 
