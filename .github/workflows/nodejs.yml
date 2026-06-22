@@ -1,6 +1,60 @@
 name: Node CI
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '!.github/actions/prepare/**'
+      - '!.github/workflows/nodejs.yml'
+      - '.claude/**'
+      - '.commitlintrc.js'
+      - '.config/eslint-rules/**'
+      - '.config/typedoc*.js'
+      - '.editorconfig'
+      - '.github/**'
+      - '.husky/**'
+      - '.markdownlint-cli2.yaml'
+      - '.prettierignore'
+      - '.release-please-manifest.json'
+      - '.vscode/**'
+      - '.wallaby.js'
+      - '**/CHANGELOG.md'
+      - '**/README.md'
+      - 'assets/**'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'cspell.json'
+      - 'eslint.config.js'
+      - 'knip.json'
+      - 'LICENSE.md'
+      - 'release-please-config.json'
+      - 'site/**'
+  pull_request:
+    paths-ignore:
+      - '!.github/actions/prepare/**'
+      - '!.github/workflows/nodejs.yml'
+      - '.claude/**'
+      - '.commitlintrc.js'
+      - '.config/eslint-rules/**'
+      - '.config/typedoc*.js'
+      - '.editorconfig'
+      - '.github/**'
+      - '.husky/**'
+      - '.markdownlint-cli2.yaml'
+      - '.prettierignore'
+      - '.release-please-manifest.json'
+      - '.vscode/**'
+      - '.wallaby.js'
+      - '**/CHANGELOG.md'
+      - '**/README.md'
+      - 'assets/**'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'cspell.json'
+      - 'eslint.config.js'
+      - 'knip.json'
+      - 'LICENSE.md'
+      - 'release-please-config.json'
+      - 'site/**'
 
 permissions:
   contents: read
