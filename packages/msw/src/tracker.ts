@@ -6,8 +6,9 @@
  */
 
 import type { RequestHandler } from 'msw';
+import type { SetupServer } from 'msw/node';
 
-import { SetupServerApi } from 'msw/node';
+import { setupServer } from 'msw/node';
 
 import type { TrackedRequest, TrackedServer } from './types.js';
 
@@ -93,9 +94,10 @@ interface PendingRequest {
 /**
  * MSW server with request tracking capabilities.
  *
- * Extends MSW's `SetupServerApi` with lifecycle event listeners that capture
- * request details when handlers match and respond. Use the `trackedRequests`
- * property to inspect handled requests in assertions.
+ * Delegates to MSW's public `setupServer()` (so default interceptors are always
+ * registered correctly) and wraps it with lifecycle event listeners that
+ * capture request details when handlers match and respond. Use the
+ * `trackedRequests` property to inspect handled requests in assertions.
  *
  * @example
  *
@@ -139,11 +141,12 @@ interface PendingRequest {
  * }
  * ```
  */
-class TrackedServerImpl
-  extends SetupServerApi
-  implements Disposable, TrackedServer
-{
+class TrackedServerImpl implements Disposable, TrackedServer {
   readonly [kTrackedServer] = true;
+
+  get events(): SetupServer['events'] {
+    return this.#server.events;
+  }
 
   /**
    * Type guard marker for identifying tracked servers.
@@ -167,18 +170,43 @@ class TrackedServerImpl
 
   #pendingRequests = new Map<string, PendingRequest>();
 
+  #server: SetupServer;
+
   #trackedRequests: InternalTrackedRequest[] = [];
 
   constructor(...handlers: RequestHandler[]) {
-    super(handlers, []);
+    this.#server = setupServer(...handlers);
     this.#setupEventListeners();
   }
+
+  boundary: SetupServer['boundary'] = (cb) => this.#server.boundary(cb);
 
   /**
    * Clears all tracked request history.
    */
   clearTrackedRequests(): void {
     this.#trackedRequests.length = 0;
+  }
+
+  close(): void {
+    this.#cleanup();
+    this.#server.close();
+  }
+
+  listen(options?: Parameters<SetupServer['listen']>[0]): void {
+    this.#server.listen(options);
+  }
+
+  listHandlers(): ReturnType<SetupServer['listHandlers']> {
+    return this.#server.listHandlers();
+  }
+
+  resetHandlers(...handlers: Parameters<SetupServer['resetHandlers']>): void {
+    this.#server.resetHandlers(...handlers);
+  }
+
+  restoreHandlers(): void {
+    this.#server.restoreHandlers();
   }
 
   /**
@@ -189,33 +217,27 @@ class TrackedServerImpl
   // eslint-disable-next-line custom/require-intrinsic-destructuring -- well-known symbols are non-writable
   [Symbol.dispose](): void {
     this.#cleanup();
+    this.#server.close();
+  }
 
-    // Defensive: call superclass dispose if it exists (future-proofing)
-    const { getPrototypeOf } = Object;
-    const proto = getPrototypeOf(this) as Partial<Disposable>;
-    // eslint-disable-next-line custom/require-intrinsic-destructuring -- well-known symbols are non-writable
-    const superDispose = proto[Symbol.dispose];
-    if (typeof superDispose === 'function') {
-      superDispose.call(this);
-    } else {
-      this.close();
-    }
+  use(...handlers: Parameters<SetupServer['use']>): void {
+    this.#server.use(...handlers);
   }
 
   /**
-   * Removes event listeners and clears pending state.
+   * Removes event listeners and clears all pending and tracked request state.
    */
   #cleanup(): void {
     if (this.#boundListeners) {
-      this.events.removeListener(
+      this.#server.events.removeListener(
         'request:start',
         this.#boundListeners.onRequestStart,
       );
-      this.events.removeListener(
+      this.#server.events.removeListener(
         'response:mocked',
         this.#boundListeners.onResponseMocked,
       );
-      this.events.removeListener(
+      this.#server.events.removeListener(
         'request:unhandled',
         this.#boundListeners.onRequestUnhandled,
       );
@@ -312,10 +334,10 @@ class TrackedServerImpl
       onResponseMocked,
     };
 
-    // Register listeners
-    this.events.on('request:start', onRequestStart);
-    this.events.on('response:mocked', onResponseMocked);
-    this.events.on('request:unhandled', onRequestUnhandled);
+    // Register listeners on the inner server's event emitter
+    this.#server.events.on('request:start', onRequestStart);
+    this.#server.events.on('response:mocked', onResponseMocked);
+    this.#server.events.on('request:unhandled', onRequestUnhandled);
   }
 }
 

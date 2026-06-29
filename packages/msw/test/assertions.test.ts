@@ -53,6 +53,11 @@ describe('@bupkis/msw', () => {
   });
 
   describe('TrackedServer', () => {
+    it('should intercept requests (response body matches mock)', async () => {
+      const res = await fetch(`${BASE_URL}/api/users`);
+      expect(await res.json(), 'to deep equal', [{ id: 1, name: 'Alice' }]);
+    });
+
     it('should track requests', async () => {
       await fetch(`${BASE_URL}/api/users`);
       expect(server.trackedRequests.length, 'to be', 1);
