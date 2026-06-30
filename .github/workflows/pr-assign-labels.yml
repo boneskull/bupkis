@@ -1,0 +1,44 @@
+name: Assign Labels From Commits
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  assign-labels:
+    name: Run mauroalderete/action-assign-labels action
+    if: github.repository == 'boneskull/bupkis'
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign labels based on conventional commits
+        uses: mauroalderete/action-assign-labels@671a4ca2da0f900464c58b8b5540a1e07133e915 # v1.5.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          maintain-labels-not-matched: false
+          conventional-commits: |
+            conventional-commits:
+              - type: 'fix'
+                nouns: ['fix', 'Fix', 'FIX']
+                labels: ['bug']
+              - type: 'feat'
+                nouns: ['feat', 'Feat', 'FEAT', 'feature', 'Feature', 'FEATURE']
+                labels: ['enhancement']
+              - type: 'chore'
+                nouns: ['chore', 'Chore', 'CHORE']
+                labels: ['chore']
+              - type: 'docs'
+                nouns: ['docs', 'Docs', 'DOCS', 'doc', 'Doc', 'DOC']
+                labels: ['documentation']
+              # NOTE: action-assign-labels only matches commit header nouns (e.g. "fix:", "feat(scope):").
+              # It does not detect conventional-commit breaking markers like "feat!:" or "BREAKING CHANGE:" footers, so semver-major can't be applied reliably here.
