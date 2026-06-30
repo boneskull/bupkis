@@ -22,7 +22,7 @@ describe('Assertion Classification', () => {
   it('should fail until classification utility is implemented', async () => {
     // This test is designed to fail until T010 implements the classification utility
     // When T010 is complete, this will pass
-    let classifierExists = false;
+    let classifierExists: boolean;
     try {
       await import(classifierPath);
       classifierExists = true;
@@ -38,7 +38,7 @@ describe('Assertion Classification', () => {
   it('should have the expected API when implemented', async () => {
     // This test documents the expected interface for T010
     // It will fail until the classification utility exists with proper exports
-    let hasExpectedAPI = false;
+    let hasExpectedAPI: boolean;
     try {
       const classifier = await import(classifierPath);
       hasExpectedAPI =
@@ -55,7 +55,7 @@ describe('Assertion Classification', () => {
   it('should categorize all sync-function assertions', async () => {
     // This test ensures the classification covers all current sync-function assertions
     // Based on T001, there are 68 sync-function assertions that need classification
-    let totalClassified = 0;
+    let totalClassified: number;
     try {
       const { getSyncFunctionAssertions } = await import(classifierPath);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call

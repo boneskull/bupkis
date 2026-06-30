@@ -47,8 +47,7 @@ const PhraseLiteralMetadataSchema = z.object({
 /**
  * Final schema for Bupkis registry
  */
-// TODO: Figure out how to make this rule allow type-only usage. Or just export it and tag it.
-
+// eslint-disable-next-line no-useless-assignment
 const _BupkisRegistrySchema = z.union([
   z.object({ ...BaseBupkisMetadataSchema.shape }),
   z.object({

@@ -46,6 +46,7 @@ export const formatAssertionFailure = (
     } catch (error) {
       throw new Error(
         `AssertionFailure formatActual threw: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error },
       );
     }
   }
@@ -57,6 +58,7 @@ export const formatAssertionFailure = (
     } catch (error) {
       throw new Error(
         `AssertionFailure formatExpected threw: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error },
       );
     }
   }
