@@ -52,7 +52,7 @@
     "ts-morph": "^28.0.0"
   },
   "devDependencies": {
-    "chai": "5.3.3",
+    "chai": "6.2.2",
     "chai-as-promised": "8.0.2"
   },
   "publishConfig": {
