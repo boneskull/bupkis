@@ -590,12 +590,8 @@ The `runSize` option adjusts the number of property test iterations:
 ```ts
 const config: PropertyTestConfig = {
   runSize: 'small', // 50 runs (vs 250 for 'medium', 500 for 'large')
-  valid: {
-    /* ... */
-  },
-  invalid: {
-    /* ... */
-  },
+  valid: {/* ... */},
+  invalid: {/* ... */},
 };
 ```
 

@@ -847,9 +847,8 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
           : AssertionSlot<First> extends PhraseLiteralChoiceSlot<
                 infer StringLiterals
               >
-            ?
-                | ArrayValues<StringLiterals>
-                | Negation<ArrayValues<StringLiterals>>
+            ? | ArrayValues<StringLiterals>
+              | Negation<ArrayValues<StringLiterals>>
             : AssertionSlot<First> extends z.ZodType
               ? z.infer<AssertionSlot<First>>
               : never,
