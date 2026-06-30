@@ -29,7 +29,6 @@ describe('Assertion Classification', () => {
       classifierExists = false;
     }
 
-    // This will pass since T010 is complete
     expect(classifierExists, 'to be true');
   });
 
