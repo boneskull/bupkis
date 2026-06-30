@@ -31,21 +31,23 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/prepare
       - run: npm run build
-      - run: npm run lint
-
-  zizmor:
-    name: zizmor
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-
-      - name: Run zizmor
-        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
-        with:
-          persona: pedantic
-          advanced-security: 'false'
-          annotations: 'true'
-          version: '1.25.2'
+      - parallel:
+          - name: ESLint
+            run: npm run lint:eslint
+          - name: markdownlint
+            run: npm run lint:markdown
+          - name: cspell
+            run: npm run lint:spelling
+          - name: Type check
+            run: npm run lint:types
+          - name: Format check
+            run: npm run lint:prettier
+          - name: Knip
+            run: npm run lint:knip
+          - name: Run zizmor
+            uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
+            with:
+              persona: pedantic
+              advanced-security: 'false'
+              annotations: 'true'
+              version: '1.25.2'

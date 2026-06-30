@@ -72,7 +72,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: '^22.13.0'
+          - node-version: '^22.22.1'
           - node-version: '^24.0.0'
           - node-version: '^26.0.0'
     steps:
@@ -83,6 +83,10 @@ jobs:
       - uses: ./.github/actions/prepare
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm run build
-      - name: Test
-        run: npm test
+      - name: Build
+        run: npm run build
+      - parallel:
+          - name: Run Tests
+            run: npm run test:ci
+          - name: Run tsd
+            run: npm run test:types
