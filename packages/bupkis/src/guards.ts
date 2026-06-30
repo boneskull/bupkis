@@ -350,7 +350,7 @@ export const isError =
  * @returns `true` if the value is an ExpectItExecutor function, `false`
  *   otherwise
  */
-export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
+export const isExpectItExecutor = <Subject = unknown>(
   value: unknown,
 ): value is ExpectItExecutor<Subject> => {
   return (

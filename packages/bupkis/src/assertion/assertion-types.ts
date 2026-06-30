@@ -16,12 +16,17 @@
  * Types related to the implementation of an assertion.
  */
 
-import { type ArrayValues, type NonEmptyTuple } from 'type-fest';
+import {
+  type ArrayValues,
+  type NonEmptyTuple,
+  type TupleToUnion,
+} from 'type-fest';
 import { type z } from 'zod';
 
 import type { DiffOptions } from '../diff.js';
 import type { StandardSchemaV1 } from '../standard-schema.js';
 import type { AsyncAssertions, SyncAssertions } from './impl/index.js';
+import type { Negation } from '../types.js';
 
 /**
  * Union type representing any assertion, either synchronous or asynchronous.
@@ -44,7 +49,7 @@ export type AnyAssertion = AnyAsyncAssertion | AnySyncAssertion;
  * @group Internal Assertion Types
  * @see {@link AnyAssertion} for individual assertion types
  */
-export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
+export type AnyAssertionWrapper = Extendable<AnyAssertion>;
 
 /**
  * Union type representing any asynchronous assertion.
@@ -56,8 +61,7 @@ export type AnyAssertions = NonEmptyTuple<AnyAssertion>;
  * @see {@link AssertionFunctionAsync} for function-based async assertions
  * @see {@link AssertionSchemaAsync} for schema-based async assertions
  */
-export type AnyAsyncAssertion = AssertionAsync<any, any, any>;
-
+export type AnyAsyncAssertion = AssertionAsync<any, any, any, any>;
 /**
  * Non-empty tuple type containing any asynchronous assertions.
  *
@@ -66,7 +70,9 @@ export type AnyAsyncAssertion = AssertionAsync<any, any, any>;
  *
  * @see {@link AnyAsyncAssertion} for individual async assertion types
  */
-export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
+export type AnyAsyncAssertionList = NonEmptyTuple<AnyAsyncAssertion>;
+
+export type AnyAsyncAssertionWrapper = Extendable<AnyAsyncAssertion>;
 
 /**
  * Union type representing any synchronous assertion.
@@ -78,7 +84,7 @@ export type AnyAsyncAssertions = NonEmptyTuple<AnyAsyncAssertion>;
  * @see {@link AssertionFunctionSync} for function-based sync assertions
  * @see {@link AssertionSchemaSync} for schema-based sync assertions
  */
-export type AnySyncAssertion = AssertionSync<any, any, any>;
+export type AnySyncAssertion = AssertionSync<any, any, any, any>;
 
 /**
  * Non-empty tuple type containing any synchronous assertions.
@@ -89,7 +95,9 @@ export type AnySyncAssertion = AssertionSync<any, any, any>;
  * @group Internal Assertion Types
  * @see {@link AnySyncAssertion} for individual sync assertion types
  */
-export type AnySyncAssertions = NonEmptyTuple<AnySyncAssertion>;
+export type AnySyncAssertionList = NonEmptyTuple<AnySyncAssertion>;
+
+export type AnySyncAssertionWrapper = Extendable<AnySyncAssertion>;
 
 /**
  * Interface for the base abstract `Assertion` class.
@@ -104,7 +112,13 @@ export interface Assertion<
   Parts extends AssertionParts,
   Impl extends AssertionImpl<Parts>,
   Slots extends AssertionSlots<Parts>,
+  Types extends AssertionTypes<Parts> = AssertionTypes<Parts>,
 > {
+  /**
+   * Does not exist at runtime!
+   */
+  readonly __types: Types;
+
   /**
    * Extracts phrase literals from this assertion for use in dispatch indexing.
    *
@@ -148,6 +162,16 @@ export interface Assertion<
   toString(): string;
 }
 
+export type AssertionArgs<Parts extends AssertionParts> =
+  Parts extends readonly [
+    StandardSchemaV1<any, any>,
+    ...infer Rest extends AssertionPartsShared,
+  ]
+    ? PartsToArgs<Rest>
+    : Parts extends AssertionPartsShared
+      ? PartsToArgs<Parts>
+      : never;
+
 /**
  * Type for an object which represents a discrete asynchronous assertion.
  *
@@ -157,7 +181,8 @@ export interface AssertionAsync<
   Parts extends AssertionParts = AssertionParts,
   Impl extends AssertionImplAsync<Parts> = AssertionImplAsync<Parts>,
   Slots extends AssertionSlots<Parts> = AssertionSlots<Parts>,
-> extends Assertion<Parts, Impl, Slots> {
+  Types extends AssertionTypes<Parts> = AssertionTypes<Parts>,
+> extends Assertion<Parts, Impl, Slots, Types> {
   /**
    * Execute the assertion implementation asynchronously.
    *
@@ -184,7 +209,6 @@ export interface AssertionAsync<
     args: Args,
   ): Promise<ParsedResult<Parts>>;
 }
-
 /**
  * Object which may be returned from assertion function implementations to
  * provide better failure reporting to the end-user.
@@ -463,6 +487,11 @@ export type AssertionImplSync<Parts extends AssertionParts> =
   | AssertionImplSchemaSync<Parts>
   | StandardSchemaV1;
 
+export type AssertionInput<Parts extends AssertionParts> =
+  Parts extends readonly [StandardSchemaV1<infer U>, ...unknown[]]
+    ? U
+    : unknown;
+
 /**
  * When you want to use a schema in an assertion implementation function against
  * some value that _isn't_ the subject, you can return this object and <span
@@ -544,8 +573,10 @@ export type AssertionPart = Phrase | StandardSchemaV1 | z.ZodType;
  * @see {@link createAssertion} for assertion creation from parts
  */
 export type AssertionParts =
-  | readonly [Phrase, ...AssertionPart[]]
-  | readonly [StandardSchemaV1 | z.ZodType, Phrase, ...AssertionPart[]];
+  | AssertionPartsShared
+  | readonly [StandardSchemaV1 | z.ZodType, ...AssertionPartsShared];
+
+export type AssertionPartsShared = readonly [Phrase, ...AssertionPart[]];
 
 /**
  * Type-level mapping from assertion parts to their corresponding validation
@@ -658,7 +689,10 @@ export type AssertionSlot<Part extends AssertionPart> = Part extends string
     : Part extends z.ZodType
       ? Part
       : Part extends StandardSchemaV1
-        ? z.ZodType
+        ? z.ZodType<
+            StandardSchemaV1.InferInput<Part>,
+            StandardSchemaV1.InferOutput<Part>
+          >
         : never;
 
 /**
@@ -756,7 +790,8 @@ export interface AssertionSync<
   Parts extends AssertionParts = AssertionParts,
   Impl extends AssertionImplSync<Parts> = AssertionImplSync<Parts>,
   Slots extends AssertionSlots<Parts> = AssertionSlots<Parts>,
-> extends Assertion<Parts, Impl, Slots> {
+  Types extends AssertionTypes<Parts> = AssertionTypes<Parts>,
+> extends Assertion<Parts, Impl, Slots, Types> {
   /**
    * Execute the assertion implementation synchronously.
    *
@@ -780,6 +815,17 @@ export interface AssertionSync<
    * @returns Result of parsing attempt
    */
   parseValues<Args extends readonly unknown[]>(args: Args): ParsedResult<Parts>;
+}
+
+export interface AssertionTypes<Parts extends AssertionParts> {
+  /**
+   * Expected usage interface
+   */
+  args: AssertionArgs<Parts>;
+  /**
+   * Value being asserted against
+   */
+  input: AssertionInput<Parts>;
 }
 
 /**
@@ -808,19 +854,6 @@ export interface BaseParsedResult<Parts extends AssertionParts> {
 }
 
 /**
- * Type for extracting individual builtin async assertion types.
- *
- * This type extracts the element types from the builtin async assertions array,
- * providing a union of all available async assertion types in the framework.
- *
- * @internal
- * @group Builtin Assertions
- * @see {@link BuiltinAsyncAssertions} for the full array type
- * @see {@link AsyncAssertions} for the actual assertion implementations
- */
-export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
-
-/**
  * Type representing the collection of all builtin async assertions.
  *
  * This type represents the compile-time type of the `AsyncAssertions` constant,
@@ -830,7 +863,34 @@ export type BuiltinAsyncAssertion = ArrayValues<BuiltinAsyncAssertions>;
  * @group Builtin Assertions
  * @see {@link AsyncAssertions} for the actual assertion implementations
  */
-export type BuiltinAsyncAssertions = typeof AsyncAssertions;
+export type BuiltinAsyncAssertionsList = typeof AsyncAssertions;
+
+/**
+ * Type representing the collection of all builtin async assertions, combined
+ * with any user input.
+ *
+ * @group Builtin Assertions
+ * @see {@link BuiltinAsyncAssertionsList} for built in assertions
+ * @see {@link AnyAsyncAssertion} for the sync interface
+ */
+export type BuiltinAsyncAssertionsListAndMore = readonly [
+  ...typeof AsyncAssertions,
+  ...AnyAsyncAssertion[],
+];
+
+/**
+ * The set of async assertions that are installed by default.
+ *
+ * "Wrapped" to be passed to any functions that accept async assertion generics.
+ *
+ * @internal
+ * @group Builtin Assertions
+ * @see {@link BuiltinAsyncAssertionsList} for the full array type
+ * @see {@link AsyncAssertions} for the actual assertion implementations
+ */
+export type BuiltinAsyncAssertionWrapper = WrapAssertions<
+  typeof AsyncAssertions
+>;
 
 /**
  * Type for extracting individual builtin sync assertion types.
@@ -844,7 +904,7 @@ export type BuiltinAsyncAssertions = typeof AsyncAssertions;
  * @see {@link BuiltinSyncAssertions} for the full array type
  * @see {@link SyncAssertions} for the actual assertion implementations
  */
-export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
+export type BuiltinSyncAssertion = ArrayValues<typeof SyncAssertions>;
 
 /**
  * Type representing the collection of all builtin sync assertions.
@@ -856,7 +916,32 @@ export type BuiltinSyncAssertion = ArrayValues<BuiltinSyncAssertions>;
  * @group Builtin Assertions
  * @see {@link SyncAssertions} for the actual assertion implementations
  */
-export type BuiltinSyncAssertions = typeof SyncAssertions;
+export type BuiltinSyncAssertionsList = typeof SyncAssertions;
+
+/**
+ * Type representing the collection of all builtin sync assertions, combined
+ * with any user input.
+ *
+ * @group Builtin Assertions
+ * @see {@link BuiltinSyncAssertionsList} for built in assertions
+ * @see {@link AnySyncAssertion} for the sync interface
+ */
+export type BuiltinSyncAssertionsListAndMore = readonly [
+  ...BuiltinSyncAssertionsList,
+  ...AnySyncAssertion[],
+];
+
+/**
+ * The set of sync assertions that are installed by default.
+ *
+ * "Wrapped" to be passed to any functions that accept async assertion generics.
+ *
+ * @internal
+ * @group Builtin Assertions
+ * @see {@link BuiltinSyncAssertionsList} for the full array type
+ * @see {@link SyncAssertions} for the actual assertion implementations
+ */
+export type BuiltinSyncAssertionWrapper = WrapAssertions<typeof SyncAssertions>;
 
 /**
  * The main factory function for creating synchronous assertions.
@@ -988,6 +1073,41 @@ export interface CreateAsyncAssertionFn {
 }
 
 /**
+ * Utility to "wrap" a type such that it can be extended.
+ *
+ * Useful when you need to accept the "non extendable" version as input (which
+ * being non-extendable, cannot be generic).
+ *
+ * @example
+ *
+ * ```ts
+ * type AcceptWrappedFoos<WrappedFoos extends Extendable<Foo>> =
+ *   WrappedFoos extends NonExtendable<infer UnwrappedFoo extends Foo>
+ *     ? DoStuffWithFoo<UnwrappedFoo>
+ *     : never;
+ *
+ * AcceptWrappedFoos<NonExtendable<MyFoo1> | NonExtendable<MyFoo2>>;
+ * ```
+ *
+ * Technically useful for any type, but in practice used to wrap assertions.
+ *
+ * @template T - The type that is the generic for wrapped types.
+ * @group Utility Types
+ * @see {@link NonExtendable} for the strict implementation
+ * @see {@link AnySyncAssertionWrapper} Sync assertion generic
+ * @see {@link AnyAsyncAssertionWrapper} Async assertion generic
+ */
+export interface Extendable<T> {
+  __extendable: true;
+  type: T;
+}
+
+export type GetAssertionArgs<Assert extends Assertion<any, any, any, any>> =
+  Assert['__types']['args'];
+
+export type GetAssertionInput<Assert extends Assertion<any, any, any, any>> =
+  Assert['__types']['input'];
+/**
  * Utility type for parsed values that may be empty.
  *
  * This type processes assertion parts recursively to produce parsed values,
@@ -1048,6 +1168,40 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
     : readonly [First, ...NoNeverTuple<Rest>]
   : readonly [];
 
+/**
+ * Utility to "wrap" a type such that it cannot be extended (a function with the
+ * same type as both input + output cannot alter both without breaking the
+ * interface).
+ *
+ * _Internally_ assertion types are passed around with this wrapper, to prevent
+ * any possible overlap (e.g. `NonExtendable<1> | NonExtendable<2>` is _not_ the
+ * same as `NonExtendable<1 | 2>` or `NonExtendable<number>`).
+ *
+ * This type should never impact public interfaces, it is only passed around
+ * internally.
+ *
+ * Types can be "unwrapped" via inference:
+ *
+ * @example
+ *
+ * ```ts
+ * WrappedFoo extends NonExtendable<infer UnwrappedFoo extends Foo>
+ *  ? DoStuffWithFoo<UnwrappedFoo>
+ *  : never
+ * ```
+ *
+ * Typescript will unwrap each value individually, and yield a union of all
+ * distinct `DoStuffWithFoo<...>` types.
+ *
+ * @template T - The type to strictly capture (in practice, assertions, but
+ *   technically could be used for anything)
+ * @group Utility Types
+ * @see {@link Extendable} for the parent interface that is used in generics
+ */
+export interface NonExtendable<T> extends Extendable<T> {
+  __nonextendable: true;
+  (val: T): T;
+}
 /**
  * Union type representing the result of parsing assertion arguments.
  *
@@ -1222,6 +1376,7 @@ export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
+
 /**
  * Type representing a single phrase literal string.
  *
@@ -1304,7 +1459,6 @@ export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
   };
-
 /**
  * Branded Zod type representing a compiled phrase literal slot.
  *
@@ -1360,3 +1514,38 @@ export type RawAssertionImplSchemaAsync<Parts extends AssertionParts> =
  */
 export type RawAssertionImplSchemaSync<Parts extends AssertionParts> =
   z.ZodType<ParsedSubject<Parts>>;
+
+export type SpreadAssertions<T extends Extendable<AnyAssertion>> =
+  (T extends Extendable<infer U extends AnyAssertion> ? U : never)[];
+
+export type WrapAssertions<T extends readonly AnyAssertion[]> = TupleToUnion<{
+  [K in keyof T]: NonExtendable<T[K]>;
+}>;
+
+type PartsToArgs<Parts extends AssertionPartsShared> = Parts extends readonly [
+  infer P extends Phrase,
+  ...infer Rest extends readonly AssertionPart[],
+]
+  ? [
+      // Support both the "regular" and negated versions of the phrase
+      P extends PhraseLiteral
+        ? Negation<P> | P
+        : Negation<P[number]> | P[number],
+      // For each remaining argument, if a phrase expect it directly (no negation)
+      // and for schemas/zod, expect the type it describes
+      ...{
+        [K in keyof Rest]: Rest[K] extends infer Text extends Phrase
+          ? Text extends PhraseLiteral
+            ? Text
+            : Text[number]
+          : Rest[K] extends StandardSchemaV1<infer Input, unknown>
+            ? // `const` callers produce readonly arrays/tuples, so array-valued
+              // params must accept the readonly form too (mutable still assigns to
+              // it). Mirrors `MutableOrReadonly` in the expect-slot mapping.
+              Input extends readonly unknown[]
+              ? Readonly<Input>
+              : Input
+            : never;
+      },
+    ]
+  : never;
