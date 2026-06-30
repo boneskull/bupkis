@@ -9,37 +9,100 @@ import * as assertions from '../../../src/assertion/impl/sync-collection.js';
 import { type AnyAssertion } from '../../../src/types.js';
 import { SyncCollectionGenerators } from '../../../test-data/sync-collection-generators.js';
 
+/**
+ * Stable, strongly-held `WeakMap` fixture shared across property-test configs.
+ *
+ * `WeakMap` membership is determined purely by object-reference identity, and
+ * its entries cannot be enumerated or regenerated. That makes it impossible to
+ * write a _passing_ ("valid") assertion (e.g. `to contain` / `to have entry`)
+ * by generating random keys — the assertion only succeeds when handed the exact
+ * object identity that was stored as the key. This class constructs a single
+ * `WeakMap` with one known entry and exposes both the map and its key so config
+ * entries can reference the very same instances.
+ *
+ * It also exists to keep those property tests _deterministic_. `WeakMap` holds
+ * its keys weakly, so without an external strong reference the garbage
+ * collector could evict the entry mid-run, silently emptying the map and
+ * causing otherwise-valid assertions to fail intermittently. Pinning the key in
+ * a `static` field prevents that. Negative ("invalid") cases intentionally use
+ * _different_ identities or primitives, guaranteeing the key is truly absent.
+ */
 class SharedWeakMapState {
+  /**
+   * The object used as the sole key in {@link SharedWeakMapState.weakMap}.
+   *
+   * Held in a static field so a strong reference survives the entire test run;
+   * without it the GC could collect the key and silently empty the map, making
+   * "valid" cases flaky.
+   */
   private static key = {};
 
+  /** The shared `WeakMap`, pre-populated with a single {@link key}/value entry. */
   private static weakMap = new WeakMap();
 
   static {
+    // Populate once at module load so the known entry exists before any test runs.
     SharedWeakMapState.weakMap.set(SharedWeakMapState.key, 'value');
   }
 
+  /**
+   * Returns the exact key object stored in the shared `WeakMap`.
+   *
+   * Use in "valid" cases that must reference the precise identity present in
+   * the map; a freshly generated object would never match.
+   */
   static getKey(): object {
     return SharedWeakMapState.key;
   }
 
+  /** Returns the shared `WeakMap` instance for use as an assertion subject. */
   static getWeakMap(): WeakMap<WeakKey, any> {
     return SharedWeakMapState.weakMap;
   }
 }
 
+/**
+ * Stable, strongly-held `WeakSet` fixture shared across property-test configs.
+ *
+ * The `WeakSet` analogue of {@link SharedWeakMapState}. `WeakSet` membership is
+ * by object-reference identity and its contents cannot be enumerated, so a
+ * _passing_ ("valid") `to contain` assertion can only be written by handing the
+ * assertion the exact object that was added. This class adds one known object
+ * to a single `WeakSet` and exposes both so configs can reference them.
+ *
+ * Pinning the value in a `static` field keeps a strong reference alive for the
+ * whole test run, preventing the garbage collector from evicting the member and
+ * making valid cases flaky. Negative ("invalid") cases use _different_
+ * identities or primitives so the value is reliably absent.
+ */
 class SharedWeakSetState {
+  /**
+   * The object stored in {@link SharedWeakSetState.weakSet}.
+   *
+   * Held in a static field so a strong reference survives the entire test run;
+   * otherwise the GC could collect it and silently empty the set.
+   */
   private static value = {};
 
+  /** The shared `WeakSet`, pre-populated with the single {@link value}. */
   private static weakSet = new WeakSet();
 
   static {
+    // Populate once at module load so the known member exists before any test runs.
     SharedWeakSetState.weakSet.add(SharedWeakSetState.value);
   }
 
+  /**
+   * Returns the exact object stored in the shared `WeakSet`.
+   *
+   * Use in "valid" cases that must reference the precise identity present in
+   * the set; a freshly generated object would never match.
+   */
   static getValue(): object {
     return SharedWeakSetState.value;
   }
 
+  /** Returns the shared `WeakSet` instance for use as an assertion subject. */
   static getWeakSet(): WeakSet<object> {
     return SharedWeakSetState.weakSet;
   }
