@@ -72,7 +72,7 @@
     "markdownlint-cli2-formatter-pretty": "0.0.10",
     "modestbench": "0.9.3",
     "npm-run-all2": "8.0.4",
-    "prettier": "3.8.5",
+    "prettier": "3.9.0",
     "prettier-plugin-jsdoc": "1.8.1",
     "prettier-plugin-pkg": "0.22.1",
     "tsd": "0.33.0",
