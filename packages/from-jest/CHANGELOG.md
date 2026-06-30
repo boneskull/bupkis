@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.2...@bupkis/from-jest-v0.3.3) (2026-06-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @boneskull/bargs to v4.1.0 ([#394](https://github.com/boneskull/bupkis/issues/394)) ([21a1d82](https://github.com/boneskull/bupkis/commit/21a1d82b8de7a1a78b5c0fcecd8131b12d569235))
+* **deps:** update dependency ts-morph to v28 ([#395](https://github.com/boneskull/bupkis/issues/395)) ([9deff57](https://github.com/boneskull/bupkis/commit/9deff57f6cd4497f065233d69cfae5179dd8bbb3))
+
 ## [0.3.2](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.1...@bupkis/from-jest-v0.3.2) (2026-02-19)
 
 
