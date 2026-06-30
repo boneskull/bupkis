@@ -294,8 +294,7 @@ export interface AssertionFunctionSync<
  * @group Assertion Implementation
  */
 export type AssertionImpl<Parts extends AssertionParts> =
-  | AssertionImplAsync<Parts>
-  | AssertionImplSync<Parts>;
+  AssertionImplAsync<Parts> | AssertionImplSync<Parts>;
 
 /**
  * Union type representing any async assertion implementation.
@@ -334,8 +333,7 @@ export type AssertionImplAsync<Parts extends AssertionParts> =
 export type AssertionImplFnAsync<Parts extends AssertionParts> = (
   ...values: ParsedValues<Parts>
 ) =>
-  | AssertionImplFnReturnType<Parts>
-  | Promise<AssertionImplFnReturnType<Parts>>;
+  AssertionImplFnReturnType<Parts> | Promise<AssertionImplFnReturnType<Parts>>;
 
 /**
  * The return type of an assertion implementation function.
@@ -382,8 +380,7 @@ export type AssertionImplFnSync<Parts extends AssertionParts> = (
  * @group Assertion Implementation
  */
 export type AssertionImplPart<Part extends AssertionPart> = Part extends
-  | PhraseLiteral
-  | PhraseLiteralChoice
+  PhraseLiteral | PhraseLiteralChoice
   ? never
   : Part extends z.ZodPromise
     ? Promise<z.infer<Part>>
@@ -1079,8 +1076,7 @@ export type NoNeverTuple<T extends readonly unknown[]> = T extends readonly [
  * @see {@link AssertionSync.parseValues} and {@link AssertionAsync.parseValuesAsync} for usage context
  */
 export type ParsedResult<Parts extends AssertionParts = AssertionParts> =
-  | ParsedResultFailure
-  | ParsedResultSuccess<Parts>;
+  ParsedResultFailure | ParsedResultSuccess<Parts>;
 
 /**
  * Interface representing a failed argument parsing attempt.

@@ -21,9 +21,7 @@ const { asyncIterator: asyncIteratorSymbol, iterator: iteratorSymbol } = Symbol;
  * @internal
  */
 export type AsyncIterableInput<T> =
-  | AsyncIterable<T>
-  | AsyncIterator<T>
-  | Iterable<T>;
+  AsyncIterable<T> | AsyncIterator<T> | Iterable<T>;
 
 /**
  * Result type for async iteration with metadata.

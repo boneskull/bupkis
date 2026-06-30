@@ -101,8 +101,7 @@ export const transformBddExpectCalls = (
   for (const stmt of expectStatements) {
     const exprStmt = stmt;
     const expr = exprStmt.getExpression() as
-      | CallExpression
-      | PropertyAccessExpression;
+      CallExpression | PropertyAccessExpression;
 
     try {
       const result = transformSingleExpect(expr, mode);

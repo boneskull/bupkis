@@ -6,8 +6,7 @@
  */
 
 type TrapResult =
-  | { error: unknown; result?: never }
-  | { error?: never; result: unknown };
+  { error: unknown; result?: never } | { error?: never; result: unknown };
 
 /**
  * Executes & traps a `Promise` rejected from an async function, capturing the
