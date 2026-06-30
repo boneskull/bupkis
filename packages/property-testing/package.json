@@ -15,7 +15,7 @@
   },
   "license": "BlueOak-1.0.0",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=23"
+    "node": "^22.12.0 || >=23"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
@@ -42,9 +42,7 @@
   "scripts": {
     "build": "zshy",
     "test": "npm run test:base -- \"test/*.test.ts\"",
-    "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:node20": "npm run test:base -- test/*.test.ts",
-    "test:types": "echo \"No type tests yet\""
+    "test:base": "node --test --test-reporter=spec --import tsx"
   },
   "peerDependencies": {
     "bupkis": ">=0.15.0",

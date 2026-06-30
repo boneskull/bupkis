@@ -15,7 +15,7 @@
   },
   "license": "BlueOak-1.0.0",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=23"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "bin": {
     "bupkis-from-jest": "./dist/cli.js"
@@ -47,8 +47,7 @@
     "example:vitest": "vitest run examples/vitest-example.test.ts examples/vitest-example.transformed.test.ts",
     "test": "npm run test:base -- \"test/*/*.test.ts\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
-    "test:dev": "npm run test:base -- --watch \"test/*/*.test.ts\"",
-    "test:node20": "npm run test:base -- test/*.test.ts"
+    "test:dev": "npm run test:base -- --watch \"test/*/*.test.ts\""
   },
   "dependencies": {
     "@boneskull/bargs": "4.1.0",

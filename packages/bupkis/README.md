@@ -221,7 +221,7 @@ We have tried to make <strong><span class="bupkis">BUPKIS</span></strong> is as 
 
 ## Prerequisites
 
-**Node.js**: ^20.19.0, ^22.12.0, >=23
+**Node.js**: ^22.13.0, >=24.0.0
 
 <strong><span class="bupkis">BUPKIS</span></strong> supports any [Standard Schema V1][standard schema]-compliant validation library. It has a peer dependency on [Zod][] v4+ (which implements Standard Schema V1), but will install it as an optional dependency if you are not already using it. You can also use [Valibot][], [ArkType][], [Effect Schema][], or any other Standard Schema V1 library.
 

@@ -14,7 +14,7 @@
   },
   "license": "BlueOak-1.0.0",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=23"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
@@ -48,9 +48,7 @@
     "test": "npm run test:base -- \"test/*.test.ts\"",
     "test:base": "node --import tsx --test --test-reporter=spec",
     "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
-    "test:node20": "npm run test:base -- test/*.test.ts",
-    "test:property": "npm run test:base -- ./test/property.test.ts",
-    "test:types": "exit 0"
+    "test:property": "npm run test:base -- ./test/property.test.ts"
   },
   "peerDependencies": {
     "bupkis": ">=0.15.0",
