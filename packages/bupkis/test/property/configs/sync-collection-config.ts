@@ -22,7 +22,7 @@ class SharedWeakMapState {
     return SharedWeakMapState.key;
   }
 
-  static getWeakMap(): WeakMap<object, any> {
+  static getWeakMap(): WeakMap<WeakKey, any> {
     return SharedWeakMapState.weakMap;
   }
 }
