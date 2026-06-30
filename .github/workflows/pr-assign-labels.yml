@@ -1,7 +1,7 @@
 name: Assign Labels From Commits
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 on:
