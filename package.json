@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "^22.13.0 || >=24.0.0"
+    "node": "^22.22.1 || >=24.0.0"
   },
   "scripts": {
     "bench": "npm run bench --workspaces --if-present",
