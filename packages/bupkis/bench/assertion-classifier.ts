@@ -15,12 +15,12 @@ import {
   isAssertionParseRequest,
 } from '../src/internal-schema.js';
 
-type AssertionClassification = 'pure' | 'schema';
-
-interface SyncFunctionAssertionClassification {
+export interface SyncFunctionAssertionClassification {
   pure: BupkisAssertionFunctionSync<any, any, any>[];
   schema: BupkisAssertionFunctionSync<any, any, any>[];
 }
+
+type AssertionClassification = 'pure' | 'schema';
 
 export const isSyncFunctionAssertion = (
   assertion: AnyAssertion,

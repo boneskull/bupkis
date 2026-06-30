@@ -9,6 +9,7 @@ import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { type SyncFunctionAssertionClassification } from '../../bench/assertion-classifier.js';
 import { expect } from '../../src/index.js';
 
 const classifierPath = pathToFileURL(
@@ -20,14 +21,11 @@ const classifierPath = pathToFileURL(
 
 describe('Assertion Classification', () => {
   it('should fail until classification utility is implemented', async () => {
-    // This test is designed to fail until T010 implements the classification utility
-    // When T010 is complete, this will pass
     let classifierExists: boolean;
     try {
       await import(classifierPath);
       classifierExists = true;
     } catch {
-      // Expected to fail with module not found until T010 is implemented
       classifierExists = false;
     }
 
@@ -36,8 +34,6 @@ describe('Assertion Classification', () => {
   });
 
   it('should have the expected API when implemented', async () => {
-    // This test documents the expected interface for T010
-    // It will fail until the classification utility exists with proper exports
     let hasExpectedAPI: boolean;
     try {
       const classifier = await import(classifierPath);
@@ -48,17 +44,16 @@ describe('Assertion Classification', () => {
       hasExpectedAPI = false;
     }
 
-    // This will pass since T010 implements the correct API
     expect(hasExpectedAPI, 'to be true');
   });
 
   it('should categorize all sync-function assertions', async () => {
-    // This test ensures the classification covers all current sync-function assertions
-    // Based on T001, there are 68 sync-function assertions that need classification
     let totalClassified: number;
     try {
-      const { getSyncFunctionAssertions } = await import(classifierPath);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const { getSyncFunctionAssertions } = (await import(classifierPath)) as {
+        getSyncFunctionAssertions: () => SyncFunctionAssertionClassification;
+      };
+
       const result = getSyncFunctionAssertions();
       totalClassified =
         (result?.pure?.length || 0) + (result?.schema?.length || 0);
@@ -66,8 +61,6 @@ describe('Assertion Classification', () => {
       totalClassified = 0;
     }
 
-    // This will pass since T010 correctly classifies all assertions
-    // Updated from 86 to 82 after consolidating deep equal and satisfy assertions
     expect(totalClassified, 'to equal', 82);
   });
 });
