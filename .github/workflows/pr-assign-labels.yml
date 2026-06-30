@@ -1,18 +1,20 @@
 name: Assign Labels From Commits
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}
   cancel-in-progress: false
+
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, synchronize, reopened]
+    branches: [main]
 
 permissions: {}
 
 jobs:
   assign-labels:
     name: Run mauroalderete/action-assign-labels action
+    if: github.repository == 'boneskull/bupkis'
     permissions:
       contents: read
       pull-requests: write
@@ -37,7 +39,7 @@ jobs:
                 labels: ['chore']
               - type: 'docs'
                 nouns: ['docs', 'Docs', 'DOCS', 'doc', 'Doc', 'DOC']
-                labels: ['docs']
+                labels: ['documentation']
               - type: 'breaking'
                 nouns:
                   [
