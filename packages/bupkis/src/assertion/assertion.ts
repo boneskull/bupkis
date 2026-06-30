@@ -133,7 +133,7 @@ export abstract class BupkisAssertion<
           ? zodType.def
           : zodType._zod.def) as DefFromZodType<T>;
 
-      let repr = '';
+      let repr: string;
       const meta = BupkisRegistry.get(zodType);
       if (meta?.name) {
         // our name

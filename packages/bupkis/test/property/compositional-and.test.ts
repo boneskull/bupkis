@@ -64,6 +64,7 @@ const assertPasses = (chain: ChainArgs): void => {
         `  Chain length: ${chainLength}\n` +
         `  Args: ${inspect(args)}\n` +
         `  Error: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
     );
   }
 };

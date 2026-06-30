@@ -1,4 +1,3 @@
-/* eslint-disable n/no-unsupported-features/node-builtins */
 /**
  * Request tracking wrapper for MSW servers.
  *
