@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.1.2...@bupkis/property-testing-v0.2.0) (2026-06-30)
+
+
+### Features
+
+* **property-testing:** expose rejectPassing ([9f903c5](https://github.com/boneskull/bupkis/commit/9f903c5b1edb5fd1a0f593c1f46d3034f5d9387a))
+
+
+### Bug Fixes
+
+* **deps:** downgrade to fast-check to v4.5.3 ([cb68779](https://github.com/boneskull/bupkis/commit/cb687795f7389832109573c812fd5efe88248f7f))
+
 ## [0.1.2](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.1.1...@bupkis/property-testing-v0.1.2) (2026-06-19)
 
 

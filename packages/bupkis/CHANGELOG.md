@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.3](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.2...bupkis-v0.18.3) (2026-06-30)
+
+
+### Bug Fixes
+
+* **deps:** replace debug with obug ([ed2a6e8](https://github.com/boneskull/bupkis/commit/ed2a6e84577bd85a2cd26b4eed6d613ff99816b9))
+* **deps:** upgrade jest-diff ([5c76107](https://github.com/boneskull/bupkis/commit/5c76107bad6f13a91d0c0b6f7a522e2f2163349f))
+
 ## [0.18.2](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.1...bupkis-v0.18.2) (2026-06-19)
 
 
