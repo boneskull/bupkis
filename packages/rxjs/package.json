@@ -46,8 +46,8 @@
     "prepublishOnly": "npm run build",
     "test": "npm run test:base -- \"test/*.test.ts\"",
     "test:base": "node --import tsx --test --test-reporter=spec",
-    "test:dev": "npm run test:base -- --watch \"test/*.test.ts\"",
-    "test:types": "tsd"
+    "test:ci": "npm run test -- --test-reporter=node-test-github-reporter",
+    "test:dev": "npm run test -- --watch"
   },
   "peerDependencies": {
     "bupkis": ">=0.15.0",

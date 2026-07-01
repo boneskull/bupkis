@@ -33,8 +33,8 @@
     "lint:types": "tsc --noEmit",
     "prepare": "husky; npm run build",
     "test": "npm run test --workspaces",
+    "test:ci": "npm run test:ci --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
-    "test:dev": "npm run test:dev --workspaces --if-present",
     "test:fuzz": "npm run test:fuzz --workspace=bupkis",
     "test:property": "npm run test:property --workspaces --if-present",
     "test:snapshots": "npm run test:snapshots --workspaces --if-present",
@@ -71,6 +71,7 @@
     "markdownlint-cli2": "0.22.1",
     "markdownlint-cli2-formatter-pretty": "0.0.10",
     "modestbench": "0.9.3",
+    "node-test-github-reporter": "1.3.2",
     "npm-run-all2": "8.0.4",
     "prettier": "3.9.1",
     "prettier-plugin-jsdoc": "1.8.1",
@@ -88,6 +89,11 @@
     "typescript-eslint": "8.62.0",
     "valibot": "1.4.2",
     "zshy": "0.7.3"
+  },
+  "knip": {
+    "ignoreDependencies": [
+      "node-test-github-reporter"
+    ]
   },
   "lint-staged": {
     "*.md": [
