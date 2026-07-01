@@ -86,7 +86,7 @@
     "typedoc-plugin-zod": "1.4.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.62.0",
-    "valibot": "1.4.1",
+    "valibot": "1.4.2",
     "zshy": "0.7.3"
   },
   "lint-staged": {
