@@ -48,6 +48,7 @@
     "test": "npm run test:base -- \"test/*/*.test.ts\"",
     "test:base": "node --test --test-reporter=spec --import tsx",
     "test:ci": "npm run test -- --test-reporter=node-test-github-reporter",
+    "test:coverage": "c8 --reporter=lcov --reporter=text npm test",
     "test:dev": "npm run test -- --watch"
   },
   "dependencies": {
