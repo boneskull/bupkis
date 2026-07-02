@@ -74,8 +74,11 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 These commands run from the monorepo root and affect all packages:
 
 ```bash
-# Build all packages (dual CJS/ESM via zshy)
-npm run build
+# Install git hooks and build
+npm run prepare
+
+# after initial setup, you can use the build script instead
+# npm run build
 
 # Run all tests across all packages
 npm test
@@ -86,8 +89,11 @@ npm run test:dev
 # Run property-based tests across packages
 npm run test:property
 
-# Run tests with coverage
+# Run tests with coverage across all packages
 npm run test:coverage
+
+# Run tests with coverage for a specific package
+npm run test:coverage --workspace=bupkis
 ```
 
 ### Linting and Type Checking
@@ -167,6 +173,9 @@ This is an **npm workspaces monorepo**. All packages live in `packages/`:
 | `@bupkis/property-testing` | `packages/property-testing` | Property-based testing harness for assertions      |
 | `@bupkis/rxjs`             | `packages/rxjs`             | RxJS Observable assertions                         |
 | `@bupkis/sinon`            | `packages/sinon`            | Sinon spy/stub/mock assertions                     |
+| `@bupkis/msw`              | `packages/msw`              | MSW mock server assertions                         |
+| `@bupkis/codemod-core`     | `packages/codemod-core`     | Codemod core utilities                             |
+| `@bupkis/from-assert`      | `packages/from-assert`      | Codemod to migrate Node.js builtin assertions      |
 
 ### Core Package Structure (`packages/bupkis`)
 
