@@ -14,6 +14,7 @@ import {
   isAssertionFailure,
   isAssertionParseRequest,
 } from '../src/internal-schema.js';
+import { isExcludedFromBenchmarks } from './shared/excluded-assertions.js';
 
 export interface SyncFunctionAssertionClassification {
   pure: BupkisAssertionFunctionSync<any, any, any>[];
@@ -70,7 +71,10 @@ export const getSyncFunctionAssertions =
     const schema: BupkisAssertionFunctionSync<any, any, any>[] = [];
 
     for (const assertion of SyncAssertions) {
-      if (isSyncFunctionAssertion(assertion)) {
+      if (
+        isSyncFunctionAssertion(assertion) &&
+        !isExcludedFromBenchmarks(assertion)
+      ) {
         const classification = classifyAssertion(assertion);
         if (classification === 'pure') {
           pure.push(assertion);

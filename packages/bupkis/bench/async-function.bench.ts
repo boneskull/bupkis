@@ -16,10 +16,12 @@ import { AsyncAssertions } from '../src/assertion/index.js';
 import { getTestDataForAssertion } from './shared/assertion-data.js';
 import { createAsyncBenchmark } from './shared/benchmark-generator.js';
 import { SUITE_CONFIGS } from './shared/config.js';
+import { isExcludedFromBenchmarks } from './shared/excluded-assertions.js';
 
 const asyncFunctionAssertions = AsyncAssertions.filter(
   (assertion): assertion is BupkisAssertionFunctionAsync<any, any, any> =>
-    assertion instanceof BupkisAssertionFunctionAsync,
+    assertion instanceof BupkisAssertionFunctionAsync &&
+    !isExcludedFromBenchmarks(assertion),
 );
 
 const benchmarks: Record<string, BenchmarkDefinition> = {};
