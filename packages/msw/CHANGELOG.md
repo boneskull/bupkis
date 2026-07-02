@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/boneskull/bupkis/compare/@bupkis/msw-v0.1.1...@bupkis/msw-v1.0.0) (2026-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366))
+
+### Miscellaneous Chores
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366)) ([2b28744](https://github.com/boneskull/bupkis/commit/2b287444149b69607a2a87ee2a2b9700c12181be))
+
 ## [0.1.1](https://github.com/boneskull/bupkis/compare/@bupkis/msw-v0.1.0...@bupkis/msw-v0.1.1) (2026-06-30)
 
 
