@@ -114,7 +114,7 @@
     "test:property:dev": "npm run test:base -- --watch \"$npm_package_config_test_property\"",
     "test:snapshots": "npm run test:base -- --test-name-pattern=\"<snapshot>\" \"$npm_package_config_test_all\"",
     "test:types": "tsd",
-    "test:update-snapshots": "npm run test:snapshots -- --test-update-snapshots"
+    "test:update-snapshots": "npm run test:base -- --test-update-snapshots --test-name-pattern=\"<snapshot>\" \"$npm_package_config_test_all\""
   },
   "config": {
     "test_all": "test/**/*.test.ts",
