@@ -37,12 +37,10 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size
 
 exports[`Sync Collection Assertion Error Snapshots > \"{map-or-weakmap} 'to contain' / 'to include' {unknown}\" [map_or_weakmap-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [map_or_weakmap-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Map to contain key\\n- expected  - 1\\n+ actual    + 1\\n\\n- key to exist in Map\\n+ missing",
+  "message": "Expected Map to contain key",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "missing",
-  "expected": "key to exist in Map",
   "diff": "simple",
   "assertionId": "map_or_weakmap-to-contain-to-include-unknown-3s3p"
 }
@@ -206,12 +204,10 @@ exports[`Sync Collection Assertion Error Snapshots > \"{record} 'to have size' {
 
 exports[`Sync Collection Assertion Error Snapshots > \"{set-or-weakset} 'to contain' / 'to include' {unknown}\" [set_or_weakset-to-contain-to-include-unknown-3s3p] > should throw a consistent AssertionError [set_or_weakset-to-contain-to-include-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected Set to contain value\\n- expected  - 1\\n+ actual    + 1\\n\\n- value to exist in Set\\n+ c",
+  "message": "Expected Set to contain value",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
-  "actual": "c",
-  "expected": "value to exist in Set",
   "diff": "simple",
   "assertionId": "set_or_weakset-to-contain-to-include-unknown-3s3p"
 }

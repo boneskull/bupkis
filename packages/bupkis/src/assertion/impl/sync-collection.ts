@@ -83,8 +83,6 @@ export const mapContainsAssertion = createAssertion(
     }
     if (!hasKey) {
       return {
-        actual: key,
-        expected: `key to exist in ${subject.constructor.name}`,
         message: `Expected ${subject.constructor.name} to contain key`,
       };
     }
@@ -174,8 +172,6 @@ export const setContainsAssertion = createAssertion(
         : subject.has(value);
     if (!hasValue) {
       return {
-        actual: value,
-        expected: `value to exist in ${subject.constructor.name}`,
         message: `Expected ${subject.constructor.name} to contain value`,
       };
     }
