@@ -3,7 +3,7 @@
   "extends": "./.config/tsconfig.base.json",
   "include": [
     ".wallaby.js",
-    "eslint.config.js",
+    "eslint.config.ts",
     ".commitlintrc.js",
     ".config/**/*.js",
     "packages/*/src/**/*.ts",
