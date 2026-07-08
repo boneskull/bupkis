@@ -7,6 +7,7 @@ import {
   getSyncFunctionAssertions,
   isSyncFunctionAssertion,
 } from '../../bench/assertion-classifier.js';
+import { isExcludedFromBenchmarks } from '../../bench/shared/excluded-assertions.js';
 import { SyncAssertions } from '../../src/assertion/index.js';
 
 describe('assertion classification properties', () => {
@@ -43,7 +44,8 @@ describe('assertion classification properties', () => {
         );
         assert.equal(
           allIds.size,
-          syncFunctionAssertions.length,
+          syncFunctionAssertions.length -
+            syncFunctionAssertions.filter(isExcludedFromBenchmarks).length,
           'All sync function assertions should be classified',
         );
 
