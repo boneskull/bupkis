@@ -83,8 +83,6 @@ jobs:
       - uses: ./.github/actions/prepare
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Build
-        run: npm run build
       - parallel:
           - name: Run Tests
             run: npm run test:ci
