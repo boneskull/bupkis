@@ -47,9 +47,7 @@ describe('Standard Schema - Function Assertions', () => {
 
       const assertion = createAssertion(
         [z.number(), 'to be in range', z.number(), 'and', z.number()],
-        (subject, min, max) => {
-          return numberRangeSchema(min, max);
-        },
+        (subject, min, max) => numberRangeSchema(min, max),
       );
 
       // Should pass
@@ -86,9 +84,7 @@ describe('Standard Schema - Function Assertions', () => {
 
       const assertion = createAssertion(
         [z.number(), 'to be in range', z.number(), 'and', z.number()],
-        (subject, min, max) => {
-          return numberRangeSchema(min, max);
-        },
+        (subject, min, max) => numberRangeSchema(min, max),
       );
 
       expect(
@@ -164,11 +160,10 @@ describe('Standard Schema - Function Assertions', () => {
     it('should handle async function returning sync Standard Schema', async () => {
       const syncSchema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Expected string' }] };
-          },
+              : { issues: [{ message: 'Expected string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -204,12 +199,10 @@ describe('Standard Schema - Function Assertions', () => {
 
       const assertion = createAssertion(
         [z.object({ email: z.string() }), 'to have valid email'],
-        (obj) => {
-          return {
-            schema: emailSchema,
-            subject: obj.email,
-          };
-        },
+        (obj) => ({
+          schema: emailSchema,
+          subject: obj.email,
+        }),
       );
 
       // Should pass
@@ -251,12 +244,10 @@ describe('Standard Schema - Function Assertions', () => {
 
       const assertion = createAsyncAssertion(
         [z.object({ email: z.string() }), 'to have valid email'],
-        (obj) => {
-          return {
-            asyncSchema: asyncEmailSchema,
-            subject: obj.email,
-          };
-        },
+        (obj) => ({
+          asyncSchema: asyncEmailSchema,
+          subject: obj.email,
+        }),
       );
 
       // Should pass
@@ -290,12 +281,13 @@ describe('Standard Schema - Function Assertions', () => {
         },
       };
 
-      const assertion = createAssertion(['to have valid value'], (obj: any) => {
-        return {
+      const assertion = createAssertion(
+        ['to have valid value'],
+        (obj: any) => ({
           schema: asyncSchema,
           subject: obj.value,
-        };
-      });
+        }),
+      );
 
       expect(
         () =>
@@ -325,11 +317,10 @@ describe('Standard Schema - Function Assertions', () => {
         (n) => ({
           schema: {
             '~standard': {
-              validate: (value: unknown) => {
-                return typeof value === 'number' && value > 0
+              validate: (value: unknown) =>
+                typeof value === 'number' && value > 0
                   ? { value }
-                  : { issues: [{ message: 'Must be positive' }] };
-              },
+                  : { issues: [{ message: 'Must be positive' }] },
               vendor: 'test',
               version: 1,
             },

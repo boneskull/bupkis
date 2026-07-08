@@ -852,9 +852,7 @@ describe('valueToSchema() property tests', () => {
       })
       .map((props) => {
         class TestClass {
-          static staticMethod() {
-            return 42;
-          }
+          static staticMethod = () => 42;
         }
         Object.assign(TestClass, props);
         return { cls: TestClass, props };

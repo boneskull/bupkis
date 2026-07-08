@@ -105,9 +105,7 @@ const assertMatcherMap = new Map<string, MatcherTransform>(
  */
 export const getMatcherTransform = (
   assertMethod: string,
-): MatcherTransform | undefined => {
-  return assertMatcherMap.get(assertMethod);
-};
+): MatcherTransform | undefined => assertMatcherMap.get(assertMethod);
 
 /**
  * Check if an assert method is supported for transformation.
@@ -130,9 +128,8 @@ export const isMatcherSupported = (assertMethod: string): boolean => {
  * @param assertMethod - The node:assert method name
  * @returns Whether the method is a negated form
  */
-export const isNegatedMethod = (assertMethod: string): boolean => {
-  return assertMethod in NEGATION_MAPPINGS;
-};
+export const isNegatedMethod = (assertMethod: string): boolean =>
+  assertMethod in NEGATION_MAPPINGS;
 
 /**
  * Get the base (non-negated) method name.
@@ -141,9 +138,8 @@ export const isNegatedMethod = (assertMethod: string): boolean => {
  * @param assertMethod - The node:assert method name
  * @returns The base method name (e.g., 'strictEqual' for 'notStrictEqual')
  */
-export const getBaseMethod = (assertMethod: string): string => {
-  return NEGATION_MAPPINGS[assertMethod] ?? assertMethod;
-};
+export const getBaseMethod = (assertMethod: string): string =>
+  NEGATION_MAPPINGS[assertMethod] ?? assertMethod;
 
 /**
  * Check if an assert method requires expectAsync.

@@ -51,14 +51,10 @@ class SharedWeakMapState {
    * Use in "valid" cases that must reference the precise identity present in
    * the map; a freshly generated object would never match.
    */
-  static getKey(): object {
-    return SharedWeakMapState.key;
-  }
+  static getKey = (): object => SharedWeakMapState.key;
 
   /** Returns the shared `WeakMap` instance for use as an assertion subject. */
-  static getWeakMap(): WeakMap<WeakKey, any> {
-    return SharedWeakMapState.weakMap;
-  }
+  static getWeakMap = (): WeakMap<WeakKey, any> => SharedWeakMapState.weakMap;
 }
 
 /**
@@ -98,14 +94,10 @@ class SharedWeakSetState {
    * Use in "valid" cases that must reference the precise identity present in
    * the set; a freshly generated object would never match.
    */
-  static getValue(): object {
-    return SharedWeakSetState.value;
-  }
+  static getValue = (): object => SharedWeakSetState.value;
 
   /** Returns the shared `WeakSet` instance for use as an assertion subject. */
-  static getWeakSet(): WeakSet<object> {
-    return SharedWeakSetState.weakSet;
-  }
+  static getWeakSet = (): WeakSet<object> => SharedWeakSetState.weakSet;
 }
 
 const helperGenerators = {

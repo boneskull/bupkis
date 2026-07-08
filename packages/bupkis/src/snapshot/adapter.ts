@@ -272,6 +272,5 @@ export type SnapshotSerializer = (value: unknown) => string;
  */
 export const isTestContext = (
   value: unknown,
-): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null;
-};
+): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;

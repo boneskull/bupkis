@@ -372,6 +372,4 @@ const bddMatcherMap = new Map<string, MatcherTransform>(
  */
 export const getBddMatcher = (
   chaiMatcher: string,
-): MatcherTransform | undefined => {
-  return bddMatcherMap.get(chaiMatcher);
-};
+): MatcherTransform | undefined => bddMatcherMap.get(chaiMatcher);

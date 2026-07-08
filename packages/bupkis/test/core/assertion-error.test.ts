@@ -325,16 +325,12 @@ describe('NegatedAssertionError', () => {
       /**
        * @function
        */
-      const outerFunction = () => {
-        return innerFunction();
-      };
+      const outerFunction = () => innerFunction();
 
       /**
        * @function
        */
-      const innerFunction = () => {
-        return createErrorWithStackStart();
-      };
+      const innerFunction = () => createErrorWithStackStart();
 
       /**
        * @function

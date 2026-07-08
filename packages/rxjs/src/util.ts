@@ -77,18 +77,15 @@ export const collectObservable = <T>(
     let error: unknown;
 
     observable.subscribe({
-      // eslint-disable-next-line custom/require-function-tag-in-arrow-functions
-      complete: () => {
+      complete() {
         completed = true;
         resolve({ completed, error, values });
       },
-      // eslint-disable-next-line custom/require-function-tag-in-arrow-functions
-      error: (err: unknown) => {
+      error(err: unknown) {
         error = err;
         resolve({ completed, error, values });
       },
-      // eslint-disable-next-line custom/require-function-tag-in-arrow-functions
-      next: (value) => {
+      next(value) {
         values.push(value);
       },
     });

@@ -244,14 +244,11 @@ const GLOBAL_PROP_TEST_CONFIG_DEFAULTS =
  */
 export const isPropertyTestConfigVariantGenerators = (
   value: PropertyTestConfigVariant,
-): value is PropertyTestConfigVariantSyncGenerators => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'generators' in value &&
-    !('async' in value)
-  );
-};
+): value is PropertyTestConfigVariantSyncGenerators =>
+  typeof value === 'object' &&
+  value !== null &&
+  'generators' in value &&
+  !('async' in value);
 
 /**
  * @function
@@ -259,15 +256,12 @@ export const isPropertyTestConfigVariantGenerators = (
  */
 export const isPropertyTestConfigVariantAsyncGenerators = (
   value: PropertyTestConfigVariant,
-): value is PropertyTestConfigVariantAsyncGenerators => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'generators' in value &&
-    'async' in value &&
-    !!value.async
-  );
-};
+): value is PropertyTestConfigVariantAsyncGenerators =>
+  typeof value === 'object' &&
+  value !== null &&
+  'generators' in value &&
+  'async' in value &&
+  !!value.async;
 
 /**
  * @function
@@ -275,14 +269,11 @@ export const isPropertyTestConfigVariantAsyncGenerators = (
  */
 export const isPropertyTestConfigVariantProperty = (
   value: PropertyTestConfigVariant,
-): value is InferPropertyTestConfigVariantProperty<typeof value> => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'property' in value &&
-    isFunction(value.property)
-  );
-};
+): value is InferPropertyTestConfigVariantProperty<typeof value> =>
+  typeof value === 'object' &&
+  value !== null &&
+  'property' in value &&
+  isFunction(value.property);
 
 /**
  * @function

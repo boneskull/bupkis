@@ -538,9 +538,8 @@ export const objectSizeAssertion = createAssertion(
  */
 export const setEqualityAssertion = createAssertion(
   [SetSchema, 'to equal', SetSchema],
-  (actual, expected) => {
-    return actual.size === expected.size && isSubsetOf(actual, expected);
-  },
+  (actual, expected) =>
+    actual.size === expected.size && isSubsetOf(actual, expected),
 );
 
 /**

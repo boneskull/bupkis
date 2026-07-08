@@ -118,11 +118,8 @@ export class AssertionError extends NodeAssertionError {
    * @param value Some value
    * @returns `true` if `value` is an instance of `AssertionError`
    */
-  static isAssertionError(value: unknown): value is AssertionError {
-    return (
-      isA(value, NodeAssertionError) && hasOwn(value, kBupkisAssertionError)
-    );
-  }
+  static isAssertionError = (value: unknown): value is AssertionError =>
+    isA(value, NodeAssertionError) && hasOwn(value, kBupkisAssertionError);
 
   toJSON() {
     return {
@@ -148,9 +145,8 @@ export class BupkisError extends Error {
 
   override name = 'BupkisError';
 
-  static isBupkisError(err: unknown): err is BupkisError {
-    return isA(err, Error) && hasOwn(err, kBupkisError);
-  }
+  static isBupkisError = (err: unknown): err is BupkisError =>
+    isA(err, Error) && hasOwn(err, kBupkisError);
 }
 
 /**
@@ -175,11 +171,10 @@ export class AssertionImplementationError extends BupkisError {
     this.result = result;
   }
 
-  static isAssertionImplementationError(
+  static isAssertionImplementationError = (
     err: unknown,
-  ): err is AssertionImplementationError {
-    return isA(err, AssertionImplementationError);
-  }
+  ): err is AssertionImplementationError =>
+    isA(err, AssertionImplementationError);
 }
 
 /**
@@ -200,11 +195,8 @@ export class FailAssertionError extends AssertionError {
     super({ ...options, id: FAIL });
   }
 
-  static isFailAssertionError(err: unknown): err is FailAssertionError {
-    return (
-      isA(err, FailAssertionError) && hasOwn(err, kBupkisFailAssertionError)
-    );
-  }
+  static isFailAssertionError = (err: unknown): err is FailAssertionError =>
+    isA(err, FailAssertionError) && hasOwn(err, kBupkisFailAssertionError);
 }
 
 /**
@@ -259,11 +251,10 @@ export class NegatedAssertionError extends AssertionError {
 
   override name = 'NegatedAssertionError';
 
-  static isNegatedAssertionError(err: unknown): err is NegatedAssertionError {
-    return (
-      isA(err, AssertionError) && hasOwn(err, kBupkisNegatedAssertionError)
-    );
-  }
+  static isNegatedAssertionError = (
+    err: unknown,
+  ): err is NegatedAssertionError =>
+    isA(err, AssertionError) && hasOwn(err, kBupkisNegatedAssertionError);
 }
 
 /**

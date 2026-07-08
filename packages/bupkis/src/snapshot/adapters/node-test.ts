@@ -252,16 +252,13 @@ const getTestFilePathFromStack = (): string => {
  * @param value - Value to check
  * @returns `true` if value looks like a node:test context
  */
-const looksLikeNodeTestContext = (value: unknown): boolean => {
-  return (
-    isTestContext(value) &&
-    'name' in value &&
-    typeof value.name === 'string' &&
-    'assert' in value &&
-    typeof value.assert === 'object' &&
-    value.assert !== null
-  );
-};
+const looksLikeNodeTestContext = (value: unknown): boolean =>
+  isTestContext(value) &&
+  'name' in value &&
+  typeof value.name === 'string' &&
+  'assert' in value &&
+  typeof value.assert === 'object' &&
+  value.assert !== null;
 
 /**
  * Type guard for node:test context.
@@ -281,16 +278,13 @@ const looksLikeNodeTestContext = (value: unknown): boolean => {
  * @param value - Value to check
  * @returns `true` if value is a node:test context
  */
-const isNodeTestContext = (value: unknown): value is NodeTestContext => {
-  return (
-    isTestContext(value) &&
-    'assert' in value &&
-    typeof value.assert === 'object' &&
-    value.assert !== null &&
-    'snapshot' in value.assert &&
-    typeof (value.assert as NodeTestContext['assert']).snapshot === 'function'
-  );
-};
+const isNodeTestContext = (value: unknown): value is NodeTestContext =>
+  isTestContext(value) &&
+  'assert' in value &&
+  typeof value.assert === 'object' &&
+  value.assert !== null &&
+  'snapshot' in value.assert &&
+  typeof (value.assert as NodeTestContext['assert']).snapshot === 'function';
 
 /**
  * Check if we're running in node:test update mode.

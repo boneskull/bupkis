@@ -360,10 +360,9 @@ export class FallbackAdapter implements SnapshotAdapter {
    * @param context - Test context or snapshot name
    * @returns `true` for strings or objects
    */
-  canHandle(context: unknown): boolean {
+  canHandle = (context: unknown): boolean =>
     // Fallback handles strings (explicit names) and objects (Mocha)
-    return typeof context === 'string' || typeof context === 'object';
-  }
+    typeof context === 'string' || typeof context === 'object';
 
   /**
    * Extract snapshot context from Mocha context or string name.

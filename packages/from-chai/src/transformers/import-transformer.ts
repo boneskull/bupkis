@@ -149,12 +149,9 @@ const buildPluginImportMap = (sourceFile: SourceFile): Map<string, string> => {
  *
  * @function
  */
-const isRecognizedPlugin = (moduleSource: string): boolean => {
-  return (
-    CHAI_PLUGIN_PATTERN.test(moduleSource) ||
-    KNOWN_CHAI_PLUGINS.has(moduleSource)
-  );
-};
+const isRecognizedPlugin = (moduleSource: string): boolean =>
+  CHAI_PLUGIN_PATTERN.test(moduleSource) ||
+  KNOWN_CHAI_PLUGINS.has(moduleSource);
 
 /**
  * Remove all chai.use() call statements and warn about unrecognized plugins.

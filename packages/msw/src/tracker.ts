@@ -213,7 +213,6 @@ class TrackedServerImpl implements Disposable, TrackedServer {
    *
    * Enables `using` syntax in TypeScript 5.2+.
    */
-  // eslint-disable-next-line custom/require-intrinsic-destructuring -- well-known symbols are non-writable
   [Symbol.dispose](): void {
     this.#cleanup();
     this.#server.close();

@@ -99,9 +99,8 @@ describe(
         };
 
         expect(data, 'to match snapshot', t, 'with options', {
-          serializer: (value: typeof data) => {
-            return stringify({ ...value, secret: '[REDACTED]' }, { space: 2 });
-          },
+          serializer: (value: typeof data) =>
+            stringify({ ...value, secret: '[REDACTED]' }, { space: 2 }),
         });
       });
 

@@ -31,9 +31,7 @@ const allMatcherMap = new Map<string, MatcherTransform>(
  */
 export const getMatcherTransform = (
   chaiMatcher: string,
-): MatcherTransform | undefined => {
-  return allMatcherMap.get(chaiMatcher);
-};
+): MatcherTransform | undefined => allMatcherMap.get(chaiMatcher);
 
 /**
  * Check if a matcher is supported (BDD, TDD, or plugin).
@@ -42,6 +40,5 @@ export const getMatcherTransform = (
  * @param chaiMatcher - The Chai matcher identifier
  * @returns True if the matcher is supported
  */
-export const isMatcherSupported = (chaiMatcher: string): boolean => {
-  return allMatcherMap.has(chaiMatcher);
-};
+export const isMatcherSupported = (chaiMatcher: string): boolean =>
+  allMatcherMap.has(chaiMatcher);

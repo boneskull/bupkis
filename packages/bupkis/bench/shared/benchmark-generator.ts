@@ -22,39 +22,35 @@ export const createSyncBenchmark = (
   testData: readonly [subject: unknown, phrase: string, ...args: unknown[]],
   tags: string[] = [],
   config: Partial<BenchmarkConfig> = {},
-): BenchmarkDefinition => {
-  return {
-    config,
-    fn() {
-      try {
-        expect(...testData);
-      } catch (error) {
-        if (!isThrowingAssertion(assertion)) {
-          console.warn(`Unexpected error in ${assertion}:`, error);
-        }
+): BenchmarkDefinition => ({
+  config,
+  fn() {
+    try {
+      expect(...testData);
+    } catch (error) {
+      if (!isThrowingAssertion(assertion)) {
+        console.warn(`Unexpected error in ${assertion}:`, error);
       }
-    },
-    tags,
-  };
-};
+    }
+  },
+  tags,
+});
 
 export const createAsyncBenchmark = (
   assertion: AnyAssertion,
   testData: readonly [subject: unknown, phrase: string, ...args: unknown[]],
   tags: string[] = [],
   config: Partial<BenchmarkConfig> = {},
-): BenchmarkDefinition => {
-  return {
-    config,
-    async fn() {
-      try {
-        await expectAsync(...testData);
-      } catch (error) {
-        if (!isThrowingAssertion(assertion)) {
-          console.warn(`Unexpected error in ${assertion}:`, error);
-        }
+): BenchmarkDefinition => ({
+  config,
+  async fn() {
+    try {
+      await expectAsync(...testData);
+    } catch (error) {
+      if (!isThrowingAssertion(assertion)) {
+        console.warn(`Unexpected error in ${assertion}:`, error);
       }
-    },
-    tags,
-  };
-};
+    }
+  },
+  tags,
+});

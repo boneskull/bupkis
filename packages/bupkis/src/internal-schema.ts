@@ -232,11 +232,8 @@ const AssertionPartsSchema = z
  * @returns `true` if value is an AssertionFailure
  * @internal
  */
-export const isAssertionFailure = (
-  value: unknown,
-): value is AssertionFailure => {
-  return AssertionFailureSchema.safeParse(value).success;
-};
+export const isAssertionFailure = (value: unknown): value is AssertionFailure =>
+  AssertionFailureSchema.safeParse(value).success;
 
 /**
  * Type guard for an {@link AssertionParseRequest}.
@@ -248,9 +245,8 @@ export const isAssertionFailure = (
  */
 export const isAssertionParseRequest = (
   value: unknown,
-): value is AssertionParseRequest => {
-  return AssertionParseRequestSchema.safeParse(value).success;
-};
+): value is AssertionParseRequest =>
+  AssertionParseRequestSchema.safeParse(value).success;
 
 /**
  * Schema for the input parameters of {@link createAssertion}.

@@ -106,7 +106,7 @@ describe('Standard Schema - Interoperability', () => {
       const assertion = createAssertion(
         [z.object({ age: z.number() }), 'to have valid age'],
         (obj) => ({
-          schema: z.number().int().gte(0).lte(120),
+          schema: z.int().gte(0).lte(120),
           subject: obj.age,
         }),
       );
@@ -128,11 +128,10 @@ describe('Standard Schema - Interoperability', () => {
 
       const stdAssertion = createAssertion(['to be a string'], {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Not a string' }] };
-          },
+              : { issues: [{ message: 'Not a string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -159,11 +158,10 @@ describe('Standard Schema - Interoperability', () => {
     it('should allow defining assertion parts with Standard Schema', () => {
       const customNumberSchema: StandardSchemaV1<number> = {
         '~standard': {
-          validate: (value: unknown) => {
-            return typeof value === 'number'
+          validate: (value: unknown) =>
+            typeof value === 'number'
               ? { value }
-              : { issues: [{ message: 'Expected number' }] };
-          },
+              : { issues: [{ message: 'Expected number' }] },
           vendor: 'test',
           version: 1,
         },
@@ -184,11 +182,10 @@ describe('Standard Schema - Interoperability', () => {
     it('should handle mixed Zod and Standard Schema in assertion parts', () => {
       const customStringSchema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value: unknown) => {
-            return typeof value === 'string'
+          validate: (value: unknown) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Expected string' }] };
-          },
+              : { issues: [{ message: 'Expected string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -217,11 +214,10 @@ describe('Standard Schema - Interoperability', () => {
             input: 0,
             output: 0,
           },
-          validate: (value: unknown) => {
-            return typeof value === 'number'
+          validate: (value: unknown) =>
+            typeof value === 'number'
               ? { value }
-              : { issues: [{ message: 'Expected number' }] };
-          },
+              : { issues: [{ message: 'Expected number' }] },
           vendor: 'test',
           version: 1,
         },
@@ -245,11 +241,10 @@ describe('Standard Schema - Interoperability', () => {
       const zodAssertion = createAssertion(['to be a string'], z.string());
       const stdAssertion = createAssertion(['to be a string'], {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Not a string' }] };
-          },
+              : { issues: [{ message: 'Not a string' }] },
           vendor: 'test',
           version: 1,
         },

@@ -105,8 +105,8 @@ const filterMatchingRequests = (
   requests: TrackedRequest[],
   path: PathMatcher,
   options?: RequestMatchOptions,
-): TrackedRequest[] => {
-  return requests.filter((req) => {
+): TrackedRequest[] =>
+  requests.filter((req) => {
     // Match path
     if (typeof path === 'string') {
       if (req.pathname !== path) {
@@ -139,7 +139,6 @@ const filterMatchingRequests = (
 
     return true;
   });
-};
 
 /**
  * Filters tracked requests that match the given path and options (async

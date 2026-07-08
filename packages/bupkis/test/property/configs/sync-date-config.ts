@@ -132,14 +132,13 @@ export const testConfigs = new Map<AnyAssertion, PropertyTestConfig>([
               noInvalidDate: true,
             }),
           )
-          .filter(([a, b]) => {
-            // Ensure both dates are valid and significantly apart
-            return (
+          .filter(
+            ([a, b]) =>
+              // Ensure both dates are valid and significantly apart
               !Number.isNaN(a.getTime()) &&
               !Number.isNaN(b.getTime()) &&
-              Math.abs(a.getTime() - b.getTime()) > 2000
-            );
-          })
+              Math.abs(a.getTime() - b.getTime()) > 2000,
+          )
           .map(([subject, other]) => [
             subject,
             'to equal',

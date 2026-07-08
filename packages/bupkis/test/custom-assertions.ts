@@ -71,9 +71,8 @@ const exhaustiveAssertionTestAssertion = expect.createAssertion(
     'from',
     z.array(AnyAssertionSchema),
   ],
-  (configMap, collectionName, assertions) => {
-    return validateAssertionCoverage(configMap, collectionName, assertions);
-  },
+  (configMap, collectionName, assertions) =>
+    validateAssertionCoverage(configMap, collectionName, assertions),
 );
 
 /**
@@ -90,14 +89,13 @@ const exhaustiveAssertionTestExceptingAssertion = expect.createAssertion(
     'excepting',
     z.array(AnyAssertionSchema),
   ],
-  (configMap, collectionName, assertions, exceptedAssertions) => {
-    return validateAssertionCoverage(
+  (configMap, collectionName, assertions, exceptedAssertions) =>
+    validateAssertionCoverage(
       configMap,
       collectionName,
       assertions,
       exceptedAssertions,
-    );
-  },
+    ),
 );
 
 /**

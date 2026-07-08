@@ -25,8 +25,8 @@ const ensureProfilesDir = async (): Promise<void> => {
 /**
  * Run a command and return a promise
  */
-const runCommand = (command: string, args: string[]): Promise<number> => {
-  return new Promise((resolve, reject) => {
+const runCommand = (command: string, args: string[]): Promise<number> =>
+  new Promise((resolve, reject) => {
     const process = spawn(command, args, {
       shell: true,
       stdio: 'inherit',
@@ -38,7 +38,6 @@ const runCommand = (command: string, args: string[]): Promise<number> => {
 
     process.on('error', reject);
   });
-};
 
 /**
  * Profile benchmark performance for specific scenarios

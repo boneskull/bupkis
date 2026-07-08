@@ -23,11 +23,10 @@ describe('Standard Schema - Basic Support', () => {
     it('should detect a valid Standard Schema v1 object', () => {
       const schema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Not a string' }] };
-          },
+              : { issues: [{ message: 'Not a string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -69,11 +68,10 @@ describe('Standard Schema - Basic Support', () => {
     it('should create a simple Standard Schema assertion that passes', () => {
       const stringSchema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Expected string' }] };
-          },
+              : { issues: [{ message: 'Expected string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -92,11 +90,10 @@ describe('Standard Schema - Basic Support', () => {
     it('should create a Standard Schema assertion that fails', () => {
       const stringSchema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Expected string' }] };
-          },
+              : { issues: [{ message: 'Expected string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -213,11 +210,10 @@ describe('Standard Schema - Basic Support', () => {
     it('should handle sync Standard Schema in async context', async () => {
       const syncSchema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (value) => {
-            return typeof value === 'string'
+          validate: (value) =>
+            typeof value === 'string'
               ? { value }
-              : { issues: [{ message: 'Expected string' }] };
-          },
+              : { issues: [{ message: 'Expected string' }] },
           vendor: 'test',
           version: 1,
         },
@@ -237,9 +233,9 @@ describe('Standard Schema - Basic Support', () => {
     it('should format errors without paths', () => {
       const schema: StandardSchemaV1<string> = {
         '~standard': {
-          validate: (_value) => {
-            return { issues: [{ message: 'Validation failed' }] };
-          },
+          validate: (_value) => ({
+            issues: [{ message: 'Validation failed' }],
+          }),
           vendor: 'test',
           version: 1,
         },
@@ -264,16 +260,14 @@ describe('Standard Schema - Basic Support', () => {
     it('should format errors with nested paths', () => {
       const schema: StandardSchemaV1 = {
         '~standard': {
-          validate: (_value) => {
-            return {
-              issues: [
-                {
-                  message: 'Invalid nested value',
-                  path: ['user', 'address', 'zip'],
-                },
-              ],
-            };
-          },
+          validate: (_value) => ({
+            issues: [
+              {
+                message: 'Invalid nested value',
+                path: ['user', 'address', 'zip'],
+              },
+            ],
+          }),
           vendor: 'test',
           version: 1,
         },
@@ -298,14 +292,12 @@ describe('Standard Schema - Basic Support', () => {
     it('should format multiple errors', () => {
       const schema: StandardSchemaV1 = {
         '~standard': {
-          validate: (_value) => {
-            return {
-              issues: [
-                { message: 'Error 1', path: ['field1'] },
-                { message: 'Error 2', path: ['field2'] },
-              ],
-            };
-          },
+          validate: (_value) => ({
+            issues: [
+              { message: 'Error 1', path: ['field1'] },
+              { message: 'Error 2', path: ['field2'] },
+            ],
+          }),
           vendor: 'test',
           version: 1,
         },

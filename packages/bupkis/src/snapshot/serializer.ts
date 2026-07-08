@@ -308,7 +308,6 @@ export const defaultSerializer = (
  * @param value - Value to serialize
  * @returns JSON string representation
  */
-export const nodeTestCompatibleSerializer = (value: unknown): string => {
+export const nodeTestCompatibleSerializer = (value: unknown): string =>
   // Node:test expects the same format as our default serializer
-  return defaultSerializer(value);
-};
+  defaultSerializer(value);

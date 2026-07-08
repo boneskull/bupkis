@@ -371,6 +371,4 @@ const tddMatcherMap = new Map<string, MatcherTransform>(
  */
 export const getTddMatcher = (
   chaiMatcher: string,
-): MatcherTransform | undefined => {
-  return tddMatcherMap.get(chaiMatcher);
-};
+): MatcherTransform | undefined => tddMatcherMap.get(chaiMatcher);

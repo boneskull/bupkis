@@ -284,6 +284,4 @@ const pluginMatcherMap = new Map<string, MatcherTransform>(
  */
 export const getPluginMatcher = (
   chaiMatcher: string,
-): MatcherTransform | undefined => {
-  return pluginMatcherMap.get(chaiMatcher);
-};
+): MatcherTransform | undefined => pluginMatcherMap.get(chaiMatcher);

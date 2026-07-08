@@ -118,9 +118,8 @@ export const isStandardSchema = (value: unknown): value is StandardSchemaV1 => {
  * @param value Value to test
  * @returns `true` if the value is a plain object, `false` otherwise
  */
-export const isObject = (value: unknown): value is NonNullable<object> => {
-  return typeof value === 'object' && value !== null && !isArray(value);
-};
+export const isObject = (value: unknown): value is NonNullable<object> =>
+  typeof value === 'object' && value !== null && !isArray(value);
 
 /**
  * Checks if a value is "promise-like", meaning it is a "thenable" object.
@@ -157,7 +156,7 @@ export const isConstructible = (fn: unknown): fn is Constructor => {
   }
   try {
     // this will throw if there is no `[[construct]]` slot.. or so I've heard.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, custom/require-function-tag-in-arrow-functions
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @bupkis/require-function-tag-in-arrow-functions
     new new Proxy(fn as any, { construct: () => ({}) })();
     return true;
   } catch {
@@ -287,9 +286,7 @@ export const isPhrase = (
 export const isA = <T extends Constructor>(
   value: unknown,
   ctor: T,
-): value is InstanceType<T> => {
-  return isNonNullObject(value) && value instanceof ctor;
-};
+): value is InstanceType<T> => isNonNullObject(value) && value instanceof ctor;
 
 /**
  * Type guard for Error instances.
@@ -352,10 +349,7 @@ export const isError =
  */
 export const isExpectItExecutor = <Subject extends z.ZodType = z.ZodUnknown>(
   value: unknown,
-): value is ExpectItExecutor<Subject> => {
-  return (
-    isFunction(value) &&
-    kExpectIt in value &&
-    (value as unknown as Record<symbol, unknown>)[kExpectIt] === true
-  );
-};
+): value is ExpectItExecutor<Subject> =>
+  isFunction(value) &&
+  kExpectIt in value &&
+  (value as unknown as Record<symbol, unknown>)[kExpectIt] === true;

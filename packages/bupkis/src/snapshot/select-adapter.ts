@@ -63,9 +63,9 @@ const adapters: SnapshotAdapter[] = [
  * @function
  * @returns Read-only array of registered adapters
  */
-export const getRegisteredAdapters = (): ReadonlyArray<SnapshotAdapter> => {
-  return [...adapters];
-};
+export const getRegisteredAdapters = (): ReadonlyArray<SnapshotAdapter> => [
+  ...adapters,
+];
 
 /**
  * Register a custom snapshot adapter.
