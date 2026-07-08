@@ -25,12 +25,9 @@ type AssertionClassification = 'pure' | 'schema';
 
 export const isSyncFunctionAssertion = (
   assertion: AnyAssertion,
-): assertion is BupkisAssertionFunctionSync<any, any, any> => {
-  return (
-    assertion instanceof BupkisAssertionFunctionSync &&
-    !(assertion instanceof BupkisAssertionSchemaSync)
-  );
-};
+): assertion is BupkisAssertionFunctionSync<any, any, any> =>
+  assertion instanceof BupkisAssertionFunctionSync &&
+  !(assertion instanceof BupkisAssertionSchemaSync);
 
 export const classifyAssertion = (
   assertion: BupkisAssertionFunctionSync<any, any, any>,
