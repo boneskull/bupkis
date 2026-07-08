@@ -22,8 +22,11 @@ runs:
       with:
         node-version: 24.18.0
         registry-url: https://registry.npmjs.org
-    - name: Install & Build
+    - name: Install
       uses: bahmutov/npm-install@20216767ca67f0f7b4d095dc5859c5700a6581cb # v1.12.1
+    - name: Build
+      run: npm run build
+      shell: bash
     - name: Publish workspaces to npm
       env:
         NODE_AUTH_TOKEN: ${{ inputs.token }}
