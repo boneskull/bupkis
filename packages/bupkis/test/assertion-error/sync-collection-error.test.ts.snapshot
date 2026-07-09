@@ -1,3 +1,47 @@
+exports[`Sync Collection Assertion Error Snapshots > \"{map | set | unknown-array} 'to have a value exhaustively satisfying' / 'to have value exhaustively satisfying' {unknown}\" [map-set-unknown_array-to-have-a-value-exhaustively-satisfying-to-have-value-exhaustively-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-set-unknown_array-to-have-a-value-exhaustively-satisfying-to-have-value-exhaustively-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected collection to have a value exhaustively satisfying 5, but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-set-unknown_array-to-have-a-value-exhaustively-satisfying-to-have-value-exhaustively-satisfying-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map | set | unknown-array} 'to have a value satisfying' / 'to have value satisfying' / 'to contain a value satisfying' {unknown}\" [map-set-unknown_array-to-have-a-value-satisfying-to-have-value-satisfying-to-contain-a-value-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-set-unknown_array-to-have-a-value-satisfying-to-have-value-satisfying-to-contain-a-value-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected collection to have a value satisfying { b: 2 }, but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-set-unknown_array-to-have-a-value-satisfying-to-have-value-satisfying-to-contain-a-value-satisfying-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map | set | unknown-array} 'to have values exhaustively satisfying' {unknown}\" [map-set-unknown_array-to-have-values-exhaustively-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-set-unknown_array-to-have-values-exhaustively-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all values to exhaustively satisfy 1, but value at index 1 did not match: 2",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-set-unknown_array-to-have-values-exhaustively-satisfying-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map | set | unknown-array} 'to have values satisfying' / 'to contain values satisfying' {unknown}\" [map-set-unknown_array-to-have-values-satisfying-to-contain-values-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-set-unknown_array-to-have-values-satisfying-to-contain-values-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all values to satisfy { a: 1 }, but value at index 1 did not match: { b: 2 }",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-set-unknown_array-to-have-values-satisfying-to-contain-values-satisfying-unknown-3s3p"
+}
+`;
+
 exports[`Sync Collection Assertion Error Snapshots > \"{map | set} 'to have size between' {[nonnegative-integer, nonnegative-integer]}\" [map-set-to-have-size-between-nonnegative_integer-nonnegative_integer-3s3p] > should throw a consistent AssertionError [map-set-to-have-size-between-nonnegative_integer-nonnegative_integer-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected Set to have size between 1 and 3, got 4",
@@ -97,6 +141,28 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to equal' {map}\" 
 }
 `;
 
+exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have a key exhaustively satisfying' / 'to have key exhaustively satisfying' / 'to have a prop exhaustively satisfying' / 'to have prop exhaustively satisfying' / 'to have a property exhaustively satisfying' / 'to have property exhaustively satisfying' / 'to have a field exhaustively satisfying' / 'to have field exhaustively satisfying' {unknown}\" [map-to-have-a-key-exhaustively-satisfying-to-have-key-exhaustively-satisfying-to-have-a-prop-exhaustively-satisfying-to-have-prop-exhaustively-satisfying-to-have-a-property-exhaustively-satisfying-to-have-property-exhaustively-satisfying-to-have-a-field-exhaustively-satisfying-to-have-field-exhaustively-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-a-key-exhaustively-satisfying-to-have-key-exhaustively-satisfying-to-have-a-prop-exhaustively-satisfying-to-have-prop-exhaustively-satisfying-to-have-a-property-exhaustively-satisfying-to-have-property-exhaustively-satisfying-to-have-a-field-exhaustively-satisfying-to-have-field-exhaustively-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected Map to have a key exhaustively satisfying 'b', but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-to-have-a-key-exhaustively-satisfying-to-have-key-exhaustively-satisfying-to-have-a-prop-exhaustively-satisfying-to-have-prop-exhaustively-satisfying-to-have-a-property-exhaustively-satisfying-to-have-property-exhaustively-satisfying-to-have-a-field-exhaustively-satisfying-to-have-field-exhaustively-satisfying-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have a key satisfying' / 'to have key satisfying' / 'to have a prop satisfying' / 'to have prop satisfying' / 'to have a property satisfying' / 'to have property satisfying' / 'to have a field satisfying' / 'to have field satisfying' {unknown}\" [map-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected Map to have a key satisfying 99, but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p"
+}
+`;
+
 exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have key' {unknown}\" [map-to-have-key-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-key-unknown-3s3p] <snapshot> 1`] = `
 {
   "message": "Expected Map to have key\\n- expected  - 1\\n+ actual    + 0\\n\\n  Array [\\n    \\"key\\",\\n-   \\"missing\\",\\n  ]",
@@ -112,6 +178,28 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have key' {unkn
   ],
   "diff": "simple",
   "assertionId": "map-to-have-key-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have keys exhaustively satisfying' / 'to have props exhaustively satisfying' / 'to have properties exhaustively satisfying' / 'to have fields exhaustively satisfying' {unknown}\" [map-to-have-keys-exhaustively-satisfying-to-have-props-exhaustively-satisfying-to-have-properties-exhaustively-satisfying-to-have-fields-exhaustively-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-keys-exhaustively-satisfying-to-have-props-exhaustively-satisfying-to-have-properties-exhaustively-satisfying-to-have-fields-exhaustively-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all Map keys to exhaustively satisfy 'a', but key at index 1 did not match: 'b'",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-to-have-keys-exhaustively-satisfying-to-have-props-exhaustively-satisfying-to-have-properties-exhaustively-satisfying-to-have-fields-exhaustively-satisfying-unknown-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have keys satisfying' / 'to have props satisfying' / 'to have properties satisfying' / 'to have fields satisfying' / 'to contain keys satisfying' / 'to contain props satisfying' / 'to contain properties satisfying' / 'to contain fields satisfying' {unknown}\" [map-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-to-contain-keys-satisfying-to-contain-props-satisfying-to-contain-properties-satisfying-to-contain-fields-satisfying-unknown-3s3p] > should throw a consistent AssertionError [map-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-to-contain-keys-satisfying-to-contain-props-satisfying-to-contain-properties-satisfying-to-contain-fields-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all Map keys to satisfy 99, but key at index 0 did not match: 'a'",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "map-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-to-contain-keys-satisfying-to-contain-props-satisfying-to-contain-properties-satisfying-to-contain-fields-satisfying-unknown-3s3p"
 }
 `;
 
@@ -143,6 +231,28 @@ exports[`Sync Collection Assertion Error Snapshots > \"{map} 'to have value' / '
 }
 `;
 
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have a key matching' / 'to have key matching' / 'to have a prop matching' / 'to have prop matching' / 'to have a property matching' / 'to have property matching' / 'to have a field matching' / 'to have field matching' {RegExp}\" [non_collection_object-to-have-a-key-matching-to-have-key-matching-to-have-a-prop-matching-to-have-prop-matching-to-have-a-property-matching-to-have-property-matching-to-have-a-field-matching-to-have-field-matching-regexp-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-a-key-matching-to-have-key-matching-to-have-a-prop-matching-to-have-prop-matching-to-have-a-property-matching-to-have-property-matching-to-have-a-field-matching-to-have-field-matching-regexp-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected object to have a key matching /^key\\\\d+$/, but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-a-key-matching-to-have-key-matching-to-have-a-prop-matching-to-have-prop-matching-to-have-a-property-matching-to-have-property-matching-to-have-a-field-matching-to-have-field-matching-regexp-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have a key satisfying' / 'to have key satisfying' / 'to have a prop satisfying' / 'to have prop satisfying' / 'to have a property satisfying' / 'to have property satisfying' / 'to have a field satisfying' / 'to have field satisfying' {unknown}\" [non_collection_object-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected object to have a key satisfying 99, but none matched",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-a-key-satisfying-to-have-key-satisfying-to-have-a-prop-satisfying-to-have-prop-satisfying-to-have-a-property-satisfying-to-have-property-satisfying-to-have-a-field-satisfying-to-have-field-satisfying-unknown-3s3p"
+}
+`;
+
 exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\" [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-exact-key-to-have-exact-property-to-have-exact-prop-property_key-3s3p] <snapshot> 1`] = `
 {
   "message": "Assertion \\"{non-collection-object} 'to have exact key' / 'to have exact property' / 'to have exact prop' {property-key}\\" failed:\\nCompared values have no visual difference.",
@@ -169,6 +279,28 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
   "actual": "no such keypath",
   "diff": "simple",
   "assertionId": "non_collection_object-to-have-key-to-have-property-to-have-prop-to-contain-key-to-contain-property-to-contain-prop-to-include-key-to-include-property-to-include-prop-keypath-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys matching' / 'to have props matching' / 'to have properties matching' / 'to have fields matching' {RegExp}\" [non_collection_object-to-have-keys-matching-to-have-props-matching-to-have-properties-matching-to-have-fields-matching-regexp-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-matching-to-have-props-matching-to-have-properties-matching-to-have-fields-matching-regexp-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all object keys to match /^key\\\\d+$/, but key \\"bar\\" did not match",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-keys-matching-to-have-props-matching-to-have-properties-matching-to-have-fields-matching-regexp-3s3p"
+}
+`;
+
+exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys satisfying' / 'to have props satisfying' / 'to have properties satisfying' / 'to have fields satisfying' {unknown}\" [non_collection_object-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-unknown-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-unknown-3s3p] <snapshot> 1`] = `
+{
+  "message": "Expected all object keys to satisfy 99, but key \\"a\\" did not match",
+  "generatedMessage": false,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "diff": "simple",
+  "assertionId": "non_collection_object-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-unknown-3s3p"
 }
 `;
 

@@ -6,6 +6,7 @@ import {
 import fc from 'fast-check';
 
 import * as assertions from '../../../src/assertion/impl/sync-collection.js';
+import { expect } from '../../../src/bootstrap.js';
 import { type AnyAssertion } from '../../../src/types.js';
 import { SyncCollectionGenerators } from '../../../test-data/sync-collection-generators.js';
 
@@ -173,6 +174,91 @@ export const testConfigs = new Map<
   ],
 
   [
+    assertions.collectionHasValueExhaustivelySatisfyingAssertion,
+    {
+      invalid: {
+        // Array contains only a — b is not present, exhaustive match for b fails
+        generators: fc
+          .tuple(
+            fc.integer({ max: 100, min: -100 }),
+            fc.integer({ max: 100, min: -100 }),
+          )
+          .filter(([a, b]) => a !== b)
+          .chain(([a, b]) =>
+            fc.tuple(
+              fc.constant([a, a, a]),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionHasValueExhaustivelySatisfyingAssertion,
+                ),
+              ),
+              fc.constant(b), // b is not in the array
+            ),
+          ),
+      },
+      valid: {
+        // Array contains the target value at least once
+        generators: fc
+          .tuple(
+            fc.integer({ max: 100, min: -100 }),
+            fc.integer({ max: 100, min: -100 }),
+          )
+          .filter(([a, b]) => a !== b)
+          .chain(([a, b]) =>
+            fc.tuple(
+              fc.constant([a, b]),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionHasValueExhaustivelySatisfyingAssertion,
+                ),
+              ),
+              fc.constant(a), // a is in the array
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
+    assertions.collectionHasValueSatisfyingAssertion,
+    {
+      invalid: {
+        // All values have { a: 2 } — none satisfy { a: 1 }
+        generators: fc
+          .array(fc.record({ a: fc.constant(2) }), { minLength: 1 })
+          .chain((items) =>
+            fc.tuple(
+              fc.constant(items),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionHasValueSatisfyingAssertion,
+                ),
+              ),
+              fc.constant({ a: 1 }),
+            ),
+          ),
+      },
+      valid: {
+        // Array always includes one { a: 1 } item, so at least one satisfies
+        generators: fc
+          .array(fc.record({ a: fc.integer({ max: 100, min: 2 }) }), {
+            maxLength: 4,
+          })
+          .chain((others) =>
+            fc.tuple(
+              fc.constant([...others, { a: 1 }]),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionHasValueSatisfyingAssertion,
+                ),
+              ),
+              fc.constant({ a: 1 }),
+            ),
+          ),
+      },
+    },
+  ],
+  [
     assertions.collectionSizeBetweenAssertion,
     {
       invalid: {
@@ -197,7 +283,6 @@ export const testConfigs = new Map<
       },
     },
   ],
-
   [
     assertions.collectionSizeGreaterThanAssertion,
     {
@@ -228,6 +313,7 @@ export const testConfigs = new Map<
       },
     },
   ],
+
   [
     assertions.collectionSizeLessThanAssertion,
     {
@@ -258,6 +344,89 @@ export const testConfigs = new Map<
       },
     },
   ],
+
+  [
+    assertions.collectionValuesExhaustivelySatisfyAssertion,
+    {
+      invalid: {
+        // Two different integers — the second fails exhaustive match against the first
+        generators: fc
+          .tuple(
+            fc.integer({ max: 100, min: -100 }),
+            fc.integer({ max: 100, min: -100 }),
+          )
+          .filter(([a, b]) => a !== b)
+          .chain(([a, b]) =>
+            fc.tuple(
+              fc.constant([a, b]),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionValuesExhaustivelySatisfyAssertion,
+                ),
+              ),
+              fc.constant(a), // b ≠ a, so not all values exhaustively match
+            ),
+          ),
+      },
+      valid: {
+        // Array of identical integers exhaustively matches that integer
+        generators: fc
+          .integer({ max: 100, min: -100 })
+          .chain((n) =>
+            fc.tuple(
+              fc.array(fc.constant(n), { maxLength: 5 }),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.collectionValuesExhaustivelySatisfyAssertion,
+                ),
+              ),
+              fc.constant(n),
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
+    assertions.collectionValuesSatisfyAssertion,
+    {
+      invalid: {
+        // All values have { a: 2 } — none satisfy { a: 1 }
+        generators: fc
+          .array(fc.record({ a: fc.constant(2) }), { minLength: 1 })
+          .chain((items) =>
+            fc.tuple(
+              fc.constant(items),
+              fc.constantFrom(
+                ...extractPhrases(assertions.collectionValuesSatisfyAssertion),
+              ),
+              fc.constant({ a: 1 }),
+            ),
+          ),
+      },
+      valid: {
+        // All values have property a: 1 (extra props allowed by satisfy semantics)
+        generators: fc
+          .array(
+            fc.record({
+              a: fc.constant(1),
+              b: fc.integer({ max: 100, min: -100 }),
+            }),
+            { maxLength: 5 },
+          )
+          .chain((items) =>
+            fc.tuple(
+              fc.constant(items),
+              fc.constantFrom(
+                ...extractPhrases(assertions.collectionValuesSatisfyAssertion),
+              ),
+              fc.constant({ a: 1 }),
+            ),
+          ),
+      },
+    },
+  ],
+
   [
     assertions.emptyMapAssertion,
     {
@@ -417,6 +586,85 @@ export const testConfigs = new Map<
   ],
 
   [
+    assertions.mapHasKeyExhaustivelySatisfyingAssertion,
+    {
+      invalid: {
+        // Map has key1 but not key2 — exhaustive match for key2 fails
+        generators: fc
+          .tuple(fc.string({ minLength: 1 }), fc.string({ minLength: 1 }))
+          .filter(([a, b]) => a !== b)
+          .chain(([key1, key2]) =>
+            fc.tuple(
+              fc.constant(new Map([[key1, 1]])),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.mapHasKeyExhaustivelySatisfyingAssertion,
+                ),
+              ),
+              fc.constant(key2), // key2 absent
+            ),
+          ),
+      },
+      valid: {
+        // Map contains the exact target key
+        generators: fc
+          .tuple(fc.string({ minLength: 1 }), fc.string({ minLength: 1 }))
+          .filter(([a, b]) => a !== b)
+          .chain(([key1, key2]) =>
+            fc.tuple(
+              fc.constant(
+                new Map([
+                  [key1, 1],
+                  [key2, 2],
+                ]),
+              ),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.mapHasKeyExhaustivelySatisfyingAssertion,
+                ),
+              ),
+              fc.constant(key1), // key1 is present
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
+    assertions.mapHasKeySatisfyingAssertion,
+    {
+      invalid: {
+        // String keys fail expect.it('to be a number') — none match
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) =>
+            fc.tuple(
+              fc.constant(new Map(nums.map((n) => [`key${n}`, n]))),
+              fc.constantFrom(
+                ...extractPhrases(assertions.mapHasKeySatisfyingAssertion),
+              ),
+              fc.constant(expect.it('to be a number')),
+            ),
+          ),
+      },
+      valid: {
+        // At least one 'key<n>' key satisfies expect.it('to be a string')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) =>
+            fc.tuple(
+              fc.constant(new Map(nums.map((n) => [`key${n}`, n]))),
+              fc.constantFrom(
+                ...extractPhrases(assertions.mapHasKeySatisfyingAssertion),
+              ),
+              fc.constant(expect.it('to be a string')),
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
     assertions.mapKeyAssertion,
     {
       invalid: {
@@ -433,6 +681,84 @@ export const testConfigs = new Map<
       },
       valid: {
         generators: SyncCollectionGenerators.get(assertions.mapKeyAssertion)!,
+      },
+    },
+  ],
+
+  [
+    assertions.mapKeysExhaustivelySatisfyAssertion,
+    {
+      invalid: {
+        // Two distinct keys, expected = only the first — second fails exhaustive match
+        generators: fc
+          .tuple(fc.string({ minLength: 1 }), fc.string({ minLength: 1 }))
+          .filter(([a, b]) => a !== b)
+          .chain(([key1, key2]) =>
+            fc.tuple(
+              fc.constant(
+                new Map([
+                  [key1, 1],
+                  [key2, 2],
+                ]),
+              ),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.mapKeysExhaustivelySatisfyAssertion,
+                ),
+              ),
+              fc.constant(key1), // key2 ≠ key1
+            ),
+          ),
+      },
+      valid: {
+        // Single-entry Map — key exhaustively matches itself
+        generators: fc
+          .string({ minLength: 1 })
+          .chain((key) =>
+            fc.tuple(
+              fc.constant(new Map([[key, 1]])),
+              fc.constantFrom(
+                ...extractPhrases(
+                  assertions.mapKeysExhaustivelySatisfyAssertion,
+                ),
+              ),
+              fc.constant(key),
+            ),
+          ),
+      },
+    },
+  ],
+
+  [
+    assertions.mapKeysSatisfyAssertion,
+    {
+      invalid: {
+        // String keys fail expect.it('to be a number')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) =>
+            fc.tuple(
+              fc.constant(new Map(nums.map((n) => [`key${n}`, n]))),
+              fc.constantFrom(
+                ...extractPhrases(assertions.mapKeysSatisfyAssertion),
+              ),
+              fc.constant(expect.it('to be a number')),
+            ),
+          ),
+      },
+      valid: {
+        // Map with 'key<n>' string keys — all satisfy expect.it('to be a string')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { maxLength: 5 })
+          .chain((nums) =>
+            fc.tuple(
+              fc.constant(new Map(nums.map((n) => [`key${n}`, n]))),
+              fc.constantFrom(
+                ...extractPhrases(assertions.mapKeysSatisfyAssertion),
+              ),
+              fc.constant(expect.it('to be a string')),
+            ),
+          ),
       },
     },
   ],
@@ -521,6 +847,78 @@ export const testConfigs = new Map<
   ],
 
   [
+    assertions.objectHasKeyMatchingAssertion,
+    {
+      invalid: {
+        // All keys start with 'other' — none match /^key\d+$/
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`other${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectHasKeyMatchingAssertion),
+              ),
+              fc.constant(/^key\d+$/),
+            );
+          }),
+      },
+      valid: {
+        // At least one 'key<n>' key matches /^key\d+$/
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectHasKeyMatchingAssertion),
+              ),
+              fc.constant(/^key\d+$/),
+            );
+          }),
+      },
+    },
+  ],
+
+  [
+    assertions.objectHasKeySatisfyingAssertion,
+    {
+      invalid: {
+        // String keys fail expect.it('to be a number') — none match
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectHasKeySatisfyingAssertion),
+              ),
+              fc.constant(expect.it('to be a number')),
+            );
+          }),
+      },
+      valid: {
+        // At least one 'key<n>' key satisfies expect.it('to be a string')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectHasKeySatisfyingAssertion),
+              ),
+              fc.constant(expect.it('to be a string')),
+            );
+          }),
+      },
+    },
+  ],
+
+  [
     assertions.objectKeyAssertion,
     {
       invalid: {
@@ -576,6 +974,82 @@ export const testConfigs = new Map<
       },
     },
   ],
+
+  [
+    assertions.objectKeysMatchAssertion,
+    {
+      invalid: {
+        // At least one key that doesn't start with 'key', so it fails /^key\d+$/
+        generators: fc
+          .string({ minLength: 1 })
+          .filter((s) => !/^key/.test(s))
+          .chain((badKey) =>
+            fc.tuple(
+              fc.constant({ [badKey]: 1, key0: 2 }),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectKeysMatchAssertion),
+              ),
+              fc.constant(/^key\d+$/),
+            ),
+          ),
+      },
+      valid: {
+        // All keys are 'key<n>' — all match /^key\d+$/
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { maxLength: 5 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectKeysMatchAssertion),
+              ),
+              fc.constant(/^key\d+$/),
+            );
+          }),
+      },
+    },
+  ],
+
+  [
+    assertions.objectKeysSatisfyAssertion,
+    {
+      invalid: {
+        // String keys fail expect.it('to be a number')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { minLength: 1 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectKeysSatisfyAssertion),
+              ),
+              fc.constant(expect.it('to be a number')),
+            );
+          }),
+      },
+      valid: {
+        // All 'key<n>' keys satisfy expect.it('to be a string')
+        generators: fc
+          .array(fc.integer({ max: 999, min: 0 }), { maxLength: 5 })
+          .chain((nums) => {
+            const obj = Object.fromEntries(nums.map((n) => [`key${n}`, n]));
+            return fc.tuple(
+              fc.constant(obj),
+              fc.constantFrom(
+                ...extractPhrases(assertions.objectKeysSatisfyAssertion),
+              ),
+              fc.constant(expect.it('to be a string')),
+            );
+          }),
+      },
+    },
+  ],
+
+  // ===========================================================================
+  // Collection value assertions (Map/Set/Array)
+  // ===========================================================================
 
   [
     assertions.objectSizeAssertion,
@@ -671,6 +1145,10 @@ export const testConfigs = new Map<
     },
   ],
 
+  // ===========================================================================
+  // Map key assertions
+  // ===========================================================================
+
   [
     assertions.setEqualityAssertion,
     {
@@ -747,6 +1225,10 @@ export const testConfigs = new Map<
       },
     },
   ],
+
+  // ===========================================================================
+  // Object key assertions
+  // ===========================================================================
 
   [
     assertions.setSubsetAssertion,

@@ -436,3 +436,319 @@ expect(new Set(), 'to be a WeakSet');
 ```js
 expect(new Set(), 'not to be a WeakSet');
 ```
+
+### {Map | Set | Array} to have values satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map | Set | Array} to have values satisfying {any}
+>     {Map | Set | Array} to contain values satisfying {any}
+
+Asserts that **all** values in a Map, Set, or Array individually satisfy the
+expected shape. Uses partial/satisfy semantics (same as `'to satisfy'`). Empty
+collections pass vacuously.
+
+For `Map`, the **values** (not the keys) are checked. Use [`{Map} to have keys satisfying`](#map-to-have-keys-satisfying-any) to check Map keys.
+
+**Success**:
+
+```js
+expect([1, 2, 3], 'to have values satisfying', expect.it('to be a number'));
+expect(
+  new Set(['a', 'b']),
+  'to contain values satisfying',
+  expect.it('to be a string'),
+);
+
+const map = new Map([
+  ['x', 10],
+  ['y', 20],
+]);
+expect(map, 'to have values satisfying', expect.it('to be a number')); // checks 10 and 20
+```
+
+**Failure**:
+
+```js
+expect([1, 'two', 3], 'to have values satisfying', expect.it('to be a number'));
+// AssertionError: Expected all values to satisfy …, but value at index 1 did not match: 'two'
+```
+
+**Negation**:
+
+```js
+expect(
+  [1, 'two', 3],
+  'not to have values satisfying',
+  expect.it('to be a number'),
+);
+```
+
+### {Map | Set | Array} to have values exhaustively satisfying {any}
+
+Asserts that **all** values in a Map, Set, or Array individually match with
+deep equality. Extra properties on object values cause failure. Empty
+collections pass vacuously.
+
+**Success**:
+
+```js
+expect([{ a: 1 }, { a: 1 }], 'to have values exhaustively satisfying', {
+  a: 1,
+});
+```
+
+**Failure**:
+
+```js
+expect([{ a: 1, b: 2 }], 'to have values exhaustively satisfying', { a: 1 });
+// AssertionError: Expected all values to exhaustively satisfy …, but value at index 0 did not match
+```
+
+**Negation**:
+
+```js
+expect([{ a: 1, b: 2 }], 'not to have values exhaustively satisfying', {
+  a: 1,
+});
+```
+
+### {Map | Set | Array} to have a value satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map | Set | Array} to have a value satisfying {any}
+>     {Map | Set | Array} to have value satisfying {any}
+>     {Map | Set | Array} to contain a value satisfying {any}
+
+Asserts that **at least one** value in a Map, Set, or Array satisfies the
+expected shape. Uses partial/satisfy semantics. Fails on empty collections.
+
+**Success**:
+
+```js
+expect(
+  [1, 'two', true],
+  'to have a value satisfying',
+  expect.it('to be a string'),
+);
+expect(
+  new Set([1, 'hello']),
+  'to contain a value satisfying',
+  expect.it('to be a string'),
+);
+```
+
+**Failure**:
+
+```js
+expect([1, 2, 3], 'to have a value satisfying', expect.it('to be a string'));
+// AssertionError: Expected collection to have a value satisfying …, but none matched
+```
+
+**Negation**:
+
+```js
+expect(
+  [1, 2, 3],
+  'not to have a value satisfying',
+  expect.it('to be a string'),
+);
+```
+
+### {Map | Set | Array} to have a value exhaustively satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map | Set | Array} to have a value exhaustively satisfying {any}
+>     {Map | Set | Array} to have value exhaustively satisfying {any}
+
+Asserts that **at least one** value in a Map, Set, or Array exhaustively
+matches the expected value (deep equality, no extra properties). Fails on
+empty collections.
+
+**Success**:
+
+```js
+expect([{ a: 1 }, { a: 1, b: 2 }], 'to have a value exhaustively satisfying', {
+  a: 1,
+});
+// passes — first element exactly matches { a: 1 }
+```
+
+**Failure**:
+
+```js
+expect([{ a: 1, b: 2 }], 'to have a value exhaustively satisfying', { a: 1 });
+// AssertionError: Expected collection to have a value exhaustively satisfying …, but none matched
+```
+
+**Negation**:
+
+```js
+expect([{ a: 1, b: 2 }], 'not to have a value exhaustively satisfying', {
+  a: 1,
+});
+```
+
+### {Map} to have keys satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map} to have keys satisfying {any}
+>     {Map} to have props satisfying {any}
+>     {Map} to have properties satisfying {any}
+>     {Map} to have fields satisfying {any}
+>     {Map} to contain keys satisfying {any}
+>     {Map} to contain props satisfying {any}
+>     {Map} to contain properties satisfying {any}
+>     {Map} to contain fields satisfying {any}
+
+Asserts that **all** keys in a Map individually satisfy the expected shape.
+Uses partial/satisfy semantics. Empty Maps pass vacuously.
+
+**Success**:
+
+```js
+const map = new Map([
+  ['foo', 1],
+  ['bar', 2],
+]);
+expect(map, 'to have keys satisfying', expect.it('to be a string'));
+```
+
+**Failure**:
+
+```js
+const map = new Map([
+  [1, 'a'],
+  ['two', 'b'],
+]);
+expect(map, 'to have keys satisfying', expect.it('to be a string'));
+// AssertionError: Expected all Map keys to satisfy …, but key at index 0 did not match: 1
+```
+
+**Negation**:
+
+```js
+expect(map, 'not to have keys satisfying', expect.it('to be a string'));
+```
+
+### {Map} to have keys exhaustively satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map} to have keys exhaustively satisfying {any}
+>     {Map} to have props exhaustively satisfying {any}
+>     {Map} to have properties exhaustively satisfying {any}
+>     {Map} to have fields exhaustively satisfying {any}
+
+Asserts that **all** keys in a Map individually match with deep equality. Empty
+Maps pass vacuously.
+
+**Success**:
+
+```js
+const map = new Map([['only', 1]]);
+expect(map, 'to have keys exhaustively satisfying', 'only');
+```
+
+**Failure**:
+
+```js
+const map = new Map([
+  ['a', 1],
+  ['b', 2],
+]);
+expect(map, 'to have keys exhaustively satisfying', 'a');
+// AssertionError: Expected all Map keys to exhaustively satisfy …
+```
+
+**Negation**:
+
+```js
+expect(map, 'not to have keys exhaustively satisfying', 'a');
+```
+
+### {Map} to have a key satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map} to have a key satisfying {any}
+>     {Map} to have key satisfying {any}
+>     {Map} to have a prop satisfying {any}
+>     {Map} to have prop satisfying {any}
+>     {Map} to have a property satisfying {any}
+>     {Map} to have property satisfying {any}
+>     {Map} to have a field satisfying {any}
+>     {Map} to have field satisfying {any}
+
+Asserts that **at least one** key in a Map satisfies the expected shape. Fails
+on empty Maps.
+
+**Success**:
+
+```js
+const map = new Map([
+  [1, 'a'],
+  ['two', 'b'],
+]);
+expect(map, 'to have a key satisfying', expect.it('to be a string')); // 'two' matches
+```
+
+**Failure**:
+
+```js
+const map = new Map([
+  [1, 'a'],
+  [2, 'b'],
+]);
+expect(map, 'to have a key satisfying', expect.it('to be a string'));
+// AssertionError: Expected Map to have a key satisfying …, but none matched
+```
+
+**Negation**:
+
+```js
+expect(map, 'not to have a key satisfying', expect.it('to be a string'));
+```
+
+### {Map} to have a key exhaustively satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {Map} to have a key exhaustively satisfying {any}
+>     {Map} to have key exhaustively satisfying {any}
+>     {Map} to have a prop exhaustively satisfying {any}
+>     {Map} to have prop exhaustively satisfying {any}
+>     {Map} to have a property exhaustively satisfying {any}
+>     {Map} to have property exhaustively satisfying {any}
+>     {Map} to have a field exhaustively satisfying {any}
+>     {Map} to have field exhaustively satisfying {any}
+
+Asserts that **at least one** key in a Map exhaustively matches the expected
+value. Fails on empty Maps.
+
+**Success**:
+
+```js
+const map = new Map([
+  ['foo', 1],
+  ['bar', 2],
+]);
+expect(map, 'to have a key exhaustively satisfying', 'foo');
+```
+
+**Failure**:
+
+```js
+const map = new Map([['foo', 1]]);
+expect(map, 'to have a key exhaustively satisfying', 'bar');
+// AssertionError: Expected Map to have a key exhaustively satisfying …, but none matched
+```
+
+**Negation**:
+
+```js
+expect(map, 'not to have a key exhaustively satisfying', 'bar');
+```

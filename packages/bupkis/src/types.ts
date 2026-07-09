@@ -48,7 +48,6 @@ import type {
   PhraseLiteralSlot,
 } from './assertion/assertion-types.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
-import type { ValueToSchemaOptions } from './value-to-schema.js';
 
 import { type kExpectIt } from './constant.js';
 
@@ -767,23 +766,6 @@ export type MapExpectSlots<Parts extends readonly AssertionPart[]> =
     : readonly [];
 
 /**
- * @groupDescription Benchmark Types
- * Types for valueToSchema() benchmark functionality.
- */
-
-/**
- * Memory usage statistics.
- */
-export interface MemoryStats {
-  /** External memory */
-  external: number;
-  /** Total heap memory */
-  heapTotal: number;
-  /** Heap memory used */
-  heapUsed: number;
-}
-
-/**
  * Makes tuple types accept both mutable and readonly variants.
  *
  * This utility type creates a union of both mutable and readonly versions of a
@@ -845,39 +827,6 @@ export type MutableOrReadonly<Tuple extends readonly unknown[]> =
  * @see {@link MapExpectSlots} for how negation is incorporated into function signatures
  */
 export type Negation<S extends string> = `not ${S}`;
-
-/**
- * Performance analysis results.
- */
-export interface PerformanceAnalysis {
-  /** Identified bottlenecks */
-  bottlenecks: Array<{
-    category: string;
-    impact: 'high' | 'low' | 'medium';
-    opsPerSecond: number;
-    reason: string;
-  }>;
-  /** Statistical outliers */
-  outliers: Array<{
-    category: string;
-    deviation: number;
-    options: ValueToSchemaOptions;
-    value: number;
-  }>;
-  /** Summary statistics */
-  summary: {
-    averageOpsPerSecond: number;
-    fastestCategory: string;
-    slowestCategory: string;
-    totalExecutionTime: number;
-  };
-  /** Performance trends */
-  trends: Array<{
-    description: string;
-    factor: string;
-    impact: number;
-  }>;
-}
 
 /**
  * Converts `AssertionParts` to complete function parameter types for expect

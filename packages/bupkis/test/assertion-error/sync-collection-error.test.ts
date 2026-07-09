@@ -39,6 +39,18 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
+    assertions.collectionHasValueExhaustivelySatisfyingAssertion,
+    () => {
+      expect([1, 2, 3], 'to have a value exhaustively satisfying', 5);
+    },
+  ],
+  [
+    assertions.collectionHasValueSatisfyingAssertion,
+    () => {
+      expect([{ a: 1 }], 'to have a value satisfying', { b: 2 });
+    },
+  ],
+  [
     assertions.collectionSizeBetweenAssertion,
     () => {
       expect(new Set([1, 2, 3, 4]), 'to have size between', [1, 3]);
@@ -54,6 +66,19 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     assertions.collectionSizeLessThanAssertion,
     () => {
       expect(new Set([1, 2, 3]), 'to have size less than', 2);
+    },
+  ],
+  [
+    assertions.collectionValuesExhaustivelySatisfyAssertion,
+    () => {
+      expect([1, 2], 'to have values exhaustively satisfying', 1);
+    },
+  ],
+  // New collection-value assertions
+  [
+    assertions.collectionValuesSatisfyAssertion,
+    () => {
+      expect([{ a: 1 }, { b: 2 }], 'to have values satisfying', { a: 1 });
     },
   ],
   [
@@ -97,9 +122,48 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
+    assertions.mapHasKeyExhaustivelySatisfyingAssertion,
+    () => {
+      expect(new Map([['a', 1]]), 'to have a key exhaustively satisfying', 'b');
+    },
+  ],
+  [
+    assertions.mapHasKeySatisfyingAssertion,
+    () => {
+      expect(new Map([['a', 1]]), 'to have a key satisfying', 99);
+    },
+  ],
+  [
     assertions.mapKeyAssertion,
     () => {
       expect(new Map([['key', 'value']]), 'to have key', 'missing');
+    },
+  ],
+  [
+    assertions.mapKeysExhaustivelySatisfyAssertion,
+    () => {
+      expect(
+        new Map([
+          ['a', 1],
+          ['b', 2],
+        ]),
+        'to have keys exhaustively satisfying',
+        'a',
+      );
+    },
+  ],
+  // New Map-key assertions
+  [
+    assertions.mapKeysSatisfyAssertion,
+    () => {
+      expect(
+        new Map([
+          ['a', 1],
+          ['b', 2],
+        ]),
+        'to have keys satisfying',
+        99,
+      );
     },
   ],
   [
@@ -134,6 +198,18 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
     },
   ],
   [
+    assertions.objectHasKeyMatchingAssertion,
+    () => {
+      expect({ foo: 1 }, 'to have a key matching', /^key\d+$/);
+    },
+  ],
+  [
+    assertions.objectHasKeySatisfyingAssertion,
+    () => {
+      expect({ a: 1, b: 2 }, 'to have a key satisfying', 99);
+    },
+  ],
+  [
     assertions.objectKeyAssertion,
     () => {
       expect({ foo: 'bar' }, 'to have key', 'missing.path');
@@ -145,6 +221,20 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
       expect({ a: 1 }, 'to have keys', ['a', 'b']);
     },
   ],
+  [
+    assertions.objectKeysMatchAssertion,
+    () => {
+      expect({ bar: 2, foo: 1 }, 'to have keys matching', /^key\d+$/);
+    },
+  ],
+  // New object-key assertions
+  [
+    assertions.objectKeysSatisfyAssertion,
+    () => {
+      expect({ a: 1, b: 2 }, 'to have keys satisfying', 99);
+    },
+  ],
+
   [
     assertions.objectSizeAssertion,
     () => {
@@ -175,6 +265,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
       expect(new Set([1, 2]), 'to be disjoint from', new Set([2, 3]));
     },
   ],
+
   [
     assertions.setEqualityAssertion,
     () => {
@@ -205,6 +296,7 @@ const failingAssertions = new Map<AnyAssertion, () => void>([
       expect(new Set(['a', 'b']), 'to have size', 3);
     },
   ],
+
   [
     assertions.setSubsetAssertion,
     () => {
