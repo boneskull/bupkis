@@ -110,63 +110,6 @@ export interface BaseExpect {
   fail: FailFn;
 }
 
-/**
- * Configuration for valueToSchema benchmark generation.
- */
-export interface BenchmarkConfig {
-  /** Optional filter for input categories */
-  categories?: string[];
-  /** Complexity levels to test */
-  complexityLevels: ComplexityLevel[];
-  /** Number of benchmark iterations (1-10000) */
-  iterations: number;
-  /** ValueToSchemaOptions combinations to test */
-  options?: Partial<ValueToSchemaOptions>[];
-  /** Number of test data samples to generate (10-10000) */
-  sampleSize: number;
-  /** Benchmark timeout in milliseconds (1000-300000) */
-  timeout: number;
-  /** Number of warmup iterations (1-100) */
-  warmupIterations: number;
-}
-
-/**
- * Type representing a dot-notation or bracket-notation keypath for accessing
- * nested object properties. Uses recursive template literal types to validate
- * keypath syntax.
- *
- * Supports paths like:
- *
- * - 'foo.bar'
- * - 'foo[0]'
- * - 'foo["bar-baz"]'
- * - 'foo.bar[1].baz'
- *
- * @public
- */
-
-/**
- * Complete benchmark result.
- */
-export interface BenchmarkResult {
-  /** Computed insights and bottleneck identification */
-  analysis: PerformanceAnalysis;
-  /** Environment details when benchmark was run */
-  executionContext: ExecutionContext;
-  /** Total execution time in milliseconds */
-  executionTime: number;
-  /** Metadata about the benchmark run */
-  metadata: {
-    nodeVersion: string;
-    timestamp: string;
-    version: string;
-  };
-  /** Individual measurement results */
-  results: PerformanceMetrics[];
-  /** Benchmark suite identifier */
-  suiteId: string;
-}
-
 export type * from './assertion/assertion-types.js';
 export type { StandardSchemaV1 };
 
@@ -226,11 +169,6 @@ export interface Bupkis<
 }
 
 /**
- * Complexity levels for test data generation.
- */
-export type ComplexityLevel = 'complex' | 'medium' | 'simple';
-
-/**
  * Helper type to concatenate two tuples
  *
  * @group Utility Types
@@ -257,34 +195,6 @@ export type DefFromZodType<T extends z.core.$ZodType | z.ZodType> =
     : T extends z.core.$ZodType
       ? T['_zod']['def']
       : never;
-
-/**
- * Execution context for benchmark runs.
- */
-export interface ExecutionContext {
-  /** CPU model */
-  cpuModel: string;
-  /** Total memory */
-  memoryTotal: number;
-  /** Node.js version */
-  nodeVersion: string;
-  /** Platform information */
-  platform: string;
-}
-
-/**
- * Execution time statistics.
- */
-export interface ExecutionTimeStats {
-  /** Mean execution time */
-  mean: number;
-  /** Median execution time */
-  median: number;
-  /** 95th percentile execution time */
-  p95: number;
-  /** 99th percentile execution time */
-  p99: number;
-}
 
 /**
  * The main synchronous assertion function.
@@ -967,24 +877,6 @@ export interface PerformanceAnalysis {
     factor: string;
     impact: number;
   }>;
-}
-
-/**
- * Performance metrics for a benchmark run.
- */
-export interface PerformanceMetrics {
-  /** Timing statistics */
-  executionTime: ExecutionTimeStats;
-  /** Category of input being measured */
-  inputCategory: string;
-  /** Memory allocation data (if available) */
-  memoryUsage?: MemoryStats;
-  /** Throughput measurement (operations per second) */
-  operationsPerSecond: number;
-  /** Configuration used for this measurement */
-  options: ValueToSchemaOptions;
-  /** When measurement was taken */
-  timestamp: Date;
 }
 
 /**
