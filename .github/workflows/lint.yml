@@ -44,6 +44,8 @@ jobs:
             run: npm run lint:prettier
           - name: Knip
             run: npm run lint:knip
+          - name: Engine check
+            run: npm run lint:engines
           - name: Run zizmor
             uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
             with:
