@@ -1428,8 +1428,8 @@ export const mapHasKeyExhaustivelySatisfyingAssertion = createAssertion(
 // =============================================================================
 
 /**
- * Asserts that ALL own enumerable string keys of a plain object individually
- * satisfy the expected shape.
+ * Asserts that ALL own enumerable string keys of a non-collection object
+ * individually satisfy the expected shape.
  *
  * Uses partial/satisfy semantics — every key must match. Empty objects pass
  * vacuously.
@@ -1468,7 +1468,7 @@ export const objectKeysSatisfyAssertion = createAssertion(
       const result = schema.safeParse(key);
       if (!result.success) {
         return {
-          message: `Expected all object keys to satisfy ${inspect(expected)}, but key "${key}" did not match`,
+          message: `Expected all object keys to satisfy ${inspect(expected)}, but key ${inspect(key)} did not match`,
         };
       }
     }
@@ -1529,8 +1529,8 @@ export const objectHasKeySatisfyingAssertion = createAssertion(
 );
 
 /**
- * Asserts that ALL own enumerable string keys of a plain object match a regular
- * expression.
+ * Asserts that ALL own enumerable string keys of a non-collection object match
+ * a regular expression.
  *
  * Empty objects pass vacuously.
  *
@@ -1565,9 +1565,10 @@ export const objectKeysMatchAssertion = createAssertion(
   ],
   (subject, pattern) => {
     for (const key of keys(subject)) {
+      pattern.lastIndex = 0;
       if (!pattern.test(key)) {
         return {
-          message: `Expected all object keys to match ${inspect(pattern)}, but key "${key}" did not match`,
+          message: `Expected all object keys to match ${inspect(pattern)}, but key ${inspect(key)} did not match`,
         };
       }
     }
@@ -1615,6 +1616,7 @@ export const objectHasKeyMatchingAssertion = createAssertion(
   ],
   (subject, pattern) => {
     for (const key of keys(subject)) {
+      pattern.lastIndex = 0;
       if (pattern.test(key)) {
         return;
       }

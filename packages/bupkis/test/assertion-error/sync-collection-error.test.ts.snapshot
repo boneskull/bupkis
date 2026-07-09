@@ -284,7 +284,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
 
 exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys matching' / 'to have props matching' / 'to have properties matching' / 'to have fields matching' {RegExp}\" [non_collection_object-to-have-keys-matching-to-have-props-matching-to-have-properties-matching-to-have-fields-matching-regexp-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-matching-to-have-props-matching-to-have-properties-matching-to-have-fields-matching-regexp-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected all object keys to match /^key\\\\d+$/, but key \\"bar\\" did not match",
+  "message": "Expected all object keys to match /^key\\\\d+$/, but key 'bar' did not match",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -295,7 +295,7 @@ exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} '
 
 exports[`Sync Collection Assertion Error Snapshots > \"{non-collection-object} 'to have keys satisfying' / 'to have props satisfying' / 'to have properties satisfying' / 'to have fields satisfying' {unknown}\" [non_collection_object-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-unknown-3s3p] > should throw a consistent AssertionError [non_collection_object-to-have-keys-satisfying-to-have-props-satisfying-to-have-properties-satisfying-to-have-fields-satisfying-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Expected all object keys to satisfy 99, but key \\"a\\" did not match",
+  "message": "Expected all object keys to satisfy 99, but key 'a' did not match",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",

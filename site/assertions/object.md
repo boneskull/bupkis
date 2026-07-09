@@ -365,12 +365,14 @@ expect(obj, 'not to be extensible');
 >     {object} to have properties satisfying {any}
 >     {object} to have fields satisfying {any}
 
-Asserts that **all** own enumerable string keys of a plain object individually
+Asserts that **all** own enumerable string keys of a non-collection object individually
 satisfy the expected shape. Uses partial/satisfy semantics. Empty objects pass
 vacuously.
 
-> ⚠️ Only considers own enumerable string keys (equivalent to `Object.keys()`).
-> Symbol keys and non-enumerable properties are not checked.
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object — including plain
+> objects, class instances, and functions. Only considers own enumerable string
+> keys (equivalent to `Object.keys()`). Symbol keys and non-enumerable
+> properties are not checked.
 
 **Success**:
 
@@ -410,11 +412,12 @@ expect({ FOO: 1 }, 'not to have keys satisfying', /^[a-z]+$/);
 >     {object} to have a field satisfying {any}
 >     {object} to have field satisfying {any}
 
-Asserts that **at least one** own enumerable string key of a plain object
+Asserts that **at least one** own enumerable string key of a non-collection object
 satisfies the expected shape. Fails on objects with no own enumerable string
 keys.
 
-> ⚠️ Only considers own enumerable string keys (equivalent to `Object.keys()`).
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys (equivalent to `Object.keys()`).
 
 **Success**:
 
@@ -445,11 +448,12 @@ expect({ FOO: 1, BAR: 2 }, 'not to have a key satisfying', /^[a-z]+$/);
 >     {object} to have properties matching {RegExp}
 >     {object} to have fields matching {RegExp}
 
-Asserts that **all** own enumerable string keys of a plain object match a
+Asserts that **all** own enumerable string keys of a non-collection object match a
 regular expression. Empty objects pass vacuously.
 
-> ⚠️ Only considers own enumerable string keys. Symbol keys and non-enumerable
-> properties are not checked.
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys. Symbol keys and non-enumerable properties are not
+> checked.
 
 **Success**:
 
@@ -484,12 +488,13 @@ expect({ FOO: 1 }, 'not to have keys matching', /^[a-z]+$/);
 >     {object} to have a field matching {RegExp}
 >     {object} to have field matching {RegExp}
 
-Asserts that **at least one** own enumerable string key of a plain object
+Asserts that **at least one** own enumerable string key of a non-collection object
 matches a regular expression. Fails on objects with no own enumerable string
 keys.
 
-> ⚠️ Only considers own enumerable string keys. Symbol keys and non-enumerable
-> properties are not checked.
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys. Symbol keys and non-enumerable properties are not
+> checked.
 
 **Success**:
 
