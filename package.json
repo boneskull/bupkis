@@ -91,6 +91,9 @@
     "valibot": "1.4.2",
     "zshy": "0.7.3"
   },
+  "overrides": {
+    "conventional-commits-parser": "7.0.1"
+  },
   "knip": {
     "ignoreDependencies": [
       "node-test-github-reporter"
