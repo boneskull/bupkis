@@ -13,7 +13,7 @@ import {
 } from '../../src/assertion/index.js';
 import { expect } from '../../src/index.js';
 
-const EXPECTED_TOTAL_ASSERTIONS = 66;
+const EXPECTED_TOTAL_ASSERTIONS = 78;
 
 describe('Assertion Classification', () => {
   describe('classifyAssertion', () => {

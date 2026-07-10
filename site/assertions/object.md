@@ -356,6 +356,166 @@ expect(obj, 'to be extensible');
 expect(obj, 'not to be extensible');
 ```
 
+### {object} to have keys satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {object} to have keys satisfying {any}
+>     {object} to have props satisfying {any}
+>     {object} to have properties satisfying {any}
+>     {object} to have fields satisfying {any}
+
+Asserts that **all** own enumerable string keys of a non-collection object individually
+satisfy the expected shape. Uses partial/satisfy semantics. Empty objects pass
+vacuously.
+
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object — including plain
+> objects, class instances, and functions. Only considers own enumerable string
+> keys (equivalent to `Object.keys()`). Symbol keys and non-enumerable
+> properties are not checked.
+
+**Success**:
+
+```js
+expect(
+  { foo: 1, bar: 2 },
+  'to have keys satisfying',
+  expect.it('to be a string'),
+);
+expect({ foo: 1, bar: 2 }, 'to have keys satisfying', /^[a-z]+$/);
+expect({}, 'to have keys satisfying', /impossible/); // vacuously true
+```
+
+**Failure**:
+
+```js
+expect({ FOO: 1, bar: 2 }, 'to have keys satisfying', /^[a-z]+$/);
+// AssertionError: Expected all object keys to satisfy …, but key 'FOO' did not match
+```
+
+**Negation**:
+
+```js
+expect({ FOO: 1 }, 'not to have keys satisfying', /^[a-z]+$/);
+```
+
+### {object} to have a key satisfying {any}
+
+> ✏️ Aliases:
+>
+>     {object} to have a key satisfying {any}
+>     {object} to have key satisfying {any}
+>     {object} to have a prop satisfying {any}
+>     {object} to have prop satisfying {any}
+>     {object} to have a property satisfying {any}
+>     {object} to have property satisfying {any}
+>     {object} to have a field satisfying {any}
+>     {object} to have field satisfying {any}
+
+Asserts that **at least one** own enumerable string key of a non-collection object
+satisfies the expected shape. Fails on objects with no own enumerable string
+keys.
+
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys (equivalent to `Object.keys()`).
+
+**Success**:
+
+```js
+expect({ foo: 1, BAR: 2 }, 'to have a key satisfying', /^[a-z]+$/);
+expect({ foo: 1 }, 'to have key satisfying', expect.it('to be a string'));
+```
+
+**Failure**:
+
+```js
+expect({ FOO: 1, BAR: 2 }, 'to have a key satisfying', /^[a-z]+$/);
+// AssertionError: Expected object to have a key satisfying …, but none matched
+```
+
+**Negation**:
+
+```js
+expect({ FOO: 1, BAR: 2 }, 'not to have a key satisfying', /^[a-z]+$/);
+```
+
+### {object} to have keys matching {RegExp}
+
+> ✏️ Aliases:
+>
+>     {object} to have keys matching {RegExp}
+>     {object} to have props matching {RegExp}
+>     {object} to have properties matching {RegExp}
+>     {object} to have fields matching {RegExp}
+
+Asserts that **all** own enumerable string keys of a non-collection object match a
+regular expression. Empty objects pass vacuously.
+
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys. Symbol keys and non-enumerable properties are not
+> checked.
+
+**Success**:
+
+```js
+expect({ foo: 1, bar: 2 }, 'to have keys matching', /^[a-z]+$/);
+expect({}, 'to have keys matching', /impossible/); // vacuously true
+```
+
+**Failure**:
+
+```js
+expect({ foo: 1, Bar: 2 }, 'to have keys matching', /^[a-z]+$/);
+// AssertionError: Expected all object keys to match /^[a-z]+$/, but key 'Bar' did not match
+```
+
+**Negation**:
+
+```js
+expect({ FOO: 1 }, 'not to have keys matching', /^[a-z]+$/);
+```
+
+### {object} to have a key matching {RegExp}
+
+> ✏️ Aliases:
+>
+>     {object} to have a key matching {RegExp}
+>     {object} to have key matching {RegExp}
+>     {object} to have a prop matching {RegExp}
+>     {object} to have prop matching {RegExp}
+>     {object} to have a property matching {RegExp}
+>     {object} to have property matching {RegExp}
+>     {object} to have a field matching {RegExp}
+>     {object} to have field matching {RegExp}
+
+Asserts that **at least one** own enumerable string key of a non-collection object
+matches a regular expression. Fails on objects with no own enumerable string
+keys.
+
+> ⚠️ Accepts any non-`Map`/`Set`/`WeakMap`/`WeakSet` object. Only considers own
+> enumerable string keys. Symbol keys and non-enumerable properties are not
+> checked.
+
+**Success**:
+
+```js
+expect({ foo: 1, BAR: 2 }, 'to have a key matching', /^[a-z]+$/);
+expect({ foo: 1 }, 'to have key matching', /foo/);
+```
+
+**Failure**:
+
+```js
+expect({ FOO: 1, BAR: 2 }, 'to have a key matching', /^[a-z]+$/);
+// AssertionError: Expected object to have a key matching /^[a-z]+$/, but none matched
+```
+
+**Negation**:
+
+```js
+expect({ FOO: 1, BAR: 2 }, 'not to have a key matching', /^[a-z]+$/);
+```
+
 ### {object} to satisfy {any}
 
 See [{unknown} to satisfy {any}](equality.md#unknown-to-satisfy-any) in Equality & Comparison Assertions.

@@ -14,6 +14,7 @@
  *
  * @showGroup
  */
+import { inspect } from 'node:util';
 import setDifference from 'set.prototype.difference';
 import setIntersection from 'set.prototype.intersection';
 import isDisjointFrom from 'set.prototype.isdisjointfrom';
@@ -40,6 +41,7 @@ import {
 import { has } from '../../util.js';
 import {
   valueToSchema,
+  valueToSchemaOptionsForDeepEqual,
   valueToSchemaOptionsForSatisfies,
 } from '../../value-to-schema.js';
 import { createAssertion } from '../create.js';
@@ -997,5 +999,634 @@ export const collectionSizeBetweenAssertion = createAssertion(
         message: `Expected ${collection.constructor.name} to have size between ${min} and ${max}, got ${size}`,
       };
     }
+  },
+);
+
+// =============================================================================
+// Collection value assertions (Map/Set/Array)
+// =============================================================================
+
+const CollectionSchema = z.union([MapSchema, SetSchema, UnknownArraySchema]);
+
+/**
+ * Returns the iterable of values for a Map, Set, or Array.
+ *
+ * Map iterates its values (not entries), while Set and Array are directly
+ * iterable.
+ *
+ * @function
+ * @internal
+ */
+const getCollectionValues = (
+  collection: Map<unknown, unknown> | Set<unknown> | unknown[],
+): Iterable<unknown> => {
+  if (collection instanceof Map) {
+    return collection.values();
+  }
+  return collection;
+};
+
+/**
+ * Asserts that ALL values in a Map, Set, or Array individually satisfy the
+ * expected shape.
+ *
+ * Uses partial/satisfy semantics — every value must match. Empty collections
+ * pass vacuously.
+ *
+ * @remarks
+ * For `Map`, values (not keys) are checked. Use `mapKeysSatisfyAssertion` to
+ * assert on Map keys instead.
+ * @example
+ *
+ * ```ts
+ * expect([{ a: 1 }, { a: 2, b: 3 }], 'to have values satisfying', {
+ *   a: z.number(),
+ * }); // passes
+ * expect(new Set([1, 2, 3]), 'to have values satisfying', z.number()); // passes
+ * expect(new Map([['k', { x: 1 }]]), 'to have values satisfying', {
+ *   x: z.number(),
+ * }); // passes
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-values-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const collectionValuesSatisfyAssertion = createAssertion(
+  [
+    CollectionSchema,
+    ['to have values satisfying', 'to contain values satisfying'],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    let index = 0;
+    for (const value of getCollectionValues(subject)) {
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        return {
+          message: `Expected all values to satisfy ${inspect(expected)}, but value at index ${index} did not match: ${inspect(value)}`,
+        };
+      }
+      index++;
+    }
+    // Empty collections trivially satisfy (vacuous truth)
+  },
+);
+
+/**
+ * Asserts that ALL values in a Map, Set, or Array individually match with deep
+ * equality.
+ *
+ * Uses strict deep-equality semantics — every value must exactly match. Empty
+ * collections pass vacuously.
+ *
+ * @example
+ *
+ * ```ts
+ * expect([{ a: 1 }, { a: 1 }], 'to have values exhaustively satisfying', {
+ *   a: 1,
+ * }); // passes
+ * expect([{ a: 1, b: 2 }], 'to have values exhaustively satisfying', {
+ *   a: 1,
+ * }); // fails — extra property b
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-values-exhaustively-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const collectionValuesExhaustivelySatisfyAssertion = createAssertion(
+  [CollectionSchema, 'to have values exhaustively satisfying', UnknownSchema],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+    let index = 0;
+    for (const value of getCollectionValues(subject)) {
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        return {
+          message: `Expected all values to exhaustively satisfy ${inspect(expected)}, but value at index ${index} did not match: ${inspect(value)}`,
+        };
+      }
+      index++;
+    }
+  },
+);
+
+/**
+ * Asserts that at least one value in a Map, Set, or Array satisfies the
+ * expected shape.
+ *
+ * Uses partial/satisfy semantics — any single matching value is sufficient.
+ * Fails on empty collections.
+ *
+ * @remarks
+ * For `Map`, values (not keys) are checked.
+ * @example
+ *
+ * ```ts
+ * expect([{ a: 1, b: 2 }, { c: 3 }], 'to have a value satisfying', {
+ *   a: 1,
+ * }); // passes
+ * expect(new Set([1, 'two', 3]), 'to have a value satisfying', z.string()); // passes
+ * expect([1, 2, 3], 'to have value satisfying', 2); // passes
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-a-value-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const collectionHasValueSatisfyingAssertion = createAssertion(
+  [
+    CollectionSchema,
+    [
+      'to have a value satisfying',
+      'to have value satisfying',
+      'to contain a value satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    for (const value of getCollectionValues(subject)) {
+      if (schema.safeParse(value).success) {
+        return;
+      }
+    }
+    return {
+      message: `Expected collection to have a value satisfying ${inspect(expected)}, but none matched`,
+    };
+  },
+);
+
+/**
+ * Asserts that at least one value in a Map, Set, or Array exhaustively matches
+ * the expected value.
+ *
+ * Uses strict deep-equality semantics. Fails on empty collections.
+ *
+ * @example
+ *
+ * ```ts
+ * expect(
+ *   [{ a: 1 }, { a: 1, b: 2 }],
+ *   'to have a value exhaustively satisfying',
+ *   {
+ *     a: 1,
+ *   },
+ * ); // passes — first element matches exactly
+ * expect([{ a: 1, b: 2 }], 'to have a value exhaustively satisfying', {
+ *   a: 1,
+ * }); // fails — extra property b
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor collection-to-have-a-value-exhaustively-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const collectionHasValueExhaustivelySatisfyingAssertion =
+  createAssertion(
+    [
+      CollectionSchema,
+      [
+        'to have a value exhaustively satisfying',
+        'to have value exhaustively satisfying',
+      ],
+      UnknownSchema,
+    ],
+    (subject, expected) => {
+      const schema = valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+      for (const value of getCollectionValues(subject)) {
+        if (schema.safeParse(value).success) {
+          return;
+        }
+      }
+      return {
+        message: `Expected collection to have a value exhaustively satisfying ${inspect(expected)}, but none matched`,
+      };
+    },
+  );
+
+// =============================================================================
+// Map key assertions
+// =============================================================================
+
+/**
+ * Asserts that ALL keys in a Map individually satisfy the expected shape.
+ *
+ * Uses partial/satisfy semantics — every key must match. Empty Maps pass
+ * vacuously.
+ *
+ * @example
+ *
+ * ```ts
+ * const map = new Map([
+ *   ['foo', 1],
+ *   ['bar', 2],
+ * ]);
+ * expect(map, 'to have keys satisfying', z.string()); // passes
+ * expect(map, 'to have props satisfying', z.string()); // alias — same assertion
+ * expect(map, 'to have fields satisfying', z.string()); // alias
+ * expect(map, 'to contain keys satisfying', /^[a-z]+$/); // alias
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor map-to-have-keys-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const mapKeysSatisfyAssertion = createAssertion(
+  [
+    MapSchema,
+    [
+      'to have keys satisfying',
+      'to have props satisfying',
+      'to have properties satisfying',
+      'to have fields satisfying',
+      'to contain keys satisfying',
+      'to contain props satisfying',
+      'to contain properties satisfying',
+      'to contain fields satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    let index = 0;
+    for (const key of subject.keys()) {
+      const result = schema.safeParse(key);
+      if (!result.success) {
+        return {
+          message: `Expected all Map keys to satisfy ${inspect(expected)}, but key at index ${index} did not match: ${inspect(key)}`,
+        };
+      }
+      index++;
+    }
+    // Empty Maps trivially satisfy (vacuous truth)
+  },
+);
+
+/**
+ * Asserts that ALL keys in a Map individually match with deep equality.
+ *
+ * Uses strict deep-equality semantics — every key must exactly match. Empty
+ * Maps pass vacuously.
+ *
+ * @example
+ *
+ * ```ts
+ * const map = new Map([
+ *   [{ id: 1 }, 'a'],
+ *   [{ id: 2 }, 'b'],
+ * ]);
+ * expect(map, 'to have keys exhaustively satisfying', { id: z.number() }); // fails — extra strict
+ * expect(map, 'to have props exhaustively satisfying', { id: z.number() }); // alias
+ * expect(map, 'to have fields exhaustively satisfying', {
+ *   id: z.number(),
+ * }); // alias
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor map-to-have-keys-exhaustively-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const mapKeysExhaustivelySatisfyAssertion = createAssertion(
+  [
+    MapSchema,
+    [
+      'to have keys exhaustively satisfying',
+      'to have props exhaustively satisfying',
+      'to have properties exhaustively satisfying',
+      'to have fields exhaustively satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+    let index = 0;
+    for (const key of subject.keys()) {
+      const result = schema.safeParse(key);
+      if (!result.success) {
+        return {
+          message: `Expected all Map keys to exhaustively satisfy ${inspect(expected)}, but key at index ${index} did not match: ${inspect(key)}`,
+        };
+      }
+      index++;
+    }
+  },
+);
+
+/**
+ * Asserts that at least one key in a Map satisfies the expected shape.
+ *
+ * Uses partial/satisfy semantics. Fails on empty Maps.
+ *
+ * @example
+ *
+ * ```ts
+ * const map = new Map([
+ *   ['foo', 1],
+ *   [42, 2],
+ * ]);
+ * expect(map, 'to have a key satisfying', z.string()); // passes
+ * expect(map, 'to have key satisfying', z.number()); // passes
+ * expect(map, 'to have a prop satisfying', z.string()); // alias
+ * expect(map, 'to have a field satisfying', z.number()); // alias
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor map-to-have-a-key-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const mapHasKeySatisfyingAssertion = createAssertion(
+  [
+    MapSchema,
+    [
+      'to have a key satisfying',
+      'to have key satisfying',
+      'to have a prop satisfying',
+      'to have prop satisfying',
+      'to have a property satisfying',
+      'to have property satisfying',
+      'to have a field satisfying',
+      'to have field satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    for (const key of subject.keys()) {
+      if (schema.safeParse(key).success) {
+        return;
+      }
+    }
+    return {
+      message: `Expected Map to have a key satisfying ${inspect(expected)}, but none matched`,
+    };
+  },
+);
+
+/**
+ * Asserts that at least one key in a Map exhaustively matches the expected
+ * value.
+ *
+ * Uses strict deep-equality semantics. Fails on empty Maps.
+ *
+ * @example
+ *
+ * ```ts
+ * const map = new Map([
+ *   [{ id: 1 }, 'a'],
+ *   [{ id: 2 }, 'b'],
+ * ]);
+ * expect(map, 'to have a key exhaustively satisfying', { id: 1 }); // passes
+ * expect(map, 'to have a prop exhaustively satisfying', { id: 1 }); // alias
+ * expect(map, 'to have a field exhaustively satisfying', { id: 2 }); // alias
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor map-to-have-a-key-exhaustively-satisfying-any
+ * @bupkisAssertionCategory collections
+ */
+export const mapHasKeyExhaustivelySatisfyingAssertion = createAssertion(
+  [
+    MapSchema,
+    [
+      'to have a key exhaustively satisfying',
+      'to have key exhaustively satisfying',
+      'to have a prop exhaustively satisfying',
+      'to have prop exhaustively satisfying',
+      'to have a property exhaustively satisfying',
+      'to have property exhaustively satisfying',
+      'to have a field exhaustively satisfying',
+      'to have field exhaustively satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForDeepEqual);
+    for (const key of subject.keys()) {
+      if (schema.safeParse(key).success) {
+        return;
+      }
+    }
+    return {
+      message: `Expected Map to have a key exhaustively satisfying ${inspect(expected)}, but none matched`,
+    };
+  },
+);
+
+// =============================================================================
+// Object key assertions
+// =============================================================================
+
+/**
+ * Asserts that ALL own enumerable string keys of a non-collection object
+ * individually satisfy the expected shape.
+ *
+ * Uses partial/satisfy semantics — every key must match. Empty objects pass
+ * vacuously.
+ *
+ * @remarks
+ * Only considers own enumerable string keys (equivalent to `Object.keys()`).
+ * Symbol keys and non-enumerable keys are not checked.
+ * @example
+ *
+ * ```ts
+ * expect({ foo: 1, bar: 2 }, 'to have keys satisfying', z.string()); // passes
+ * expect({ foo: 1, bar: 2 }, 'to have props satisfying', /^[a-z]+$/); // alias
+ * expect({ foo: 1, bar: 2 }, 'to have fields satisfying', /^[a-z]+$/); // alias
+ * expect({ FOO: 1 }, 'to have keys satisfying', /^[a-z]+$/); // fails
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor object-to-have-keys-satisfying-any
+ * @bupkisAssertionCategory object
+ */
+export const objectKeysSatisfyAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    [
+      'to have keys satisfying',
+      'to have props satisfying',
+      'to have properties satisfying',
+      'to have fields satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    for (const key of keys(subject)) {
+      const result = schema.safeParse(key);
+      if (!result.success) {
+        return {
+          message: `Expected all object keys to satisfy ${inspect(expected)}, but key ${inspect(key)} did not match`,
+        };
+      }
+    }
+    // Empty objects trivially satisfy (vacuous truth)
+  },
+);
+
+/**
+ * Asserts that at least one own enumerable string key of a non-collection
+ * object satisfies the expected shape.
+ *
+ * Uses partial/satisfy semantics. Fails on objects with no own enumerable
+ * string keys.
+ *
+ * @remarks
+ * Only considers own enumerable string keys (equivalent to `Object.keys()`).
+ * Symbol keys and non-enumerable keys are not checked.
+ * @example
+ *
+ * ```ts
+ * expect({ foo: 1, BAR: 2 }, 'to have a key satisfying', /^[a-z]+$/); // passes
+ * expect({ foo: 1 }, 'to have key satisfying', z.string()); // passes
+ * expect({ foo: 1 }, 'to have a prop satisfying', z.string()); // alias
+ * expect({ foo: 1 }, 'to have a field satisfying', z.string()); // alias
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor object-to-have-a-key-satisfying-any
+ * @bupkisAssertionCategory object
+ */
+export const objectHasKeySatisfyingAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    [
+      'to have a key satisfying',
+      'to have key satisfying',
+      'to have a prop satisfying',
+      'to have prop satisfying',
+      'to have a property satisfying',
+      'to have property satisfying',
+      'to have a field satisfying',
+      'to have field satisfying',
+    ],
+    UnknownSchema,
+  ],
+  (subject, expected) => {
+    const schema = valueToSchema(expected, valueToSchemaOptionsForSatisfies);
+    for (const key of keys(subject)) {
+      if (schema.safeParse(key).success) {
+        return;
+      }
+    }
+    return {
+      message: `Expected object to have a key satisfying ${inspect(expected)}, but none matched`,
+    };
+  },
+);
+
+/**
+ * Asserts that ALL own enumerable string keys of a non-collection object match
+ * a regular expression.
+ *
+ * Empty objects pass vacuously.
+ *
+ * @remarks
+ * Only considers own enumerable string keys (equivalent to `Object.keys()`).
+ * Symbol keys and non-enumerable keys are not checked.
+ * @example
+ *
+ * ```ts
+ * expect({ foo: 1, bar: 2 }, 'to have keys matching', /^[a-z]+$/); // passes
+ * expect({ foo: 1, bar: 2 }, 'to have props matching', /^[a-z]+$/); // alias
+ * expect({ foo: 1, bar: 2 }, 'to have fields matching', /^[a-z]+$/); // alias
+ * expect({ foo: 1, Bar: 2 }, 'to have keys matching', /^[a-z]+$/); // fails
+ * expect({}, 'to have keys matching', /anything/); // passes (vacuous)
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor object-to-have-keys-matching-regexp
+ * @bupkisAssertionCategory object
+ */
+export const objectKeysMatchAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    [
+      'to have keys matching',
+      'to have props matching',
+      'to have properties matching',
+      'to have fields matching',
+    ],
+    z.instanceof(RegExp),
+  ],
+  (subject, pattern) => {
+    for (const key of keys(subject)) {
+      if (pattern.global || pattern.sticky) {
+        pattern.lastIndex = 0;
+      }
+      if (!pattern.test(key)) {
+        return {
+          message: `Expected all object keys to match ${inspect(pattern)}, but key ${inspect(key)} did not match`,
+        };
+      }
+    }
+  },
+);
+
+/**
+ * Asserts that at least one own enumerable string key of a non-collection
+ * object matches a regular expression.
+ *
+ * Fails on objects with no own enumerable string keys.
+ *
+ * @remarks
+ * Only considers own enumerable string keys (equivalent to `Object.keys()`).
+ * Symbol keys and non-enumerable keys are not checked.
+ * @example
+ *
+ * ```ts
+ * expect({ foo: 1, BAR: 2 }, 'to have a key matching', /^[a-z]+$/); // passes
+ * expect({ foo: 1, BAR: 2 }, 'to have a prop matching', /^[a-z]+$/); // alias
+ * expect({ foo: 1, BAR: 2 }, 'to have a field matching', /^[a-z]+$/); // alias
+ * expect({ FOO: 1, BAR: 2 }, 'to have a key matching', /^[a-z]+$/); // fails
+ * expect({ foo: 1 }, 'to have key matching', /foo/); // passes
+ * ```
+ *
+ * @function
+ * @group Collection Assertions
+ * @bupkisAnchor object-to-have-a-key-matching-regexp
+ * @bupkisAssertionCategory object
+ */
+export const objectHasKeyMatchingAssertion = createAssertion(
+  [
+    NonCollectionObjectSchema,
+    [
+      'to have a key matching',
+      'to have key matching',
+      'to have a prop matching',
+      'to have prop matching',
+      'to have a property matching',
+      'to have property matching',
+      'to have a field matching',
+      'to have field matching',
+    ],
+    z.instanceof(RegExp),
+  ],
+  (subject, pattern) => {
+    for (const key of keys(subject)) {
+      if (pattern.global || pattern.sticky) {
+        pattern.lastIndex = 0;
+      }
+      if (pattern.test(key)) {
+        return;
+      }
+    }
+    return {
+      message: `Expected object to have a key matching ${inspect(pattern)}, but none matched`,
+    };
   },
 );
