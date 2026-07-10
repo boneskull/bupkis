@@ -390,7 +390,7 @@ expect({}, 'to have keys satisfying', /impossible/); // vacuously true
 
 ```js
 expect({ FOO: 1, bar: 2 }, 'to have keys satisfying', /^[a-z]+$/);
-// AssertionError: Expected all object keys to satisfy …, but key "FOO" did not match
+// AssertionError: Expected all object keys to satisfy …, but key 'FOO' did not match
 ```
 
 **Negation**:
@@ -466,7 +466,7 @@ expect({}, 'to have keys matching', /impossible/); // vacuously true
 
 ```js
 expect({ foo: 1, Bar: 2 }, 'to have keys matching', /^[a-z]+$/);
-// AssertionError: Expected all object keys to match /^[a-z]+$/, but key "Bar" did not match
+// AssertionError: Expected all object keys to match /^[a-z]+$/, but key 'Bar' did not match
 ```
 
 **Negation**:

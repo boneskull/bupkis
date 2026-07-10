@@ -1477,8 +1477,8 @@ export const objectKeysSatisfyAssertion = createAssertion(
 );
 
 /**
- * Asserts that at least one own enumerable string key of a plain object
- * satisfies the expected shape.
+ * Asserts that at least one own enumerable string key of a non-collection
+ * object satisfies the expected shape.
  *
  * Uses partial/satisfy semantics. Fails on objects with no own enumerable
  * string keys.
@@ -1565,7 +1565,9 @@ export const objectKeysMatchAssertion = createAssertion(
   ],
   (subject, pattern) => {
     for (const key of keys(subject)) {
-      pattern.lastIndex = 0;
+      if (pattern.global || pattern.sticky) {
+        pattern.lastIndex = 0;
+      }
       if (!pattern.test(key)) {
         return {
           message: `Expected all object keys to match ${inspect(pattern)}, but key ${inspect(key)} did not match`,
@@ -1576,8 +1578,8 @@ export const objectKeysMatchAssertion = createAssertion(
 );
 
 /**
- * Asserts that at least one own enumerable string key of a plain object matches
- * a regular expression.
+ * Asserts that at least one own enumerable string key of a non-collection
+ * object matches a regular expression.
  *
  * Fails on objects with no own enumerable string keys.
  *
@@ -1616,7 +1618,9 @@ export const objectHasKeyMatchingAssertion = createAssertion(
   ],
   (subject, pattern) => {
     for (const key of keys(subject)) {
-      pattern.lastIndex = 0;
+      if (pattern.global || pattern.sticky) {
+        pattern.lastIndex = 0;
+      }
       if (pattern.test(key)) {
         return;
       }
