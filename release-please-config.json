@@ -7,76 +7,68 @@
     "packages/bupkis": {
       "package-name": "bupkis",
       "changelog-path": "CHANGELOG.md",
-      "component": "bupkis",
-      "release-type": "node"
+      "component": "bupkis"
     },
     "packages/events": {
       "package-name": "@bupkis/events",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/events",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/from-chai": {
       "package-name": "@bupkis/from-chai",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-chai",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/from-assert": {
       "package-name": "@bupkis/from-assert",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-assert",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/from-jest": {
       "package-name": "@bupkis/from-jest",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/from-jest",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/msw": {
       "package-name": "@bupkis/msw",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/msw",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/property-testing": {
       "package-name": "@bupkis/property-testing",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/property-testing",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/rxjs": {
       "package-name": "@bupkis/rxjs",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/rxjs",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/sinon": {
       "package-name": "@bupkis/sinon",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/sinon",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/http": {
+      "package-name": "@bupkis/http",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/http",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     },
     "packages/codemod-core": {
+      "package-name": "@bupkis/codemod-core",
       "changelog-path": "CHANGELOG.md",
       "component": "@bupkis/codemod-core",
-      "initial-version": "0.1.0",
-      "release-type": "node"
+      "initial-version": "0.1.0"
     }
-  }
+  },
+  "plugins": ["node-workspace"]
 }
