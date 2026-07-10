@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.0.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.3...bupkis-v1.0.0) (2026-07-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366))
+
+### Features
+
+* **bupkis:** add new collection assertions ([#466](https://github.com/boneskull/bupkis/issues/466)) ([ea3b7ba](https://github.com/boneskull/bupkis/commit/ea3b7ba5fa663610049145036fc2a98ac59b7d53))
+
+
+### Bug Fixes
+
+* **bupkis:** remove bad actual/expect props from Set/Map "contains" assertion ([94eac33](https://github.com/boneskull/bupkis/commit/94eac3373f4597fc7f6c479b8f65be5507cd51f1))
+
+
+### Miscellaneous Chores
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366)) ([2b28744](https://github.com/boneskull/bupkis/commit/2b287444149b69607a2a87ee2a2b9700c12181be))
+
 ## [0.18.3](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.2...bupkis-v0.18.3) (2026-06-30)
 
 
