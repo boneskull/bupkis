@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.3...@bupkis/from-jest-v1.0.0) (2026-07-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366))
+
+### Miscellaneous Chores
+
+* drop support for Node.js v20.x ([#366](https://github.com/boneskull/bupkis/issues/366)) ([2b28744](https://github.com/boneskull/bupkis/commit/2b287444149b69607a2a87ee2a2b9700c12181be))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bupkis/codemod-core bumped from ^0.1.0 to ^1.0.0
+
 ## [0.3.3](https://github.com/boneskull/bupkis/compare/@bupkis/from-jest-v0.3.2...@bupkis/from-jest-v0.3.3) (2026-06-30)
 
 

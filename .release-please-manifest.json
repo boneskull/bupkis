@@ -1,13 +1,13 @@
 {
-  "packages/bupkis": "0.18.3",
-  "packages/codemod-core": "0.1.2",
-  "packages/events": "0.2.0",
-  "packages/from-assert": "0.1.2",
-  "packages/from-chai": "0.1.3",
-  "packages/from-jest": "0.3.3",
-  "packages/http": "0.1.1",
-  "packages/msw": "0.1.1",
-  "packages/property-testing": "0.2.0",
-  "packages/rxjs": "0.1.0",
-  "packages/sinon": "0.2.0"
+  "packages/bupkis": "1.0.0",
+  "packages/codemod-core": "1.0.0",
+  "packages/events": "1.0.0",
+  "packages/from-assert": "1.0.0",
+  "packages/from-chai": "1.0.0",
+  "packages/from-jest": "1.0.0",
+  "packages/http": "1.0.0",
+  "packages/msw": "1.0.0",
+  "packages/property-testing": "1.0.0",
+  "packages/rxjs": "1.0.0",
+  "packages/sinon": "1.0.0"
 }

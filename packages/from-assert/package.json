@@ -1,6 +1,6 @@
 {
   "name": "@bupkis/from-assert",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "type": "module",
   "description": "Migrate node:assert assertions to bupkis",
   "repository": {
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@boneskull/bargs": "4.1.0",
-    "@bupkis/codemod-core": "^0.1.0",
+    "@bupkis/codemod-core": "^1.0.0",
     "ts-morph": "^28.0.0"
   },
   "devDependencies": {},
