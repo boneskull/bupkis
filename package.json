@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@bupkis/property-testing": "^0.1.0",
-    "@commitlint/cli": "21.1.0",
-    "@commitlint/config-conventional": "21.1.0",
+    "@commitlint/cli": "21.2.0",
+    "@commitlint/config-conventional": "21.2.0",
     "@eslint/js": "10.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@tsconfig/node22": "22.0.5",
