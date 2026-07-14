@@ -52,7 +52,7 @@
     "@types/wallabyjs": "0.0.15",
     "@typescript-eslint/typescript-estree": "8.63.0",
     "@typescript-eslint/utils": "8.63.0",
-    "arktype": "2.2.1",
+    "arktype": "2.2.3",
     "bupkis": "^0.16.0",
     "c8": "11.0.0",
     "cspell": "10.0.1",
