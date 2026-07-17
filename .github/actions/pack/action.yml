@@ -1,0 +1,55 @@
+name: Pack npm workspaces
+description: >
+  Builds and packs one or more npm workspace packages into tarballs, then
+  uploads them as a workflow artifact. Intended to run after checkout and
+  before a separate, isolated publish job.
+
+inputs:
+  paths-released:
+    description: >
+      JSON array of workspace paths to pack
+      (e.g. '["packages/bupkis","packages/sinon"]').
+    required: true
+  node-version:
+    description: Node.js version to use.
+    required: false
+    default: '24.18.0'
+  artifact-name:
+    description: Name of the workflow artifact to upload.
+    required: false
+    default: bupkis-tarballs
+  artifact-retention-days:
+    description: Number of days to retain the uploaded artifact.
+    required: false
+    default: '1'
+
+outputs:
+  files:
+    description: JSON array of tarball filenames (basenames, not full paths).
+    value: ${{ steps.pack.outputs.files }}
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/prepare
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Pack workspaces
+      id: pack
+      shell: bash
+      env:
+        INPUT_PATHS_RELEASED: ${{ inputs.paths-released }}
+        INPUT_OUTDIR: ${{ runner.temp }}/bupkis-pack
+      run: |
+        mkdir -p "$INPUT_OUTDIR"
+        readarray -t workspace_args < <(jq -r '.[] | "--workspace=" + .' <<< "$INPUT_PATHS_RELEASED")
+        echo "Packing workspaces: ${workspace_args[*]}"
+        pack_output=$(npm pack "${workspace_args[@]}" --pack-destination="$INPUT_OUTDIR" --ignore-scripts --json --silent)
+        files=$(jq -c '[.[].filename]' <<< "$pack_output")
+        echo "files=$files" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/bupkis-pack
+        if-no-files-found: error
+        retention-days: ${{ inputs.artifact-retention-days }}
