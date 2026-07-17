@@ -12,30 +12,44 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  publish:
-    name: Run publish action
+  pack:
+    name: Pack workspaces
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
+    permissions: {}
+    outputs:
+      files: ${{ steps.pack.outputs.files }}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
       - name: Convert paths to JSON array
-        id: paths
-        run: |
-          # Convert comma-separated paths to JSON array
-          json=$(echo "$INPUTS_PATHS" | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
-          echo "json=$json" >> "$GITHUB_OUTPUT"
+        id: convert
         shell: bash
         env:
           INPUTS_PATHS: ${{ inputs.paths }}
+        run: |
+          json=$(echo "$INPUTS_PATHS" | jq -cR 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          echo "json=$json" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - id: pack
+        uses: ./.github/actions/pack
+        with:
+          paths-released: ${{ steps.convert.outputs.json }}
+
+  publish:
+    name: Publish workspaces
+    runs-on: ubuntu-latest
+    needs: pack
+    if: needs.pack.result == 'success' && needs.pack.outputs.files != '[]'
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/publish
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          paths-released: ${{ steps.paths.outputs.json }}
+          files: ${{ needs.pack.outputs.files }}
