@@ -49,7 +49,7 @@
     "@tsconfig/node22": "22.0.5",
     "@types/node": "22.20.1",
     "@types/slug": "5.0.9",
-    "@types/wallabyjs": "0.0.15",
+    "@types/wallabyjs": "0.0.16",
     "@typescript-eslint/typescript-estree": "8.64.0",
     "@typescript-eslint/utils": "8.64.0",
     "arktype": "2.2.3",
