@@ -156,10 +156,11 @@ export default defineConfig(
     plugins: {
       '@bupkis': {
         rules: {
+          // @ts-expect-error - TODO: fix this
           'require-function-tag-in-arrow-functions':
-            requireFunctionTagInArrowFunctions as any,
-          'require-intrinsic-destructuring':
-            requireIntrinsicDestructuring as any,
+            requireFunctionTagInArrowFunctions,
+          // @ts-expect-error - TODO: fix this
+          'require-intrinsic-destructuring': requireIntrinsicDestructuring,
         },
       },
     },
