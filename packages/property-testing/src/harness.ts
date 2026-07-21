@@ -8,14 +8,13 @@ import type {
   AnyAssertion,
   AnyAsyncAssertion,
   AnySyncAssertion,
-  AssertionPart,
   AssertionParts,
+  PhraseLiteralChoice,
 } from 'bupkis/types';
 
 import { AssertionError, NegatedAssertionError } from 'bupkis';
 import fc from 'fast-check';
 import { inspect } from 'util';
-import { z } from 'zod';
 
 import {
   type InferPropertyTestConfigVariantProperty,
@@ -128,11 +127,19 @@ export interface ExpectUsingOptions {
  *
  * Contains the expect functions that will be used to test assertions.
  *
+ * The parameters are intentionally typed as `any`: the harness is a deliberate
+ * escape hatch that fires _runtime-generated_ values at `expect`/`expectAsync`,
+ * so it cannot satisfy their compile-time assertion-chain validation (which
+ * "poisons" the subject parameter to reject invalid chains). `any` is the only
+ * type assignable in both directions — from the strict `Expect`/`ExpectAsync`
+ * function values into this slot, and from this slot back out to arbitrary
+ * subject/argument calls inside the harness.
+ *
  * @group Test Harness
  */
 export interface PropertyTestHarnessContext {
-  expect: (value: unknown, ...args: unknown[]) => void;
-  expectAsync: (value: unknown, ...args: unknown[]) => Promise<void>;
+  expect: (value: any, ...args: any[]) => void;
+  expectAsync: (value: any, ...args: any[]) => Promise<void>;
 }
 
 /**
@@ -303,7 +310,6 @@ export const isGeneratorsTuple = (
   isArray(value) &&
   value.length >= 2 &&
   value.every((v) => v instanceof fc.Arbitrary);
-
 /**
  * Extracts phrase literals from assertion parts.
  *
@@ -317,12 +323,23 @@ export const isGeneratorsTuple = (
  */
 export const extractPhrases = (
   assertion: AnyAssertion,
-): readonly [string, ...string[]] =>
-  (assertion.parts as AssertionParts)
-    .filter((part: AssertionPart) => !(part instanceof z.ZodType))
-    .flatMap((part: AssertionPart) =>
-      isArray(part) ? part : [part],
-    ) as unknown as readonly [string, ...string[]];
+): readonly [string, ...string[]] => {
+  const extractedPhrases: string[] = [];
+  for (const part of assertion.parts as AssertionParts) {
+    if (typeof part === 'string') {
+      extractedPhrases.push(part);
+    } else if (Array.isArray(part)) {
+      extractedPhrases.push(...(part as PhraseLiteralChoice));
+    }
+  }
+  const [first, ...rest] = extractedPhrases;
+  if (!first) {
+    throw new ReferenceError(
+      `No phrases extractable in assertion ${assertion}; this is a bug`,
+    );
+  }
+  return [first, ...rest];
+};
 
 /**
  * Extracts variants from a property test configuration.
