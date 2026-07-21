@@ -226,7 +226,10 @@ export const safeRegexStringFilter = (str: string) =>
  */
 export const rejectPassing =
   (
-    expectFn: (value: unknown, ...args: [phrase: string, ...unknown[]]) => void,
+    // `value` is `any` (not `unknown`) so the strict `Expect` function type —
+    // whose subject parameter is "poisoned" to reject invalid assertion chains
+    // at compile time — remains assignable here. See PropertyTestHarnessContext.
+    expectFn: (value: any, ...args: [phrase: string, ...unknown[]]) => void,
   ) =>
   (
     args: readonly [subject: unknown, phrase: string, ...unknown[]],
