@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/boneskull/bupkis/compare/bupkis-v1.0.0...bupkis-v1.1.0) (2026-07-21)
+
+
+### Features
+
+* **bupkis:** allow strict enforcement of assertion phrase types ([e19ac59](https://github.com/boneskull/bupkis/commit/e19ac593c8f0628a94701e84f4ff4a73a6334383))
+
+
+### Bug Fixes
+
+* **deps:** update dependency obug to v2.1.4 ([#486](https://github.com/boneskull/bupkis/issues/486)) ([81bb28d](https://github.com/boneskull/bupkis/commit/81bb28db9adc277ea07e14848fb74c648b3a236a))
+
 ## [1.0.0](https://github.com/boneskull/bupkis/compare/bupkis-v0.18.3...bupkis-v1.0.0) (2026-07-10)
 
 

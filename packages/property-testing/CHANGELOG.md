@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.1](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v1.0.0...@bupkis/property-testing-v1.0.1) (2026-07-21)
+
+
+### Bug Fixes
+
+* **property-testing:** correct types for extracted phrases ([25169ad](https://github.com/boneskull/bupkis/commit/25169ad6dbb8170b701e52c3b44add265878fcd4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * peerDependencies
+    * bupkis bumped from >=0.15.0 to >=1.1.0
+
 ## [1.0.0](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v0.2.0...@bupkis/property-testing-v1.0.0) (2026-07-10)
 
 
