@@ -2,8 +2,8 @@
  * Example node:assert test file for integration testing. This file demonstrates
  * various node:assert assertion patterns.
  */
-import { describe, it } from 'node:test';
 import { expect, expectAsync } from 'bupkis';
+import { describe, it } from 'node:test';
 
 interface User {
   id: number;
@@ -103,7 +103,7 @@ describe('User Service', () => {
     });
 
     it('should handle rejects with Error type', async () => {
-      await expectAsync(asyncReject, 'to reject with', Error);
+      await expectAsync(asyncReject, 'to reject with an', Error);
     });
 
     it('should handle doesNotReject', async () => {
