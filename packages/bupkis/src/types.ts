@@ -418,6 +418,42 @@ export type ExpectItFunction<Parts extends AssertionParts> = (
   : ExpectItExecutor<unknown>;
 
 /**
+ * Union of every phrase literal (and its `'not '`-negated form) that can start
+ * an assertion — i.e. occupy the _leading_ phrase position (the first argument
+ * after the subject) across the assertions in `Assertion`.
+ *
+ * Unlike {@link PhraseSuggestions}, this deliberately excludes _interior_
+ * phrases such as the `'and'` in `'to be between' X 'and' Y` or the
+ * `'satisfying'` in `'to throw a' Ctor 'satisfying' X`, none of which can
+ * legitimately begin an assertion chain. It drives position-0 autocompletion in
+ * {@link ExpectFunction}/{@link ExpectAsyncFunction} so the very first suggestion
+ * list is not polluted by these connectors.
+ *
+ * @group Expect-Related
+ */
+export type LeadingPhraseSuggestions<Assertion extends AnyAssertion> =
+  Assertion extends InvariantOf<infer U extends AnyAssertion>
+    ? LeadingPhraseFromParts<U['parts']>
+    : never;
+
+/**
+ * Union of every phrase literal (and its `'not '`-negated form) contributed by
+ * the assertions in `Assertion`.
+ *
+ * Used purely to drive editor autocompletion for the `phrase` parameters of
+ * {@link ExpectFunction}/{@link ExpectAsyncFunction}. It is wrapped in
+ * {@link LiteralStringUnion} at the use site so that the suggestions surface
+ * while _any_ string is still accepted. The assertion chain itself is validated
+ * by the `value` gate; never here.
+ *
+ * @group Expect-Related
+ */
+export type PhraseSuggestions<Assertion extends AnyAssertion> =
+  Assertion extends InvariantOf<infer U extends AnyAssertion>
+    ? PhrasesFromParts<U['parts']>
+    : never;
+
+/**
  * Validates an entire assertion chain (one or more assertions joined by
  * `'and'`) against the available assertions, producing the type the subject
  * value must satisfy.
@@ -462,25 +498,6 @@ type LeadingPhraseFromParts<Parts extends readonly unknown[]> =
     : never;
 
 /**
- * Union of every phrase literal (and its `'not '`-negated form) that can start
- * an assertion — i.e. occupy the _leading_ phrase position (the first argument
- * after the subject) across the assertions in `Assertion`.
- *
- * Unlike {@link PhraseSuggestions}, this deliberately excludes _interior_
- * phrases such as the `'and'` in `'to be between' X 'and' Y` or the
- * `'satisfying'` in `'to throw a' Ctor 'satisfying' X`, none of which can
- * legitimately begin an assertion chain. It drives position-0 autocompletion in
- * {@link ExpectFunction}/{@link ExpectAsyncFunction} so the very first suggestion
- * list is not polluted by these connectors.
- *
- * @group Expect-Related
- */
-type LeadingPhraseSuggestions<Assertion extends AnyAssertion> =
-  Assertion extends InvariantOf<infer U extends AnyAssertion>
-    ? LeadingPhraseFromParts<U['parts']>
-    : never;
-
-/**
  * Converts a single {@link AssertionPart} into the phrase literals it
  * contributes (the literal itself plus its {@link Negation}). Non-phrase parts
  * resolve to `never`.
@@ -505,23 +522,6 @@ type PhrasePartToLiteral<Part> = Part extends readonly string[]
 type PhrasesFromParts<Parts extends readonly unknown[]> =
   Parts extends readonly [infer First, ...infer Rest]
     ? PhrasePartToLiteral<First> | PhrasesFromParts<Rest>
-    : never;
-
-/**
- * Union of every phrase literal (and its `'not '`-negated form) contributed by
- * the assertions in `Assertion`.
- *
- * Used purely to drive editor autocompletion for the `phrase` parameters of
- * {@link ExpectFunction}/{@link ExpectAsyncFunction}. It is wrapped in
- * {@link LiteralStringUnion} at the use site so that the suggestions surface
- * while _any_ string is still accepted — the assertion chain itself is
- * validated by the `value` gate ({@link AssertValidChain}), never here.
- *
- * @group Expect-Related
- */
-type PhraseSuggestions<Assertion extends AnyAssertion> =
-  Assertion extends InvariantOf<infer U extends AnyAssertion>
-    ? PhrasesFromParts<U['parts']>
     : never;
 
 /**
@@ -782,7 +782,7 @@ export type FailFn = (reason?: string) => never;
  *
  * @template MixedAssertions - Array that may contain both sync and async
  *   assertions
- * @see {@link FilterSyncAssertions} for extracting synchronous assertions
+ * @see {@link FilterAndWrapSyncAssertions} for extracting synchronous assertions
  * @see {@link UseFn} for the primary use case of this type
  */
 export type FilterAndWrapAsyncAssertions<
