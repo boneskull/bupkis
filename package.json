@@ -92,7 +92,7 @@
     "zshy": "0.7.3"
   },
   "overrides": {
-    "conventional-commits-parser": "7.1.0"
+    "conventional-commits-parser": "7.1.1"
   },
   "knip": {
     "ignoreDependencies": [
