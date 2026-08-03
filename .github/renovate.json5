@@ -31,6 +31,20 @@
       matchPackageNames: ['ghcr.io/zizmorcore/zizmor'],
       minimumReleaseAge: '3 days',
     },
+    {
+      matchManagers: ['npm'],
+      patch: {
+        automerge: true,
+      },
+      minor: {
+        automerge: true,
+      },
+      pin: {
+        automerge: true,
+      },
+      separateMinorPatch: true,
+      matchDepTypes: ['devDependencies'],
+    },
   ],
   ignorePaths: [
     '**/node_modules/**',
