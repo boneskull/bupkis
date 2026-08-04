@@ -44,6 +44,16 @@ This is the monorepo for [**BUPKIS**][docs], the _uncommonly extensible assertio
 - [**BUPKIS** on npm][npm]
 - [**BUPKIS** on GitHub][GitHub]
 
+## Contributors
+
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- prettier-ignore-end -->
+<!-- markdownlint-restore -->
+
 ## ~~Slop~~ AI Usage Disclosure
 
 The `bupkis` package itself is very much the work of a human ([boneskull][])
