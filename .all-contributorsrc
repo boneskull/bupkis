@@ -1,0 +1,24 @@
+{
+  "projectName": "gh-stack",
+  "projectOwner": "boneskull",
+  "files": ["README.md"],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "boneskull",
+      "name": "Christopher Hiller",
+      "avatar_url": "https://avatars.githubusercontent.com/u/924465?v=4",
+      "profile": "https://github.com/boneskull",
+      "contributions": ["maintenance"]
+    },
+    {
+      "login": "JacobLey",
+      "name": "Jacob Ley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37151850?v=4",
+      "profile": "https://github.com/JacobLey",
+      "contributions": ["code"]
+    }
+  ]
+}
