@@ -104,6 +104,14 @@ export interface PropertyTestConfig extends PropertyTestConfigParameters {
  */
 export interface PropertyTestConfigParameters extends Parameters<any> {
   numRuns?: never;
+  /**
+   * Type of random number generator to use.
+   *
+   * @remarks
+   * Omits ability to provide a builder function from `pure-rand` to avoid
+   * entraining a direct production dependency on `pure-rand`.
+   */
+  randomType?: fc.RandomType;
   runSize?: 'large' | 'medium' | 'small' | undefined;
 }
 
