@@ -64,7 +64,7 @@
     "eslint-plugin-prefer-arrow-functions": "3.10.2",
     "eslint-plugin-zod": "4.9.1",
     "fast-check": "4.5.3",
-    "globals": "17.9.0",
+    "globals": "17.10.0",
     "husky": "9.1.7",
     "installed-check": "11.0.0",
     "knip": "6.32.2",
