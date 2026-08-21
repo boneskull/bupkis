@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v1.0.1...@bupkis/property-testing-v1.0.2) (2026-08-21)
+
+
+### Bug Fixes
+
+* **property-testing:** deny ability to provide a builder function for randomType ([7bfef6d](https://github.com/boneskull/bupkis/commit/7bfef6d25f84129da3c5980433fb56abbbc41563))
+
 ## [1.0.1](https://github.com/boneskull/bupkis/compare/@bupkis/property-testing-v1.0.0...@bupkis/property-testing-v1.0.1) (2026-08-04)
 
 
