@@ -61,7 +61,7 @@
     "cross-env": "10.1.0",
     "jest": "30.4.2",
     "ts-jest": "29.4.12",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "publishConfig": {
     "access": "public",
