@@ -7,8 +7,7 @@ import {
   type AssertionError,
   type AssertionFailure,
   type AssertionImplementationError,
-  type Bupkis,
-  type BupkisError,
+  BupkisError,
   createAssertion,
   type CreateAssertionFn,
   createAsyncAssertion,
@@ -25,12 +24,12 @@ import {
   type SatisfactionError,
   type UnexpectedAsyncError,
   type UnknownAssertionError,
-  use,
   type UseFn,
   z,
 } from 'bupkis';
+import type { AssertionError as NodeAssertionError } from 'node:assert';
 import { describe, it } from 'node:test';
-import { expectAssignable, expectType } from 'tsd';
+import { expectAssignable, expectError, expectType } from 'tsd';
 
 describe('expect', () => {
   it('should be a function', () => {
@@ -60,9 +59,12 @@ describe('expect', () => {
     const matches = expect.it('to match', /test/);
     const isArray = expect.it('to be an array');
 
-    // Verify return types are properly typed ExpectItExecutor functions
+    // Verify return types are properly typed ExpectItExecutor functions.
+    // Executors are widened to the union of subject inputs across every
+    // assertion sharing the leading phrase, since the runtime executor
+    // dispatches by subject shape (see SubjectUnionForPhrases).
     expectType<(subject: unknown) => void>(isString);
-    expectType<(subject: number) => void>(isGreaterThan);
+    expectType<(subject: number | string) => void>(isGreaterThan);
     expectType<(subject: string) => void>(matches);
     expectType<(subject: unknown) => void>(isArray);
 
@@ -94,17 +96,31 @@ describe('expectAsync', () => {
 
   it('should have it property for deferred async assertions', () => {
     // Test that expectAsync.it accepts various assertion signatures
-    const isString = expectAsync.it('to be a string');
     const resolves = expectAsync.it('to resolve');
     const rejectsWith = expectAsync.it('to reject with a', TypeError);
 
     // Verify return types are properly typed ExpectItExecutorAsync functions
-    expectType<(subject: unknown) => Promise<void>>(isString);
-    expectType<(subject: Promise<unknown>) => Promise<void>>(resolves);
-    expectType<(subject: Promise<unknown>) => Promise<void>>(rejectsWith);
+    expectAssignable<(subject: PromiseLike<unknown>) => Promise<void>>(
+      resolves,
+    );
+    expectAssignable<
+      (
+        subject: (...args: readonly unknown[] | unknown[]) => unknown,
+      ) => Promise<void>
+    >(resolves);
+    expectAssignable<(subject: PromiseLike<unknown>) => Promise<void>>(
+      rejectsWith,
+    );
+    expectAssignable<
+      (
+        subject: (...args: readonly unknown[] | unknown[]) => unknown,
+      ) => Promise<void>
+    >(rejectsWith);
 
     // Verify expectAsync.it itself has proper overload signatures
     expectAssignable<typeof expectAsync.it>(expectAsync.it);
+
+    expectAsync(Promise.resolve('foo'), 'to resolve');
   });
 });
 
@@ -849,7 +865,7 @@ describe('Promise Assertions (Async)', () => {
 
 describe('createAssertion', () => {
   it('should be a function that creates sync assertions', () => {
-    expectType<CreateAssertionFn>(createAssertion);
+    expectAssignable<CreateAssertionFn>(createAssertion);
   });
 
   it('should create assertion from phrase and schema', () => {
@@ -878,17 +894,7 @@ describe('createAssertion', () => {
 
 describe('createAsyncAssertion', () => {
   it('should be a function that creates async assertions', () => {
-    expectType<CreateAsyncAssertionFn>(createAsyncAssertion);
-  });
-});
-
-describe('use', () => {
-  it('should extend expect with custom assertions', () => {
-    const customAssertion = createAssertion(['to be a Foo'], () => true);
-    const result = use([customAssertion]);
-    expectAssignable<Bupkis<any, any, any, any>>(result);
-    expectAssignable<Expect>(result.expect);
-    expectAssignable<ExpectAsync>(result.expectAsync);
+    expectAssignable<CreateAsyncAssertionFn>(createAsyncAssertion);
   });
 });
 
@@ -909,7 +915,7 @@ describe('z', () => {
 describe('Error classes', () => {
   it('AssertionError should have required properties', () => {
     const err = {} as AssertionError;
-    expectAssignable<Error>(err);
+    expectAssignable<NodeAssertionError>(err);
     expectAssignable<string>(err.assertionId);
   });
 
@@ -961,7 +967,7 @@ describe('Error classes', () => {
   });
 });
 
-describe('Types', () => {
+describe('Type Safety', () => {
   it('AssertionFailure should describe failure shape', () => {
     const failure: AssertionFailure = {
       message: 'test',
@@ -969,9 +975,162 @@ describe('Types', () => {
     expectType<AssertionFailure>(failure);
   });
 
-  it('Bupkis should define the main API structure', () => {
-    const api = use([]);
-    expectAssignable<Bupkis<any, any>>(api);
-    expectAssignable<{ expect: Expect; expectAsync: ExpectAsync }>(api);
+  it('abstract class should work with "to be a" assertion', () => {
+    abstract class Foo {}
+
+    class Bar extends Foo {}
+
+    class Baz extends Bar {}
+
+    const err1 = new Bar();
+    expect(err1, 'to be a', Foo);
+
+    const err2 = new Baz();
+    expect(err2, 'to be an', Bar);
+  });
+});
+
+describe('Strict phrase enforcement', () => {
+  describe('expect', () => {
+    it('should accept valid phrases', () => {
+      expectType<void>(expect(42, 'to be a number'));
+      expectType<void>(expect(5, 'to be greater than', 3));
+      expectType<void>(expect('foo', 'not to be a number'));
+    });
+
+    it('should reject unknown phrases', () => {
+      expectError(expect(42, 'to do something impossible'));
+    });
+
+    it('should reject a phrase missing its required parameter', () => {
+      expectError(expect(42, 'to equal'));
+    });
+
+    it('should reject a parameter of the wrong type', () => {
+      // 'to be greater than' accepts numbers (and strings, via a sibling
+      // assertion), so only a parameter that no overload takes is rejected
+      expectError(expect(5, 'to be greater than', {}));
+    });
+
+    it('should reject extra trailing arguments', () => {
+      expectError(expect(42, 'to be a number', 'oops'));
+    });
+
+    it('should accept valid "and" chains', () => {
+      expectType<void>(
+        expect(5, 'to be greater than', 3, 'and', 'to be less than', 10),
+      );
+      expectType<void>(
+        expect('foo', 'to be a string', 'and', 'to start with', 'f'),
+      );
+    });
+
+    it('should reject a dangling "and"', () => {
+      expectError(expect(13, 'to equal', 13, 'and'));
+    });
+
+    it('should reject "and" followed by a non-phrase', () => {
+      expectError(expect(13, 'to equal', 13, 'and', 42));
+    });
+
+    it('should reject "and" followed by an unknown phrase', () => {
+      expectError(expect(13, 'to equal', 13, 'and', 'not a real assertion'));
+    });
+
+    it('should reject chains of mutually exclusive assertions', () => {
+      // numbers have no "to end with"; strings have no "to be greater than"
+      expectError(
+        expect(5, 'to be greater than', 3, 'and', 'to end with', 'x'),
+      );
+    });
+
+    it('should reject async assertions', () => {
+      expectError(expect(Promise.resolve(1), 'to resolve'));
+    });
+  });
+
+  describe('expectAsync', () => {
+    it('should accept valid phrases', () => {
+      expectType<Promise<void>>(expectAsync(Promise.resolve(1), 'to resolve'));
+    });
+
+    it('should reject unknown phrases', () => {
+      expectError(
+        expectAsync(Promise.resolve(1), 'to do something impossible'),
+      );
+    });
+
+    it('should reject sync assertions', () => {
+      expectError(expectAsync(42, 'to be a number'));
+    });
+  });
+
+  describe('expect.use()', () => {
+    const toBeCustomThing = createAssertion(
+      ['to be custom thing'],
+      (subject) => subject === 'custom',
+    );
+    const toBeCustomAsyncThing = createAsyncAssertion(
+      [z.string(), 'to be async custom thing'],
+      async (subject) => subject === 'custom',
+    );
+
+    it('should accept the custom phrase (and its negation)', () => {
+      const { expect: customExpect } = expect.use([toBeCustomThing]);
+      expectType<void>(customExpect('custom', 'to be custom thing'));
+      expectType<void>(customExpect('custom', 'not to be custom thing'));
+    });
+
+    it('should reject phrases the custom assertion does not define', () => {
+      const { expect: customExpect } = expect.use([toBeCustomThing]);
+      expectError(customExpect('custom', 'to be coztum thing'));
+    });
+
+    it('should retain builtin phrases', () => {
+      const { expect: customExpect } = expect.use([toBeCustomThing]);
+      expectType<void>(customExpect(42, 'to be a number'));
+    });
+
+    it('should not leak custom phrases into the original expect', () => {
+      expect.use([toBeCustomThing]);
+      expectError(expect('custom', 'to be custom thing'));
+    });
+
+    it('should accumulate phrases across chained use() calls', () => {
+      const toBeOtherThing = createAssertion(
+        ['to be other thing'],
+        (subject) => subject === 'x',
+      );
+      const { expect: chainedExpect } = expect
+        .use([toBeCustomThing])
+        .use([toBeOtherThing]);
+      expectType<void>(chainedExpect('custom', 'to be custom thing'));
+      expectType<void>(chainedExpect('x', 'to be other thing'));
+      expectError(chainedExpect('x', 'to be neither thing'));
+    });
+
+    it('should route async custom assertions only to expectAsync', () => {
+      const { expect: customExpect, expectAsync: customExpectAsync } =
+        expect.use([toBeCustomAsyncThing]);
+      expectType<Promise<void>>(
+        customExpectAsync('custom', 'to be async custom thing'),
+      );
+      expectError(customExpect('custom', 'to be async custom thing'));
+    });
+
+    it('should route sync custom assertions only to expect', () => {
+      const { expectAsync: customExpectAsync } = expect.use([toBeCustomThing]);
+      expectError(customExpectAsync('custom', 'to be custom thing'));
+    });
+  });
+
+  describe('expect.it()', () => {
+    it('should reject unknown phrases', () => {
+      expectError(expect.it('to do something impossible'));
+    });
+
+    it('should reject async phrases', () => {
+      expectError(expect.it('to resolve'));
+    });
   });
 });

@@ -170,7 +170,7 @@ exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a boolean' / 
 
 exports[`Sync Basic Assertion Error Snapshots > \"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\" [unknown-to-be-a-class-to-be-a-constructor-to-be-constructible-2s1p] > should throw a consistent AssertionError [unknown-to-be-a-class-to-be-a-constructor-to-be-constructible-2s1p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\" failed:\\nInvalid input",
+  "message": "Assertion \\"{unknown} 'to be a class' / 'to be a constructor' / 'to be constructible'\\" failed:\\nmust be a constructor, class, or a non-arrow function",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
