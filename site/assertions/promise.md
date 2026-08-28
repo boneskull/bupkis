@@ -110,6 +110,12 @@ await expectAsync(
 
 ### {Promise} to reject with error satisfying {any}
 
+> ✏️ Aliases:
+>
+>     {Promise} to reject with error satisfying {any}
+>     {Promise} to be rejected with error satisfying {any}
+>     {Promise} to reject with {any}
+
 > 👉 See [`{object} to satisfy {any}`](object.md#object-to-satisfy-any)
 
 **Success**:
@@ -119,6 +125,12 @@ await expectAsync(
 await expectAsync(
   Promise.reject(new Error('Specific error')),
   'to reject with',
+  'Specific error',
+);
+
+await expectAsync(
+  Promise.reject(new Error('Specific error')),
+  'to reject with error satisfying',
   'Specific error',
 );
 

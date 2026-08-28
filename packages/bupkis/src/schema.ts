@@ -45,6 +45,7 @@ import {
 } from './guards.js';
 import { BupkisRegistry } from './metadata.js';
 import {
+  type Class,
   type Constructor,
   type Keypath,
   type MutableOrReadonly,
@@ -103,6 +104,21 @@ export const ConstructibleSchema = z
   .custom<Constructor>(isConstructible)
   .register(BupkisRegistry, { name: 'constructible' })
   .meta({ description: 'Constructible Function' });
+
+/**
+ * A Zod schema that parses a thing that looks like a class.
+ *
+ * Unlike {@link ConstructibleSchema}, this schema supports "abstract" classes,
+ * which are not considered constructible by TypeScript, but which _are_
+ * constructible at runtime.
+ *
+ * @group Schema
+ * @see {@link ConstructibleSchema}
+ */
+export const ClassSchema = z
+  .custom<Class>(isConstructible)
+  .register(BupkisRegistry, { name: 'class' })
+  .meta({ description: 'Class' });
 
 /**
  * A Zod schema that validates any JavaScript function.
