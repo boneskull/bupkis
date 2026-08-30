@@ -68,7 +68,7 @@
     "husky": "9.1.7",
     "installed-check": "11.0.0",
     "knip": "6.32.3",
-    "lint-staged": "17.3.0",
+    "lint-staged": "17.4.1",
     "markdownlint-cli2": "0.23.2",
     "markdownlint-cli2-formatter-pretty": "0.0.10",
     "modestbench": "0.9.3",
