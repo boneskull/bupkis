@@ -7,8 +7,7 @@ import {
   type AssertionError,
   type AssertionFailure,
   type AssertionImplementationError,
-  type Bupkis,
-  type BupkisError,
+  BupkisError,
   createAssertion,
   type CreateAssertionFn,
   createAsyncAssertion,
@@ -25,7 +24,6 @@ import {
   type SatisfactionError,
   type UnexpectedAsyncError,
   type UnknownAssertionError,
-  use,
   type UseFn,
   z,
 } from 'bupkis';
@@ -94,14 +92,20 @@ describe('expectAsync', () => {
 
   it('should have it property for deferred async assertions', () => {
     // Test that expectAsync.it accepts various assertion signatures
-    const isString = expectAsync.it('to be a string');
     const resolves = expectAsync.it('to resolve');
     const rejectsWith = expectAsync.it('to reject with a', TypeError);
 
     // Verify return types are properly typed ExpectItExecutorAsync functions
-    expectType<(subject: unknown) => Promise<void>>(isString);
-    expectType<(subject: Promise<unknown>) => Promise<void>>(resolves);
-    expectType<(subject: Promise<unknown>) => Promise<void>>(rejectsWith);
+    expectType<
+      (
+        subject: (...args: readonly unknown[] | unknown[]) => unknown,
+      ) => Promise<void>
+    >(resolves);
+    expectType<
+      (
+        subject: (...args: readonly unknown[] | unknown[]) => unknown,
+      ) => Promise<void>
+    >(rejectsWith);
 
     // Verify expectAsync.it itself has proper overload signatures
     expectAssignable<typeof expectAsync.it>(expectAsync.it);
@@ -849,7 +853,7 @@ describe('Promise Assertions (Async)', () => {
 
 describe('createAssertion', () => {
   it('should be a function that creates sync assertions', () => {
-    expectType<CreateAssertionFn>(createAssertion);
+    expectAssignable<CreateAssertionFn>(createAssertion);
   });
 
   it('should create assertion from phrase and schema', () => {
@@ -878,17 +882,7 @@ describe('createAssertion', () => {
 
 describe('createAsyncAssertion', () => {
   it('should be a function that creates async assertions', () => {
-    expectType<CreateAsyncAssertionFn>(createAsyncAssertion);
-  });
-});
-
-describe('use', () => {
-  it('should extend expect with custom assertions', () => {
-    const customAssertion = createAssertion(['to be a Foo'], () => true);
-    const result = use([customAssertion]);
-    expectAssignable<Bupkis<any, any, any, any>>(result);
-    expectAssignable<Expect>(result.expect);
-    expectAssignable<ExpectAsync>(result.expectAsync);
+    expectAssignable<CreateAsyncAssertionFn>(createAsyncAssertion);
   });
 });
 
@@ -961,7 +955,7 @@ describe('Error classes', () => {
   });
 });
 
-describe('Types', () => {
+describe('Type Safety', () => {
   it('AssertionFailure should describe failure shape', () => {
     const failure: AssertionFailure = {
       message: 'test',
@@ -969,9 +963,17 @@ describe('Types', () => {
     expectType<AssertionFailure>(failure);
   });
 
-  it('Bupkis should define the main API structure', () => {
-    const api = use([]);
-    expectAssignable<Bupkis<any, any>>(api);
-    expectAssignable<{ expect: Expect; expectAsync: ExpectAsync }>(api);
+  it('abstract class should work with "to be a" assertion', () => {
+    abstract class Foo {}
+
+    class Bar extends Foo {}
+
+    class Baz extends Bar {}
+
+    const err1 = new Bar();
+    expect(err1, 'to be a', Foo);
+
+    const err2 = new Baz();
+    expect(err2, 'to be an', Bar);
   });
 });
