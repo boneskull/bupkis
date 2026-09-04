@@ -7,7 +7,7 @@
   "packages/from-jest": "1.0.0",
   "packages/http": "1.0.0",
   "packages/msw": "1.0.0",
-  "packages/property-testing": "1.0.1",
+  "packages/property-testing": "1.0.2",
   "packages/rxjs": "1.0.0",
   "packages/sinon": "1.0.0"
 }
