@@ -89,7 +89,7 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.69.0",
     "valibot": "1.4.2",
-    "zshy": "0.7.3"
+    "zshy": "0.8.0"
   },
   "overrides": {
     "conventional-commits-parser": "7.1.2"
