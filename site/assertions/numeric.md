@@ -243,11 +243,19 @@ expect(3.14, 'not to be an integer');
 
 ### {unknown} to be greater than {number}
 
+> ✏️ Aliases:
+>
+>     {unknown} to be greater than {number}
+>     {unknown} to be gt {number}
+>     {unknown} to be above {number}
+
 **Success**:
 
 ```js
 expect(10, 'to be greater than', 5);
 expect(3.14, 'to be greater than', 3);
+expect(10, 'to be gt', 5);
+expect(10, 'to be above', 5);
 ```
 
 **Failure**:
@@ -269,12 +277,15 @@ expect(5, 'not to be greater than', 10);
 >
 >     {unknown} to be less than {number}
 >     {unknown} to be lt {number}
+>     {unknown} to be below {number}
 
 **Success**:
 
 ```js
 expect(5, 'to be less than', 10);
 expect(3, 'to be less than', 3.14);
+expect(5, 'to be lt', 10);
+expect(5, 'to be below', 10);
 ```
 
 **Failure**:

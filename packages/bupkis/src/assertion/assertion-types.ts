@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Core type definitions for the assertion system.
  *
@@ -887,6 +888,13 @@ export type BuiltinSyncAssertionsListAndMore = readonly [
 ];
 
 /**
+ * A "class-like" type. Not necessarily constructible.
+ *
+ * @group Utility Types
+ */
+export type Class = typeof Class_;
+
+/**
  * The main factory function for creating synchronous assertions.
  *
  * @group Core API
@@ -1032,7 +1040,6 @@ export type InvariantAssertions<T extends readonly AnyAssertion[]> =
   TupleToUnion<{
     [K in keyof T]: InvariantOf<T[K]>;
   }>;
-
 /**
  * The set of async assertions that are installed by default.
  *
@@ -1058,6 +1065,7 @@ export type InvariantBuiltinAsyncAssertions = InvariantAssertions<
 export type InvariantBuiltinSyncAssertions = InvariantAssertions<
   typeof SyncAssertions
 >;
+
 /**
  * Utility type for parsed values that may be empty.
  *
@@ -1292,7 +1300,6 @@ export type ParsedValues<Parts extends AssertionParts = AssertionParts> =
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type Phrase = PhraseLiteral | PhraseLiteralChoice;
-
 /**
  * Type representing a single phrase literal string.
  *
@@ -1322,7 +1329,6 @@ export type Phrase = PhraseLiteral | PhraseLiteralChoice;
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type PhraseLiteral = string;
-
 /**
  * Type representing a choice between multiple phrase literals.
  *
@@ -1353,6 +1359,7 @@ export type PhraseLiteral = string;
  * @see {@link AssertionPart} for how phrases fit into assertion structure
  */
 export type PhraseLiteralChoice = NonEmptyTuple<string>;
+
 /**
  * Branded Zod type representing a compiled choice phrase slot.
  *
@@ -1374,6 +1381,7 @@ export type PhraseLiteralChoiceSlot<H extends readonly [string, ...string[]]> =
   z.core.$ZodBranded<z.ZodType, 'string-literal'> & {
     readonly __values: H;
   };
+
 /**
  * Branded Zod type representing a compiled phrase literal slot.
  *
@@ -1463,3 +1471,12 @@ type PartsToArgs<Parts extends AssertionPartsShared> = Parts extends readonly [
       },
     ]
   : never;
+
+/**
+ * Only used to derive {@link Class}.
+ *
+ * @see {@link Class}
+ */
+abstract class Class_ {
+  constructor(..._args: any[]) {}
+}
