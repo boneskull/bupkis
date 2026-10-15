@@ -331,7 +331,11 @@ export const functionRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
 export const promiseRejectWithErrorSatisfyingAssertion = createAsyncAssertion(
   [
     WrappedPromiseLikeSchema,
-    ['to reject with error satisfying', 'to be rejected with error satisfying'],
+    [
+      'to reject with error satisfying',
+      'to be rejected with error satisfying',
+      'to reject with',
+    ],
     UnknownSchema,
   ],
   async (subject, param) => {

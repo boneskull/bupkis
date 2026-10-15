@@ -215,6 +215,7 @@ HTTP response assertions for bupkis. Works with supertest, superagent, fetch, ax
 - Uses Node.js built-in `node:test` with `describe`/`it` structure
 - Write tests in TypeScript with `tsx` for execution
 - BDD-style descriptions: "should do X when Y"
+- `tsd` is used for checks of the type system within `bupkis`. To run these, run `npm run test:types` in the `bupkis` workspace.
 
 ### Property-Based Testing
 
@@ -231,6 +232,7 @@ HTTP response assertions for bupkis. Works with supertest, superagent, fetch, ax
 - `test/assertion-error/` - Error formatting tests with snapshots
 - `test/property/` - Property-based tests
 - `test/integration/` - Integration tests (CJS/ESM compatibility)
+- `test-d/` - `tsd` tests
 
 ## Code Style Requirements -- **CRITICAL**
 
