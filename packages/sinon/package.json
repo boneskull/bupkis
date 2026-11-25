@@ -57,7 +57,7 @@
     "sinon": ">=17.0.0"
   },
   "devDependencies": {
-    "@types/sinon": "22.0.0",
+    "@types/sinon": "22.0.2",
     "sinon": "22.1.0"
   },
   "publishConfig": {
