@@ -46,7 +46,7 @@
     "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "10.0.1",
     "@stylistic/eslint-plugin": "6.0.1",
-    "@tsconfig/node22": "22.0.6",
+    "@tsconfig/node22": "22.0.7",
     "@types/node": "22.20.5",
     "@types/slug": "5.0.9",
     "@types/wallabyjs": "0.0.16",
