@@ -402,20 +402,71 @@ export type ExpectFunction<SyncAssertion extends AnySyncAssertion> = ((
  */
 export type ExpectIt<
   SyncAssertion extends AnySyncAssertion = InvariantBuiltinSyncAssertions,
+> = ExpectItFromUnion<SyncAssertion, SyncAssertion>;
+
+/**
+ * Distributive helper for {@link ExpectIt}: distributes over `Current`
+ * (per-assertion overload generation) while retaining the full `All` union
+ * separately so {@link SubjectUnionForPhrases} can scan every sibling assertion
+ * regardless of which distributed member is currently being visited.
+ *
+ * Not intended for direct consumption; use {@link ExpectIt} instead.
+ */
+export type ExpectItFromUnion<
+  Current extends AnySyncAssertion,
+  All extends AnySyncAssertion,
 > = UnionToIntersection<
-  SyncAssertion extends InvariantOf<infer U extends AnySyncAssertion>
-    ? ExpectItFunction<U['parts']>
+  Current extends InvariantOf<infer U extends AnySyncAssertion>
+    ? ExpectItFunction<U['parts'], All>
     : never
 >;
 
 /**
  * The function part of {@link ExpectIt}.
+ *
+ * Because `UnionToIntersection` only lets TypeScript match a single call
+ * signature at a time during assignability, sibling assertions that share the
+ * same leading phrase (e.g. sync `'to satisfy'`) would otherwise fight over
+ * which one wins the overload resolution and leak their specific subject schema
+ * into the executor return type. We instead union subjects across all
+ * assertions whose leading phrases overlap, so every candidate overload for a
+ * given `.it(phrase, ...)` call returns the same widened
+ * {@link ExpectItExecutor}.
+ *
+ * @template Parts - Assertion parts contributing this overload's arg tuple
+ * @template AllAssertions - Full assertion union used to compute the subject
  */
-export type ExpectItFunction<Parts extends AssertionParts> = (
+export type ExpectItFunction<
+  Parts extends AssertionParts,
+  AllAssertions extends AnyAssertion = AnyAssertion,
+> = (
   ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
-) => Parts[0] extends StandardSchemaV1<infer Input>
-  ? ExpectItExecutor<Input>
-  : ExpectItExecutor<unknown>;
+) => ExpectItExecutor<
+  SubjectUnionForPhrases<AllAssertions, LeadingPhraseFromParts<Parts>>
+>;
+
+/**
+ * Extracts the phrase literal(s) that may occupy the _leading_ phrase position
+ * of an assertion — the first argument immediately after the subject in an
+ * `expect()`/`expectAsync()` call.
+ *
+ * The leading phrase is `Parts[0]` for phrase-first assertions (both single
+ * {@link PhraseLiteral | literals} and {@link PhraseLiteralChoice | choices}) and
+ * `Parts[1]` for subject-first assertions, where `Parts[0]` is the subject
+ * schema. The `readonly string[]` branch is what lets `const`-captured choice
+ * tuples be recognized as phrases (they are not assignable to the mutable
+ * {@link PhraseLiteralChoice}). Non-phrase parts resolve to `never`.
+ *
+ * @template Parts - The assertion parts to inspect
+ */
+export type LeadingPhraseFromParts<Parts extends readonly unknown[]> =
+  Parts extends readonly [infer First, ...infer Rest]
+    ? First extends readonly string[] | string
+      ? PhrasePartToLiteral<First>
+      : Rest extends readonly [infer Second, ...unknown[]]
+        ? PhrasePartToLiteral<Second>
+        : never
+    : never;
 
 /**
  * Union of every phrase literal (and its `'not '`-negated form) that can start
@@ -454,6 +505,34 @@ export type PhraseSuggestions<Assertion extends AnyAssertion> =
     : never;
 
 /**
+ * Union of subject-input types drawn from every assertion in `AllAssertions`
+ * whose leading phrase overlaps with `Phrases`.
+ *
+ * When two assertions share a leading phrase (for example
+ * `functionResolveAssertion` and `promiseResolveAssertion` both accept `'to
+ * resolve'`), the runtime `.it('to resolve')` executor dispatches to whichever
+ * matches the actual subject shape. This type mirrors that reality at the type
+ * level by widening the subject to a union of every possible input.
+ *
+ * @template AllAssertions - Full assertion union to scan
+ * @template Phrases - Leading phrase literal(s) contributed by the current
+ *   assertion (typically `LeadingPhraseFromParts<CurrentParts>`)
+ */
+export type SubjectUnionForPhrases<
+  AllAssertions extends AnyAssertion,
+  Phrases extends string,
+> =
+  AllAssertions extends InvariantOf<infer U extends AnyAssertion>
+    ? U['parts'] extends AssertionParts
+      ? [LeadingPhraseFromParts<U['parts']> & Phrases] extends [never]
+        ? never
+        : U['parts'][0] extends StandardSchemaV1<infer Input>
+          ? Input
+          : unknown
+      : never
+    : never;
+
+/**
  * Validates an entire assertion chain (one or more assertions joined by
  * `'and'`) against the available assertions, producing the type the subject
  * value must satisfy.
@@ -473,29 +552,6 @@ type AssertValidChain<Args extends unknown[], Assertion extends AnyAssertion> =
     : [AssertionChainToWidestType<Args, Assertion>] extends [never]
       ? { [InvalidAssertionChain]: 'Impossible assertion' }
       : unknown;
-
-/**
- * Extracts the phrase literal(s) that may occupy the _leading_ phrase position
- * of an assertion — the first argument immediately after the subject in an
- * `expect()`/`expectAsync()` call.
- *
- * The leading phrase is `Parts[0]` for phrase-first assertions (both single
- * {@link PhraseLiteral | literals} and {@link PhraseLiteralChoice | choices}) and
- * `Parts[1]` for subject-first assertions, where `Parts[0]` is the subject
- * schema. The `readonly string[]` branch is what lets `const`-captured choice
- * tuples be recognized as phrases (they are not assignable to the mutable
- * {@link PhraseLiteralChoice}). Non-phrase parts resolve to `never`.
- *
- * @template Parts - The assertion parts to inspect
- */
-type LeadingPhraseFromParts<Parts extends readonly unknown[]> =
-  Parts extends readonly [infer First, ...infer Rest]
-    ? First extends readonly string[] | string
-      ? PhrasePartToLiteral<First>
-      : Rest extends readonly [infer Second, ...unknown[]]
-        ? PhrasePartToLiteral<Second>
-        : never
-    : never;
 
 /**
  * Converts a single {@link AssertionPart} into the phrase literals it
@@ -566,9 +622,22 @@ declare const InvalidAssertionChain: unique symbol;
  */
 export type ExpectItAsync<
   AsyncAssertion extends AnyAsyncAssertion = InvariantBuiltinAsyncAssertions,
+> = ExpectItAsyncFromUnion<AsyncAssertion, AsyncAssertion>;
+
+/**
+ * Distributive helper for {@link ExpectItAsync}: distributes over `Current`
+ * (per-assertion overload generation) while retaining the full `All` union
+ * separately so {@link SubjectUnionForPhrases} can scan every sibling async
+ * assertion regardless of which distributed member is currently being visited.
+ *
+ * Not intended for direct consumption; use {@link ExpectItAsync} instead.
+ */
+export type ExpectItAsyncFromUnion<
+  Current extends AnyAsyncAssertion,
+  All extends AnyAsyncAssertion,
 > = UnionToIntersection<
-  AsyncAssertion extends InvariantOf<infer U extends AnyAssertion>
-    ? ExpectItFunctionAsync<U['parts']>
+  Current extends InvariantOf<infer U extends AnyAssertion>
+    ? ExpectItFunctionAsync<U['parts'], All>
     : never
 >;
 
@@ -712,11 +781,14 @@ export interface ExpectItExecutorAsync<Subject> {
  * @see {@link TupleTail} for parameter extraction from assertion parts
  * @see {@link SlotsFromParts} for type slot generation
  */
-export type ExpectItFunctionAsync<Parts extends AssertionParts> = (
+export type ExpectItFunctionAsync<
+  Parts extends AssertionParts,
+  AllAssertions extends AnyAssertion = AnyAssertion,
+> = (
   ...args: MutableOrReadonly<TupleTail<SlotsFromParts<Parts>>>
-) => Parts[0] extends StandardSchemaV1<infer Input>
-  ? ExpectItExecutorAsync<Input>
-  : ExpectItExecutorAsync<unknown>;
+) => ExpectItExecutorAsync<
+  SubjectUnionForPhrases<AllAssertions, LeadingPhraseFromParts<Parts>>
+>;
 
 /**
  * Properties of {@link expect}.

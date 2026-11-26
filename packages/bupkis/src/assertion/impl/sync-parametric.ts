@@ -44,12 +44,12 @@ import {
   WeakSetSchema,
   WrappedPromiseLikeSchema,
 } from '../../schema.js';
-import { type Constructor } from '../../types.js';
 import {
   valueToSchema,
   valueToSchemaOptionsForDeepEqual,
   valueToSchemaOptionsForSatisfies,
 } from '../../value-to-schema.js';
+import { type Class } from '../assertion-types.js';
 import { createAssertion } from '../create.js';
 import { trapError } from './assertion-util.js';
 
@@ -187,7 +187,11 @@ export const typeOfAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberGreaterThanAssertion = createAssertion(
-  [NumberSchema, 'to be greater than', NumberSchema],
+  [
+    NumberSchema,
+    ['to be greater than', 'to be gt', 'to be above'],
+    NumberSchema,
+  ],
   (_, other) => NumberSchema.gt(other),
 );
 
@@ -204,7 +208,7 @@ export const numberGreaterThanAssertion = createAssertion(
  * @group Parametric Assertions (Sync)
  */
 export const numberLessThanAssertion = createAssertion(
-  [NumberSchema, ['to be less than', 'to be lt'], NumberSchema],
+  [NumberSchema, ['to be less than', 'to be lt', 'to be below'], NumberSchema],
   (_, other) => NumberSchema.lt(other),
 );
 
@@ -937,19 +941,19 @@ export const satisfiesAssertion = createAssertion(
 /**
  * Memoizes {@link createInstanceOfSchema}
  */
-const createInstanceOfSchemaCache = new WeakMap<Constructor, z.ZodCustom>();
+const createInstanceOfSchemaCache = new WeakMap<Class, z.ZodCustom>();
 
 /**
  * @function
  */
-const createInstanceOfSchema = <T extends Constructor>(
+const createInstanceOfSchema = <T extends Class>(
   ctor: T,
 ): z.ZodCustom<T, T> => {
   const cached = createInstanceOfSchemaCache.get(ctor);
   if (cached) {
     return cached as z.ZodCustom<T, T>;
   }
-  const schema = z.instanceof(ctor);
+  const schema = z.instanceof(ctor as any);
   createInstanceOfSchemaCache.set(ctor, schema);
-  return schema;
+  return schema as z.ZodCustom<T, T>;
 };

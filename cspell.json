@@ -104,6 +104,7 @@
     "granularities",
     "rxjs",
     "shiki",
-    "unioned"
+    "unioned",
+    "unvetted"
   ]
 }

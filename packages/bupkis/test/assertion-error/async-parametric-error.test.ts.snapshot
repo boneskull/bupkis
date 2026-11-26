@@ -120,9 +120,9 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
 }
 `;
 
-exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' / 'to be rejected with error satisfying' {unknown}\" [promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-unknown-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-unknown-3s3p] <snapshot> 1`] = `
+exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject with error satisfying' / 'to be rejected with error satisfying' / 'to reject with' {unknown}\" [promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-to-reject-with-unknown-3s3p] > should throw a consistent AssertionError [promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-to-reject-with-unknown-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{promiselike} 'to reject with error satisfying' / 'to be rejected with error satisfying' {unknown}\\" failed:\\n- expected  - 3\\n+ actual    + 1\\n\\n- Object {\\n-   \\"message\\": \\"expected message\\",\\n- }\\n+ [Error: wrong message]",
+  "message": "Assertion \\"{promiselike} 'to reject with error satisfying' / 'to be rejected with error satisfying' / 'to reject with' {unknown}\\" failed:\\n- expected  - 3\\n+ actual    + 1\\n\\n- Object {\\n-   \\"message\\": \\"expected message\\",\\n- }\\n+ [Error: wrong message]",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
@@ -133,7 +133,7 @@ exports[`Async Parametric Assertion Error Snapshots > \"{promiselike} 'to reject
     "message": "expected message"
   },
   "diff": "simple",
-  "assertionId": "promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-unknown-3s3p"
+  "assertionId": "promiselike-to-reject-with-error-satisfying-to-be-rejected-with-error-satisfying-to-reject-with-unknown-3s3p"
 }
 `;
 

@@ -1,26 +1,26 @@
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be greater than' {custom}\" [custom-to-be-greater-than-custom-3s3p] > should throw a consistent AssertionError [custom-to-be-greater-than-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be greater than' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 3",
+  "message": "Assertion \\"{number} 'to be greater than' / 'to be gt' / 'to be above' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 3",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 3,
   "expected": 5,
   "diff": "simple",
-  "assertionId": "number-to-be-greater-than-number-3s3p"
+  "assertionId": "number-to-be-greater-than-to-be-gt-to-be-above-number-3s3p"
 }
 `;
 
 exports[`Valibot Assertion Error Snapshots > \"{custom} 'to be less than' {custom}\" [custom-to-be-less-than-custom-3s3p] > should throw a consistent AssertionError [custom-to-be-less-than-custom-3s3p] <snapshot> 1`] = `
 {
-  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 10",
+  "message": "Assertion \\"{number} 'to be less than' / 'to be lt' / 'to be below' {number}\\" failed:\\n- expected  - 1\\n+ actual    + 1\\n\\n- 5\\n+ 10",
   "generatedMessage": false,
   "name": "AssertionError",
   "code": "ERR_ASSERTION",
   "actual": 10,
   "expected": 5,
   "diff": "simple",
-  "assertionId": "number-to-be-less-than-to-be-lt-number-3s3p"
+  "assertionId": "number-to-be-less-than-to-be-lt-to-be-below-number-3s3p"
 }
 `;
 

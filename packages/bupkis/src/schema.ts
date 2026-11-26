@@ -100,9 +100,15 @@ const { isInteger } = Number;
  */
 
 export const ConstructibleSchema = z
-  .custom<Constructor>(isConstructible)
+  .custom<Constructor>(isConstructible, {
+    error(issue) {
+      return issue.code === 'custom'
+        ? 'must be a constructor, class, or a non-arrow function'
+        : undefined;
+    },
+  })
   .register(BupkisRegistry, { name: 'constructible' })
-  .meta({ description: 'Constructible Function' });
+  .meta({ description: 'Constructible Function or Class' });
 
 /**
  * A Zod schema that validates any JavaScript function.
