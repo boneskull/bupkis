@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/boneskull/bupkis/compare/bupkis-v1.1.0...bupkis-v1.1.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency obug to v2.2.1 ([#577](https://github.com/boneskull/bupkis/issues/577)) ([4c82fb0](https://github.com/boneskull/bupkis/commit/4c82fb060ebc90b5da5f61df6ed3438e6166ab20))
+
 ## [1.1.0](https://github.com/boneskull/bupkis/compare/bupkis-v1.0.0...bupkis-v1.1.0) (2026-08-04)
 
 
